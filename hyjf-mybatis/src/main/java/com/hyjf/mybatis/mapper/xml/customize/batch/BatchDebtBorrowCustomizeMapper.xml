@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.batch.BatchDebtBorrowCustomizeMapper">
+
+	<!-- 查询出到期但是未满标的标的,给其发短信 -->
+	<resultMap id="searchNotFullBorrowMsgMap" type="com.hyjf.mybatis.model.customize.batch.BatchDebtBorrowCommonCustomize">
+		<!-- 序号借款编号  --> 
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="timeStartSrch" property="timeStartSrch" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="searchNotFullBorrowMsg" resultMap="searchNotFullBorrowMsgMap" parameterType="com.hyjf.mybatis.model.customize.batch.BatchDebtBorrowCommonCustomize">
+		SELECT
+			b.borrow_nid,
+			FROM_UNIXTIME(verify_time +  borrow_valid_time * 24 * 60 *60, '%Y-%m-%d %H:%i:%s' ) as timeStartSrch
+		FROM
+			hyjf_debt_borrow b
+		WHERE
+				( b.`status` = 1 AND b.reverify_time = '0'
+				 	AND 
+				 	  ( 
+				 	      ( b.reverify_status = 0 AND b.borrow_account_yes <![CDATA[<]]> b.account ) 
+				 	  AND 
+				 	      ( b.verify_time + ( b.borrow_valid_time * 24 * 60 *60 ) <![CDATA[<]]> UNIX_TIMESTAMP(NOW()) ) 
+				 	  ) 
+				  )
+	</select>
+	<update id="updateOfBorrow" parameterType="map" >
+	    UPDATE hyjf_debt_borrow b
+		SET b.borrow_account_yes = b.borrow_account_yes + #{borrowAccountYes,jdbcType=DECIMAL},
+		b.borrow_account_wait = b.borrow_account_wait - #{borrowAccountYes,jdbcType=DECIMAL},
+		b.borrow_service = CAST(
+		(
+			CAST(
+				CASE
+				WHEN b.borrow_service IS NULL THEN
+					'0'
+				ELSE
+					b.borrow_service
+				END AS DECIMAL(65,2)
+			) + #{borrowService,jdbcType=DECIMAL}
+		) AS CHAR),
+		b.borrow_account_scale =TRUNCATE((b.borrow_account_yes/b.account)*100,2),
+		b.tender_times = b.tender_times + 1
+		WHERE
+			b.id = #{borrowId,jdbcType=INTEGER}
+  	</update>
+	
+  	<update id="updateOfFullBorrow" parameterType="map" >
+	    UPDATE hyjf_debt_borrow b
+		SET b.borrow_full_status = 1,
+		b.borrow_full_time = unix_timestamp(now())
+		WHERE
+			b.id = #{borrowId,jdbcType=INTEGER}
+  	</update>
+ 
+</mapper>

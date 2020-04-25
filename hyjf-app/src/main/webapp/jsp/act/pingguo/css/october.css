@@ -1,0 +1,52 @@
+*{ padding: 0;margin: 0;-webkit-tap-highlight-color:rgba(0,0,0,0);}
+body, html { width: 100%; height: 100%;  margin: 0px; padding: 0px; display: -webkit-box; -webkit-box-orient: vertical; -webkit-box-align: center;overflow-x:hidden; }
+body{-webkit-transition:opacity 800ms ease-out; margin:0 auto;  font-family: Microsoft YaHei,arial; font-size:28px; color:#3a3a3a; text-align: left;   }
+table { border-spacing: 0px;  border-collapse: collapse; }
+ul,li{ list-style-type:none;}
+h1,h2,h3,h4,th,td{ font-weight:normal;}
+a{-webkit-tap-highlight-color:rgba(0,0,0,0); text-decoration: none; outline:none; cursor:pointer; }
+img{ border:0; vertical-align:bottom; }
+em,i{ font-style:normal;}
+
+.popup{ display:none;  width:100%; height:100%; left:0px; position:absolute; top:0; z-index:300; background:#000; background:rgba(0, 0, 0, 0.8) none repeat scroll 0 0 !important; filter:Alpha(opacity=80); }
+.popup_box{ width:408px; position:absolute; top:50%; left:50%; margin:-300px 0 0 -254px; padding:50px; text-align:center; background:#fff; border-radius:15px; }
+.popup_box .close{ position: absolute; right:-19px; top:-17px; cursor:pointer; }
+.popup_box h1{ font-size:48px; color:#6c6c6c; line-height:90px;  }
+.popup_box h4{ color:#2ec26c; line-height:28px; margin-top:8px; }
+.popup_box p img{ width:245px; height:245px; margin:35px 0 30px 0; border-radius:50%;   }
+.popup_box a.btn,.home_intro p a{ display:inline-block;  width:360px; height:72px; line-height:72px;  background:#da2032; border-radius:35px; color:#fff; font-size:16px;  }
+
+.content{ width:100%;  text-align:center; background-color:#018957; position:relative; }
+.btn_rule{ position:absolute; top:19px; right:19px;  }
+.btn_rule a{ display:inline-block;background:#ff5d05; border-radius:20px; width:142px; height:38px; line-height:38px; color:#fff; font-size:22px; text-align:center;    }
+.con_box{position:absolute; top:315px; left:120px; width:555px; height:310px; border-radius: 190px 150px 20px 0;  }
+#fruit{  position:relative;  }
+#fruit li{position:absolute;  transition:all .5s ease-out 0s; -webkit-transition:all .5s ease-out 0s; -o-transition:all .5s ease-out 0s; cursor:pointer; }
+#fruit .li_0{top:0px; left:217px;}
+#fruit .li_1{top:38px; left:374px;}
+#fruit .li_2{top:33px; left:90px;}
+#fruit .li_3{top:146px; left:35px;}
+#fruit .li_4{top:150px; left:180px;}
+#fruit .li_5{top:112px; left:288px;}
+#fruit .li_6{top:142px; left: 426px;}
+.home_intro{ width:100%; min-height:202px; text-align:center;position:relative;  }
+.home_intro h4{ color:#fff; font-size:28px;  }
+.home_intro p a{  width:161px; margin:30px 15px; background:#015f3d;   } 
+.home_intro p a.btn{background:#da2032; }
+.home_intro .round{ position:absolute; right:36px;width:90px; height:90px; border:2px solid #00c17b; border-radius:50%; }
+.home_intro .round a{ display:inline-block; width:82px; height:82px;margin:4px; background:#12c685;border-radius:50%;  }
+.home_intro .round a em{  display:inline-block; margin-top:13.5px;line-height:26px; font-size:25px; color:#fff;   }
+
+.rules_bg{ position:relative; width:100%; height:100%; background:url("../images/rules_bg.png") #56d6a4 repeat-x ;    }
+.rules_box{ width:92%; padding:50px 0 35px 0;  background:#fff; border-radius:20px; margin:-3px auto auto auto; position:relative;      }
+.rules_box .tit{ position:absolute; top:-35px; left:50%; margin-left:-167px;  width:334px; height:57px;  
+background:url("../images/rules_tit.png") no-repeat; text-align:center; line-height:56px; font-size:28px; color:#fff;   }
+.rules_box .brief{ padding:0 5%; line-height:55px; max-height:770px; min-height:700px; overflow-x: hidden; }
+.rules_box .brief em{ color:#fa5808;}
+.rules_box .tab{ width:100%;  margin:0 auto;  border:2px solid #72ca93; border-bottom:none; }
+.rules_box .tab th,.rules_box .tab td{ border-left:2px solid #72ca93; padding:0 2%;  }
+.rules_box .tab td{ border-bottom:2px solid #8eddac; line-height:30px; padding:23px 2%;  }
+.rules_box .tab thead{  background-color:#8eddac; }
+.rules_box .tab th{height:60px; line-height:60px;  }
+.rules_box .total{ width:100%; margin:18px 0; line-height:46px;font-size:29px;  }
+img{width:100% !important;}

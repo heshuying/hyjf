@@ -1,0 +1,395 @@
+/* ---------------------------------------------------------------------- 
+>>> TABLE OF CONTENT(WWW)
+-------------------------------------------------------------------------
+1 - PERFECT-SCROLLBAR
+2 - BOOTSTRAP SLIDERS
+3 - IMAGE CROP
+4 - FILE UPLOAD
+5 - SWEET ALERT
+6 - SPARKLINE
+7 - SELECT2
+8 - JQUERY.VALIDFORM
+/* ---------------------------------------------------------------------- */
+
+
+/* ---------------------------------------------------------------------- */
+/*  Perfect Scrollbar
+/* ---------------------------------------------------------------------- */
+.ps-container .ps-scrollbar-x,
+.ps-container .ps-scrollbar-x-rail {
+  height: 4px !important;
+}
+
+.ps-container .ps-scrollbar-x-rail:hover,
+.ps-container .ps-scrollbar-x-rail.hover {
+  background-color: #eee !important;
+  height: 4px !important;
+}
+
+.ps-container .ps-scrollbar-y-rail {
+  -moz-transition: all 300ms !important;
+  -o-transition: all 300ms !important;
+  -webkit-transition: all 300ms !important;
+  transition: all 300ms !important;
+  width: 4px !important;
+}
+
+.ps-container .ps-scrollbar-y {
+  -moz-transition: all 300ms !important;
+  -o-transition: all 300ms !important;
+  -webkit-transition: all 300ms !important;
+  transition: all 300ms !important;
+  width: 4px !important;
+}
+
+.ps-container:hover .ps-scrollbar-y-rail,
+.ps-container.hover .ps-scrollbar-y-rail {
+  -moz-transition: all 300ms !important;
+  -o-transition: all 300ms !important;
+  -webkit-transition: all 300ms !important;
+  transition: all 300ms !important;
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=40);
+  opacity: 0.4;
+  width: 4px !important;
+}
+
+.ps-container .ps-scrollbar-y-rail:hover,
+.ps-container .ps-scrollbar-y-rail.hover,
+.ps-container .ps-scrollbar-y-rail.in-scrolling {
+  background-color: #eee;
+  width: 6px !important;
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);
+  opacity: 0.6;
+}
+
+.ps-container .ps-scrollbar-y-rail:hover .ps-scrollbar-y,
+.ps-container .ps-scrollbar-y-rail.hover .ps-scrollbar-y,
+.ps-container .ps-scrollbar-y-rail.in-scrolling .ps-scrollbar-y {
+  background-color: #999;
+  width: 6px !important;
+}
+
+.perfect-scrollbar {
+  overflow-y: hidden !important;
+}
+
+.touch .perfect-scrollbar {
+  overflow-y: scroll !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Bootsrap Slider
+/* ---------------------------------------------------------------------- */
+.slider {
+  display: inline-block;
+  position: relative;
+  vertical-align: middle;
+}
+
+.slider.slider-horizontal {
+  margin: 10px 0;
+  width: 210px !important;
+}
+
+.slider.slider-horizontal .slider-track {
+  height: 5px !important;
+  left: 0;
+  margin-top: -5px;
+  top: 50%;
+  width: 100%;
+}
+
+.slider.slider-horizontal .slider-handle {
+  margin-top: -10px !important;
+}
+
+.slider.slider-vertical {
+  margin: 0 10px;
+}
+
+.slider.slider-vertical .slider-handle {
+  margin-left: -10px !important;
+}
+
+.slider.slider-vertical .slider-track {
+  width: 5px !important;
+}
+
+.slider.slider-vertical .slider-handle {
+  margin-left: -10px !important;
+}
+
+.slider-handle.round {
+  background: linear-gradient(to bottom, #dddddd 13%, #ffffff 97%) repeat scroll 0 0 transparent;
+  box-shadow: 0 2px 1px -1px #ffffff inset, 0 1px 3px rgba(0, 0, 0, 0.39);
+  height: 26px;
+  opacity: 1;
+  width: 26px;
+}
+
+.slider-selection {
+  background-image: none !important;
+  border-radius: none;
+  box-shadow: none;
+}
+
+.slider.slider-primary .slider-selection {
+  background: #007AFF;
+}
+
+.slider.slider-blue .slider-selection {
+  background: #5F8295;
+}
+
+.slider.slider-green .slider-selection {
+  background: #1FBBA6;
+}
+
+.slider.slider-orange .slider-selection {
+  background: #FF6600;
+}
+
+.slider.slider-red .slider-selection {
+  background: #C82E29;
+}
+
+.slider.slider-yellow .slider-selection {
+  background: #FFB848;
+}
+
+.slider.slider-purple .slider-selection {
+  background: #804C75;
+}
+
+.slider.slider-azure .slider-selection {
+  background: #0095C8;
+}
+
+/* ---------------------------------------------------------------------- */
+/*  Crop Image
+/* ---------------------------------------------------------------------- */
+.cropBox {
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  color: #666;
+  margin-bottom: 20px;
+  padding: 10px;
+}
+
+.cropArea {
+  height: 350px;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+.croppedBox {
+  width: 220px;
+  height: 220px;
+}
+.croppedBox > div {
+  background: #fff url(images/picture.svg) center center no-repeat;
+  background-size: 50px 50px;
+  height: 200px;
+}
+
+img-crop {
+  background: url(images/picture.svg) center center no-repeat;
+  background-size: 100px 100px;
+}
+
+/* ---------------------------------------------------------------------- */
+/*  File Input
+/* ---------------------------------------------------------------------- */
+.fileinput {
+  display: block !important;
+}
+
+.fileinput-new.thumbnail {
+  width: 200px;
+}
+
+.fileinput-preview.thumbnail {
+  max-width: 200px;
+  line-height: 20px;
+}
+
+/* ---------------------------------------------------------------------- */
+/*  Sweet Alert
+/* ---------------------------------------------------------------------- */
+.sweet-overlay {
+  z-index: 9998 !important;
+}
+
+.sweet-alert {
+  z-index: 9999 !important;
+}
+.sweet-alert h2 {
+  color: #5b5b60 !important;
+  font-family: "Raleway", sans-serif !important;
+  font-weight: 300 !important;
+}
+.sweet-alert button {
+  padding: 5px 32px !important;
+  box-shadow: none !important;
+}
+
+/* ---------------------------------------------------------------------- */
+/*  Sparkline
+/* ---------------------------------------------------------------------- */
+.mini-stats {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.mini-stats li {
+  text-align: center;
+  margin: 0 0 0 25px;
+  display: inline-block;
+}
+.mini-stats li:last-child {
+  border-right: 0 none;
+}
+.mini-stats .values {
+  font-size: 12px;
+  padding: 5px 0 0 0;
+}
+.mini-stats .values strong {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 2px;
+  line-height: 18px;
+}
+@media (max-width: 767px) {
+  .mini-stats {
+    width: 100%;
+    padding: 20px 0;
+  }
+}
+
+.jqstooltip {
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+}
+
+.mini-stats .sparkline-bar {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  line-height: normal !important;
+}
+
+.sparkline > canvas span {
+  box-shadow: none;
+  border: none;
+  background: red;
+}
+
+/* ---------------------------------------------------------------------- */
+/*  Jcrop - Crop Image
+/* ---------------------------------------------------------------------- */
+.crop-image form {
+  margin: 1.5em 0;
+}
+
+.jcrop-holder #preview-pane {
+  display: block;
+  position: absolute;
+  z-index: 1000;
+  top: 10px;
+  right: -280px;
+  padding: 6px;
+  border: 1px rgba(0, 0, 0, 0.4) solid;
+  background-color: white;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  -webkit-box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 1px 1px 5px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* The Javascript code will set the aspect ratio of the crop
+ area based on the size of the thumbnail preview,
+ specified here */
+#preview-pane .preview-container {
+  width: 250px;
+  height: 170px;
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------------- */
+/*  Multiple File Upload
+/* ---------------------------------------------------------------------- */
+.fileupload .uneditable-input {
+  white-space: nowrap;
+}
+
+.fileupload-new .input-group .btn-file {
+  -webkit-border-radius: 0 3px 3px 0 !important;
+  -moz-border-radius: 0 3px 3px 0 !important;
+  border-radius: 0 3px 3px 0 !important;
+}
+
+.fileinput-button {
+  overflow: hidden;
+  position: relative;
+}
+
+.fileinput-button input {
+  cursor: pointer;
+  direction: ltr;
+  font-size: 23px;
+  margin: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transform: translate(-300px, 0px) scale(4);
+}
+
+/* ---------------------------------------------------------------------- */
+/*  SELECT2_v0.2.9
+/* ---------------------------------------------------------------------- */
+.select2-container--default .select2-selection--single {
+	border-radius: 0 !important;
+	border-color: #c8c7cc !important;
+}
+.select2-container--default .select2-selection--single:hover {
+  border-color: #aeacb4;
+}
+.select2-container .select2-selection--single {
+	height: 30px !important;
+}
+.has-error .select2-container--default .select2-selection--single {
+  color: #5b5b60;
+  background: #ffe8e8;
+  border-color: #F8F8F8;
+  border-bottom-color: #a94442 !important;
+  border-bottom-width: 1px !important;
+  border-bottom-style: dotted;
+  border-color: #a94442 !important;
+  border-width: 1px !important;
+  border-style: dotted;
+}
+
+/* ---------------------------------------------------------------------- */
+/*  JQUERY.VALIDFORM_v5.3.2
+/* ---------------------------------------------------------------------- */
+
+.Validform_error {
+	color: #DA5251 !important;
+	background: #ffe8e8!important;
+	border-color: #E18D9A !important;
+}
+.Validform_error:focus {
+}
+.Validform_wrong {
+	color: #a94442;
+	margin-top: 3px;
+	display: block;
+}
+.Validform_right {
+	display: none;
+}

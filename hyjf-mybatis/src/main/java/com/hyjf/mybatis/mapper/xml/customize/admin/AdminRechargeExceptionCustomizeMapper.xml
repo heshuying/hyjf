@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.hyjf.mybatis.mapper.customize.admin.AdminRechargeExceptionCustomizeMapper">
+	<resultMap id="RechargeMapResult"
+		type="com.hyjf.mybatis.model.customize.RechargeCustomize">
+		<result column="id" property="id" />
+		<result column="nid" property="nid" /> <!-- 订单id -->
+		<result column="user_id" property="userId" /> <!-- 用户名 -->
+		<result column="username" property="username" /> <!-- 用户名 -->
+		<result column="bank_name" property="bankName" /> <!-- 充值银行 -->
+		<result column="type" property="type" /> <!-- 充值方式 -->
+		<result column="gate_type" property="gateType" /> <!-- 充值类型 -->
+		<result column="status" property="status" /> <!-- z状态 -->
+		<result column="money" property="money" /> <!-- 充值金额 -->
+		<result column="balance" property="balance" /> <!-- 可用金额 -->
+		<result column="fee" property="fee" /> <!-- 手续费 -->
+		<result column="dianfuFee" property="dianfuFee" /> <!-- 垫付手续费 -->
+		<result column="fee_from" property="feeFrom" /> <!-- 充值手续费收取方式 -->
+		<result column="client" property="client" /> <!-- 客户端 -->
+		<result column="create_time" property="createTime" /> <!-- 交易时间 -->
+		<result column="outtime" property="outtime" /> <!-- 当前时间减去充值时间，秒数 -->
+		<result column="cardid" property="cardid" /> <!-- 银行卡号 -->
+		<result column="message" property="message" /> <!-- 失败原因 -->
+	</resultMap>
+
+	<sql id="where-all-page-condition">
+		<where>
+			r.is_bank = 0
+			<if test="userId != null and userId != 0">
+				AND r.user_id = #{userId}
+			</if>
+			<!-- r.`status` = 1 -->
+			<if test="status != null and status !=''">
+				AND r.status = #{status}
+			</if>
+			<if test="userId != null and userId != 0">
+				AND r.user_id = #{userId}
+			</if>
+			<if test="nidSearch != null and nidSearch != 0">
+				AND r.nid = #{nidSearch}
+			</if>
+			<if test="usernameSearch != null and usernameSearch != ''">
+				AND u.username = #{usernameSearch}
+			</if>
+			<if test="typeSearch != null and typeSearch != ''">
+				AND r.gate_type = #{typeSearch}
+			</if>
+			<if test="getfeefromSearch != null and getfeefromSearch != ''">
+				<if test='getfeefromSearch=="0"'>
+					AND r.fee_from = #{getfeefromSearch} or r.fee_from is
+					null
+				</if>
+				<if test='getfeefromSearch=="1"'>
+					AND r.fee_from = #{getfeefromSearch}
+				</if>
+			</if>
+			<if test="balance != null">
+				AND r.balance = #{balance}
+			</if>
+			<if test="bankCodeSearch != null and bankCodeSearch != ''">
+				AND b.code = #{bankCodeSearch}
+			</if>
+			<if test="startDate != null and startDate != ''">
+				AND FROM_UNIXTIME(r.create_time, '%Y-%m-%d %H:%i:%S')
+				&gt;= STR_TO_DATE(CONCAT(#{startDate},'00:00:00' ),'%Y-%m-%d
+				%H:%i:%s')
+			</if>
+			<if test="endDate != null and endDate != ''">
+				AND FROM_UNIXTIME(r.create_time, '%Y-%m-%d %H:%i:%S')
+				&lt;= STR_TO_DATE(CONCAT(#{endDate},'23:59:59' ),'%Y-%m-%d
+				%H:%i:%s')
+			</if>
+			<if test="clientTypeSearch != null and clientTypeSearch != ''">
+				AND r.client = #{clientTypeSearch}
+			</if>
+		</where>
+	</sql>
+
+	<select id="queryRechargeCount" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.mapper.customize.RechargeCustomizeMapper">
+		SELECT
+			COUNT(1)
+		FROM
+			huiyingdai_account_recharge r
+		LEFT JOIN huiyingdai_users u ON r.user_id = u.user_id
+		LEFT JOIN huiyingdai_users_info ui ON r.user_id = ui.user_id
+		LEFT JOIN huiyingdai_bank_config b ON r.payment = b. CODE
+		LEFT JOIN hyjf_param_name pn ON pn.name_cd = r.client AND pn.name_class = 'CLIENT'
+		LEFT JOIN hyjf_param_name pna ON pna.name_cd = r.`status` AND pna.name_class = 'RECHARGE_STATUS'
+		<include refid="where-all-page-condition" />
+	</select>
+
+	<select id="queryRechargeList" resultMap="RechargeMapResult" parameterType="com.hyjf.mybatis.mapper.customize.RechargeCustomizeMapper">
+		SELECT
+			u.user_id,
+			u.username,
+			r.nid,
+			CASE r.type
+		WHEN 0 THEN
+			'平台转账'
+		WHEN 1 THEN
+			'线上充值'
+		END AS type,
+		 r.gate_type,
+		 b.`name` AS bank_name,
+		 r.money,
+		 r.fee,
+		 r.dianfu_fee AS dianfuFee,
+		 r.fee_from,
+		 r.balance,
+		 pna.`name` AS STATUS,
+		 FROM_UNIXTIME(
+			r.create_time,
+			'%Y-%m-%d
+				%H:%i:%S'
+		) AS create_time,
+		 pn.`name` AS client,
+		 r.id,
+		 r.cardid,
+		 r.message,
+		 UNIX_TIMESTAMP() - r.create_time AS outtime
+		FROM
+			huiyingdai_account_recharge r
+		LEFT JOIN huiyingdai_users u ON r.user_id = u.user_id
+		LEFT JOIN huiyingdai_users_info ui ON r.user_id = ui.user_id
+		LEFT JOIN huiyingdai_bank_config b ON r.payment = b. CODE
+		LEFT JOIN hyjf_param_name pn ON pn.name_cd = r.client AND pn.name_class = 'CLIENT'
+		LEFT JOIN hyjf_param_name pna ON pna.name_cd = r.`status` AND pna.name_class = 'RECHARGE_STATUS'
+		<include refid="where-all-page-condition" />
+		ORDER BY r.id DESC
+		<if test="limitStart >= 0">
+			LIMIT #{limitStart} , #{limitEnd}
+		</if>
+	</select>
+</mapper>
+

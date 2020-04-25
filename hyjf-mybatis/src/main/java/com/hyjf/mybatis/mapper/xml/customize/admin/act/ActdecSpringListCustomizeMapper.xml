@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.act.ActdecSpringListCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+			<!-- 用户名 -->
+			<if test="userNameSrch != null and userNameSrch != ''">
+				AND asl.user_name LIKE CONCAT('%', #{userNameSrch}, '%')
+			</if>
+			<!-- 手机号 -->
+			<if test="numberSrch != null and numberSrch != ''">
+				AND asl.user_mobile LIKE CONCAT('%', #{numberSrch}, '%')
+			</if>
+			<!-- 操作-->
+			<if test="operTypeSrch != null and operTypeSrch!=''">
+				<if test="operTypeSrch ==1">
+					AND asl.oper_type in(1,2,3,4)
+				</if>
+				<if test="operTypeSrch ==2">
+					AND asl.oper_type in(5,6,7,8,9,10)
+				</if>
+				<if test="operTypeSrch ==3">
+					AND asl.oper_type =11
+				</if>
+				<if test="operTypeSrch ==4">
+					AND asl.oper_type =12
+				</if>
+				<if test="operTypeSrch ==5">
+					AND asl.oper_type =13
+				</if>
+			</if>
+			<!-- 获得奖励-->
+			<if test="rewardSrch != null and rewardSrch != ''">
+				<if test="rewardSrch ==2">
+					AND asl.oper_type in(2,8)
+				</if>
+				<if test="rewardSrch !=2">
+					AND asl.oper_type = #{rewardSrch}
+				</if>
+			</if>
+			<!-- 获得时间 -->
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND FROM_UNIXTIME( asl.create_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch != ''">
+				AND FROM_UNIXTIME( asl.create_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+			
+		</where>
+	</sql>
+	<resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.customize.admin.act.ActdecSpringListCustomize" >
+	    <id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+	    <result column="user_mobile" property="userMobile" jdbcType="VARCHAR" />
+	    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+	    <result column="oper_type" property="operType" jdbcType="VARCHAR" />
+	    <result column="number" property="number" jdbcType="INTEGER" />
+	    <result column="reward" property="reward" jdbcType="VARCHAR" />
+	    <result column="total_number" property="totalNumber" jdbcType="INTEGER" />
+	    <result column="available_number" property="availableNumber" jdbcType="INTEGER" />
+	    <result column="new_recharge" property="newRecharge" jdbcType="INTEGER" />
+	    <result column="new_investment" property="newInvestment" jdbcType="INTEGER" />
+	    <result column="oper_amount" property="operAmount" jdbcType="INTEGER" />
+	    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+	    <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+	    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+	    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+	    <result column="del_flg" property="delFlg" jdbcType="BIT" />
+	  </resultMap>
+	<select id="selectInviteRecommendList" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.customize.admin.act.ActdecSpringListCustomize">
+		SELECT
+			user_name,
+			user_mobile,
+			CASE
+		WHEN oper_type = 1 THEN
+			'我的加息我做主'
+		WHEN oper_type = 2 THEN
+			'我的加息我做主'	
+		WHEN oper_type = 3 THEN
+			'我的加息我做主'
+		WHEN oper_type = 4 THEN
+			'我的加息我做主'
+		WHEN oper_type = 5 THEN
+			'零元夺宝抽奖机'
+		WHEN oper_type = 6 THEN
+			'零元夺宝抽奖机'
+		WHEN oper_type = 7 THEN
+			'零元夺宝抽奖机'
+		WHEN oper_type = 8 THEN
+			'零元夺宝抽奖机'
+		WHEN oper_type = 9 THEN
+			'零元夺宝抽奖机'
+		WHEN oper_type = 10 THEN
+			'零元夺宝抽奖机'
+		WHEN oper_type = 11 THEN
+			'充值'
+		WHEN oper_type = 12 THEN
+			'提现'
+		WHEN oper_type = 13 THEN
+			'出借'
+		ELSE
+			''
+		END AS oper_type,
+		oper_amount,
+		new_recharge,
+		new_investment,
+		number,
+		reward,
+		total_number,
+		available_number,
+		FROM_UNIXTIME(
+				asl.create_time,
+				'%Y-%m-%d %H:%i:%S'
+			) AS create_time
+		FROM
+			hyjf_actdec_spring_list asl
+		<include refid="Where_Clause" />
+		ORDER BY
+			asl.create_time DESC
+		<if test="limitStart != null and limitStart >= 0 and limitEnd !=null and limitEnd >= 0" >
+     		LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+    	</if>
+	</select>
+	
+	<select id="selectInviteRecommendTotal" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.admin.act.ActdecSpringListCustomize">
+		SELECT
+			count(1)
+		FROM
+			hyjf_actdec_spring_list asl
+		<include refid="Where_Clause" />
+	</select>
+
+	
+</mapper>

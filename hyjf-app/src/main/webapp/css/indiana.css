@@ -1,0 +1,334 @@
+* {
+	margin:0;
+	padding:0;
+}
+li {
+	list-style:none;
+}
+a {
+	text-decoration:none;
+}
+h1,h2,h3,h4 {
+	font-weight:normal;
+}
+i {
+	font-style:normal;
+}
+img{border: none;vertical-align: middle;}
+.indinaInvest {
+	letter-spacing:0.01610306rem;
+}
+.indianaBg-1 {
+	width:100%;
+	height:7.6916747rem;
+	background:url(../img/indiana01.jpg) no-repeat top;
+	background-size:100%;
+}
+.indianaBg-2 {
+	width:100%;
+	height:2.8202415rem;
+	background:url(../img/indiana02.jpg) no-repeat top;
+	background-size:100%;
+}
+.indianaBg-3 {
+	width:100%;
+	height:6.8730757rem;
+	background:url(../img/indiana03.jpg) no-repeat top;
+	background-size:100%;
+}
+.indianaBg-4 {
+	width:100%;
+	height:6.8778132rem;
+	background:url(../img/indiana04.jpg) no-repeat top;
+	background-size:100%;
+}
+.indianaBg-5 {
+	width:100%;
+	height:6.8744187rem;
+	background:url(../img/indiana05.jpg) no-repeat top;
+	background-size:100%;
+}
+.indianaBg-6 {
+	width:100%;
+	height:4.6459903rem;
+	background:url(../img/indiana06.jpg) no-repeat top;
+	background-size:100%;
+}
+.indianaBg-7 {
+	background:#141132;
+	color:#FFFFFF;
+	font-size:0.3381643rem;
+	padding:0 0.8856683rem;
+	padding-bottom:2.9468599rem;
+	letter-spacing:0.03610306rem;
+}
+.indianaBg-7 span{color: #f0fd38;}
+.indianaBg-2 p {
+	text-align:center;
+	color:#FFFFFF;
+	font-size:0.45088567rem;
+}
+.indianaBg-2 p span {
+	color:#e91265}
+.indianaBg-2 a {
+	display:block;
+	width:3.40055878rem;
+	height:0.85346216rem;
+	line-height:0.85346216rem;
+	background:rgba(233,18,101,0.9);
+	color:#f0fd39;
+	margin:0 auto;
+	margin-top:0.605153rem;
+	text-align:center;
+	border-radius:1.2305153rem;
+	-webkit-border-radius:1.2305153rem;
+	font-size:0.37037037rem;
+	border:solid #fb619b 0.07610306rem}
+.indiana-ban .indiana-right {
+	width:3.7084863rem;
+	float:right;
+	color:#FFFFFF;
+	margin-top:2.45781rem;
+	margin-right:1.2628019rem;
+}
+.indiana-ban .winPrize {
+	
+	
+	    float: right;
+    color: #FFFFFF;
+    margin-top: 2.8985507rem;
+    margin-right: 0.878744rem;
+    font-size: 0.337037rem;
+    text-align: center;
+}
+.indiana-ban .indiana-right p {
+	font-size:0.37037037rem;
+}
+.indiana-ban .indianaPercent {
+	margin-top:0.2415459rem;
+	height:0.2012882rem;
+	background:#FFFFFF;
+	border-radius:1.04025765rem;
+	-webkit-border-radius:1.04025765rem;
+	border:solid #a175f4 0.04025765rem;
+}
+.indiana-ban .indiana-right .indianaPercent .joinPercent {
+	height:0.2012882rem;
+	border-radius:1.04025765rem;
+	-webkit-border-radius:1.04025765rem;
+	background:url(../img/indiana-percent.png) no-repeat left;
+	background-size:auto 100%;
+}
+.indiana-ban .indiana-right .peoplenum {
+	font-size:0.2931643rem;
+	margin-top:0.2148945rem;
+}
+.peoplenum span {
+	display:inline-block;
+	line-height:0.4636578rem}
+.peoplenum span i {
+	display:block;
+}
+.peoplenum .jionsNum {
+	color:#eec148;
+}
+.peoplenum .remainNum {
+	color:#39fcfb;
+}
+.peoplenum span.right-align {
+	text-align:right;
+	float:right;
+}
+.clear {
+	clear:both;
+}
+.indiana-right .indianaStart {
+	display:block;
+	margin-top:0.3455789rem;
+	text-align:center;
+	background:rgba(233,18,101,0.9);
+	color:#f0fd39;
+	height:0.65346216rem;
+	line-height:0.65346216rem;
+	border-radius:1.2305153rem;
+	-webkit-border-radius:1.2305153rem;
+	font-size:0.37037037rem;
+	border:solid #fb619b 0.07610306rem
+	}
+.indiana-right .indianaEnd {
+	display:block;
+	margin-top:0.3455789rem;
+	text-align:center;
+	background:#b1a7a7;
+	color:#ffffff;
+	height:0.65346216rem;
+	line-height:0.65346216rem;
+	border-radius:1.2305153rem;
+	-webkit-border-radius:1.2305153rem;
+	font-size:0.37037037rem;
+	border:solid #b1a7a7 0.07610306rem
+	}
+.indianaBg-5 .indiana-right {
+	margin-top:2.57813rem;
+}
+
+.indianaBg-5 .indiana-right {
+	margin-top:2.57813rem;
+}
+.indiana-ban .winPrize p {
+	color:#F0FD39;
+}
+.indiana-ban .winPrize .winBg {
+	border-radius: 1.023578rem;
+    -webkit-border-radius: 1.023578rem;
+    width: 100%;
+    color: #14196c;
+    height: 0.8868438rem;
+    line-height: 0.8868438rem;
+    background: url(../img/winBg.png) no-repeat left;
+    background-size: 100%;
+    margin-top: 0.4428341rem;
+    padding: 0.13578rem;
+}
+.indianaBg-6 .myfortuneBtn {
+	position:relative;
+	top:1.102382rem;
+	text-align:center;
+	font-size:0.37037037rem;
+	color:#e91263;
+	width:5.8607085rem;
+	height:0.8003382rem;
+	line-height:0.8003382rem;
+	background:#f0fd37;
+	border:solid #fdcc37 0.08661836rem;
+	margin:0 auto;
+	border-radius:1.023578rem;
+	-webkit-border-radius:1.023578rem;
+}
+.indianaBg-7 p {
+	margin-bottom:0.5246377rem;
+	line-height:0.5818035rem}
+.indianaBg-7 p.zhushi {
+	color:#f0fd38;
+	margin-bottom: 0;
+	font-size: 0.35333rem;
+}
+.indianaBg-7 p.indiana-fontsize {
+	font-size:0.2898551rem;
+	margin-top:0.745rem;
+}
+.congratulationBg {
+	width:100%;
+	height:100%;
+	position:fixed;
+	top:0;
+	background:rgba(0,0,0,.5);
+	z-index:22;
+}
+.congratulation-con {
+	width:100%}
+.congratulations .congratulation-con {
+	width:100%;
+	height:7.5845411rem;
+	position:fixed;
+	top:2.5206119rem;
+	z-index:33;
+	background:url(../img/congratulationBg.png) no-repeat;
+	background-size:100%;
+	text-align:center;
+	margin-top:1.610306rem}
+.congrate-content {
+	margin-top:2.20139rem;
+	font-size:0.381643rem;
+	color:#FFFFFF;
+}
+.congrate-content .getFortune-code {
+	color:#f0fd37;
+	font-size:0.4267311rem;
+	margin-top:1.2882448rem}
+.getFortune-sure {
+	display:block;
+	text-align:center;
+	font-size:0.4267311rem;
+	color:#e91263;
+	width:4.0257649rem;
+	height:0.7454106rem;
+	line-height:0.7454106rem;
+	background:#f0fd37;
+	border:solid #fdcc37 0.08661836rem;
+	margin:0 auto;
+	border-radius:1.023578rem;
+	-webkit-border-radius:1.023578rem;
+	margin-top:0.421311rem}
+.myFortune-con {
+	width:100%;
+	height:8.4138486rem;
+	background:url(../img/fortuneBg.png) no-repeat;
+	background-size:100%;
+	position:fixed;
+	top:3.8906119rem;
+	z-index:33;
+}
+.myFortune-content {
+	    width: 7.68285024rem;
+    margin: 0 auto;
+    margin-top: 2.4790rem;
+    padding-left:0.75rem;
+}
+.myFortune-content p{margin-bottom:0.13456rem}
+.myFortune-content p span{display: inline-block;color:#FFFFFF;text-align: center;font-weight: bold;font-size:0.407037rem}
+.expiryCode-con {
+	width:100%;
+	height:2.3171498rem;
+	overflow:auto;
+	color:#fff;
+	margin:0 auto}
+.expiryCode-con::-webkit-scrollbar {
+	display:none;
+}
+.expiryCode-con::-moz-scrollbar {
+	display:none;
+}
+.expiryCode-con table {
+	text-align:center;
+	font-size:0.2457005rem;
+}
+.expiryCode table td {
+	padding:0.2657005rem}
+.bothconfort {
+	display:none;
+}
+.indiana-left{
+	width:50%;
+float: left;
+font-size: 0.4186795rem;
+color: #FFFFFF;
+}
+.indiana-left p{
+	margin-top:5.0249597rem;
+	text-align: center;
+}
+.indianaBg-5 .indiana-left p{margin-top:5.08249597rem;} 
+.congratulations .congratulation-lose{background: url(../img/congratulation_lose.png) no-repeat;background-size: 100%;}
+.congratulations  .congratulation-lose .nochance{       width: 5.833rem;
+    font-size: 0.42037037rem;
+    color: #FFFFFF;
+    text-align: center;
+    margin: 0 auto;
+    margin-top: 2.844356rem;}
+.nochance a{   display: block;
+    text-align: center;
+    font-size: 0.4267311rem;
+    color: #e91263;
+    width: 2.0257649rem;
+    height: 0.5454106rem;
+    line-height: 0.5454106rem;
+    background: #f0fd37;
+    border: solid #fdcc37 0.08661836rem;
+    border-radius: 1.023578rem;
+    -webkit-border-radius: 1.023578rem;
+    margin-top: 1.321311rem;
+    margin-left: 0.4678rem;
+    font-size: 0.294rem;
+    float: left;
+    }

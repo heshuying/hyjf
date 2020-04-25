@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.TwoelevenCustomizeMapper">
+    <sql id="Where_Clause">
+        <if test="rewardId != null and rewardId != ''">
+            AND tr.reward_id = #{rewardId}
+        </if>
+        <if test="truename != null and truename != ''">
+            AND tr.truename  = #{truename}
+        </if>
+        <if test="username != null and username != ''">
+          AND tr.username = #{username}
+        </if>
+        <if test="rewardType != null and rewardType != '' ">
+            AND tr.reward_type =#{ rewardType}
+        </if>
+        <if test="status != null ">
+            AND tr.status =#{status}
+        </if>
+        <if test="mobile != null and mobile != ''">
+            AND tr.mobile =#{mobile}
+        </if>
+    </sql>
+    <resultMap id="TwoelevenCustomizeResult"
+               type="com.hyjf.mybatis.model.customize.admin.TwoelevenCustomize">
+        <result column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="mobile" property="mobile" />
+        <result column="username" property="username" />
+        <result column="truename" property="truename" />
+        <result column="reward_name" property="rewardName" />
+        <result column="reward_id" property="rewardId" />
+        <result column="reward_type" property="rewardType" />
+        <result column="distribution_status" property="distributionStatus" />
+        <result column="distribution_status_name" property="distributionStatusName" />
+        <result column="status_name" property="statusName" />
+        <result column="status" property="status" />
+        <result column="seconds_time" property="secondsTime" />
+        <result column="send_time" property="sendTime" />
+        <result column="obtain_time" property="obtainTime" />
+        <result column="year_amount_all" property="yearAmountAll" />
+    </resultMap>
+    <select id="selectTwoelevenSeckillCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+        select count(tr.id)
+        from hyjf_activity_twoeleven_reward tr
+        where tr.reward_type !='实物'
+        <include refid="Where_Clause"/>
+    </select>
+
+    <select id="selectTwoelevenSeckillList" resultMap="TwoelevenCustomizeResult"
+            parameterType="java.util.HashMap">
+        select tr.id,tr.reward_name,tr.reward_id,tr.reward_type,tr.username,tr.truename,tr.mobile,tr.distribution_status,tr.status,
+        date_format(tr.seconds_time, '%Y-%m-%d %H:%i:%s') as seconds_time,
+        case
+        when tr.status='1' then date_format(tr.send_time, '%Y-%m-%d %H:%i:%s')
+        else'' end as send_time,
+        date_format(tr.obtain_time, '%Y-%m-%d %H:%i:%s') as obtain_time,
+        case
+        when tr.distribution_status='0' then '系统发放'
+        when tr.distribution_status='1' then '手动发放'
+        end as distribution_status_name,
+        case
+        when tr.status='0' then '待发放'
+        when tr.status='1' then '已发放'
+        end as status_name
+        from hyjf_activity_twoeleven_reward tr
+        where tr.reward_type !='实物'
+        <include refid="Where_Clause"/>
+        <if test="sort == null and col == null">
+            ORDER BY tr.seconds_time DESC
+        </if>
+        <if test="sort != null and col != null">
+            ORDER BY ${col} ${sort}
+        </if>
+        <if test="limitStart >= 0" >
+            LIMIT #{limitStart} , #{limitEnd}
+        </if>
+    </select>
+
+    <select id="selectTwoelevenInvestCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+        select count(tr.user_id) from (
+        select user_id,username,truename from hyjf_activity_twoeleven_investment
+        group by user_id,username,truename)tr
+        where 1=1
+        <include refid="Where_Clause"/>
+    </select>
+
+    <select id="selectTwoelevenInvestList" resultMap="TwoelevenCustomizeResult"
+            parameterType="java.util.HashMap">
+        select tr.user_id,tr.username,tr.truename,truncate(IFNULL(sum(tr.year_amount),0),2) as year_amount_all,
+        (select t.reward_name from hyjf_activity_twoeleven_reward t where t.user_id=tr.user_id and t.reward_type = '实物') as reward_name
+        from hyjf_activity_twoeleven_investment tr
+        where 1=1
+        <include refid="Where_Clause"/>
+        group by tr.user_id,tr.username,tr.truename
+        ORDER BY sum(tr.year_amount)
+        <if test="sort == null ">
+             DESC
+        </if>
+        <if test="sort != null ">
+            ${sort}
+        </if>
+        <if test="limitStart >= 0" >
+            LIMIT #{limitStart} , #{limitEnd}
+        </if>
+    </select>
+
+    <select id="selectTwoelevenRewardCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+        select count(tr.id)
+        from hyjf_activity_twoeleven_reward tr
+        where tr.reward_type ='实物'
+        <include refid="Where_Clause"/>
+    </select>
+
+    <select id="selectTwoelevenRewardList" resultMap="TwoelevenCustomizeResult"
+            parameterType="java.util.HashMap">
+        select tr.id,tr.reward_name,tr.username,tr.truename,tr.mobile,tr.distribution_status,tr.status,
+        date_format(tr.obtain_time, '%Y-%m-%d %H:%i:%s') as obtain_time,
+        case
+        when tr.status='1' then date_format(tr.send_time, '%Y-%m-%d %H:%i:%s')
+        else'' end as send_time,
+        case
+        when tr.distribution_status='0' then '系统发放'
+        when tr.distribution_status='1' then '手动发放'
+        end as distribution_status_name,
+        case
+        when tr.status='0' then '待发放'
+        when tr.status='1' then '已发放'
+        end as status_name
+        from hyjf_activity_twoeleven_reward tr
+        where tr.reward_type ='实物'
+        <include refid="Where_Clause"/>
+        <if test="sort == null and col == null">
+            ORDER BY tr.obtain_time DESC
+        </if>
+        <if test="sort != null and col != null">
+            ORDER BY ${col} ${sort}
+        </if>
+        <if test="limitStart >= 0" >
+            LIMIT #{limitStart} , #{limitEnd}
+        </if>
+    </select>
+
+
+    <select id="selectInvestReward" resultMap="TwoelevenCustomizeResult"
+            parameterType="java.util.HashMap">
+        select
+        tr.user_id,tr.username,tr.truename,sum(tr.year_amount) as year_amount_all,u.mobile
+        from hyjf_activity_twoeleven_investment tr
+        <include refid="Where_Clause"/>
+        left join huiyingdai_users u on u.user_id=tr.user_id
+        group by tr.user_id,tr.username,tr.truename
+    </select>
+
+    <select id="selectInvestRewardSW" resultType="java.lang.Integer"
+            parameterType="java.util.List">
+        select tr.user_id from hyjf_activity_twoeleven_reward tr where tr.reward_type='实物' AND tr.user_id in
+        <foreach collection="list"  open="(" close=")" separator="," item="item">
+            #{item.userId}
+        </foreach>
+    </select>
+
+    <insert id="batchInsertInvestReward" parameterType="java.util.List" useGeneratedKeys="true" >
+        <!--<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >-->
+            <!--SELECT LAST_INSERT_ID()-->
+        <!--</selectKey>-->
+        insert into hyjf_activity_twoeleven_reward
+        (reward_name,
+                reward_type,
+                user_id,
+                username,
+                truename,
+                mobile,
+                distribution_status,
+                `status`,
+                obtain_time)
+        values
+        <foreach collection="list" item="item" index="index" separator="," close=";">
+            (#{item.rewardName,jdbcType=VARCHAR},
+                    #{item.rewardType,jdbcType=VARCHAR},
+                    #{item.userId,jdbcType=INTEGER},
+                    #{item.username,jdbcType=VARCHAR},
+                    #{item.truename,jdbcType=VARCHAR},
+                    #{item.mobile,jdbcType=VARCHAR},
+                    #{item.distributionStatus,jdbcType=TINYINT},
+                    #{item.status,jdbcType=TINYINT},
+                    STR_TO_DATE(#{item.obtainTime,jdbcType=VARCHAR},'%Y-%m-%d %H:%i:%s'))
+        </foreach>
+
+    </insert>
+    <select id="getCouponQuantity" resultType="java.lang.Integer" parameterType="java.lang.String">
+        select coupon_quantity from hyjf_coupon_config where coupon_code = #{couponCode};
+    </select>
+
+    <select id="getYearAmount" resultType="java.math.BigDecimal" parameterType="java.lang.Integer">
+        select truncate(IFNULL(sum(year_amount),0),2) from hyjf_activity_twoeleven_investment  where user_id = ${userId}
+    </select>
+
+    <select id="getUserAwardTime" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        select count(*) from hyjf_activity_twoeleven_reward where user_id = ${userId} and reward_type != '实物' and to_days(create_time) = to_days(now());
+    </select>
+
+    <select id="getUserInfos" resultType="com.hyjf.mybatis.model.customize.admin.TwoelevenCustomize" parameterType="java.lang.Integer">
+        SELECT
+            usr.username as username,
+            usrinfo.truename as truename
+        FROM
+            huiyingdai_users usr
+        LEFT JOIN huiyingdai_users_info usrinfo ON usr.user_id = usrinfo.user_id
+        WHERE
+            usr.user_id = ${userId};
+    </select>
+
+</mapper>
+

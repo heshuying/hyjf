@@ -1,0 +1,523 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.AccountDetailCustomizeMapper">
+	<resultMap id="AccountDetailMapResult"
+		type="com.hyjf.mybatis.model.customize.AccountDetailCustomize">
+		<result column="id" property="id" />
+		<result column="user_id" property="userId" /> <!-- 用户id -->
+		<result column="username" property="username" /> <!-- 用户名 -->
+		<result column="referrer_name" property="referrerName" /> <!-- 推荐人 -->
+		<result column="referrer_group" property="referrerGroup" /> <!-- 推荐组 -->
+		<result column="nid" property="nid" /> <!-- 订单号 -->
+		<result column="type" property="type" /> <!-- 操作类型 -->
+		<result column="trade_type" property="tradeType" /> <!-- 交易类型  -->
+		<result column="amount" property="amount" /> <!-- 操作金额  -->
+		<result column="balance" property="balance" /> <!-- 可用金额 -->
+		<result column="frost" property="frost" /> <!-- 冻结金额 -->
+		<result column="planBalance" property="planBalance"/><!-- 汇添金可用金额 -->
+		<result column="planFrost" property="planFrost"/><!-- 汇添金冻结金额 -->
+		<result column="remark" property="remark" /> <!-- 备注  -->
+		<result column="create_time" property="createTime" /> <!-- 交易时间  -->
+		<result column="is_bank" property="isBank" /> <!-- 是否是银行存管 -->
+		<result column="account_id" property="accountId" /> <!-- 电子账号 -->
+		<result column="seq_no" property="seqNo" /> <!-- 交易流水号  -->
+		<result column="bank_balance" property="bankBalance" /> <!-- 银行存管余额  -->
+		<result column="bank_frost" property="bankFrost" /> <!-- 银行存管冻结金额-->
+		<result column="bank_total" property="bankTotal" /> <!-- 银行存管总资产-->
+		<result column="check_status" property="checkStatus" /> <!-- 对账状态 -->
+		<result column="trade_status" property="tradeStatus" /> <!-- 交易状态  -->
+		<!--银行代收本金  huiyingdai_account 表-->
+		<result column="bank_await_capital" property="bankAwaitCapital" /> <!-- 银行待收本金  -->
+	</resultMap>
+
+	<sql id="where-all-page-condition">
+		<if test="userId != null and userId != 0">
+			AND l.user_id = #{userId}
+		</if>
+		<if test="referrerName != null and referrerName != ''">
+			AND u2.username = #{referrerName}
+		</if>
+		<if test="tradeTypeSearch != null and tradeTypeSearch != ''">
+			AND t.id = #{tradeTypeSearch}
+		</if>
+		<if test="username != null and username != ''">
+			AND u.username = #{username}
+		</if>
+		<if test="nid != null and nid != ''">
+			AND l.nid = #{nid}
+		</if>
+		<if test="typeSearch != null and typeSearch != ''">
+			AND l.type = #{typeSearch}
+		</if>
+		<if test="isBank != null and isBank != ''">
+			AND l.is_bank = #{isBank}
+		</if>
+		<if test="checkStatus != null and checkStatus != ''">
+			AND l.check_status = #{checkStatus}
+		</if>
+		<if test="tradeStatus != null and tradeStatus != ''">
+			AND l.trade_status = #{tradeStatus}
+		</if>
+		<if test="accountId != null and accountId != ''">
+			AND l.account_id = #{accountId}
+		</if>
+		<if test="seqNo != null and seqNo != ''">
+			AND l.seq_no = #{seqNo}
+		</if>
+		<if test="balance != null">
+			AND l.balance = #{balance}
+		</if>
+		<if test="frost != null">
+			AND l.frost = #{frost}
+		</if>
+		<if test="remarkSrch != null and remarkSrch != ''">
+			AND l.remark = #{remarkSrch}
+		</if>
+		<if test="startDate != null and startDate != ''">
+			AND l.create_time >= UNIX_TIMESTAMP(CONCAT(#{startDate},' 00:00:00'))
+		</if>
+		<if test="endDate != null and endDate != ''">
+			AND l.create_time <![CDATA[<=]]> UNIX_TIMESTAMP(CONCAT(#{endDate},' 23:59:59'))
+		</if>
+	</sql>
+
+	<select id="queryAccountDetailCount" resultType="java.lang.Integer"
+		parameterType="com.hyjf.mybatis.mapper.customize.AccountDetailCustomizeMapper">
+		SELECT COUNT(1)
+		FROM huiyingdai_account_list l
+		LEFT JOIN huiyingdai_users u ON l.user_id= u.user_id
+		LEFT JOIN huiyingdai_users_info ui ON l.user_id= ui.user_id
+		LEFT JOIN huiyingdai_account_trade t ON l.trade= t.`value`
+		LEFT JOIN huiyingdai_users u2 ON u.referrer= u2.user_id
+		
+		WHERE 1=1
+		<include refid="where-all-page-condition"/>
+	</select>
+
+	<select id="queryAccountDetailCountAll" resultType="java.lang.Integer"
+		parameterType="com.hyjf.mybatis.mapper.customize.AccountDetailCustomizeMapper">
+		SELECT COUNT(1)
+		FROM huiyingdai_account_list
+	</select>
+
+	<select id="queryAccountDetails" resultMap="AccountDetailMapResult"
+		parameterType="com.hyjf.mybatis.mapper.customize.AccountDetailCustomizeMapper">
+		SELECT
+			l.id,
+			u.username,
+			u2.username AS 'referrer_name',
+			l.nid,
+			CASE l.type
+		WHEN 1 THEN
+			'收入'
+		WHEN 2 THEN
+			'支出'
+		WHEN 3 THEN
+			'冻结'
+		WHEN 4 THEN
+			'解冻'
+		ELSE
+			'其它'
+		END AS type,
+		 t.`name` AS trade_type,
+		 l.amount,
+		 l.balance,
+		 IFNULL(l.frost, 0) AS frost,
+		 IFNULL(l.plan_balance, 0) AS planBalance,
+		 IFNULL(l.plan_frost, 0) AS planFrost,
+		 l.remark,
+		 FROM_UNIXTIME(
+			l.create_time,
+			'%Y-%m-%d %H:%i:%S'
+		) AS 'create_time',
+		 l.account_id,
+		 l.is_bank,
+		 l.seq_no,
+		 IFNULL(l.bank_total, 0) AS bank_total,
+		 IFNULL(l.bank_balance, 0) AS bank_balance,
+		 IFNULL(l.bank_frost, 0) AS bank_frost,
+		 l.trade_status,
+		 l.check_status
+		FROM
+			huiyingdai_account_list l
+		LEFT JOIN huiyingdai_users u ON l.user_id = u.user_id
+		LEFT JOIN huiyingdai_users_info ui ON l.user_id = ui.user_id
+		LEFT JOIN huiyingdai_account_trade t ON l.trade = t.`value`
+		LEFT JOIN huiyingdai_users u2 ON u.referrer = u2.user_id
+		WHERE 1=1
+		<include refid="where-all-page-condition"/>
+		ORDER BY l.create_time DESC, l.id DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<resultMap id="queryAccountDetailErrorUserListMap" type="com.hyjf.mybatis.model.customize.admin.AdminAccountDetailDataRepairCustomize">
+		<result column="user_id" property="userId" /> <!-- 用户id -->
+		<result column="id" property="id" /> <!-- 交易明细id -->
+	</resultMap>
+	<select id="queryAccountDetailErrorUserList"  resultMap="queryAccountDetailErrorUserListMap" >
+		SELECT
+			distinct(bal.user_id) AS user_id
+		FROM
+			huiyingdai_account_list bal
+		LEFT JOIN huiyingdai_borrow_recover br ON bal.user_id = br.user_id
+		AND bal.nid = br.repay_ordid
+		WHERE
+			br.borrow_nid IN (
+				'HXD160709202',
+				'GYD160908704',
+				'HDD161004504',
+				'HDD161004505',
+				'HDD161004506',
+				'HXD160709203',
+				'HDD161208102',
+				'GYD160908705',
+				'HXD160709204',
+				'HBD161005101',
+				'HXD160709205',
+				'HDD161005201',
+				'HBD161111004',
+				'HDD161005202',
+				'HDD161208103',
+				'HDD161005203',
+				'HDD161005204',
+				'HFD160710101',
+				'HDD161005205',
+				'HBD161111005',
+				'HDD161005206',
+				'HDD161005207',
+				'HBD161111701',
+				'HDD161005208',
+				'NEW161207803',
+				'HDD161005209',
+				'HDD160710401',
+				'HBD161111702',
+				'HFD161005601',
+				'HDD160710402',
+				'HDD161005801',
+				'HDD161208104',
+				'NEW161209901',
+				'HDD161005802',
+				'HBD161111703',
+				'HDD161006001',
+				'NEW161210001',
+				'HDD161006002',
+				'HDD161006003',
+				'HDD161006004',
+				'HDD161006005',
+				'HDD161006006',
+				'HBD161111704',
+				'HDD160710403',
+				'HDD161006007',
+				'HBD161006101',
+				'HDD161208105'
+			);
+	</select>
+	
+	<select id="queryAccountDetailIdByUserId" resultMap="queryAccountDetailErrorUserListMap" parameterType="java.lang.Integer">
+		SELECT
+			min(hal.id) AS id
+		FROM
+			huiyingdai_account_list hal
+		LEFT JOIN huiyingdai_borrow_recover br ON hal.user_id = br.user_id
+		AND hal.nid = br.repay_ordid
+		WHERE
+			br.borrow_nid IN (
+				'HXD160709202',
+				'GYD160908704',
+				'HDD161004504',
+				'HDD161004505',
+				'HDD161004506',
+				'HXD160709203',
+				'HDD161208102',
+				'GYD160908705',
+				'HXD160709204',
+				'HBD161005101',
+				'HXD160709205',
+				'HDD161005201',
+				'HBD161111004',
+				'HDD161005202',
+				'HDD161208103',
+				'HDD161005203',
+				'HDD161005204',
+				'HFD160710101',
+				'HDD161005205',
+				'HBD161111005',
+				'HDD161005206',
+				'HDD161005207',
+				'HBD161111701',
+				'HDD161005208',
+				'NEW161207803',
+				'HDD161005209',
+				'HDD160710401',
+				'HBD161111702',
+				'HFD161005601',
+				'HDD160710402',
+				'HDD161005801',
+				'HDD161208104',
+				'NEW161209901',
+				'HDD161005802',
+				'HBD161111703',
+				'HDD161006001',
+				'NEW161210001',
+				'HDD161006002',
+				'HDD161006003',
+				'HDD161006004',
+				'HDD161006005',
+				'HDD161006006',
+				'HBD161111704',
+				'HDD160710403',
+				'HDD161006007',
+				'HBD161006101',
+				'HDD161208105'
+			) AND hal.user_id = #{userId};
+	</select>
+	
+	<select id="selectNextAccountList" resultType="com.hyjf.mybatis.model.auto.AccountList" parameterType="java.util.Map">
+		SELECT
+			*
+		FROM
+			huiyingdai_account_list hal
+		WHERE
+			hal.user_id = #{userId}
+		AND hal.id > #{id}
+		ORDER BY
+			hal.id ASC
+		LIMIT 1;
+	</select>
+	<select id="selectAccountTrade" resultType="com.hyjf.mybatis.model.auto.AccountTrade" parameterType="java.lang.String">
+		SELECT
+			*
+		FROM
+			huiyingdai_account_trade hat
+		WHERE
+			lower(hat.value) = lower(#{trade})
+			AND hat.status = 1
+	</select>
+	
+	
+	<select id="queryApiAccountDetails" resultMap="AccountDetailMapResult"
+		parameterType="com.hyjf.mybatis.mapper.customize.AccountDetailCustomizeMapper">
+		SELECT
+			u.username,
+			u2.username AS 'referrer_name',
+			l.nid,
+			CASE l.type
+		WHEN 1 THEN
+			'收入'
+		WHEN 2 THEN
+			'支出'
+		WHEN 3 THEN
+			'冻结'
+		WHEN 4 THEN
+			'解冻'
+		ELSE
+			'其它'
+		END AS type,
+		 t.`name` AS trade_type,
+		 l.amount,
+		 IFNULL(l.plan_balance, 0) AS planBalance,
+		 IFNULL(l.plan_frost, 0) AS planFrost,
+		 l.remark,
+		 FROM_UNIXTIME(
+			l.create_time,
+			'%Y-%m-%d %H:%i:%S'
+		) AS 'create_time',
+		 l.account_id,
+		 l.is_bank,
+		 l.seq_no,
+		 IFNULL(l.bank_total, 0) AS bank_total,
+		 IFNULL(l.bank_balance, 0) AS bank_balance,
+		 IFNULL(l.bank_frost, 0) AS bank_frost,
+		 l.trade_status,
+		 l.check_status
+		FROM
+			huiyingdai_account_list l
+		LEFT JOIN huiyingdai_users u ON l.user_id = u.user_id
+		LEFT JOIN huiyingdai_users_info ui ON l.user_id = ui.user_id
+		LEFT JOIN huiyingdai_account_trade t ON l.trade = t.`value`
+		LEFT JOIN huiyingdai_users u2 ON u.referrer = u2.user_id
+		WHERE 1=1
+		<include refid="where-all-page-condition"/>
+		ORDER BY l.create_time DESC, l.id DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+
+
+	<select id="queryAccountEvalDetail" resultMap="AccountDetailMapResult"
+			parameterType="com.hyjf.mybatis.mapper.customize.AccountDetailCustomizeMapper">
+		SELECT
+		l.id,
+		l.user_id,
+		u.username,
+		l.balance,
+		IFNULL(l.plan_frost, 0) AS planFrost,
+		IFNULL(l.bank_frost, 0) AS bankFrost,
+		IFNULL(l.bank_await_capital, 0) + IFNULL(l.plan_capital_wait, 0) AS bank_await_capital
+		FROM
+		huiyingdai_account l
+		LEFT JOIN huiyingdai_users u ON l.user_id = u.user_id
+		WHERE 1=1
+		AND l.user_id = #{userId}
+	</select>
+	
+	<resultMap id="queryCertAccountListMap" type="com.hyjf.mybatis.model.customize.CertAccountListCustomize" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="nid" property="nid" jdbcType="VARCHAR" />
+    <result column="accede_order_id" property="accedeOrderId" jdbcType="VARCHAR" />
+    <result column="is_show" property="isShow" jdbcType="TINYINT" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="trade" property="trade" jdbcType="VARCHAR" />
+    <result column="trade_code" property="tradeCode" jdbcType="VARCHAR" />
+    <result column="total" property="total" jdbcType="DECIMAL" />
+    <result column="balance" property="balance" jdbcType="DECIMAL" />
+    <result column="frost" property="frost" jdbcType="DECIMAL" />
+    <result column="plan_frost" property="planFrost" jdbcType="DECIMAL" />
+    <result column="await" property="await" jdbcType="DECIMAL" />
+    <result column="repay" property="repay" jdbcType="DECIMAL" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="INTEGER" />
+    <result column="operator" property="operator" jdbcType="VARCHAR" />
+    <result column="ip" property="ip" jdbcType="VARCHAR" />
+    <result column="is_update" property="isUpdate" jdbcType="TINYINT" />
+    <result column="base_update" property="baseUpdate" jdbcType="TINYINT" />
+    <result column="interest" property="interest" jdbcType="DECIMAL" />
+    <result column="web" property="web" jdbcType="TINYINT" />
+    <result column="plan_balance" property="planBalance" jdbcType="DECIMAL" />
+    <result column="is_bank" property="isBank" jdbcType="TINYINT" />
+    <result column="account_id" property="accountId" jdbcType="VARCHAR" />
+    <result column="seq_no" property="seqNo" jdbcType="VARCHAR" />
+    <result column="bank_total" property="bankTotal" jdbcType="DECIMAL" />
+    <result column="bank_wait_repay" property="bankWaitRepay" jdbcType="DECIMAL" />
+    <result column="bank_balance" property="bankBalance" jdbcType="DECIMAL" />
+    <result column="bank_frost" property="bankFrost" jdbcType="DECIMAL" />
+    <result column="bank_wait_capital" property="bankWaitCapital" jdbcType="DECIMAL" />
+    <result column="bank_wait_interest" property="bankWaitInterest" jdbcType="DECIMAL" />
+    <result column="bank_await_capital" property="bankAwaitCapital" jdbcType="DECIMAL" />
+    <result column="bank_await_interest" property="bankAwaitInterest" jdbcType="DECIMAL" />
+    <result column="bank_await" property="bankAwait" jdbcType="DECIMAL" />
+    <result column="bank_interest_sum" property="bankInterestSum" jdbcType="DECIMAL" />
+    <result column="bank_invest_sum" property="bankInvestSum" jdbcType="DECIMAL" />
+    <result column="check_status" property="checkStatus" jdbcType="INTEGER" />
+    <result column="trade_status" property="tradeStatus" jdbcType="INTEGER" />
+    <result column="tx_date" property="txDate" jdbcType="INTEGER" />
+    <result column="tx_time" property="txTime" jdbcType="INTEGER" />
+    <result column="bank_seq_no" property="bankSeqNo" jdbcType="VARCHAR" />
+    <result column="check_date" property="checkDate" jdbcType="INTEGER" />
+    <result column="check_balance" property="checkBalance" jdbcType="DECIMAL" />
+    <result column="account_date" property="accountDate" jdbcType="INTEGER" />
+    <result column="role_id" property="roleId" jdbcType="INTEGER" />
+  </resultMap>
+	
+	
+	<select id="queryCertAccountList" resultMap="queryCertAccountListMap"
+		parameterType="java.util.Map">
+		SELECT
+			hui.role_id role_id,
+			hal.*
+		FROM
+			huiyingdai_account_list hal
+		INNER JOIN huiyingdai_users_info hui ON hal.user_id = hui.user_id
+		WHERE hal.id<![CDATA[>=]]>#{minId} AND hal.id<![CDATA[<=]]>#{maxId}
+	</select>
+	
+	<select id="queryOldCertAccountList" resultMap="queryCertAccountListMap"
+		parameterType="java.util.Map">
+		SELECT
+			hui.role_id role_id,
+			hal.*
+		FROM
+			huiyingdai_account_list hal
+		INNER JOIN huiyingdai_users_info hui ON hal.user_id = hui.user_id
+		INNER JOIN ht_cert_user_transact hcut ON hal.user_id=hcut.user_id
+		WHERE  hal.is_bank=1
+		AND hal.id<![CDATA[<=]]>#{maxId}
+		AND hal.trade IN (
+			"cash_success",
+			"account_adjustment_down",
+			"recharge",
+			"recharge_offline",
+			"auto_reverse",
+			"account_adjustment_up",
+			"borrow_success",
+			"repay_success",
+			"experience_profit",
+			"increase_interest_profit",
+			"cash_coupon_profit",
+			"tender_recover_yes",
+			"hjh_repay_balance",
+			"credit_tender_recover_yes",
+			"creditassign",
+			"accede_assign",
+			"liquidates_sell",
+			"creditsell",
+			"hjh_tender_success",
+			"tender_success",
+			"hjh_repay_frost",
+			"credit_tender_recover_forst"
+		)
+		ORDER BY hal.create_time
+		LIMIT #{limitStart} , #{limitEnd}
+	</select>
+	
+	<select id="queryOldCertAccountListByRepaySuccess" resultMap="queryCertAccountListMap"
+		parameterType="java.util.Map">
+		SELECT
+			hal.*
+		FROM
+			huiyingdai_account_list hal
+		INNER JOIN ht_cert_borrow hcb ON hal.remark=hcb.borrow_nid
+		WHERE  hal.is_bank=1
+		AND hal.id<![CDATA[<=]]>#{maxId}
+		AND hal.trade IN (
+			"repay_success"
+		)
+		ORDER BY hal.create_time
+		LIMIT #{limitStart} , #{limitEnd}
+	</select>
+	
+	
+	
+	<resultMap id="queryCertAccountListIdMap" type="com.hyjf.mybatis.model.customize.CertAccountListIdCustomize" >
+	    <result column="limitMinId" property="limitMinId" jdbcType="INTEGER" />
+	    <result column="limitMaxId" property="limitMaxId" jdbcType="INTEGER" />
+	    <result column="sumCount" property="sumCount" jdbcType="INTEGER" />
+	    <result column="maxId" property="maxId" jdbcType="INTEGER" />
+	  </resultMap>
+	<select id="queryCertAccountListId" resultMap="queryCertAccountListIdMap"
+		parameterType="java.util.Map">
+		SELECT
+			count(*) sumCount,
+			IFNULL(MIN(id), 0) limitMinId,
+			IFNULL(MAX(id), 0) limitMaxId,
+			(
+				SELECT
+					MAX(id)
+				FROM
+					huiyingdai_account_list
+					
+			) maxId
+		FROM
+			(
+				SELECT
+					* FROM huiyingdai_account_list hal
+				WHERE 
+					hal.id > #{minId}
+				LIMIT #{limitStart} , #{limitEnd}
+			) t
+	</select>
+	
+	<select id="queryOldCertAccountListMaxId"  resultType="java.lang.Integer" >
+    	SELECT MAX(id) from huiyingdai_account_list
+    </select>
+	
+	 <select id="queryOldCertAccountListMinTime"  resultType="java.lang.Integer" >
+    	select MIN(a.addtime) from huiyingdai_borrow  a where a.`status` in (2,3,4,7)
+    </select> 
+</mapper>
+

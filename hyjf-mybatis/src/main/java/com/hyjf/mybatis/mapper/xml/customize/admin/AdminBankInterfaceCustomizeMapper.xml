@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.AdminBankInterfaceCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+		    hybi.`is_delete` = 0
+			<if test="interfaceName != null and interfaceName !='' ">
+				AND hybi.interface_name LIKE CONCAT('%', #{interfaceName}, '%')
+			</if>
+		</where>
+	</sql>
+
+	<resultMap id="BankInterfaceListPOMap" type="com.hyjf.mybatis.model.customize.admin.AdminBankInterfaceCustomize">
+		<result column="id" property="id" jdbcType="INTEGER" />
+		<result column="interface_name" property="interfaceName" jdbcType="VARCHAR" />
+		<result column="interface_type" property="interfaceType" jdbcType="VARCHAR" />
+		<result column="interface_status" property="interfaceStatus" jdbcType="INTEGER" />
+		<result column="is_usable" property="isUsable" jdbcType="INTEGER" />
+		<result column="is_delete" property="isDelete" jdbcType="INTEGER" />
+		<result column="is_usable_name" property="isUsableName" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<select id="selectBankInterfaceList" resultMap="BankInterfaceListPOMap" parameterType="Map">
+		SELECT
+			hybi.id,
+		   	hybi.interface_name,
+			CASE hybi.interface_status WHEN 0 THEN '老接口'
+									  WHEN 1 THEN '新接口' END AS interface_status,
+			hybi.is_usable,
+			hybi.is_delete,
+			CASE hybi.is_usable WHEN 0 THEN '不可用'
+								 WHEN 1 THEN '可用' END AS is_usable_name,
+			DATE_FORMAT(
+			hybi.update_time,
+			'%Y-%m-%d %H:%i:%s'
+			) AS update_time
+		FROM
+			hyjf_bank_interface hybi
+		<include refid="Where_Clause" />
+		ORDER BY hybi.id DESC
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	<select id="countRecordTotal" resultType="java.lang.Integer" parameterType="Map">
+		SELECT
+			COUNT(hybi.id)
+		FROM
+			hyjf_bank_interface hybi
+		<include refid="Where_Clause" />
+	</select>
+	
+</mapper>

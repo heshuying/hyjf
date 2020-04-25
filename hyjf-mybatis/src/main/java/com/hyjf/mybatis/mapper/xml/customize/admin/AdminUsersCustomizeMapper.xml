@@ -1,0 +1,612 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.AdminUsersCustomizeMapper">
+	<sql id="Where_Clause">
+		<where>
+			<if test="borrowerType != null and borrowerType !=''">
+				AND t.borrower_type = #{borrowerType}
+			</if>
+			<if test="userName != null and userName !=''">
+				AND t.user_name = #{userName}
+			</if>
+			<if test="realName != null and realName != ''">
+				AND t.real_name LIKE CONCAT('%', #{realName}, '%')
+			</if>
+			<if test="recommendName != null and recommendName != ''">
+				AND t.recommend_name LIKE CONCAT('%', #{recommendName}, '%')
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND t.mobile = #{mobile}
+			</if>
+			<if test="userRole != null and userRole != ''">
+				AND t.role_id = #{userRole,jdbcType=INTEGER}
+			</if>
+			<if test="userType != null and userType != ''">
+				AND t.type_id = #{userType,jdbcType=INTEGER}
+			</if>
+			<if test="userProperty != null and userProperty != ''">
+				AND t.attribute = #{userProperty,jdbcType=INTEGER}
+			</if>
+			<if test="accountStatus != null and accountStatus != ''">
+				AND t.bank_open_account = #{accountStatus,jdbcType=INTEGER}
+			</if>
+			<if test="userStatus != null and userStatus != ''">
+				AND t.`status` = #{userStatus,jdbcType=INTEGER}
+			</if>
+			<if test="registPlat != null and registPlat != ''">
+				AND t.reg_esb = #{registPlat,jdbcType=INTEGER}
+			</if>
+			<if test="is51 != null and is51 != ''">
+				AND t.is51_cd = #{is51,jdbcType=INTEGER}
+			</if>
+			<if test="vipType != null and vipType == 1">
+				AND t.vipid IS NULL
+			</if>
+			<if test="vipType != null and vipType == 2">
+				AND t.vipid IS NOT NULL
+			</if>
+			<if test="regTimeStart != null and regTimeStart != '' ">
+				AND FROM_UNIXTIME( t.regTime, '%Y-%m-%d' ) <![CDATA[>=]]> #{regTimeStart}
+			</if>
+			<if test="regTimeEnd != null and regTimeEnd != ''">
+				AND FROM_UNIXTIME( t.regTime, '%Y-%m-%d' ) <![CDATA[<=]]> #{regTimeEnd}
+			</if>
+			<if test="combotreeListSrch != null and combotreeListSrch != ''">
+				AND od.id in
+				<foreach collection="combotreeListSrch" open="(" close=")" separator="," item="dep">
+					#{dep}
+				</foreach>
+			</if>
+			
+			<if test="instCodeSrch != null and instCodeSrch != ''">
+				AND t.instCode = #{instCodeSrch,jdbcType=INTEGER}
+			</if>
+			<if test="customerId != null and customerId != ''">
+				AND t.customer_id = #{customerId}
+			</if>
+			
+		</where>
+	</sql>
+	<sql id="Admin_Where_Clause">
+		<where>
+			<if test="borrowerType != null and borrowerType !=''">
+				AND hydui.borrower_type = #{borrowerType}
+			</if>
+			<if test="realName != null and realName != ''">
+				AND hydui.truename LIKE CONCAT('%', #{realName}, '%')
+			</if>
+			<if test="recommendName != null and recommendName != ''">
+				AND hydur.username  LIKE CONCAT('%', #{recommendName}, '%')
+			</if>
+			<if test="userRole != null and userRole != ''">
+				AND hydui.role_id = #{userRole,jdbcType=INTEGER}
+			</if>
+			<if test="userProperty != null and userProperty != ''">
+				AND hydui.attribute = #{userProperty,jdbcType=INTEGER}
+			</if>
+			<if test="accountStatus != null and accountStatus != ''">
+				AND hydu.bank_open_account = #{accountStatus,jdbcType=INTEGER}
+			</if>
+			<if test="userStatus != null and userStatus != ''">
+				AND hydu.`status` = #{userStatus,jdbcType=INTEGER}
+			</if>
+			<if test="registPlat != null and registPlat != ''">
+				AND hydu.reg_esb = #{registPlat,jdbcType=INTEGER}
+			</if>
+			<if test="is51 != null and is51 != ''">
+				AND hydui.is51 = #{is51,jdbcType=INTEGER}
+			</if>
+			<if test="vipType != null and vipType == 1">
+				AND hvi.id IS NULL
+			</if>
+			<if test="vipType != null and vipType == 2">
+				AND hvi.id IS NOT NULL
+			</if>
+			<if test="regTimeStart != null and regTimeStart != '' ">
+				AND FROM_UNIXTIME( hydu.reg_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{regTimeStart}
+			</if>
+			<if test="regTimeEnd != null and regTimeEnd != ''">
+				AND FROM_UNIXTIME( hydu.reg_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{regTimeEnd}
+			</if>
+			<if test="combotreeListSrch != null and combotreeListSrch != ''">
+				AND dd3.id in
+				<foreach collection="combotreeListSrch" open="(" close=")" separator="," item="dep">
+					#{dep}
+				</foreach>
+			</if>
+			<if test="instCodeSrch != null and instCodeSrch != ''">
+				AND config.inst_code = #{instCodeSrch,jdbcType=INTEGER}
+			</if>
+			<if test="userName != null and userName !=''">
+				AND hydu.username = #{userName}
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND hydu.mobile = #{mobile}
+			</if>
+			<if test="userType != null and userType != ''">
+				AND hydu.user_type = #{userType,jdbcType=INTEGER}
+			</if>
+			<if test="customerId != null and customerId != ''">
+				AND hca.customer_id = #{customerId}
+			</if>
+		</where>
+	</sql>
+	<resultMap id="UserListPOMap" type="com.hyjf.mybatis.model.customize.admin.AdminUserListCustomize">
+		<id column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="real_name" property="realName" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="vip_type" property="vipType" jdbcType="VARCHAR" />
+		<result column="user_role" property="userRole" jdbcType="VARCHAR" />
+		<result column="user_type" property="userType" jdbcType="VARCHAR" />
+		<result column="user_property" property="userProperty" jdbcType="VARCHAR" />
+		<result column="account_status" property="accountStatus" jdbcType="VARCHAR" />
+		<result column="open_account" property="openAccount" jdbcType="VARCHAR" />
+		<result column="bank_open_account" property="bankOpenAccount" jdbcType="VARCHAR" />
+		<result column="bank_open_time" property="bankOpenTime" jdbcType="VARCHAR" />
+		<result column="is51" property="is51" jdbcType="INTEGER" />
+		<result column="user_status" property="userStatus" jdbcType="VARCHAR" />
+		<result column="recommend_name" property="recommendName" jdbcType="VARCHAR" />
+		<result column="regist_plat" property="registPlat" jdbcType="VARCHAR" />
+		<result column="reg_time" property="regTime" jdbcType="VARCHAR" />
+		<result column="regionName" property="regionName" /> <!-- 大区 -->
+		<result column="branchName" property="branchName" /> <!-- 分公司  -->
+		<result column="departmentName" property="departmentName" /> <!-- 部门  -->
+		<result column="borrower_type" property="borrowerType"  jdbcType="INTEGER" />
+		<result column="sex" property="sex"  jdbcType="VARCHAR" />
+		<result column="birthday" property="birthday"  jdbcType="VARCHAR" />
+		<result column="regist_area" property="registArea"  jdbcType="VARCHAR" />
+		<result column="idcard" property="idcard"  jdbcType="VARCHAR" />
+		<result column="customer_id" property="customerId"  jdbcType="VARCHAR" />
+		<result column="account" property="account"  jdbcType="VARCHAR" />
+		<result column="instName" property="instName"  jdbcType="VARCHAR" />
+		
+	</resultMap>
+	<select id="selectUserList" resultMap="UserListPOMap" parameterType="Map">
+		SELECT
+			hydu.user_id,
+			hydu.username AS user_name,
+			hydui.truename AS real_name,
+			hydu.mobile,
+			IFNULL( hvi.vip_name, "会员" ) AS vip_type,
+			hvi.id AS vipid,
+			hydu.user_type AS type_id,
+			hydui.role_id,
+			hydui.attribute,
+			hydui.birthday,
+			hydui.sex,
+			hydui.idcard,
+			concat( province, city, area ) AS regist_area,
+			hydu.open_account,
+			hydu.`status`,
+			hydu.reg_esb,
+			hydui.is51 AS is51_cd,
+			hydu.reg_time AS regTime,
+			pnr.NAME AS user_role,
+			pnusertype.NAME AS user_type,
+			pna.NAME AS user_property,
+			pnac.NAME AS account_status,
+			pnu.NAME AS user_status,
+			hydur.username AS recommend_name,
+			pnrp.NAME AS regist_plat,
+			pnis51.NAME AS is51,
+			FROM_UNIXTIME( hydu.reg_time, '%Y-%m-%d %H:%i:%s' ) AS reg_time,
+		CASE
+			WHEN hydui.attribute = 2 
+			OR hydui.attribute = 3 THEN
+			hydu.user_id ELSE hydsu.spreads_userid 
+		END AS hyd_id,
+			hydui.borrower_type,
+			hydu.bank_open_account bank_open_account,
+			config.inst_code AS instCode,
+			config.inst_name AS instName,
+			hca.customer_id,
+			hboa.account,
+			hboa.create_time AS bank_open_time,
+		CASE
+				hydui.attribute 
+				WHEN 1 THEN
+				d1.NAME 
+				WHEN 2 THEN
+				dd1.NAME 
+				WHEN 3 THEN
+				dd1.NAME 
+			END AS `regionName`,
+		CASE
+				hydui.attribute 
+				WHEN 1 THEN
+				d2.NAME 
+				WHEN 2 THEN
+				dd2.NAME 
+				WHEN 3 THEN
+				dd2.NAME 
+			END AS `branchName`,
+		CASE
+				hydui.attribute 
+				WHEN 1 THEN
+				d3.NAME 
+				WHEN 2 THEN
+				dd3.NAME 
+				WHEN 3 THEN
+				dd3.NAME 
+			END AS `departmentName` 
+		FROM
+			<choose>
+				<when test='whereFlag == "0"'>
+					(SELECT * FROM huiyingdai_users
+					where 
+					1=1
+					<if test="userName != null and userName !=''">
+						AND hydu.username = #{userName}
+					</if>
+					<if test="mobile != null and mobile != ''">
+						AND hydu.mobile = #{mobile}
+					</if>
+					<if test="userType != null and userType != ''">
+						AND hydu.user_type = #{userType,jdbcType=INTEGER}
+					</if>
+					ORDER BY reg_time DESC
+					<if test="limitStart != null and limitEnd !=null" >
+						LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+					</if>
+					) hydu
+				</when>
+				<otherwise>
+					huiyingdai_users hydu
+				</otherwise>
+			</choose>
+			LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+			LEFT JOIN hyjf_vip_info hvi ON hvi.id = hydui.vip_id
+			LEFT JOIN huiyingdai_spreads_users hydsu ON hydsu.user_id = hydu.user_id
+			LEFT JOIN huiyingdai_users hydur ON hydur.user_id = hydsu.spreads_userid
+			LEFT JOIN hyjf_param_name pnr ON cast( hydui.role_id AS CHAR ) = pnr.name_cd 
+			AND pnr.name_class = 'USER_ROLE'
+			LEFT JOIN hyjf_param_name pna ON cast( hydui.attribute AS CHAR ) = pna.name_cd 
+			AND pna.name_class = 'USER_PROPERTY'
+			LEFT JOIN hyjf_param_name pnac ON cast( hydu.open_account AS CHAR ) = pnac.name_cd 
+			AND pnac.name_class = 'ACCOUNT_STATUS'
+			LEFT JOIN hyjf_param_name pnu ON cast( hydu.STATUS AS CHAR ) = pnu.name_cd 
+			AND pnu.name_class = 'USER_STATUS'
+			LEFT JOIN hyjf_param_name pnrp ON cast( hydu.reg_esb AS CHAR ) = pnrp.name_cd 
+			AND pnrp.name_class = 'CLIENT'
+			LEFT JOIN hyjf_param_name pnis51 ON cast( hydui.is51 AS CHAR ) = pnis51.name_cd 
+			AND pnis51.name_class = 'IS_51'
+			LEFT JOIN hyjf_param_name pnusertype ON cast( hydu.user_type AS CHAR ) = pnusertype.name_cd 
+			AND pnusertype.name_class = 'USER_TYPE'
+			LEFT JOIN hyjf_bank_open_account hboa ON hydu.user_id = hboa.user_id
+			LEFT JOIN hyjf_certificate_authority hca ON hydu.user_id = hca.user_id
+			LEFT JOIN hyjf_hjh_inst_config config ON hydu.inst_code = config.inst_code
+			LEFT JOIN hyjf_crm.oa_users u ON u.hyd_id = hydsu.spreads_userid 
+			AND u.user_status IN ( 'E', 'Q1', 'Q11', 'Q2', 'Q21' )
+			LEFT JOIN hyjf_crm.oa_department d3 ON d3.id = u.departmentid AND d3.id IS NOT NULL 
+			LEFT JOIN hyjf_crm.oa_department d2 ON d2.id = d3.parentid
+			LEFT JOIN hyjf_crm.oa_department d1 ON d1.id = d2.parentid
+			LEFT JOIN hyjf_crm.oa_users ou ON ou.hyd_id = hydu.user_id AND ou.user_status IN ( 'E', 'Q1', 'Q11', 'Q2', 'Q21' )
+			LEFT JOIN hyjf_crm.oa_department dd3 ON dd3.id = ou.departmentid AND dd3.id IS NOT NULL
+			LEFT JOIN hyjf_crm.oa_department dd2 ON dd2.id = dd3.parentid
+		  	LEFT JOIN hyjf_crm.oa_department dd1 ON dd1.id = dd2.parentid
+			<if test='whereFlag != "0"'>
+				<include refid="Admin_Where_Clause"/>
+				ORDER BY hydu.reg_time DESC
+				<if test="limitStart != null and limitEnd !=null" >
+					LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+				</if>
+			</if>
+	</select>
+	<!--当分账类型选择按投资人分账时，需选择投资人分公司，从会员中心-会员管理-分公司字段读取所有一级节点的分公司 crm入职时添加的部门为三级部门,所以查找父节点的父节点就可以了-->
+	<select id="selectRegionNameList" resultType="java.util.Map">
+		SELECT
+		distinct
+		`od3`.`id`,
+		`od3`.`name` AS `regionName`
+		FROM
+		(
+		SELECT
+		CASE WHEN hydui.attribute = 2 OR hydui.attribute = 3 THEN hydu.user_id ELSE hydsu.spreads_userid END AS hyd_id
+		FROM huiyingdai_users hydu
+		LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+		LEFT JOIN huiyingdai_spreads_users hydsu ON hydsu.user_id = hydu.user_id
+		) t
+		LEFT JOIN `hyjf_crm`.`oa_users` `ou` ON `ou`.hyd_id = t.hyd_id AND ou.user_status IN ('E','Q1','Q11','Q2','Q21')
+		LEFT JOIN `hyjf_crm`.`oa_department` `od` ON `od`.`id` = `ou`.`departmentid` AND `od`.id IS NOT NULL
+		LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+		LEFT JOIN `hyjf_crm`.`oa_department` `od3` ON `od3`.`id` = `od2`.`parentid`
+		WHERE `od3`.`name` is not NULL
+	</select>
+	<select id="countRecordTotal" resultType="java.lang.Integer" parameterType="Map">
+	<choose>
+		<when test='whereFlag == "0"'>
+			SELECT
+				COUNT(*)
+			FROM
+				huiyingdai_users
+		</when>
+		<otherwise>
+			SELECT
+				COUNT(*)
+			FROM
+				huiyingdai_users hydu
+				LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+				LEFT JOIN hyjf_vip_info hvi ON hvi.id = hydui.vip_id
+				LEFT JOIN huiyingdai_spreads_users hydsu ON hydsu.user_id = hydu.user_id
+				LEFT JOIN huiyingdai_users hydur ON hydur.user_id = hydsu.spreads_userid
+				LEFT JOIN hyjf_param_name pnr ON cast( hydui.role_id AS CHAR ) = pnr.name_cd 
+				AND pnr.name_class = 'USER_ROLE'
+				LEFT JOIN hyjf_param_name pna ON cast( hydui.attribute AS CHAR ) = pna.name_cd 
+				AND pna.name_class = 'USER_PROPERTY'
+				LEFT JOIN hyjf_param_name pnac ON cast( hydu.open_account AS CHAR ) = pnac.name_cd 
+				AND pnac.name_class = 'ACCOUNT_STATUS'
+				LEFT JOIN hyjf_param_name pnu ON cast( hydu.STATUS AS CHAR ) = pnu.name_cd 
+				AND pnu.name_class = 'USER_STATUS'
+				LEFT JOIN hyjf_param_name pnrp ON cast( hydu.reg_esb AS CHAR ) = pnrp.name_cd 
+				AND pnrp.name_class = 'CLIENT'
+				LEFT JOIN hyjf_param_name pnis51 ON cast( hydui.is51 AS CHAR ) = pnis51.name_cd 
+				AND pnis51.name_class = 'IS_51'
+				LEFT JOIN hyjf_param_name pnusertype ON cast( hydu.user_type AS CHAR ) = pnusertype.name_cd 
+				AND pnusertype.name_class = 'USER_TYPE'
+				LEFT JOIN hyjf_bank_open_account hboa ON hydu.user_id = hboa.user_id
+				LEFT JOIN hyjf_certificate_authority hca ON hydu.user_id = hca.user_id
+				LEFT JOIN hyjf_hjh_inst_config config ON hydu.inst_code = config.inst_code
+				LEFT JOIN hyjf_crm.oa_users u ON u.hyd_id = hydsu.spreads_userid 
+				AND u.user_status IN ( 'E', 'Q1', 'Q11', 'Q2', 'Q21' )
+				LEFT JOIN hyjf_crm.oa_department d3 ON d3.id = u.departmentid 
+				AND d3.id IS NOT NULL 
+				LEFT JOIN hyjf_crm.oa_department d2 ON d2.id = d3.parentid
+				LEFT JOIN hyjf_crm.oa_department d1 ON d1.id = d2.parentid
+				LEFT JOIN hyjf_crm.oa_users ou ON ou.hyd_id = hydu.user_id 
+				AND ou.user_status IN ( 'E', 'Q1', 'Q11', 'Q2', 'Q21' )
+				LEFT JOIN hyjf_crm.oa_department dd3 ON dd3.id = ou.departmentid 
+				AND dd3.id IS NOT NULL 
+				LEFT JOIN hyjf_crm.oa_department dd2 ON dd2.id = dd3.parentid
+				LEFT JOIN hyjf_crm.oa_department dd1 ON dd1.id = dd3.parentid 
+			<include refid="Admin_Where_Clause" />
+		</otherwise>
+	</choose>
+
+	</select>
+	<resultMap id="UserDetailPOMap" type="com.hyjf.mybatis.model.customize.admin.AdminUserDetailCustomize">
+		<id column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="user_nick_name" property="userNickName" jdbcType="VARCHAR" />
+		<result column="user_property" property="userProperty" jdbcType="INTEGER" />
+		<result column="role" property="role" jdbcType="INTEGER" />
+		<result column="user_type" property="userType" jdbcType="VARCHAR" />
+		<result column="recommend_name" property="recommendName" jdbcType="VARCHAR" />
+		<!--<result column="depart_name" property="departName" jdbcType="VARCHAR" />-->
+		<result column="regist_pid_name" property="registPidName" jdbcType="VARCHAR" />
+		<result column="regist_plat" property="registPlat" jdbcType="INTEGER" />
+		<result column="open_account_plat" property="openAccountPlat" jdbcType="INTEGER" />
+		<result column="regist_ip" property="registIP" jdbcType="VARCHAR" />
+		<result column="regist_time" property="registTime" jdbcType="TIMESTAMP" />
+		<result column="open_account_time" property="openAccountTime" jdbcType="TIMESTAMP" />
+		<result column="last_login_ip" property="lastLoginIP" jdbcType="VARCHAR" />
+		<result column="last_login_time" property="lastLoginTime" jdbcType="VARCHAR" />
+		<result column="em_name" property="emName" jdbcType="VARCHAR" />
+		<result column="em_relation" property="emRealtion" jdbcType="INTEGER" />
+		<result column="em_phone" property="emPhone" jdbcType="VARCHAR" />
+		<result column="email" property="email" jdbcType="VARCHAR" />
+		<result column="email_status" property="emailStatus" jdbcType="INTEGER" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="mobile_status" property="mobileStatus" jdbcType="INTEGER" />
+		<result column="real_name" property="realName" jdbcType="VARCHAR" />
+		<result column="real_name_status" property="realNameStatus" jdbcType="INTEGER" />
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<result column="account_status" property="accountStatus" jdbcType="INTEGER" />
+		<result column="customer_account" property="customerAccount" jdbcType="VARCHAR" />
+		<result column="id_card" property="idCard" jdbcType="VARCHAR" />
+		<result column="icon_url" property="iconUrl" jdbcType="VARCHAR" />
+		<result column="vip_id" property="vipId" jdbcType="INTEGER" />
+		<result column="vip_value" property="vipValue" jdbcType="INTEGER" />
+		<result column="vip_exp_date" property="vipExpDate" jdbcType="VARCHAR" />
+		<result column="borrower_type" property="borrowerType"  jdbcType="INTEGER" />
+		<result column="is_set_password" property="isSetPassword"  jdbcType="INTEGER" />
+		<result column="is_ca_flag" property="isCaFlag"  jdbcType="INTEGER" />
+	</resultMap>
+	<select id="selectUserDetailById" resultMap="UserDetailPOMap" parameterType="java.lang.Integer">
+		SELECT
+			hydu.user_id,
+			hydu.username AS user_name,
+			hydui.nickname AS user_nick_name,
+			hydu.iconUrl AS icon_url,
+			hydui.vip_id,
+			hydui.vip_value,
+			from_unixtime(
+				hydui.vip_exp_date,
+				'%Y-%m-%d %H:%i:%s'
+			) AS vip_exp_date,
+			pnr.`name` AS role,
+			pnusertype .`name` AS user_type,
+			pna.`name` AS user_property,
+			hydurefer.username AS recommend_name,
+-- 			hydd.`name` AS depart_name,
+			CASE WHEN hydup.source_name IS NULL THEN hydup1.source_name
+			ELSE  hydup.source_name END AS regist_pid_name,
+			hyjfpnr. NAME AS regist_plat,
+			hyjfpno. NAME AS open_account_plat,
+			hydu.reg_ip AS regist_ip,
+			from_unixtime(
+				hydu.reg_time,
+				'%Y-%m-%d %H:%i:%s'
+			) AS regist_time,
+			from_unixtime(
+				hydac.addtime,
+				'%Y-%m-%d %H:%i:%s'
+			) AS open_account_time,
+			hydu.login_ip AS last_login_ip,
+			from_unixtime(
+				hydu.login_time,
+				'%Y-%m-%d %H:%i:%s'
+			) AS last_login_time,
+			hyduc.rl_name AS em_name,
+			hyjfpnur.`name` AS em_relation,
+			hyduc.rl_phone AS em_phone,
+			hydu.email,
+			hydui.email_isApprove AS email_status,
+			hydu.mobile,
+			hydui.mobile_isApprove AS mobile_status,
+			hydui.truename AS real_name,
+			hydui.truename_isApprove AS real_name_status,
+			hydu.`status` AS account_status,
+			hydac.chinapnr_usrid AS account,
+			hydac.chinapnr_usrcustid AS customer_account,
+			hydui.idcard AS id_card,
+			hydui.borrower_type,
+			hydu.is_ca_flag AS is_ca_flag,
+			hydu.is_set_password AS is_set_password
+		FROM
+			huiyingdai_users hydu
+		LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+		LEFT JOIN huiyingdai_users_contact hyduc ON hydu.user_id = hyduc.user_id
+		LEFT JOIN huiyingdai_account_chinapnr hydac ON hydac.user_id = hydu.user_id
+		LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+		LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+		LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+		LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+		LEFT JOIN huiyingdai_utm hydutm1 ON hydur.utm_id = hydutm1.utm_id
+		LEFT JOIN huiyingdai_utm_plat hydup1 ON hydup1.source_id = hydutm1.source_id
+		LEFT JOIN huiyingdai_spreads_users hydsu ON hydsu.user_id = hydu.user_id
+		LEFT JOIN huiyingdai_users hydurefer ON hydurefer.user_id = hydsu.spreads_userid
+-- 		LEFT JOIN hyjf_crm.oa_users oau ON oau.hyd_id = hydsu.spreads_userid and oau.user_status IN ('E','Q1','Q11','Q2','Q21')
+-- 		LEFT JOIN hyjf_crm.oa_department hydd ON hydd.id = oau.departmentid
+		LEFT JOIN hyjf_param_name hyjfpnr ON hyjfpnr.name_cd = hydu.reg_esb
+		AND hyjfpnr.name_class = 'CLIENT'
+		LEFT JOIN hyjf_param_name hyjfpno ON hyjfpno.name_cd = hydu.account_esb
+		AND hyjfpno.name_class = 'CLIENT'
+		LEFT JOIN hyjf_param_name pnr ON cast(hydui.role_id AS CHAR) = pnr.name_cd
+		AND pnr.name_class = 'USER_ROLE'
+		LEFT JOIN hyjf_param_name pna ON cast(hydui.attribute AS CHAR) = pna.name_cd
+		AND pna.name_class = 'USER_PROPERTY'
+		LEFT JOIN hyjf_param_name hyjfpnur ON hyjfpnur.name_cd = hyduc.relation
+		AND hyjfpnur.name_class = 'USER_RELATION'
+		LEFT JOIN hyjf_param_name pnusertype ON cast(hydu.user_type AS CHAR) = pnusertype.name_cd 
+		AND pnusertype.name_class = 'USER_TYPE'
+		WHERE
+		hydu.user_id =#{userId,jdbcType=INTEGER}
+	</select>
+	
+	<resultMap id="UserUpdatePOMap" type="com.hyjf.mybatis.model.customize.admin.AdminUserUpdateCustomize">
+		<id column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="email" property="email" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="user_role" property="userRole" jdbcType="INTEGER" />
+		<result column="user_property" property="userProperty" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="borrower_type" property="borrowerType"  jdbcType="INTEGER" />
+	</resultMap>
+	<select id="selectUserUpdateById" resultMap="UserUpdatePOMap" parameterType="java.lang.Integer">
+		SELECT
+		hydu.user_id,
+		hydu.username AS user_name,
+		hydu.email,
+		hydu.mobile,
+		hydui.role_id AS user_role,
+		hydu.status,
+		hydui.borrower_type
+		FROM
+		huiyingdai_users hydu
+		LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+		WHERE
+		hydu.user_id = #{userId,jdbcType=INTEGER}
+	</select>
+	<resultMap id="UserRecommendPOMap" type="com.hyjf.mybatis.model.customize.admin.AdminUserRecommendCustomize">
+		<id column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="recommend_name" property="recommendName" jdbcType="VARCHAR" />
+		<result column="true_name" property="trueName" jdbcType="VARCHAR" />
+		<result column="id_card" property="idCard" jdbcType="VARCHAR" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="searchUserRecommend" resultMap="UserRecommendPOMap" parameterType="java.lang.Integer">
+		SELECT
+			hydu.user_id,
+			hydu.username AS user_name,
+			hydurefer.username AS recommend_name,
+			hyui.truename AS true_name,
+			hyui.idcard AS id_card
+		FROM
+			huiyingdai_users hydu
+		LEFT JOIN huiyingdai_spreads_users hydsu ON hydsu.user_id = hydu.user_id
+		LEFT JOIN huiyingdai_users hydurefer ON hydurefer.user_id = hydsu.spreads_userid
+		LEFT JOIN huiyingdai_users_info hyui ON hyui.user_id = hydu.user_id
+		WHERE
+		hydu.user_id =#{userId,jdbcType=INTEGER}
+	</select>
+
+	<!-- 获取2015-08-19 16:38:01到2016-01-08 15:41:12修改推荐人的信息 -->
+	<resultMap id="querySpreadsUsersLogResult" type="com.hyjf.mybatis.model.customize.admin.AdminUserRecommendCustomize">
+		<id column="user_id" property="userId" jdbcType="INTEGER" />
+	</resultMap>
+	<select id="querySpreadsUsersLog" resultMap="querySpreadsUsersLogResult" parameterType="com.hyjf.mybatis.model.customize.admin.AdminUserRecommendCustomize">
+		SELECT DISTINCT
+		  log.user_id
+		FROM
+		  huiyingdai_spreads_users_log log
+		<where>
+			<if test="startTime != null and startTime != ''" >
+				AND log.addtime <![CDATA[>=]]> #{startTime}
+			</if>
+			<if test="endTime != null and endTime != ''" >
+				AND log.addtime <![CDATA[<=]]> #{endTime}
+			</if>
+			<if test="userId != null and userId != ''" >
+				AND log.user_id = #{userId}
+			</if>
+		</where>
+		ORDER BY
+		  log.addtime ASC
+	</select>
+	
+	<!-- **************************************银行存管 修改**************************************** -->
+	<resultMap id="BankOpenAccountPOMap" type="com.hyjf.mybatis.model.customize.admin.AdminUserBankOpenAccountCustomize">
+		<id column="account" property="account" jdbcType="INTEGER" />
+		<result column="open_account_plat" property="openAccountPlat" jdbcType="VARCHAR" />
+		<result column="open_account_time" property="openAccountTime" jdbcType="VARCHAR" />
+		<result column="user_type" property="userType" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="bankNo" property="bankNo" jdbcType="VARCHAR" />
+		<result column="payAllianceCode" property="payAllianceCode" jdbcType="VARCHAR" />
+		<result column="bankName" property="bankName" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectBankOpenAccountById" resultMap="BankOpenAccountPOMap" parameterType="java.lang.Integer">
+		SELECT
+			hboa.account AS account,
+			hyjfpno. NAME AS open_account_plat,
+			date_format(hboa.create_time,'%Y-%c-%d %H:%i:%s') AS open_account_time,
+			pnusertype.`name` AS user_type,
+            hbc.mobile AS mobile,
+            <!--合规四期,用户详情添加以下三个字段显示 add by nxl-->
+			hbc.card_no AS bankNo,
+			hbc.pay_alliance_code as payAllianceCode,
+			hbc.bank AS bankName
+		FROM
+			huiyingdai_users hydu
+		LEFT JOIN hyjf_bank_open_account hboa ON hboa.user_id = hydu.user_id
+		LEFT JOIN hyjf_param_name pnusertype ON cast(hydu.user_type AS CHAR) = pnusertype.name_cd
+		AND pnusertype.name_class = 'USER_TYPE'
+		LEFT JOIN hyjf_param_name hyjfpno ON hyjfpno.name_cd = hydu.bank_account_esb
+		AND hyjfpno.name_class = 'CLIENT'
+		LEFT JOIN hyjf_bank_card hbc ON hydu.user_id = hbc.user_id
+		WHERE
+		hydu.user_id =#{userId,jdbcType=INTEGER}
+	</select>
+
+	<!-- 用户渠道信息 合规自查添加 -->
+	<resultMap id="userUtmInfoMap" type="com.hyjf.mybatis.model.customize.admin.AdminUserDetailCustomize">
+		<result column="utm_id" property="sourceId" jdbcType="INTEGER" />
+		<result column="utm_source" property="sourceName" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectUserUtmInfo" resultMap="userUtmInfoMap" parameterType="java.lang.Integer">
+		SELECT
+		up.utm_id,
+		up.utm_source
+		FROM huiyingdai_users u
+		LEFT JOIN hyjf_crm.oa_users ou ON ou.hyd_id = u.user_id and ou.user_status IN ('E','Q1','Q11','Q2','Q21')
+		LEFT JOIN `hyjf_crm`.`oa_department` `od` ON `od`.`id` = `ou`.`departmentid` AND `od`.id IS NOT NULL
+		LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+		LEFT JOIN `hyjf_crm`.`oa_department` `od3` ON `od3`.`id` = `od2`.`parentid`
+		LEFT JOIN huiyingdai_utm up ON up.utm_source = od3.`name`
+		WHERE
+		u.user_id =#{userId,jdbcType=INTEGER}
+	</select>
+</mapper>

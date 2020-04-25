@@ -1,0 +1,45 @@
+package com.hyjf.mybatis.mapper.customize.admin;
+
+import java.util.List;
+
+import com.hyjf.mybatis.model.customize.admin.PcChannelStatisticsCustomize;
+
+/**
+ * Pc渠道统计
+ * 
+ * @author liuyang
+ *
+ */
+public interface PcChannelStatisticsCustomizeMapper {
+
+	public List<PcChannelStatisticsCustomize> selectPcChannelStatisticsList(PcChannelStatisticsCustomize pcChannelStatisticsCustomize);
+
+	public Integer countList(PcChannelStatisticsCustomize pcChannelStatisticsCustomize);
+
+	public List<PcChannelStatisticsCustomize> selectSumRecordList(PcChannelStatisticsCustomize pcChannelStatisticsCustomize);
+
+	public List<PcChannelStatisticsCustomize> exportList(PcChannelStatisticsCustomize pcChannelStatisticsCustomize);
+
+	public PcChannelStatisticsCustomize selectVisit(PcChannelStatisticsCustomize pcChannelStatisticsCustomize);
+
+	public PcChannelStatisticsCustomize selectRegistNumber(PcChannelStatisticsCustomize pcChannelStatisticsCustomize);
+
+	public PcChannelStatisticsCustomize selectAccountNumber(PcChannelStatisticsCustomize pcChannelStatisticsCustomize);
+
+	public PcChannelStatisticsCustomize selectTenderNumber(PcChannelStatisticsCustomize pcChannelStatisticsCustomize);
+
+	public PcChannelStatisticsCustomize selectRechargePrice(PcChannelStatisticsCustomize pcChannelStatisticsCustomize);
+
+	public PcChannelStatisticsCustomize selectHztTenderPrice(PcChannelStatisticsCustomize pcChannelStatisticsCustomize);
+
+	public PcChannelStatisticsCustomize selectHxfTenderPrice(PcChannelStatisticsCustomize pcChannelStatisticsCustomize);
+
+	public PcChannelStatisticsCustomize selectHtlTenderPrice(PcChannelStatisticsCustomize pcChannelStatisticsCustomize);
+
+	public PcChannelStatisticsCustomize selectHtjTenderPrice(PcChannelStatisticsCustomize pcChannelStatisticsCustomize);
+
+	public PcChannelStatisticsCustomize selectRtbTenderPrice(PcChannelStatisticsCustomize pcChannelStatisticsCustomize);
+
+	public PcChannelStatisticsCustomize selectHzrTenderPrice(PcChannelStatisticsCustomize pcChannelStatisticsCustomize);
+
+}

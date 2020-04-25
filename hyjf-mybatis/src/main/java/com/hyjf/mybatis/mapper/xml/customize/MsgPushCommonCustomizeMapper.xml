@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.MsgPushCommonCustomizeMapper">
+	<resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.customize.MsgPushCommonCustomize">
+		<result column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="mobile_code" property="mobileCode" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="package_code" property="packageCode" jdbcType="VARCHAR" />
+		<result column="client" property="client" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!--  通过手机号获取设备标识码-->
+	<select id="getMobileCodeByNumber" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT
+			u.user_id,
+			c.mobile_code,
+			c.package_code,
+			c.client,
+			u.mobile
+		FROM
+			huiyingdai_users u
+		INNER JOIN hyjf_mobile_code c ON u.user_id = c.user_id
+		WHERE
+			u.mobile = #{mobile}
+			limit 1
+	</select>
+	
+	<!--  通过用户id获取设备标识码-->
+	<select id="getMobileCodeByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT
+			u.user_id,
+			c.mobile_code,
+			c.package_code,
+			c.client,
+			u.mobile
+		FROM
+			huiyingdai_users u
+		INNER JOIN hyjf_mobile_code c ON u.user_id = c.user_id
+		WHERE
+			u.user_id = #{userId}
+	</select>
+
+	<!--  通过手机号获取设备标识码 -->
+	<select id="getMobileCodeByMobiles" parameterType="com.hyjf.mybatis.model.customize.MsgPushCommonCustomize" resultMap="BaseResultMap" >
+		SELECT
+			u.user_id,
+			c.mobile_code,
+			c.package_code,
+			c.client,
+			u.mobile
+		FROM
+			huiyingdai_users u
+		INNER JOIN hyjf_mobile_code c ON u.user_id = c.user_id
+		WHERE
+			u.mobile in 
+			 <foreach item="item" index="index" collection="mobiles" open="(" separator="," close=")">  
+			  #{item}  
+			 </foreach>
+			
+	</select>
+
+</mapper>

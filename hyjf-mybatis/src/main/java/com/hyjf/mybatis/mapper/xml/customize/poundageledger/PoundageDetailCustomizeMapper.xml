@@ -1,0 +1,490 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.hyjf.mybatis.mapper.customize.poundageledger.PoundageDetailCustomizeMapper">
+ 
+	<resultMap id="RM_PoundageDetail" type="com.hyjf.mybatis.model.customize.poundageledger.PoundageDetailCustomize">
+        <result property="id" column="id"/>
+        <result property="nid" column="nid"/>
+        <result property="borrowNid" column="borrow_nid"/>
+        <result property="borrowType" column="borrow_type"/>
+        <result property="addtime" column="addtime"/>
+        <result property="usernname" column="usernname"/>
+        <result property="source" column="source"/>
+        <result property="inviteRegionName" column="invite_region_name"/>
+        <result property="inviteUserId" column="invite_user_id"/>
+        <result property="amount" column="amount"/>
+        <result property="ledgerTime" column="ledger_time"/>
+        <result property="ledgerId" column="ledger_id"/>
+        <result property="poundageType" column="poundage_type"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="PoundageDetail_columns">
+	    <![CDATA[
+		id,nid,borrow_nid,borrow_type,addtime,usernname,source,invite_region_name,invite_user_id,amount,ledger_time,ledger_id,poundage_type
+	    ]]>
+	</sql>
+	
+	 <!-- mysql 分页尾 -->
+	<sql id="pagination_Tail">
+	   <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</sql>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insertPoundageDetail" useGeneratedKeys="true" keyProperty="id">
+    <![CDATA[
+        INSERT INTO huiyingdai_poundage_detail (
+         id, nid, borrow_nid, borrow_type, addtime, usernname, source, invite_region_name, invite_user_id, amount, ledger_time, ledger_id, poundage_type
+        ) VALUES (
+         #{id}, #{nid}, #{borrowNid}, #{borrowType}, #{addtime}, #{usernname}, #{source}, #{inviteRegionName}, #{inviteUserId}, #{amount}, #{ledgerTime}, #{ledgerId}, #{poundageType}    
+        )
+    ]]>
+	</insert>
+    
+	<update id="updatePoundageDetail" >
+    <![CDATA[
+        UPDATE huiyingdai_poundage_detail SET
+	        nid = #{nid} , borrow_nid = #{borrowNid} , borrow_type = #{borrowType} , addtime = #{addtime} , usernname = #{usernname} , source = #{source} , invite_region_name = #{inviteRegionName} , invite_user_id = #{inviteUserId} , amount = #{amount} , ledger_time = #{ledgerTime} , ledger_id = #{ledgerId}  
+        WHERE 
+        	id = #{id}  	        
+    ]]>
+	</update>
+
+    <delete id="deletePoundageDetail">
+    <![CDATA[
+        DELETE FROM huiyingdai_poundage_detail WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+    
+    <select id="getPoundageDetailById" resultMap="RM_PoundageDetail">
+		SELECT <include refid="PoundageDetail_columns" />
+	    <![CDATA[
+		    FROM huiyingdai_poundage_detail 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+	</select>
+	
+	<sql id="PoundageDetail_findPage_where">
+		<where>	      				
+	       <if test="idSer != null and idSer != ''">	
+				AND PoundageDetail.id = #{idSer}
+			</if>
+	       <if test="nidSer != null and nidSer != ''">	
+				AND PoundageDetail.nid LIKE CONCAT('%', #{nidSer}, '%')
+			</if>
+	       <if test="borrowNidSer != null and borrowNidSer != ''">	
+				AND PoundageDetail.borrow_nid LIKE CONCAT('%', #{borrowNidSer}, '%')
+			</if>
+	       <if test="borrowTypeSer != null and borrowTypeSer != ''">	
+				AND PoundageDetail.borrow_type = #{borrowTypeSer}
+			</if>
+			<if test="addTimeStart != null and addTimeStart != ''">
+				AND FROM_UNIXTIME(PoundageDetail.addtime, '%Y-%m-%d %H:%i:%S') <![CDATA[>=]]> STR_TO_DATE(CONCAT(#{addTimeStart},'00:00:00'
+				),'%Y-%m-%d %H:%i:%s')
+			</if>
+			<if test="addTimeEnd != null and addTimeEnd != ''">
+				AND FROM_UNIXTIME(PoundageDetail.addtime, '%Y-%m-%d %H:%i:%S') <![CDATA[<=]]> STR_TO_DATE(CONCAT(#{addTimeEnd},'23:59:59'
+				),'%Y-%m-%d %H:%i:%s')
+			</if>
+	       <if test="usernnameSer != null and usernnameSer != ''">	
+				AND PoundageDetail.usernname LIKE CONCAT('%', #{usernnameSer}, '%')
+			</if>
+	       <if test="sourceSer != null and sourceSer != ''">	
+				AND PoundageDetail.source = #{sourceSer}
+			</if>
+	       <if test="inviteRegionNameSer != null and inviteRegionNameSer != ''">	
+				AND PoundageDetail.invite_region_name = #{inviteRegionNameSer}
+			</if>
+	       <if test="inviteUserIdSer != null and inviteUserIdSer != ''">	
+				AND PoundageDetail.invite_user_id = #{inviteUserIdSer}
+			</if>
+	       <if test="amountSer != null and amountSer != ''">	
+				AND PoundageDetail.amount = #{amountSer}
+			</if>
+	       <if test="ledgerTimeSer != null and ledgerTimeSer != ''">	
+				AND PoundageDetail.ledger_time = #{ledgerTimeSer}
+			</if>
+	       <if test="ledgerIdSer != null and ledgerIdSer != ''">	
+				AND PoundageDetail.ledger_id = #{ledgerIdSer}
+			</if>
+	       <if test="poundageTypeIdSer != null and poundageTypeIdSer != ''">	
+				AND PoundageDetail.poundage_type = #{poundageTypeIdSer}
+			</if>
+		</where>
+	</sql>
+		
+    <select id="getPoundageDetailCount" resultType="java.lang.Integer">
+        SELECT count(*) FROM huiyingdai_poundage_detail PoundageDetail
+		<include refid="PoundageDetail_findPage_where"/>    
+    </select>
+    
+    <select id="getPoundageDetailList" resultMap="RM_PoundageDetail">
+    	SELECT <include refid="PoundageDetail_columns" />
+	    FROM huiyingdai_poundage_detail PoundageDetail
+		<include refid="PoundageDetail_findPage_where"/>
+		ORDER BY PoundageDetail.addtime DESC
+    	<include refid="pagination_Tail"/>
+    </select>
+    
+    
+    <select id="getPoundageDetailPage" resultMap="RM_PoundageDetail">
+    	SELECT <include refid="PoundageDetail_columns" />
+	    FROM huiyingdai_poundage_detail PoundageDetail
+		<include refid="PoundageDetail_findPage_where"/>
+    	<include refid="pagination_Tail"/>
+		
+    </select>
+    
+     <insert id="insertTimerPoundageDetailList">
+		insert into huiyingdai_poundage_detail (nid,borrow_nid,borrow_type,addtime,usernname,invite_region_name,source,amount,invite_user_id,ledger_id,ledger_time,poundage_type)
+			(SELECT
+						bt.nid,
+						bt.borrow_nid,
+						bpt.borrow_name as borrowType,
+						br.addtime,
+						hu.username,
+						bt.invite_region_name as inviteRegionName,
+						'服务费' AS source,
+						truncate(bt.loan_fee * oatp.service_ratio,2) AS amount,
+						bt.invite_user_id as inviteUserId,
+						oatp.id as ledgerId,
+						UNIX_TIMESTAMP(date_sub(curdate(),interval 1 day)) as ledgerTime,
+						'出借人分账'
+					FROM
+						huiyingdai_borrow_tender bt
+					INNER JOIN huiyingdai_borrow b ON bt.borrow_nid = b.borrow_nid
+					LEFT JOIN huiyingdai_borrow_recover br ON br.borrow_nid = bt.borrow_nid
+					AND br.nid = bt.nid
+					LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = b.project_type
+					LEFT JOIN huiyingdai_users hu ON hu.user_id = bt.user_id
+					INNER join (
+						select od.name,hpl.id,hpl.service_ratio,hpl.project_type,hpl.source  from huiyingdai_poundage_ledger hpl
+						inner join hyjf_crm.oa_department od on od.id = hpl.investor_company_id
+					where hpl.type = 1 and if(hpl.source =0,1=1,hpl.source = 1) and hpl.status=0
+					) oatp on oatp.name = bt.invite_region_name
+					WHERE
+						(
+							b.`status` in (4,5)
+							OR (
+								b.`status` = 3
+								AND b.reverify_status &lt;> 0
+							)
+						)
+					AND br.addtime >= CONCAT(UNIX_TIMESTAMP(date_sub(curdate(),interval 1 day)),'')
+					AND br.addtime &lt; CONCAT(UNIX_TIMESTAMP(curdate()),'')
+					AND bt.invite_department_id IS NOT NULL
+					AND bt.invite_department_id > 0
+					AND (oatp.project_type = 0 or FIND_IN_SET(bpt.id,oatp.project_type)))
+					union all
+					
+					 (SELECT
+							bt.nid,
+							bt.borrow_nid,
+							bpt.borrow_name,
+							br.recover_yestime,
+							hu.username,
+							br.invite_region_name,
+							'管理费' AS serviceName,
+							truncate(br.recover_fee * oatp.manage_ratio,2) AS service_price,
+							if(bt.invite_user_id =0,bt.user_id,bt.invite_user_id),
+							oatp.id,
+							UNIX_TIMESTAMP(date_sub(curdate(),interval 1 day)),
+							'出借人分账'
+						FROM
+							huiyingdai_borrow AS b
+						INNER JOIN huiyingdai_borrow_tender  AS bt ON bt.borrow_nid = b.borrow_nid
+						INNER JOIN huiyingdai_borrow_recover AS br ON br.borrow_nid = b.borrow_nid and bt.user_id = br.user_id
+						LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = b.project_type
+						LEFT JOIN huiyingdai_users hu ON hu.user_id = bt.user_id
+						INNER join (
+							select od.name,hpl.id,hpl.manage_ratio,hpl.project_type,hpl.source  from huiyingdai_poundage_ledger hpl
+							inner join hyjf_crm.oa_department od on od.id = hpl.investor_company_id
+						where hpl.type = 1 and if(hpl.source =0,1=1,hpl.source = 3)  and hpl.status=0
+					) oatp on oatp.name = bt.invite_region_name
+						WHERE
+						 br.recover_yestime >= CONCAT(UNIX_TIMESTAMP(date_sub(curdate(),interval 1 day)),'')
+						AND br.recover_yestime &lt; CONCAT(UNIX_TIMESTAMP(curdate()),'')
+						AND br.recover_status = 1
+						AND bt.invite_department_id IS NOT NULL
+						AND bt.invite_department_id > 0
+						AND (oatp.project_type = 0 or FIND_IN_SET(bpt.id,oatp.project_type))
+						AND b.borrow_style not in ('principal','month','endmonth')
+						AND bt.nid not in (select credit_tender_nid from huiyingdai_credit_tender))
+					
+					union all 
+					
+					(SELECT
+								ct.assign_nid,
+								ct.bid_nid,
+								bpt.borrow_name,
+								ct.add_time,
+								hu.username,
+								ct.invite_user_regionname,
+								'债转服务费' AS serviceName,
+								truncate(ct.credit_fee * oatp.credit_ratio,2) AS credit_fee,
+								hui.user_id,
+								oatp.id,
+								UNIX_TIMESTAMP(date_sub(curdate(),interval 1 day)),
+								'出借人分账'
+							FROM
+								huiyingdai_credit_tender ct
+							LEFT JOIN huiyingdai_borrow b ON b.borrow_nid = ct.bid_nid
+							LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = b.project_type
+							LEFT JOIN huiyingdai_users hu ON hu.user_id = ct.user_id
+							LEFT JOIN huiyingdai_users hui ON hui.username = ct.invite_user_name
+							INNER join (
+									select od.name,hpl.id,hpl.credit_ratio,hpl.project_type,hpl.source from huiyingdai_poundage_ledger hpl
+									inner join hyjf_crm.oa_department od on od.id = hpl.investor_company_id
+								where hpl.type = 1 and if(hpl.source =0,1=1,hpl.source = 2) and hpl.status=0
+							) oatp on oatp.name = ct.invite_user_regionname
+							WHERE
+							 ct.add_time >= UNIX_TIMESTAMP(date_sub(curdate(),interval 1 day))
+							AND ct.add_time &lt; UNIX_TIMESTAMP(curdate())
+							AND ct.invite_user_regionname IS NOT NULL
+							AND ct.invite_user_regionname != ''
+							AND (oatp.project_type = 0 or FIND_IN_SET(bpt.id,oatp.project_type)))
+					
+					union all 
+					
+					(SELECT
+									hcr.assign_nid,
+									hcr.bid_nid,
+									bpt.borrow_name,
+									hcr.assign_repay_yes_time,
+									hu.username,
+									ct.invite_user_regionname,
+									'管理费' AS serviceName,
+									truncate(hcr.manage_fee  * oatp.manage_ratio,2) AS credit_fee,
+									hui.user_id,
+									oatp.id,
+									UNIX_TIMESTAMP(date_sub(curdate(),interval 1 day)),
+									'出借人分账'
+								FROM
+									huiyingdai_credit_repay hcr
+								LEFT JOIN huiyingdai_credit_tender ct ON ct.credit_nid = hcr.credit_nid and ct.user_id = hcr.user_id
+								LEFT JOIN huiyingdai_borrow b ON b.borrow_nid = ct.bid_nid
+								LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = b.project_type
+								LEFT JOIN huiyingdai_users hu ON hu.user_id = ct.user_id
+								LEFT JOIN huiyingdai_users hui ON hui.username = ct.invite_user_name
+								INNER join (
+									select od.name,hpl.id,hpl.manage_ratio,hpl.project_type,hpl.source   from huiyingdai_poundage_ledger hpl
+									inner join hyjf_crm.oa_department od on od.id = hpl.investor_company_id
+									where hpl.type = 1 and if(hpl.source =0,1=1,hpl.source = 3) and hpl.status=0
+								) oatp on oatp.name = ct.invite_user_regionname
+								WHERE
+								 hcr.assign_repay_yes_time >= UNIX_TIMESTAMP(date_sub(curdate(),interval 1 day))
+								AND hcr.assign_repay_yes_time &lt; UNIX_TIMESTAMP(curdate())
+								AND	hcr.`status` = 1
+								AND ct.invite_user_regionname IS NOT NULL
+								AND ct.invite_user_regionname != ''
+								AND (oatp.project_type = 0 or FIND_IN_SET(bpt.id,oatp.project_type))
+								AND b.borrow_style not in ('principal','month','endmonth'))
+			union ALL
+			(SELECT
+						'--',
+						bt.borrow_nid,
+						bpt.borrow_name as borrowType,
+						br.addtime,
+						'--',
+						'--',
+						'服务费' AS source,
+						truncate(sum(bt.loan_fee) * oatp.service_ratio,2) AS amount,
+						0,
+						oatp.id as ledgerId,
+						UNIX_TIMESTAMP(date_sub(curdate(),interval 1 day)) as ledgerTime,
+						'借款人分账'
+					FROM
+						huiyingdai_borrow_tender bt
+					INNER JOIN huiyingdai_borrow b ON bt.borrow_nid = b.borrow_nid
+					LEFT JOIN huiyingdai_borrow_recover br ON br.borrow_nid = bt.borrow_nid
+					AND br.nid = bt.nid
+					LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = b.project_type
+					LEFT JOIN huiyingdai_users hu ON hu.user_id = bt.user_id
+					INNER join (
+						select hsc.cooperate_num,hpl.user_id,hpl.id,hpl.service_ratio,hpl.project_type,hpl.source  from huiyingdai_poundage_ledger hpl
+						left join hyjf_sub_commission_list_config hsc on hsc.user_id = hpl.user_id
+					where hpl.type = 2 and if(hpl.source =0,1=1,hpl.source = 1) and hpl.status=0
+					) oatp on oatp.cooperate_num = b.inst_code
+					WHERE
+						(
+							b.`status` in (4,5)
+							OR (
+								b.`status` = 3
+								AND b.reverify_status &lt;> 0
+							)
+						)
+					AND br.addtime >= CONCAT(UNIX_TIMESTAMP(date_sub(curdate(),interval 1 day)),'')
+					AND br.addtime &lt; CONCAT(UNIX_TIMESTAMP(curdate()),'')
+					AND bt.invite_department_id IS NOT NULL
+					AND bt.invite_department_id > 0
+					AND (oatp.project_type = 0 or FIND_IN_SET(bpt.id,oatp.project_type))
+			group by bt.borrow_nid,oatp.id)
+			union all 
+			
+			(SELECT
+							'--',
+							br.borrow_nid,
+							bpt.borrow_name,
+							br.recover_yestime,
+							'--',
+							'--',
+							'管理费' AS serviceName,
+							truncate(sum(br.recover_fee) * oatp.manage_ratio,2) AS service_price,
+							0,
+							oatp.id,
+							UNIX_TIMESTAMP(date_sub(curdate(),interval 1 day)),
+							'借款人分账'
+						FROM
+							huiyingdai_borrow AS b
+						INNER JOIN huiyingdai_borrow_recover AS br ON br.borrow_nid = b.borrow_nid
+						LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = b.project_type
+						LEFT JOIN huiyingdai_users hu ON hu.user_id = br.user_id
+					INNER join (
+						select hsc.cooperate_num,hpl.user_id,hpl.id,hpl.manage_ratio,hpl.project_type,hpl.source  from huiyingdai_poundage_ledger hpl
+						left join hyjf_sub_commission_list_config hsc on hsc.user_id = hpl.user_id
+					where hpl.type = 2 and if(hpl.source =0,1=1,hpl.source = 3) and hpl.status=0
+					) oatp on oatp.cooperate_num = b.inst_code
+						WHERE
+						 br.recover_yestime >= CONCAT(UNIX_TIMESTAMP(date_sub(curdate(),interval 1 day)),'')
+						AND br.recover_yestime &lt; CONCAT(UNIX_TIMESTAMP(curdate()),'')
+						AND br.recover_status = 1
+						AND br.invite_department_id IS NOT NULL
+						AND br.invite_department_id > 0
+						AND (oatp.project_type = 0 or FIND_IN_SET(bpt.id,oatp.project_type))
+						AND b.borrow_style not in ('principal','month','endmonth')
+			group by br.borrow_nid,oatp.id)
+
+union all 
+	  (SELECT
+							bt.nid,
+							bt.borrow_nid,
+							bpt.borrow_name,
+							br.recover_yestime,
+							hu.username,
+							bt.invite_region_name,
+							'管理费' AS serviceName,
+							truncate((br.recover_fee_yes-br.credit_manage_fee) * oatp.manage_ratio,2) AS service_price,
+							if(bt.invite_user_id =0,bt.user_id,bt.invite_user_id),
+							oatp.id,
+							UNIX_TIMESTAMP(date_sub(curdate(),interval 1 day)),
+							'出借人分账'
+						FROM
+							huiyingdai_borrow AS b
+						INNER JOIN huiyingdai_borrow_tender AS bt ON bt.borrow_nid = b.borrow_nid
+						INNER JOIN huiyingdai_borrow_recover_plan AS br ON br.borrow_nid = b.borrow_nid and bt.user_id = br.user_id
+						LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = b.project_type
+						LEFT JOIN huiyingdai_users hu ON hu.user_id = bt.user_id
+						INNER join (
+							select od.name,hpl.id,hpl.manage_ratio,hpl.project_type,hpl.source  from huiyingdai_poundage_ledger hpl
+							inner join hyjf_crm.oa_department od on od.id = hpl.investor_company_id
+						where hpl.type = 1 and if(hpl.source =0,1=1,hpl.source = 3)  and hpl.status=0
+					) oatp on oatp.name = bt.invite_region_name
+						WHERE
+						 br.recover_yestime >= CONCAT(UNIX_TIMESTAMP(date_sub(curdate(),interval 1 day)),'')
+						AND br.recover_yestime &lt; CONCAT(UNIX_TIMESTAMP(curdate()),'')
+						AND br.recover_status = 1
+						AND bt.invite_department_id IS NOT NULL
+						AND bt.invite_department_id > 0
+						AND (oatp.project_type = 0 or FIND_IN_SET(bpt.id,oatp.project_type)))
+
+UNION ALL
+					(SELECT
+									hcr.assign_nid,
+									hcr.bid_nid,
+									bpt.borrow_name,
+									hcr.assign_repay_yes_time,
+									hu.username,
+									ct.invite_user_regionname,
+									'管理费' AS serviceName,
+									truncate(hcr.manage_fee  * oatp.manage_ratio,2) AS credit_fee,
+									if(hu1.user_id =0,ct.user_id,hu1.user_id),
+									oatp.id,
+									UNIX_TIMESTAMP(date_sub(curdate(),interval 1 day)),
+									'出借人分账'
+								FROM
+									huiyingdai_credit_repay hcr
+								LEFT JOIN huiyingdai_credit_tender ct on ct.assign_nid = hcr.assign_nid and ct.user_id = hcr.user_id
+								LEFT JOIN huiyingdai_borrow b ON b.borrow_nid = hcr.bid_nid
+								LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = b.project_type
+								LEFT JOIN huiyingdai_users hu ON hu.user_id = ct.user_id
+								LEFT JOIN huiyingdai_users hu1 ON hu1.username = ct.invite_user_name
+								INNER join (
+									select od.name,hpl.id,hpl.manage_ratio,hpl.project_type,hpl.source   from huiyingdai_poundage_ledger hpl
+									inner join hyjf_crm.oa_department od on od.id = hpl.investor_company_id
+									where hpl.type = 1 and if(hpl.source =0,1=1,hpl.source = 3) and hpl.status=0
+								) oatp on oatp.name = ct.invite_user_regionname
+								WHERE
+								 hcr.assign_repay_yes_time >= UNIX_TIMESTAMP(date_sub(curdate(),interval 1 day))
+								AND hcr.assign_repay_yes_time &lt; UNIX_TIMESTAMP(curdate())
+								AND	hcr.`status` = 1
+								AND ct.invite_user_regionname IS NOT NULL
+								AND ct.invite_user_regionname != ''
+								AND (oatp.project_type = 0 or FIND_IN_SET(bpt.id,oatp.project_type)))
+
+union  all 
+
+					(SELECT
+							'--',
+							br.borrow_nid,
+							bpt.borrow_name,
+							br.recover_yestime,
+							'--',
+							'--',
+							'管理费' AS serviceName,
+							truncate(sum(br.recover_fee_yes) * oatp.manage_ratio,2) AS service_price,
+							0,
+							oatp.id,
+							UNIX_TIMESTAMP(date_sub(curdate(),interval 1 day)),
+							'借款人分账'
+						FROM
+							huiyingdai_borrow AS b
+						INNER JOIN huiyingdai_borrow_recover_plan AS br ON br.borrow_nid = b.borrow_nid
+						LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = b.project_type
+						LEFT JOIN huiyingdai_users hu ON hu.user_id = br.user_id
+					INNER join (
+						select hsc.cooperate_num,hpl.user_id,hpl.id,hpl.manage_ratio,hpl.project_type,hpl.source  from huiyingdai_poundage_ledger hpl
+						left join hyjf_sub_commission_list_config hsc on hsc.user_id = hpl.user_id
+					where hpl.type = 2 and if(hpl.source =0,1=1,hpl.source = 3) and hpl.status=0
+					) oatp on oatp.cooperate_num = b.inst_code
+						WHERE
+						 br.recover_yestime >= CONCAT(UNIX_TIMESTAMP(date_sub(curdate(),interval 1 day)),'')
+						AND br.recover_yestime &lt; CONCAT(UNIX_TIMESTAMP(curdate()),'')
+						AND br.recover_status = 1
+						AND br.invite_department_id IS NOT NULL
+						AND br.invite_department_id > 0
+						AND (oatp.project_type = 0 or FIND_IN_SET(bpt.id,oatp.project_type))
+			group by br.borrow_nid,oatp.id)
+    </insert>
+    
+    
+    <insert id="insertTimerPoundageList">
+    	insert into huiyingdai_poundage (user_id,amount,quantity,poundage_time,status,create_time,ledger_id)
+SELECT
+				hpl.user_id,
+			(select sum(hpd.amount) from huiyingdai_poundage_detail hpd where hpd.ledger_id = hpl.id
+			and hpd.ledger_time = UNIX_TIMESTAMP(date_sub(curdate(),interval 1 day))) as amount,
+			(select count(hpd.id) from huiyingdai_poundage_detail hpd where hpd.ledger_id = hpl.id
+			and hpd.ledger_time = UNIX_TIMESTAMP(date_sub(curdate(),interval 1 day))) as quantity,
+			UNIX_TIMESTAMP(date_sub(curdate(),interval 1 day)) as poundage_time,
+			0 as status,
+			unix_timestamp(now()) as create_time,
+			hpl.id
+			FROM
+				huiyingdai_poundage_ledger hpl
+			left join huiyingdai_users hu on hu.username = hpl.username
+			where  hpl.status=0 and 
+			(select sum(hpd.amount) from huiyingdai_poundage_detail hpd where hpd.ledger_id = hpl.id
+			and hpd.ledger_time = UNIX_TIMESTAMP(date_sub(curdate(),interval 1 day))) is not null
+            and (select sum(hpd.amount) from huiyingdai_poundage_detail hpd where hpd.ledger_id = hpl.id
+			and hpd.ledger_time = UNIX_TIMESTAMP(date_sub(curdate(),interval 1 day))) != 0
+
+    </insert>
+
+	
+</mapper>
+

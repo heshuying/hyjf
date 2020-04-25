@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.HtlUserInfoCustomizeMapper">
+	<resultMap id="selectHtlUserInfosMap" type="com.hyjf.mybatis.model.customize.HtlUserInfoCustomize">
+		<result column="user_id" property="userid" jdbcType="INTEGER" />
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<result column="referid" property="referid" jdbcType="INTEGER" />
+		<result column="refername" property="refername" jdbcType="VARCHAR" />
+		<result column="currentEarnings" property="currentEarnings" jdbcType="DECIMAL" />
+		<result column="principal" property="principal" jdbcType="DECIMAL" />
+		<result column="todayEarnings" property="todayEarnings" jdbcType="DECIMAL" />
+		<result column="weekEarnings" property="weekEarnings" jdbcType="DECIMAL" />
+		<result column="monthEarnings" property="monthEarnings" jdbcType="DECIMAL" />
+		<result column="historyEarnings" property="historyEarnings" jdbcType="DECIMAL" />
+		<result column="truename" property="truename" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Where_Clause">
+		<where>
+		  p.`status` = 0 AND p.invest_status=0
+	    <if test="username != null" >
+	      AND u.username LIKE CONCAT('%', #{username}, '%')
+	    </if>
+	    <if test="refername != null" >
+	      AND ur.username LIKE CONCAT('%', #{refername}, '%')
+	    </if>
+		</where>
+	</sql>
+	
+   <select id="countHtlUserInfoRecord" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.HtlUserInfoCustomize">
+		SELECT
+			count(1)
+		FROM
+			(
+				SELECT
+					p.user_id
+				FROM
+					huiyingdai_product_list p
+					LEFT JOIN huiyingdai_users u ON p.user_id = u.user_id
+					LEFT JOIN huiyingdai_spreads_users su ON p.user_id = su.user_id
+					LEFT JOIN huiyingdai_users ur ON su.spreads_userid= ur.user_id
+				WHERE
+					p.`status` = 0
+				AND p.invest_status = 0
+				    <if test="username != null" >
+				      AND u.username LIKE CONCAT('%', #{username}, '%')
+				    </if>
+				    <if test="refername != null" >
+				      AND ur.username LIKE CONCAT('%', #{refername}, '%')
+				    </if>
+				GROUP BY
+					user_id
+			) AS t
+	</select>
+
+	<select id="selectHtlUserInfos" resultMap="selectHtlUserInfosMap" parameterType="com.hyjf.mybatis.model.customize.HtlUserInfoCustomize">
+		SELECT DISTINCT
+		 p.user_id,
+		 u.username,
+		 su.spreads_userid AS referid,
+		 ur.username AS refername,
+		 TRUNCATE (SUM(p.rest_amount), 2) AS principal,
+	     i.historyEarnings,
+		 ui.truename,
+		 u.mobile
+		FROM huiyingdai_product_list p
+		LEFT JOIN huiyingdai_users u ON p.user_id = u.user_id
+		LEFT JOIN huiyingdai_spreads_users su ON p.user_id = su.user_id
+		LEFT JOIN huiyingdai_users_info ui ON p.user_id = ui.user_id
+		LEFT JOIN huiyingdai_users ur ON su.spreads_userid= ur.user_id
+		LEFT JOIN view_htl_user_interest i ON i.user_id = p.user_id
+		<include refid="Where_Clause" />
+		GROUP BY p.user_id 
+		ORDER BY SUM(rest_amount) DESC 
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	<!-- 获取汇天利本金 -->
+	<select id="selectHtlUserPrincipal" resultMap="selectHtlUserInfosMap" parameterType="com.hyjf.mybatis.model.customize.HtlUserInfoCustomize">
+		SELECT 
+		  TRUNCATE (SUM(p.rest_amount), 2) AS principal
+		  FROM huiyingdai_product_list p
+		<where>
+		  p.`status` = 0 AND p.invest_status=0
+	    <if test="userid != null" >
+	      AND p.user_id = #{userid} 
+	    </if>
+		</where>
+	</select>
+	
+	
+</mapper>

@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.BorrowCreditCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+			<!-- 项目编号 -->
+			<if test="bidNidSrch != null and bidNidSrch != ''">
+				AND bc.bid_nid LIKE CONCAT('%', #{bidNidSrch}, '%')
+			</if>
+			<!-- 债转编号 -->
+			<if test="creditNidSrch != null and creditNidSrch != ''">
+				AND bc.credit_nid LIKE CONCAT('%', #{creditNidSrch}, '%')
+			</if>
+			<!-- 用户名 -->
+			<if test="usernameSrch != null and usernameSrch != ''">
+				AND u.username LIKE CONCAT('%', #{usernameSrch}, '%')
+			</if>
+			<!-- 承接人-->
+			<if test="creditUsername != null and creditUsername != ''">
+				AND credit_users.username LIKE CONCAT('%', #{creditUsername}, '%')
+			</if>		
+			<!-- 订单号-->
+			<if test="assignNid != null and assignNid != ''">
+				AND ct.assign_nid LIKE CONCAT('%', #{assignNid}, '%')
+			</if>				
+			<!-- 客户端-->
+			<if test="client != null and client != ''">
+				AND bc.client=#{client}
+			</if>				
+			<!-- 转让状态 -->
+			<if test="creditStatusSrch == '1'.toString()">
+				AND ( bc.credit_status = 1 OR ( bc.credit_status = 0 AND bc.end_time  <![CDATA[<]]> UNIX_TIMESTAMP(NOW()) ) )
+			</if>
+			<!-- 转让状态 -->
+			<if test="creditStatusSrch == '2'.toString()">
+				AND bc.credit_status = 2
+			</if>
+			<!-- 转让状态 -->
+			<if test="creditStatusSrch == '0'.toString()">
+				AND ( bc.credit_status = 0 AND bc.end_time  <![CDATA[>=]]> UNIX_TIMESTAMP(NOW()) )
+			</if>
+			<!-- 时间 -->
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND bc.add_time <![CDATA[>=]]> unix_timestamp(#{timeStartSrch})
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch != ''">
+				AND bc.add_time <![CDATA[<=]]> unix_timestamp(#{timeEndSrch})+86399
+			</if>
+		</where>
+	</sql>
+
+	<select id="countBorrowCredit" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.BorrowCreditCustomize">
+		SELECT
+		  COUNT(1)
+		FROM
+		    huiyingdai_borrow_credit bc
+		INNER JOIN huiyingdai_borrow b ON bc.bid_nid = b.borrow_nid
+		LEFT JOIN huiyingdai_users u ON u.user_id = bc.credit_user_id
+		<include refid="Where_Clause" />
+	</select>
+	
+	<update id="updateParam" parameterType="map" >
+    update huiyingdai_borrow_credit
+        set credit_income = credit_income + #{creditIncome},
+        credit_capital_assigned = credit_capital_assigned + #{creditCapitalAssigned},
+        credit_interest_advance_assigned = credit_interest_advance_assigned + #{creditInterestAdvanceAssigned},
+        credit_interest_assigned = credit_interest_assigned + #{creditInterestAssigned},
+        credit_fee = credit_fee + #{creditFee},
+        credit_status = #{creditStatus},
+        assign_time = UNIX_TIMESTAMP(NOW()),assign_num = assign_num + 1
+      where credit_id = #{creditId}
+  </update>
+
+	<resultMap id="selectBorrowCreditListMap" type="com.hyjf.mybatis.model.customize.BorrowCreditCustomize">
+		<result column="credit_id" property="creditId" jdbcType="VARCHAR" />
+		<result column="credit_nid" property="creditNid" jdbcType="VARCHAR" />
+		<result column="bid_nid" property="bidNid" jdbcType="VARCHAR" />
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<result column="credit_capital" property="creditCapital" jdbcType="VARCHAR" />
+		<result column="credit_discount" property="creditDiscount" jdbcType="VARCHAR" />
+		<result column="credit_capital_price" property="creditCapitalPrice" jdbcType="VARCHAR" />
+		<result column="credit_price" property="creditPrice" jdbcType="VARCHAR" />
+		<result column="credit_capital_assigned" property="creditCapitalAssigned" jdbcType="VARCHAR" />
+		<result column="credit_status_name" property="creditStatusName" jdbcType="VARCHAR" />
+		<result column="repay_status_name" property="repayStatusName" jdbcType="VARCHAR" />
+		<result column="credit_status" property="creditStatus" jdbcType="VARCHAR" />
+		<result column="add_time" property="addTime" jdbcType="VARCHAR" />
+		<result column="repay_last_time" property="repayLastTime" jdbcType="VARCHAR" />
+		<result column="client" property="client" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectBorrowCreditList" resultMap="selectBorrowCreditListMap" parameterType="com.hyjf.mybatis.model.customize.BorrowCreditCustomize">
+		SELECT
+		   bc.credit_id,
+		   bc.credit_nid,
+		   CASE 
+		      WHEN bc.client = 1 THEN '微信'
+		       WHEN bc.client = 2 THEN 'android'
+		        WHEN bc.client = 3 THEN  'ios'
+		        WHEN bc.client = 0 THEN  'pc'
+		       ELSE '其他' END  as client,
+		   bc.bid_nid,
+		   u.username,
+		   FORMAT(bc.credit_capital, 2) AS credit_capital,
+		   FORMAT(bc.credit_capital, 2) AS credit_capital_price,
+		   CONCAT(credit_discount, '%') AS credit_discount,
+		   FORMAT(bc.credit_price, 2) AS credit_price,
+		   bc.credit_capital_assigned,
+		   CASE 
+		      WHEN bc.credit_status = '1' THEN '停止' 
+		      WHEN bc.credit_status = '2' THEN '完全承接' 
+		      ELSE 
+		          '进行中'
+		    END AS credit_status_name,
+		   CASE WHEN bc.repay_status= 0 THEN '未还款' 
+		   WHEN bc.repay_status = 1 THEN '还款成功'
+		   WHEN bc.repay_status = 2 THEN '还款失败'
+		   ELSE '还款失败' END AS repay_status_name,
+		   CASE 
+		      WHEN bc.credit_status = '1' THEN '1' 
+		      WHEN bc.credit_status = '2' THEN '2' 
+		      ELSE 
+		        CASE
+		          WHEN bc.end_time  <![CDATA[<]]> UNIX_TIMESTAMP(NOW()) THEN '1' 
+		        ELSE
+		          '0'
+		        END
+		    END AS credit_status,
+		   CASE WHEN bc.add_time != 0 AND bc.add_time IS NOT NULL THEN FROM_UNIXTIME( bc.add_time, '%Y-%m-%d %H:%i:%s' ) ELSE '' END AS add_time,
+		   CASE WHEN b.repay_last_time != 0 AND b.repay_last_time IS NOT NULL THEN FROM_UNIXTIME( b.repay_last_time, '%Y-%m-%d %H:%i:%s' ) ELSE '' END AS repay_last_time
+		FROM
+		    huiyingdai_borrow_credit bc
+		INNER JOIN huiyingdai_borrow b ON bc.bid_nid = b.borrow_nid
+		LEFT JOIN huiyingdai_users u ON u.user_id = bc.credit_user_id
+	   <include refid="Where_Clause" />
+		ORDER BY
+		  bc.add_time DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<resultMap id="exportBorrowCreditListMap" type="com.hyjf.mybatis.model.customize.BorrowCreditCustomize">
+		<result column="credit_id" property="creditId" jdbcType="VARCHAR" />
+		<result column="credit_nid" property="creditNid" jdbcType="VARCHAR" />
+		<result column="bid_nid" property="bidNid" jdbcType="VARCHAR" />
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<result column="credit_capital" property="creditCapital" jdbcType="VARCHAR" />
+		<result column="credit_discount" property="creditDiscount" jdbcType="VARCHAR" />
+		<result column="credit_capital_price" property="creditCapitalPrice" jdbcType="VARCHAR" />
+		<result column="credit_price" property="creditPrice" jdbcType="VARCHAR" />
+		<result column="credit_capital_assigned" property="creditCapitalAssigned" jdbcType="VARCHAR" />
+		<result column="credit_status_name" property="creditStatusName" jdbcType="VARCHAR" />
+		<result column="repay_status_name" property="repayStatusName" jdbcType="VARCHAR" />
+		<result column="credit_status" property="creditStatus" jdbcType="VARCHAR" />
+		<result column="add_time" property="addTime" jdbcType="VARCHAR" />
+		<result column="repay_last_time" property="repayLastTime" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="exportBorrowCreditList" resultMap="exportBorrowCreditListMap" parameterType="com.hyjf.mybatis.model.customize.BorrowCreditCustomize">
+		SELECT
+		   bc.credit_id,
+		   bc.credit_nid,
+		   bc.bid_nid,
+		   u.username,
+		   bc.credit_capital AS credit_capital,
+		   bc.credit_capital AS credit_capital_price,
+		   CONCAT(credit_discount, '%') AS credit_discount,
+		   bc.credit_price,
+		   bc.credit_capital_assigned,
+		   CASE 
+		      WHEN bc.credit_status = '1' THEN '停止' 
+		      WHEN bc.credit_status = '2' THEN '已还款' 
+		      ELSE 
+		        CASE
+		          WHEN bc.end_time  <![CDATA[<]]> UNIX_TIMESTAMP(NOW()) THEN '停止' 
+		        ELSE
+		          '进行中'
+		        END
+		    END AS credit_status_name,
+		      CASE 
+		      WHEN bc.repay_status= 1 THEN '已还款' 
+		      WHEN bc.repay_status = 2 THEN '还款失败' 
+		      ELSE 
+		          '还款中'
+		    	END AS repay_status_name,
+		   bc.credit_status,
+		   CASE WHEN bc.add_time != 0 AND bc.add_time IS NOT NULL THEN FROM_UNIXTIME( bc.add_time, '%Y-%m-%d %H:%i:%s' ) ELSE '' END AS add_time,
+		   CASE WHEN b.repay_last_time != 0 AND b.repay_last_time IS NOT NULL THEN FROM_UNIXTIME( b.repay_last_time, '%Y-%m-%d %H:%i:%s' ) ELSE '' END AS repay_last_time
+		FROM
+		    huiyingdai_borrow_credit bc
+		INNER JOIN huiyingdai_borrow b ON bc.bid_nid = b.borrow_nid
+		LEFT JOIN huiyingdai_users u ON u.user_id = bc.credit_user_id
+		ORDER BY
+		  bc.add_time DESC
+	</select>
+	<sql id="CreditInfo_Where_Clause">
+		<where>
+			<!-- 项目编号 -->
+			<if test="bidNidSrch != null and bidNidSrch != ''">
+				AND bc.bid_nid LIKE CONCAT('%', #{bidNidSrch}, '%')
+			</if>
+			<!-- 债转编号 -->
+			<if test="creditNidSrch != null and creditNidSrch != ''">
+				AND bc.credit_nid LIKE CONCAT('%', #{creditNidSrch}, '%')
+			</if>
+			<!-- 用户名 -->
+			<if test="usernameSrch != null and usernameSrch != ''">
+				AND u.username LIKE CONCAT('%', #{usernameSrch}, '%')
+			</if>
+			<!-- 承接人-->
+			<if test="creditUsername != null and creditUsername != ''">
+				AND credit_users.username LIKE CONCAT('%', #{creditUsername}, '%')
+			</if>		
+			<!-- 订单号-->
+			<if test="assignNid != null and assignNid != ''">
+				AND ct.assign_nid LIKE CONCAT('%', #{assignNid}, '%')
+			</if>				
+			<!-- 客户端-->
+			<if test="client != null and client != ''">
+				AND bc.client=#{client}
+			</if>				
+			<!-- 转让状态 -->
+			<if test="creditStatusSrch == '1'.toString()">
+				AND ( bc.credit_status = 1 OR ( bc.credit_status = 0 AND bc.end_time  <![CDATA[<]]> UNIX_TIMESTAMP(NOW()) ) )
+			</if>
+			<!-- 转让状态 -->
+			<if test="creditStatusSrch == '2'.toString()">
+				AND bc.credit_status = 2
+			</if>
+			<!-- 转让状态 -->
+			<if test="creditStatusSrch == '0'.toString()">
+				AND ( bc.credit_status = 0 AND bc.end_time  <![CDATA[>=]]> UNIX_TIMESTAMP(NOW()) )
+			</if>
+			<!-- 时间 -->
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND ct.add_time <![CDATA[>=]]> unix_timestamp(#{timeStartSrch})
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch != ''">
+				AND ct.add_time<![CDATA[<=]]> unix_timestamp(#{timeEndSrch})+86399
+			</if>
+		</where>
+	</sql>
+	<select id="countBorrowCreditInfoList" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.BorrowCreditCustomize">
+		SELECT
+		  COUNT(1)
+		FROM
+		  huiyingdai_credit_tender ct
+        INNER JOIN huiyingdai_borrow_credit bc ON bc.bid_nid = ct.bid_nid AND bc.credit_nid = ct.credit_nid
+		LEFT JOIN huiyingdai_users u ON u.user_id = ct.user_id
+		LEFT JOIN huiyingdai_users credit_users ON credit_users.user_id = ct.credit_user_id
+		<include refid="CreditInfo_Where_Clause" />
+	</select>
+
+	<resultMap id="selectBorrowCreditInfoListMap" type="com.hyjf.mybatis.model.customize.BorrowCreditCustomize">
+		<!-- 订单号 -->
+		<result column="assign_nid" property="assignNid" jdbcType="VARCHAR" />
+		<!-- 债转编号 -->
+		<result column="credit_nid" property="creditNid" jdbcType="VARCHAR" />
+		<!-- 项目编号 -->
+		<result column="bid_nid" property="bidNid" jdbcType="VARCHAR" />
+		<!-- 出让人 -->
+		<result column="credit_username" property="creditUsername" jdbcType="VARCHAR" />
+		<!-- 认购人 -->
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<!-- 转让本金 -->
+		<result column="assign_capital" property="assignCapital" jdbcType="VARCHAR" />
+		<!-- 折让率 -->
+		<result column="credit_discount" property="creditDiscount" jdbcType="VARCHAR" />
+		
+		<!-- 转让价格(assign_price) -->
+		<result column="assign_capital_price" property="assignCapitalPrice" jdbcType="VARCHAR" />
+		<!-- 认购金额 -->
+		<result column="assign_price" property="assignPrice" jdbcType="VARCHAR" />	
+			
+		<!-- 垫付利息 -->
+		<result column="assign_interest_advance" property="assignInterestAdvance" jdbcType="VARCHAR" />
+		<!-- 服务费 -->
+		<result column="credit_fee" property="creditFee" jdbcType="VARCHAR" />
+		<!-- 支付金额 -->
+		<result column="assign_pay" property="assignPay" jdbcType="VARCHAR" />
+		<!-- 认购时间 -->
+		<result column="add_time" property="addTime" jdbcType="VARCHAR" />
+		<!-- 客户端 -->
+		<result column="client" property="client" jdbcType="INTEGER" />
+		<!-- 承接用户推荐人用户名-->
+		<result column="recommend_name" property="recommendName"/>
+		<!-- 承接用户推荐人属性 -->
+		<result column="recommend_attr" property="recommendAttr"/>
+		<!-- 承接人部门信息-->
+		<result column="regionName" property="regionName"/>
+		<!-- 承接人部门信息-->
+		<result column="branchName" property="branchName"/>
+		<!-- 承接人部门信息 -->
+		<result column="departmentName" property="departmentName"/>
+		<!-- 出让用户推荐人用户名 -->
+		<result column="recommend_name_credit" property="recommendNameCredit"/>
+		<!-- 出让用户推荐人属性-->
+		<result column="recommend_attr_credit" property="recommendAttrCredit"/>
+		<!-- 出让人部门信息-->
+		<result column="regionNameCredit" property="regionNameCredit"/>
+		<!-- 出让人部门信息 -->
+		<result column="branchNameCredit" property="branchNameCredit"/>
+		<!-- 出让人部门信息-->
+		<result column="departmentNameCredit" property="departmentNameCredit"/>
+		<result column="invite_user_name" property="inviteUserName"/>
+		<result column="invite_user_attribute" property="inviteUserAttribute"/>
+		<result column="invite_user_regionname" property="inviteUseRegionname"/>
+		<result column="invite_user_branchname" property="inviteUserBranchname"/>
+		<result column="invite_user_departmentname" property="inviteUserDepartmentName"/>
+		<result column="invite_user_credit_name" property="inviteUserCreditName"/>
+		<result column="invite_user_credit_attribute" property="inviteUserCreditAttribute"/>
+		<result column="invite_user_credit_regionname" property="inviteUserCreditRegionName"/>
+		<result column="invite_user_credit_branchname" property="inviteUserCreditBranchName"/>
+		<result column="invite_user_credit_departmentname" property="inviteUserCreditDepartmentName"/>
+
+		<result column="recommend_attr_self" property="recommendAttrSelf"/>
+		<result column="regionNameSelf" property="regionNameSelf"/>
+		<result column="branchNameSelf" property="branchNameSelf"/>
+		<result column="departmentNameSelf" property="departmentNameSelf"/>
+
+		<result column="recommend_attr_credit_self" property="recommendAttrCreditSelf"/>
+		<result column="regionNameCreditSelf" property="regionNameCreditSelf"/>
+		<result column="branchNameCreditSelf" property="branchNameCreditSelf"/>
+		<result column="departmentNameCreditSelf" property="departmentNameCreditSelf"/>
+		<!--合同状态-->
+		<result column="contractStatus" property="contractStatus"/>
+		<!--合同编号-->
+		<result column="contract_number" property="contract_number"/>
+		<!-- 承接人用户ID -->
+		<result column="user_id" property="userId" jdbcType="INTEGER" />
+        <!-- 原始投资订单号 -->
+        <result column="credit_tender_nid" property="creditTenderNid" jdbcType="VARCHAR" />
+		<!--合同下载地址-->
+		<result column="download_url" property="downloadUrl"  />
+		<!--合同查看地址-->
+		<result column="viewpdf_url" property="viewpdfUrl"  />
+		<!--脱敏后合同查看地址-->
+		<result column="img_url" property="imgUrl"  />
+	</resultMap>
+
+	<select id="selectBorrowCreditInfoList" resultMap="selectBorrowCreditInfoListMap" parameterType="com.hyjf.mybatis.model.customize.BorrowCreditCustomize">
+		SELECT
+		ct.assign_nid              AS assign_nid,
+		ct.client             	 AS client,
+		ct.credit_nid              AS credit_nid,
+		ct.bid_nid                 AS bid_nid,
+		credit_users.username      AS credit_username,
+		pna_credit.`name` AS recommend_attr_credit_self,
+		`od3_credit`.`name` AS `regionNameCreditSelf`,
+		`od2_credit`.`name` AS `branchNameCreditSelf`,
+		`od_credit`.`name` AS `departmentNameCreditSelf`,
+
+		u.username                 AS username,
+		pna_u.`name` AS recommend_attr_self,
+		`od3_u`.`name` AS `regionNameSelf`,
+		`od2_u`.`name` AS `branchNameSelf`,
+		`od_u`.`name` AS `departmentNameSelf`,
+		FORMAT(ct.assign_capital, 2)          AS assign_capital,
+		FORMAT(bc.credit_discount, 2)         AS credit_discount,
+		FORMAT(ct.assign_capital, 2)          AS assign_capital_price,
+		FORMAT(ct.assign_price, 2)            AS assign_price,
+		FORMAT(ct.assign_interest_advance, 2) AS assign_interest_advance,
+		FORMAT(ct.credit_fee, 2)              AS credit_fee,
+		FORMAT(ct.assign_pay, 2)              AS assign_pay,
+		CASE WHEN ct.add_time != 0 AND ct.add_time IS NOT NULL THEN FROM_UNIXTIME( ct.add_time, '%Y-%m-%d %H:%i:%s' ) ELSE '' END AS add_time,
+		u_re.username AS recommend_name,
+		pna_re.`name` AS recommend_attr,
+		`od3_re`.`name` AS `regionName`,
+		`od2_re`.`name` AS `branchName`,
+		`od_re`.`name` AS `departmentName`,
+		u_credit_re.username AS recommend_name_credit,
+		pna_credit_re.`name` AS recommend_attr_credit,
+		`od3_credit_re`.`name` AS `regionNameCredit`,
+		`od2_credit_re`.`name` AS `branchNameCredit`,
+		`od_credit_re`.`name` AS `departmentNameCredit`,
+		ct.invite_user_name,
+		pna_re_tender.`name` AS invite_user_attribute,
+		ct.invite_user_regionname,
+		ct.invite_user_branchname,
+		ct.invite_user_departmentname,
+		ct.invite_user_credit_name,
+		pna_re_credit_tender.`name` AS invite_user_credit_attribute,
+		ct.invite_user_credit_regionname,
+		ct.invite_user_credit_branchname,
+		ct.invite_user_credit_departmentname,
+		hta.status AS contractStatus,
+		hta.contract_number AS contractNumber,
+		ct.user_id,
+        ct.credit_tender_nid,
+		hta.download_url AS download_url,
+		hta.viewpdf_url AS viewpdf_url,
+		hta.img_url AS img_url
+		FROM
+		huiyingdai_credit_tender ct
+		INNER JOIN huiyingdai_borrow_credit bc ON bc.bid_nid = ct.bid_nid AND bc.credit_nid = ct.credit_nid
+		LEFT JOIN huiyingdai_users u ON u.user_id = ct.user_id
+		LEFT JOIN huiyingdai_users_info hui ON u.user_id = hui.user_id
+		LEFT JOIN hyjf_param_name pna_u ON cast(hui.attribute AS CHAR) = pna_u.name_cd AND pna_u.name_class = 'USER_PROPERTY'
+		LEFT JOIN `hyjf_crm`.`oa_users` `ou_u` ON `ou_u`.hyd_id = u.user_id AND ou_u.user_status IN ('E','Q1','Q11','Q2','Q21')
+		LEFT JOIN `hyjf_crm`.`oa_department` `od_u` ON `od_u`.`id` = `ou_u`.`departmentid` AND `od_u`.id IS NOT NULL
+		LEFT JOIN `hyjf_crm`.`oa_department` `od2_u` ON `od2_u`.`id` = `od_u`.`parentid`
+		LEFT JOIN `hyjf_crm`.`oa_department` `od3_u` ON `od3_u`.`id` = `od2_u`.`parentid`
+
+		LEFT JOIN huiyingdai_spreads_users hydsu ON u.user_id = hydsu.user_id
+		LEFT JOIN huiyingdai_users u_re ON u_re.user_id = hydsu.spreads_userid
+		LEFT JOIN huiyingdai_users_info hui_re ON hui_re.user_id = hydsu.spreads_userid
+		LEFT JOIN hyjf_param_name pna_re ON cast(hui_re.attribute AS CHAR) = pna_re.name_cd AND pna_re.name_class = 'USER_PROPERTY'
+		LEFT JOIN `hyjf_crm`.`oa_users` `ou_re` ON `ou_re`.hyd_id = u_re.user_id AND ou_re.user_status IN ('E','Q1','Q11','Q2','Q21')
+		LEFT JOIN `hyjf_crm`.`oa_department` `od_re` ON `od_re`.`id` = `ou_re`.`departmentid` AND `od_re`.id IS NOT NULL
+		LEFT JOIN `hyjf_crm`.`oa_department` `od2_re` ON `od2_re`.`id` = `od_re`.`parentid`
+		LEFT JOIN `hyjf_crm`.`oa_department` `od3_re` ON `od3_re`.`id` = `od2_re`.`parentid`
+
+		LEFT JOIN huiyingdai_users credit_users ON credit_users.user_id = ct.credit_user_id
+		LEFT JOIN huiyingdai_users_info hui_credit ON hui_credit.user_id = credit_users.user_id
+		LEFT JOIN hyjf_param_name pna_credit ON cast(hui_credit.attribute AS CHAR) = pna_credit.name_cd AND pna_credit.name_class = 'USER_PROPERTY'
+		LEFT JOIN `hyjf_crm`.`oa_users` `ou_credit` ON `ou_credit`.hyd_id = u.user_id AND ou_credit.user_status IN ('E','Q1','Q11','Q2','Q21')
+		LEFT JOIN `hyjf_crm`.`oa_department` `od_credit` ON `od_credit`.`id` = `ou_credit`.`departmentid` AND `od_credit`.id IS NOT NULL
+		LEFT JOIN `hyjf_crm`.`oa_department` `od2_credit` ON `od2_credit`.`id` = `od_credit`.`parentid`
+		LEFT JOIN `hyjf_crm`.`oa_department` `od3_credit` ON `od3_credit`.`id` = `od2_credit`.`parentid`
+
+		LEFT JOIN huiyingdai_spreads_users hydsu_credit ON credit_users.user_id = hydsu_credit.user_id
+		LEFT JOIN huiyingdai_users u_credit_re ON u_credit_re.user_id = hydsu_credit.spreads_userid
+		LEFT JOIN huiyingdai_users_info ui_credit_re ON ui_credit_re.user_id = hydsu_credit.spreads_userid
+		LEFT JOIN hyjf_param_name pna_credit_re ON cast(ui_credit_re.attribute AS CHAR) = pna_credit_re.name_cd AND pna_credit_re.name_class = 'USER_PROPERTY'
+		LEFT JOIN `hyjf_crm`.`oa_users` `ou_credit_re` ON `ou_credit_re`.hyd_id = u_credit_re.user_id AND ou_credit_re.user_status IN ('E','Q1','Q11','Q2','Q21')
+		LEFT JOIN `hyjf_crm`.`oa_department` `od_credit_re` ON `od_credit_re`.`id` = `ou_credit_re`.`departmentid` AND `od_credit_re`.id IS NOT NULL
+		LEFT JOIN `hyjf_crm`.`oa_department` `od2_credit_re` ON `od2_credit_re`.`id` = `od_credit_re`.`parentid`
+		LEFT JOIN `hyjf_crm`.`oa_department` `od3_credit_re` ON `od3_credit_re`.`id` = `od2_credit_re`.`parentid`
+
+		LEFT JOIN hyjf_param_name pna_re_tender ON cast(ct.invite_user_attribute AS CHAR) = pna_re_tender.name_cd AND pna_re_tender.name_class = 'USER_PROPERTY'
+		LEFT JOIN hyjf_param_name pna_re_credit_tender ON cast(ct.invite_user_credit_attribute AS CHAR) = pna_re_credit_tender.name_cd AND pna_re_credit_tender.name_class = 'USER_PROPERTY'
+
+		LEFT JOIN hyjf_tender_agreement hta ON hta.tender_nid = ct.assign_nid
+		<include refid="CreditInfo_Where_Clause" />
+		ORDER BY
+		bc.add_time DESC
+		<if test="limitStart >= 0" >
+			LIMIT #{limitStart} , #{limitEnd}
+		</if>
+	</select>
+	
+	<select id="getCountByBorrowId" resultType="java.lang.Integer" parameterType="java.lang.String">
+		SELECT
+		  COUNT(1)
+		FROM
+		    huiyingdai_borrow_credit bc
+		INNER JOIN huiyingdai_borrow b ON bc.bid_nid = b.borrow_nid
+	</select>
+	
+	<!-- add by LSY START -->
+	<resultMap id="sumBorrowCreditMap" type="com.hyjf.mybatis.model.customize.BorrowCreditCustomize">
+		<result column="credit_capital" property="sumCreditCapital" jdbcType="VARCHAR" />
+		<result column="credit_capital_price" property="sumCreditCapitalPrice" jdbcType="VARCHAR" />
+		<result column="credit_price" property="sumCreditPrice" jdbcType="VARCHAR" />
+		<result column="credit_capital_assigned" property="sumCreditCapitalAssigned" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="sumBorrowCredit" resultMap="sumBorrowCreditMap" parameterType="com.hyjf.mybatis.model.customize.BorrowCreditCustomize">
+		SELECT
+		   SUM(bc.credit_capital) AS credit_capital,
+		   SUM(bc.credit_capital) AS credit_capital_price,
+		   SUM(bc.credit_price) AS credit_price,
+		   SUM(bc.credit_capital_assigned) AS credit_capital_assigned
+		FROM
+		    huiyingdai_borrow_credit bc
+		INNER JOIN huiyingdai_borrow b ON bc.bid_nid = b.borrow_nid
+		LEFT JOIN huiyingdai_users u ON u.user_id = bc.credit_user_id
+	   <include refid="Where_Clause" />
+	</select>
+	
+	<resultMap id="sumBorrowCreditInfoMap" type="com.hyjf.mybatis.model.customize.BorrowCreditCustomize">
+		<result column="assign_capital" property="sumAssignCapital" jdbcType="VARCHAR" />
+		<result column="assign_capital_price" property="sumAssignCapitalPrice" jdbcType="VARCHAR" />
+		<result column="assign_price" property="sumAssignPrice" jdbcType="VARCHAR" />
+		<result column="assign_interest_advance" property="sumAssignInterestAdvance" jdbcType="VARCHAR" />
+		<result column="credit_fee" property="sumCreditFee" jdbcType="VARCHAR" />
+		<result column="assign_pay" property="sumAssignPay" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="sumBorrowCreditInfo" resultMap="sumBorrowCreditInfoMap" parameterType="com.hyjf.mybatis.model.customize.BorrowCreditCustomize">
+		SELECT
+		  SUM(ct.assign_capital)          AS assign_capital, 
+		  SUM(ct.assign_capital)          AS assign_capital_price,
+		  SUM(ct.assign_price)            AS assign_price,
+		  SUM(ct.assign_interest_advance) AS assign_interest_advance,
+		  SUM(ct.credit_fee)              AS credit_fee,
+		  SUM(ct.assign_pay)              AS assign_pay
+		FROM
+		  huiyingdai_credit_tender ct
+        INNER JOIN huiyingdai_borrow_credit bc ON bc.bid_nid = ct.bid_nid AND bc.credit_nid = ct.credit_nid
+		LEFT JOIN huiyingdai_users u ON u.user_id = ct.user_id
+		LEFT JOIN huiyingdai_spreads_users hydsu ON u.user_id = hydsu.user_id
+		LEFT JOIN huiyingdai_users u_re ON u_re.user_id = hydsu.spreads_userid
+		LEFT JOIN huiyingdai_users_info hui_re ON hui_re.user_id = hydsu.spreads_userid
+		LEFT JOIN hyjf_param_name pna_re ON cast(hui_re.attribute AS CHAR) = pna_re.name_cd AND pna_re.name_class = 'USER_PROPERTY'
+		LEFT JOIN `hyjf_crm`.`oa_users` `ou` ON `ou`.hyd_id = u_re.user_id AND ou.user_status IN ('E','Q1','Q11','Q2','Q21')
+		LEFT JOIN `hyjf_crm`.`oa_department` `od` ON `od`.`id` = `ou`.`departmentid` AND `od`.id IS NOT NULL
+		LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+		LEFT JOIN `hyjf_crm`.`oa_department` `od3` ON `od3`.`id` = `od2`.`parentid`
+		LEFT JOIN huiyingdai_users credit_users ON credit_users.user_id = ct.credit_user_id
+		LEFT JOIN huiyingdai_spreads_users hydsu_credit ON credit_users.user_id = hydsu_credit.user_id
+		LEFT JOIN huiyingdai_users u_credit_re ON u_credit_re.user_id = hydsu_credit.spreads_userid
+		LEFT JOIN huiyingdai_users_info ui_credit_re ON ui_credit_re.user_id = hydsu_credit.spreads_userid
+		LEFT JOIN hyjf_param_name pna_credit_re ON cast(ui_credit_re.attribute AS CHAR) = pna_credit_re.name_cd AND pna_credit_re.name_class = 'USER_PROPERTY'
+		LEFT JOIN `hyjf_crm`.`oa_users` `ou_credit` ON `ou_credit`.hyd_id = u_credit_re.user_id AND ou_credit.user_status IN ('E','Q1','Q11','Q2','Q21')
+		LEFT JOIN `hyjf_crm`.`oa_department` `od_credit` ON `od_credit`.`id` = `ou_credit`.`departmentid` AND `od_credit`.id IS NOT NULL
+		LEFT JOIN `hyjf_crm`.`oa_department` `od2_credit` ON `od2_credit`.`id` = `od_credit`.`parentid`
+		LEFT JOIN `hyjf_crm`.`oa_department` `od3_credit` ON `od3_credit`.`id` = `od2_credit`.`parentid`
+		LEFT JOIN hyjf_param_name pna_re_tender ON cast(ct.invite_user_attribute AS CHAR) = pna_re_tender.name_cd AND pna_re_tender.name_class = 'USER_PROPERTY'
+		LEFT JOIN hyjf_param_name pna_re_credit_tender ON cast(ct.invite_user_credit_attribute AS CHAR) = pna_re_credit_tender.name_cd AND pna_re_credit_tender.name_class = 'USER_PROPERTY'
+	   <include refid="CreditInfo_Where_Clause" />
+	</select>
+	<!-- add by LSY END -->
+</mapper>

@@ -1,0 +1,134 @@
+.ganen_wrapper{
+	max-width: 1280px;
+	margin-left: auto;
+	margin-right: auto;
+}
+.ganen_wrapper .section{
+	width: 100%;
+	float: left;
+}
+.ganen_wrapper .section1{
+	height: 585px;
+	background: url(../img/active_ganen/active_ganen_1.jpg) center top no-repeat;
+}
+.ganen_wrapper .section2{
+	height: 618px;
+	background: url(../img/active_ganen/active_ganen_2.jpg) center top no-repeat;
+}
+.ganen_wrapper .section2 .btn-box{
+	width: 570px;
+	margin-top: 316px;
+	margin-left: auto;
+	margin-right: auto;
+}
+.ganen_wrapper .section2 .btn-box .dw-btn{
+	width: 263px;
+	height: 77px;
+	display: block;
+	float: left;
+	margin-bottom: 20px;
+	background: url(../img/active_ganen/download_android.png) center top no-repeat;
+	-webkit-transition-duration: .25s;
+	-moz-transition-duration: .25s;
+	transition-duration: .25s;
+}
+.ganen_wrapper .section2 .btn-box .dw-btn:hover{
+	opacity: .75;
+	filter: alpha(opacity=75);
+}
+.ganen_wrapper .section2 .btn-box .dw-btn.ios{
+	background: url(../img/active_ganen/download_ios.png) center top no-repeat;
+}
+.ganen_wrapper .section2 .btn-box .qr{
+	float: right;
+	margin-right: 50px;
+}
+.ganen_wrapper .section3{
+	height: 623px;
+	background: url(../img/active_ganen/active_ganen_3.jpg) center top no-repeat;
+}
+.ganen_wrapper .section3 .ticket_box{
+	width: 150px;
+	padding-right: 15px;
+	height: 88px;
+	float: left;
+	overflow: hidden;
+	margin-top: 350px;
+	margin-left: 305px;
+	text-align: center;
+}
+.ganen_wrapper .section3 .ticket_box.ticket_box2{
+	margin-left: 5px;
+}
+.ganen_wrapper .section3 .ticket_box em{
+	margin-right: 10px;
+}
+.ganen_wrapper .section3 .rules{
+	margin-top: 305px;
+	width: 140px;
+	height: 150px;
+	float: left;
+	margin-left: 5px;
+    margin-right: 15px;
+    color: #4a2416;
+    font-size: 15px;
+}
+.ganen_wrapper .section3 .rules_btm{
+	width: 645px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 15px;
+	font-size: 13px;
+	line-height: 16px;
+}
+.ganen_wrapper .section3 .rules_btm span{
+	color: #fe6031;
+}
+.ganen_wrapper .section3 .rules span{
+	color: #fe492a;
+}
+.ganen_wrapper .section4{
+	height: 540px;
+	background: url(../img/active_ganen/active_ganen_4.jpg) center top no-repeat;
+}
+.ganen_wrapper .section5{
+	height: 238px;
+	background: #545046;
+}
+.ganen_wrapper .section5 .btn-box{
+	width: 570px;
+	margin-top: 10px;
+	margin-left: auto;
+	margin-right: auto;
+}
+.ganen_wrapper .section5 .btn-box .dw-btn{
+	width: 263px;
+	height: 59px;
+	display: block;
+	float: left;
+	margin-bottom: 15px;
+	margin-top: 15px;
+	background: url(../img/active_ganen/download_android_bt.png) center top no-repeat;
+	-webkit-transition-duration: .25s;
+	-moz-transition-duration: .25s;
+	transition-duration: .25s;
+}
+.ganen_wrapper .section5 .btn-box .dw-btn:hover{
+	opacity: .75;
+	filter: alpha(opacity=75);
+}
+.ganen_wrapper .section5 .btn-box .dw-btn.ios{
+	background: url(../img/active_ganen/download_ios_bt.png) center top no-repeat;
+}
+.ganen_wrapper .section5 .btn-box .qr{
+	float: right;
+	margin-right: 50px;
+}
+.ganen_wrapper .section6{
+	height: 46px;
+	line-height: 46px;
+	color: #fff;
+	font-size: 22px;
+	text-align: center;
+	background: #413d32;
+}

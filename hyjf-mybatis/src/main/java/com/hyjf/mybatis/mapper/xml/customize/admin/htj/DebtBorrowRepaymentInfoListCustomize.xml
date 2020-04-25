@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.hyjf.mybatis.mapper.customize.admin.htj.DebtBorrowRepaymentInfoListCustomizeMapper">
+	<sql id="Where_Clause">
+		<where>
+			<!-- 投资nid -->
+			<if test="nid != null and nid != ''">
+				AND brp.invest_order_id = #{nid}
+			</if>
+			<!-- 借款编号 -->
+			<if test="borrowNid != null and borrowNid != ''">
+				AND brp.borrow_nid LIKE CONCAT('%', #{borrowNid}, '%')
+			</if>
+			<!-- 期数 -->
+			<if test="recoverPeriod != null and recoverPeriod != ''">
+				AND brp.repay_period = #{recoverPeriod}
+			</if>
+			<!-- 投资人 -->
+			<if test="recoverUserName != null and recoverUserName != ''">
+				AND u.username LIKE CONCAT('%', #{recoverUserName},
+				'%')
+			</if>
+			<!-- 还款状态 -->
+			<if test="status != null and status != ''">
+				AND brp.repay_status = #{status}
+			</if>
+			<!-- 最后还款日 -->
+			<if test="recoverTimeStartSrch != null and recoverTimeStartSrch != ''">
+				AND FROM_UNIXTIME( brp.recover_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{recoverTimeStartSrch}
+			</if>
+			<if test="recoverTimeEndSrch != null and recoverTimeEndSrch != ''">
+				AND FROM_UNIXTIME( brp.recover_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{recoverTimeEndSrch}
+			</if>
+		</where>
+	</sql>
+
+	<select id="countBorrowRepaymentInfoList" resultType="java.lang.Long"
+		parameterType="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowRepaymentInfoListCustomize">
+		SELECT
+			COUNT(1)
+		from hyjf_debt_loan_detail AS brp
+		left join huiyingdai_users AS u on brp.user_id=u.user_id
+		left join hyjf_debt_invest AS t on brp.invest_id=t.id
+		<include refid="Where_Clause" />
+	</select>
+
+	<resultMap id="searchBorrowRepaymentInfoListListResultMap"
+		type="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowRepaymentInfoListCustomize">
+		<result column="nid" property="nid" jdbcType="VARCHAR" />
+		<result column="borrowNid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="userId" property="userId" jdbcType="VARCHAR" />
+		<result column="borrowUserName" property="borrowUserName" jdbcType="VARCHAR" />
+		<result column="borrowName" property="borrowName" jdbcType="VARCHAR" />
+		<result column="projectType" property="projectType" jdbcType="VARCHAR" />
+		<result column="projectTypeName" property="projectTypeName" jdbcType="VARCHAR" />
+		<result column="borrowPeriod" property="borrowPeriod" jdbcType="VARCHAR" />
+		<result column="borrowApr" property="borrowApr" jdbcType="VARCHAR" />
+		<result column="borrowAccount" property="borrowAccount" jdbcType="VARCHAR" />
+		<result column="borrowAccountYes" property="borrowAccountYes" jdbcType="VARCHAR" />
+		<result column="repayType" property="repayType" jdbcType="VARCHAR" />
+		<result column="recoverPeriod" property="recoverPeriod" jdbcType="VARCHAR" />
+		<result column="recoverUserId" property="recoverUserId" jdbcType="VARCHAR" />
+		<result column="recoverUserName" property="recoverUserName" jdbcType="VARCHAR" />
+		<result column="recoverTotal" property="recoverTotal" jdbcType="VARCHAR" />
+		<result column="recoverCapital" property="recoverCapital" jdbcType="VARCHAR" />
+		<result column="recoverInterest" property="recoverInterest" jdbcType="VARCHAR" />
+		<result column="recoverAccount" property="recoverAccount" jdbcType="VARCHAR" />
+		<result column="recoverFee" property="recoverFee" jdbcType="VARCHAR" />
+		<result column="tiqiantianshu" property="tiqiantianshu" jdbcType="VARCHAR" />
+		<result column="shaohuanlixi" property="shaohuanlixi" jdbcType="VARCHAR" />
+		<result column="yanqitianshu" property="yanqitianshu" jdbcType="VARCHAR" />
+		<result column="yanqilixi" property="yanqilixi" jdbcType="VARCHAR" />
+		<result column="yuqitianshu" property="yuqitianshu" jdbcType="VARCHAR" />
+		<result column="yuqilixi" property="yuqilixi" jdbcType="VARCHAR" />
+		<result column="yinghuanzonge" property="yinghuanzonge" jdbcType="VARCHAR" />
+		<result column="shihuanzonge" property="shihuanzonge" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="recoverActionTime" property="recoverActionTime" jdbcType="VARCHAR" />
+		<result column="recoverLastTime" property="recoverLastTime" jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- 提前天数,少还利息,延期天数,延期利息,逾期天数,逾期利息,应还总额,实还总额,实际还款日期 -->
+	<select id="selectBorrowRepaymentInfoListList" resultMap="searchBorrowRepaymentInfoListListResultMap"
+		parameterType="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowRepaymentInfoListCustomize">
+		select
+			brp.invest_order_id AS nid,
+			brp.borrow_nid AS borrowNid,
+			u1.user_id AS borrowUserId,
+			u1.username AS borrowUserName,
+			b.name AS borrowName,
+			b.project_Type AS projectType,
+			bpt.borrow_name AS projectTypeName,
+			CASE WHEN b.borrow_style = 'endday' THEN CONCAT(b.borrow_period, '天') ELSE CONCAT(b.borrow_period, '个月') END AS borrowPeriod,
+			b.borrow_Apr AS borrowApr,
+			t.account AS borrowAccount,
+			b.borrow_account_yes AS borrowAccountYes,
+			bs.name AS repayType,
+			brp.repay_period AS recoverPeriod,
+			u2.user_id AS recoverUserId,
+			u2.username AS recoverUserName,
+			t.account AS recoverTotal,
+			brp.loan_capital AS recoverCapital,
+			brp.loan_interest AS recoverInterest,
+			brp.loan_account AS recoverAccount,
+			brp.manage_fee AS recoverFee,
+			'' AS tiqiantianshu,
+			'' AS shaohuanlixi,
+			'' AS yanqitianshu,
+			'' AS yanqilixi,
+			'' AS yuqitianshu,
+			'' AS yuqilixi,
+			'' AS yinghuanzonge,
+			'' AS shihuanzonge,
+			brp.repay_status AS status,
+			'' AS recoverActionTime,
+			if(brp.repay_time='' OR brp.repay_time='0' OR
+			brp.repay_time='null','',FROM_UNIXTIME(brp.repay_time, '%Y-%m-%d')) AS recoverLastTime
+		from hyjf_debt_borrow AS b
+		INNER JOIN hyjf_debt_loan_detail AS brp on b.borrow_nid=brp.borrow_nid
+		LEFT join hyjf_debt_invest AS t on brp.invest_id=t.id
+		LEFT JOIN huiyingdai_borrow_style AS bs on b.borrow_style=bs.nid
+		LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = CAST(b.project_type AS CHAR)
+		LEFT JOIN huiyingdai_users AS u1 ON brp.borrow_user_id = u1.user_id
+		LEFT JOIN huiyingdai_users AS u2 ON brp.user_id = u2.user_id
+		<include refid="Where_Clause" />
+		ORDER BY
+		brp.repay_time ASC,b.id ASC
+		<if test="limitStart >= 0">
+			LIMIT #{limitStart} , #{limitEnd}
+		</if>
+	</select>
+
+	<select id="sumBorrowRepaymentInfoList"
+		resultType="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowRepaymentInfoListCustomize"
+		parameterType="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowRepaymentInfoListCustomize">
+		select
+			SUM(brp.loan_capital) AS recoverCapital,
+			SUM(brp.loan_interest) AS recoverInterest,
+			SUM(brp.loan_account) AS recoverAccount,
+			SUM(brp.manage_fee) AS recoverFee
+		from
+			hyjf_debt_loan_detail AS brp
+		left join huiyingdai_users AS u on brp.user_id=u.user_id
+		left join hyjf_debt_invest AS t on brp.invest_id=t.id
+		<include refid="Where_Clause" />
+	</select>
+
+</mapper>

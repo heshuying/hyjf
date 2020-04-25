@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.ContentArticleCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+				AND 1=1
+			<if test="title != null and title != ''">
+				AND title LIKE CONCAT('%', #{title}, '%')
+			</if>
+			<if test="status != 3">
+				AND status = #{status}
+			</if>
+			<if test="type != null and type != ''">
+				AND type = #{type}
+			</if>
+			<if test="startCreate != null and startCreate != ''">
+				AND create_time <![CDATA[>=]]> #{startCreate}
+			</if>
+			<if test="endCreate != null and endCreate != ''">
+				AND create_time <![CDATA[<=]]> #{endCreate}
+			</if>
+				ORDER BY create_time DESC
+			<if test="limitStart >= 0">
+				limit #{limitStart} , #{limitEnd}
+			</if>
+		</where>
+	</sql>
+
+	<select id="selectContentArticle" resultMap="BaseResultMap"
+		parameterType="com.hyjf.mybatis.model.customize.ContentArticleCustomize">
+		SELECT * FROM huiyingdai_content_article
+		<include refid="Where_Clause" />
+	</select>
+	
+	
+	<select id="selectContentArticleCustomize" resultMap="BaseResultMap"
+		parameterType="com.hyjf.mybatis.model.customize.ContentArticleCustomize">
+		SELECT 
+			<include refid="ref_Column_List" />
+		 	FROM huiyingdai_content_article
+		<include refid="Where_Clause" />
+	</select>
+	<sql id="ref_Column_List">
+   		id, imgUrl,create_time,title,summary
+  	</sql>
+	
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="int">
+		SELECT 
+			<include refid="ref_article_Column_List" />
+		 	FROM huiyingdai_content_article where id=#{id} 
+		
+	</select>
+	<sql id="ref_article_Column_List">
+   		create_time,title,summary
+  	</sql>
+	
+	<select id="countNetLoanKnowledge" resultType="java.lang.Integer"
+		parameterType="Map">
+		SELECT count(1) FROM huiyingdai_content_article
+		<where>
+			AND status = 1
+			<if test="type != null and type != ''">
+				AND type = #{type}
+			</if>
+				ORDER BY create_time DESC
+			<if test="limitStart >= 0">
+				limit #{limitStart} , #{limitEnd}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getNetLoanKnowledgeList" resultMap="BaseResultMap"
+		parameterType="Map">
+		SELECT * FROM huiyingdai_content_article
+		<where>
+			AND status = 1
+			<if test="type != null and type != ''">
+				AND type = #{type}
+			</if>
+				ORDER BY create_time DESC
+			<if test="limitStart >= 0">
+				limit #{limitStart} , #{limitEnd}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getContentArticleUp" resultMap="BaseResultMap"
+		parameterType="Map">
+		SELECT
+			*
+		FROM
+			huiyingdai_content_article
+		WHERE
+			id = (
+				SELECT
+					id
+				FROM
+					huiyingdai_content_article
+				WHERE
+					1=1
+					AND id <![CDATA[>]]> #{messageId}
+					AND STATUS = 1
+					AND type = #{type}
+				ORDER BY
+					create_time
+				LIMIT 1
+			)
+	</select>
+	
+	<select id="getContentArticleDown" resultMap="BaseResultMap"
+		parameterType="Map">
+		SELECT
+			*
+		FROM
+			huiyingdai_content_article
+		WHERE
+			id = (
+				SELECT
+					id
+				FROM
+					huiyingdai_content_article
+				WHERE
+					1=1
+					AND id <![CDATA[<]]> #{messageId}
+				AND STATUS = 1
+				AND type = #{type}
+				ORDER BY
+					create_time DESC
+				LIMIT 1
+			)
+	</select>
+	
+	
+
+	<resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.ContentArticle" >
+	    <id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="type" property="type" jdbcType="VARCHAR" />
+	    <result column="title" property="title" jdbcType="VARCHAR" />
+	    <result column="status" property="status" jdbcType="INTEGER" />
+	    <result column="author" property="author" jdbcType="VARCHAR" />
+	    <result column="create_by" property="createBy" jdbcType="INTEGER" />
+	    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+	    <result column="update_by" property="updateBy" jdbcType="INTEGER" />
+	    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+	    <result column="summary" property="summary" jdbcType="TIMESTAMP" />
+  	</resultMap>
+</mapper>

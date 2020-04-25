@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.Mgm10CustomizeMapper">
+
+	<!-- 根据用户编号 取得用户在平台的投资额度 -->
+	<select id="getTenderAccountSum" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+		SELECT
+			SUM(t.account)
+		FROM
+			huiyingdai_borrow_tender t
+		INNER JOIN huiyingdai_borrow b ON t.borrow_nid = b.borrow_nid
+		INNER JOIN huiyingdai_borrow_project_type pt ON b.project_type = pt.borrow_cd
+		AND pt.borrow_project_type = 'HZT' AND pt.borrow_class <![CDATA[<>]]> 'ZXH'
+		WHERE
+			t.user_id = #{userId}
+		AND t.addtime <![CDATA[>=]]> #{startDate}
+		AND t.addtime <![CDATA[<=]]> #{endDate}
+	</select>
+	
+	<!-- 更新用户推荐星数量 -->
+	<update id="updateUserRecommend"  parameterType="java.util.Map">
+		UPDATE hyjf_invite_recommend ir
+		SET ir.prize_all_count = ir.prize_all_count + #{recommendCount}
+		WHERE
+			ir.user_id = #{userId}
+	</update>
+	
+	<!-- 根据用户编号 取得用户在平台的投资额度 -->
+	<select id="selectThrUser" resultType="java.lang.Integer">
+		SELECT
+			i.invite_user
+		FROM
+			hyjf_invite_info i
+		WHERE
+			ISNULL(i.group_code)
+		AND i.recommend_source = 2
+		AND i.send_flag = 1
+		GROUP BY
+			i.invite_user
+		HAVING
+			COUNT(i.invite_user) >= 3
+	</select>
+
+</mapper>

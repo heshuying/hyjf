@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.htj.DebtAdminBorrowExceptionMapper">
+
+	<sql id="Where_Clause">
+		<where>
+			<if test="borrowNidSrch != null and borrowNidSrch != ''">
+				AND b.borrow_nid LIKE CONCAT('%', #{borrowNidSrch}, '%')
+			</if>
+			<if test="borrowNameSrch != null and borrowNameSrch != ''">
+				AND b.`name` LIKE CONCAT('%', #{borrowNameSrch}, '%')
+			</if>
+			<if test="usernameSrch != null and usernameSrch != ''">
+				AND b.borrow_user_name LIKE CONCAT('%', #{usernameSrch}, '%')
+			</if>
+			<!-- 默认查询初审中和待发布 -->
+			<if test="statusSrch == null or statusSrch == ''">
+				AND 
+				(
+					(
+					  ( b.`status` = 0 AND ( NOT EXISTS ( SELECT 1 FROM hyjf_debt_bail bb WHERE b.borrow_nid = bb.borrow_nid ) ) )
+					  OR
+					  ( b.`status` = 0 AND b.verify_status = 0 AND ( EXISTS ( SELECT 1 FROM hyjf_debt_bail bb WHERE b.borrow_nid = bb.borrow_nid ) ) )
+	                )
+	                OR
+	                ( ( b.`status` = 0 AND ( b.verify_status = 1 OR b.verify_status = 3 ) AND ( EXISTS ( SELECT 1 FROM hyjf_debt_bail bb WHERE b.borrow_nid = bb.borrow_nid ) ) ) )
+                )
+			</if>
+			<!-- 初审中 -->
+			<if test="statusSrch == '0'.toString()">
+				AND 
+				(
+				  ( b.`status` = 0 AND ( NOT EXISTS ( SELECT 1 FROM hyjf_debt_bail bb WHERE b.borrow_nid = bb.borrow_nid ) ) )
+				  OR
+				  ( b.`status` = 0 AND b.verify_status = 0 AND ( EXISTS ( SELECT 1 FROM hyjf_debt_bail bb WHERE b.borrow_nid = bb.borrow_nid ) ) )
+                )
+			</if>
+			<!-- 待发布 -->
+			<if test="statusSrch == '10'.toString()">
+				AND ( ( b.`status` = 0 AND ( b.verify_status = 1 OR b.verify_status = 3 ) AND ( EXISTS ( SELECT 1 FROM hyjf_debt_bail bb WHERE b.borrow_nid = bb.borrow_nid ) ) ) )
+			</if>
+			<!-- 如果有拆标的,只要状态有大于已发布的,都不予以显示 -->
+			AND ( NOT EXISTS (SELECT 1 FROM hyjf_debt_borrow hb2 WHERE hb2.status >0 AND hb2.borrow_pre_nid = substring(b.borrow_nid, 4, 7))) 
+			<!-- 暂时移除HXF开头的项目数据 -->
+			AND ( b.borrow_nid NOT IN (SELECT hb3.borrow_nid FROM hyjf_debt_borrow hb3 WHERE hb3.borrow_nid LIKE 'HXF%'))
+			<if test="projectTypeSrch != null and projectTypeSrch != ''">
+				AND b.project_type = #{projectTypeSrch}
+			</if>
+			<if test="borrowStyleSrch != null and borrowStyleSrch != ''">
+				AND b.borrow_style = #{borrowStyleSrch}
+			</if>
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND FROM_UNIXTIME( b.addtime, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch != ''">
+				AND FROM_UNIXTIME( b.addtime, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+		</where>
+	</sql>
+	
+	<select id="sumAccount" resultType="java.math.BigDecimal" parameterType="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowCommonCustomize">
+		  SELECT
+		    SUM(b.account)
+		  FROM
+			hyjf_debt_borrow b
+		<include refid="Where_Clause" />
+	</select>
+	
+	<select id="countBorrow" resultType="java.lang.Long" parameterType="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowCommonCustomize">
+		  SELECT
+		    COUNT(1)
+		  FROM
+			hyjf_debt_borrow b
+		<include refid="Where_Clause" />
+	</select>
+	
+	<insert id="insert" parameterType="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowExceptionDeleteBean" >
+	    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+	    insert into hyjf_debt_delete_log (borrow_nid, borrow_name, username, account, borrow_account_yes, borrow_account_wait, borrow_account_scale,
+	    	borrow_style, borrow_style_name, project_type, project_type_name, borrow_period, borrow_apr, status, addtime, borrow_full_time, recover_last_time,
+	    	bail_num, operater_uid,operater_user, operater_time)
+	    values (
+	       #{borrow_nid,jdbcType=VARCHAR},#{borrow_name,jdbcType=VARCHAR},#{username,jdbcType=VARCHAR},#{account,jdbcType=VARCHAR},
+	       #{borrow_account_yes,jdbcType=VARCHAR},#{borrow_account_wait,jdbcType=VARCHAR},#{borrow_account_scale,jdbcType=VARCHAR},#{borrow_style,jdbcType=VARCHAR},
+	       #{borrow_style_name,jdbcType=VARCHAR},#{project_type,jdbcType=INTEGER},#{project_type_name,jdbcType=VARCHAR},#{borrow_period,jdbcType=VARCHAR},
+	       #{borrow_apr,jdbcType=VARCHAR},#{status,jdbcType=VARCHAR},#{addtime,jdbcType=VARCHAR},#{borrow_full_time,jdbcType=VARCHAR},#{recover_last_time,jdbcType=VARCHAR},
+	       #{bail_num,jdbcType=DECIMAL},#{operater_uid,jdbcType=INTEGER},#{operater_user,jdbcType=VARCHAR},#{operater_time,jdbcType=INTEGER}
+	       )
+	</insert>
+
+	<resultMap id="selectBorrowListMap" type="com.hyjf.mybatis.model.customize.BorrowCustomize">
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<result column="borrow_style" property="borrowStyle" jdbcType="VARCHAR" />
+		<result column="borrow_style_name" property="borrowStyleName" jdbcType="VARCHAR" />
+		<result column="project_type" property="projectType" jdbcType="VARCHAR" />
+		<result column="project_type_name" property="projectTypeName" jdbcType="VARCHAR" />
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="addtime" property="addtime" jdbcType="VARCHAR" />
+		<result column="borrow_full_time" property="borrowFullTime" jdbcType="VARCHAR" />
+		<!-- 放款完成时间 --> 
+		<result column="recover_last_time" property="recoverLastTime" jdbcType="VARCHAR" />
+		<!-- 已借到金额 --> 
+		<result column="borrow_account_yes" property="borrowAccountYes" jdbcType="VARCHAR" />
+		<!-- 剩余金额 --> 
+		<result column="borrow_account_wait" property="borrowAccountWait" jdbcType="VARCHAR" />
+		<!-- 借款进度 --> 
+		<result column="borrow_account_scale" property="borrowAccountScale" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectBorrowList" resultMap="selectBorrowListMap" parameterType="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowCommonCustomize">
+		SELECT
+			b.borrow_nid,
+			b.`name` AS borrow_name,
+			b.borrow_user_name AS username,
+			FORMAT(b.account, 2) AS account,
+			FORMAT(b.borrow_account_yes, 2) AS borrow_account_yes,
+		    FORMAT(b.borrow_account_wait, 2) AS borrow_account_wait,
+		    CONCAT(b.borrow_account_scale, '%') borrow_account_scale,
+			b.borrow_style,
+			bs.`name` AS borrow_style_name,
+			b.project_type,
+			bpt.borrow_name AS project_type_name,
+			CASE WHEN borrow_style = 'endday' THEN CONCAT(b.borrow_period, '天') ELSE CONCAT(b.borrow_period, '个月') END borrow_period,
+			CONCAT(b.borrow_apr, '%') borrow_apr,
+			CASE 
+			  WHEN ( ( b.`status` = 0 AND ( NOT EXISTS ( SELECT 1 FROM huiyingdai_borrow_bail bb WHERE b.borrow_nid = bb.borrow_nid ) ) ) OR ( b.`status` = 0 AND b.verify_status = 0 AND ( EXISTS ( SELECT 1 FROM huiyingdai_borrow_bail bb WHERE b.borrow_nid = bb.borrow_nid ) ) ) ) THEN '初审中'
+              WHEN ( ( b.`status` = 0 AND ( b.verify_status = 1 OR b.verify_status = 3 ) AND ( EXISTS ( SELECT 1 FROM huiyingdai_borrow_bail bb WHERE b.borrow_nid = bb.borrow_nid ) ) ) ) THEN '待发布'
+              WHEN ( b.`status` = 1 AND b.borrow_status = 1 AND b.borrow_account_yes <![CDATA[<]]> b.account AND b.verify_time + ( borrow_valid_time * 24 * 60 *60 ) <![CDATA[>]]> UNIX_TIMESTAMP( NOW() ) ) THEN '出借中'
+              WHEN ( b.`status` = 1 AND b.reverify_time = '0' AND ( ( b.reverify_status = 0 AND b.borrow_account_yes <![CDATA[>=]]> b.account ) OR ( b.verify_time + ( borrow_valid_time * 24 * 60 *60 ) <![CDATA[<]]> UNIX_TIMESTAMP(NOW()) ) ) ) THEN '复审中'
+              WHEN ( b.`status` = 3 AND b.repay_full_status = 0 ) THEN '还款中'
+              WHEN ( b.`status` = 3 AND b.repay_full_status = 1 ) THEN '已还款'              
+              WHEN b.`status` = 2 THEN '已流标'
+			ELSE
+			  ''
+			END AS `status`,
+			FROM_UNIXTIME( b.addtime, '%Y-%m-%d %H:%i:%s' ) AS addtime,
+      		CASE WHEN b.borrow_full_time IS NOT NULL THEN FROM_UNIXTIME( b.borrow_full_time, '%Y-%m-%d %H:%i:%s' ) ELSE '' END AS borrow_full_time,
+      		CASE WHEN b.recover_last_time <![CDATA[<>]]> 0 AND b.recover_last_time IS NOT NULL THEN FROM_UNIXTIME( b.recover_last_time, '%Y-%m-%d %H:%i:%s' ) ELSE '' END AS recover_last_time
+		FROM
+		    hyjf_debt_borrow b
+			LEFT JOIN huiyingdai_borrow_style bs ON bs.nid = b.borrow_style
+			LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = CAST(b.project_type AS CHAR)
+		<include refid="Where_Clause" />
+		ORDER BY
+		<if test="col != null and col != '' and sort != null and sort != ''">
+			${col} ${sort},
+		</if>
+		  b.addtime DESC, b.id DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<!-- 根据bnid获取borrow信息 -->
+	<select id="selectBorrowByNid" resultMap="selectBorrowListMap" parameterType="String">
+		SELECT
+			b.borrow_nid,
+			b.`name` AS borrow_name,
+			b.borrow_user_name AS username,
+			FORMAT(b.account, 2) AS account,
+			FORMAT(b.borrow_account_yes, 2) AS borrow_account_yes,
+		    FORMAT(b.borrow_account_wait, 2) AS borrow_account_wait,
+		    CONCAT(b.borrow_account_scale, '%') borrow_account_scale,
+			b.borrow_style,
+			bs.`name` AS borrow_style_name,
+			b.project_type,
+			bpt.borrow_name AS project_type_name,
+			CASE WHEN borrow_style = 'endday' THEN CONCAT(b.borrow_period, '天') ELSE CONCAT(b.borrow_period, '个月') END borrow_period,
+			CONCAT(b.borrow_apr, '%') borrow_apr,
+			CASE 
+			  WHEN ( ( b.`status` = 0 AND ( NOT EXISTS ( SELECT 1 FROM huiyingdai_borrow_bail bb WHERE b.borrow_nid = bb.borrow_nid ) ) ) OR ( b.`status` = 0 AND b.verify_status = 0 AND ( EXISTS ( SELECT 1 FROM huiyingdai_borrow_bail bb WHERE b.borrow_nid = bb.borrow_nid ) ) ) ) THEN '初审中'
+              WHEN ( ( b.`status` = 0 AND ( b.verify_status = 1 OR b.verify_status = 3 ) AND ( EXISTS ( SELECT 1 FROM huiyingdai_borrow_bail bb WHERE b.borrow_nid = bb.borrow_nid ) ) ) ) THEN '待发布'
+              WHEN ( b.`status` = 1 AND b.borrow_status = 1 AND b.borrow_account_yes <![CDATA[<]]> b.account AND b.verify_time + ( borrow_valid_time * 24 * 60 *60 ) <![CDATA[>]]> UNIX_TIMESTAMP( NOW() ) ) THEN '出借中'
+              WHEN ( b.`status` = 1 AND b.reverify_time = '0' AND ( ( b.reverify_status = 0 AND b.borrow_account_yes <![CDATA[>=]]> b.account ) OR ( b.verify_time + ( borrow_valid_time * 24 * 60 *60 ) <![CDATA[<]]> UNIX_TIMESTAMP(NOW()) ) ) ) THEN '复审中'
+              WHEN ( b.`status` = 3 AND b.repay_full_status = 0 ) THEN '还款中'
+              WHEN ( b.`status` = 3 AND b.repay_full_status = 1 ) THEN '已还款'              
+              WHEN b.`status` = 2 THEN '已流标'
+			ELSE
+			  ''
+			END AS `status`,
+			FROM_UNIXTIME( b.addtime, '%Y-%m-%d %H:%i:%s' ) AS addtime,
+      		CASE WHEN b.borrow_full_time IS NOT NULL THEN FROM_UNIXTIME( b.borrow_full_time, '%Y-%m-%d %H:%i:%s' ) ELSE '' END AS borrow_full_time,
+      		CASE WHEN b.recover_last_time <![CDATA[<>]]> 0 AND b.recover_last_time IS NOT NULL THEN FROM_UNIXTIME( b.recover_last_time, '%Y-%m-%d %H:%i:%s' ) ELSE '' END AS recover_last_time
+		FROM
+		    hyjf_debt_borrow b
+			LEFT JOIN huiyingdai_borrow_style bs ON bs.nid = b.borrow_style
+			LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = CAST(b.project_type AS CHAR)
+		WHERE
+			b.borrow_pre_nid= substring(#{nid}, 4, 7)
+			<!-- 默认查询初审中和待发布 -->
+			AND 
+			(
+				(
+				  ( b.`status` = 0 AND ( NOT EXISTS ( SELECT 1 FROM hyjf_debt_bail bb WHERE b.borrow_nid = bb.borrow_nid ) ) )
+				  OR
+				  ( b.`status` = 0 AND b.verify_status = 0 AND ( EXISTS ( SELECT 1 FROM hyjf_debt_bail bb WHERE b.borrow_nid = bb.borrow_nid ) ) )
+                )
+                OR
+                ( ( b.`status` = 0 AND ( b.verify_status = 1 OR b.verify_status = 3 ) AND ( EXISTS ( SELECT 1 FROM hyjf_debt_bail bb WHERE b.borrow_nid = bb.borrow_nid ) ) ) )
+               )
+            <!-- 如果有拆标的,只要状态有大于已发布的,都不予以显示-->
+			AND ( NOT EXISTS (SELECT 1 FROM hyjf_debt_borrow hb2 WHERE hb2.status >0 AND hb2.borrow_pre_nid = substring(#{nid}, 4, 7))) 
+		ORDER BY b.addtime DESC, b.id DESC
+	</select>
+
+	<sql id="Where_BorrowDelete">
+		<where>
+			<if test="borrow_nidSrch != null and borrow_nidSrch != ''">
+				AND hbdl.borrow_nid LIKE CONCAT('%', #{borrow_nidSrch}, '%')
+			</if>
+			<if test="borrow_nameSrch != null and borrow_nameSrch != ''">
+				AND hbdl.borrow_name LIKE CONCAT('%', #{borrow_nameSrch}, '%')
+			</if>
+			<if test="operater_userSrch != null and operater_userSrch != ''">
+				AND hbdl.operater_user LIKE CONCAT('%', #{operater_userSrch}, '%')
+			</if>
+			<if test="operater_time_startSrch != null and operater_time_startSrch != ''">
+				AND FROM_UNIXTIME( hbdl.operater_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{operater_time_startSrch}
+			</if>
+			<if test="operater_time_endSrch != null and operater_time_endSrch != ''">
+				AND FROM_UNIXTIME( hbdl.operater_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{operater_time_endSrch}
+			</if>
+		</where>
+	</sql>
+	<resultMap id="selectBorrowDeleteListMap" type="com.hyjf.mybatis.model.customize.BorrowExceptionDeleteBean">
+		<result column="borrow_nid" property="borrow_nid" jdbcType="VARCHAR" />
+		<result column="borrow_name" property="borrow_name" jdbcType="VARCHAR" />
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<result column="borrow_account_yes" property="borrow_account_yes" jdbcType="VARCHAR" />
+		<result column="borrow_account_wait" property="borrow_account_wait" jdbcType="VARCHAR" />
+		<result column="borrow_account_scale" property="borrow_account_scale" jdbcType="VARCHAR" />
+		<result column="project_type_name" property="project_type_name" jdbcType="VARCHAR" />
+		<result column="borrow_style" property="borrow_style" jdbcType="VARCHAR" />
+		<result column="borrow_style_name" property="borrow_style_name" jdbcType="VARCHAR" />
+		<result column="project_type" property="project_type" jdbcType="INTEGER" />
+		<result column="project_type_name" property="project_type_name" jdbcType="VARCHAR" />
+		<result column="borrow_period" property="borrow_period" jdbcType="VARCHAR" />
+		<result column="borrow_apr" property="borrow_apr" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="addtime" property="addtime" jdbcType="VARCHAR" />
+		<result column="borrow_full_time" property="borrow_full_time" jdbcType="VARCHAR" />
+		<result column="recover_last_time" property="recover_last_time" jdbcType="VARCHAR" />
+		<result column="bail_num" property="bail_num" jdbcType="DECIMAL" />
+		<result column="operater_uid" property="operater_uid" jdbcType="INTEGER" />
+		<result column="operater_user" property="operater_user" jdbcType="VARCHAR" />
+		<result column="operater_time_str" property="operater_time_str" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="countBorrowDelete" resultType="java.lang.Long" parameterType="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowExceptionDeleteSrchBean">
+		  SELECT
+		    COUNT(1)
+		  FROM
+			hyjf_debt_delete_log hbdl
+		<include refid="Where_BorrowDelete" />
+	</select>
+	
+	<select id="selectBorrowDeleteList" resultMap="selectBorrowDeleteListMap" parameterType="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowExceptionDeleteSrchBean">
+		SELECT
+			hbdl.borrow_nid AS borrow_nid,
+			hbdl.borrow_name AS borrow_name,
+			hbdl.username AS username,
+			hbdl.account AS account,
+			hbdl.borrow_account_yes AS borrow_account_yes,
+			hbdl.borrow_account_wait AS borrow_account_wait,
+			hbdl.borrow_account_scale AS borrow_account_scale,
+			hbdl.project_type_name AS project_type_name,
+			hbdl.borrow_style AS borrow_style,
+			hbdl.borrow_style_name AS borrow_style_name,
+			hbdl.project_type AS project_type,
+			hbdl.project_type_name AS project_type_name,
+			hbdl.borrow_period AS borrow_period,
+			hbdl.borrow_apr AS borrow_apr,
+			hbdl.status AS status,
+			hbdl.addtime AS addtime,
+			hbdl.borrow_full_time AS borrow_full_time,
+			hbdl.recover_last_time AS recover_last_time,
+			hbdl.bail_num AS bail_num,
+			hbdl.operater_uid AS operater_uid,
+			hbdl.operater_user AS operater_user,
+			FROM_UNIXTIME( hbdl.operater_time, '%Y-%m-%d %H:%i:%s' ) AS operater_time_str
+		FROM
+			hyjf_debt_delete_log hbdl
+		<include refid="Where_BorrowDelete" />
+		ORDER BY
+		<if test="col != null and col != '' and sort != null and sort != ''">
+			${col} ${sort},
+		</if>
+		  hbdl.addtime DESC, hbdl.id DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+</mapper>

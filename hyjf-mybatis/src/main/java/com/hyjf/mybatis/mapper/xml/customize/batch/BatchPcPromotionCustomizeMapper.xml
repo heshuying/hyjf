@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.batch.BatchPcPromotionCustomizeMapper">
+	<resultMap id="BatchPcPromotionCustomizeMap" type="com.hyjf.mybatis.model.customize.batch.BatchPcPromotionCustomize">
+		<result column="user_id" 				property="userId"				jdbcType="INTEGER" />
+		<result column="borrow_period" 			property="investProjectPeriod"  jdbcType="VARCHAR" />
+		<result column="invest_amount" 			property="investAmount" 		jdbcType="DECIMAL" />
+		<result column="invest_time" 			property="investTime"			jdbcType="VARCHAR" />
+		<result column="invest_project_type" 	property="investProjectType"	jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectPcPromotionCustomizeList" resultMap="BatchPcPromotionCustomizeMap" parameterType="java.util.Map">
+		SELECT
+				a.user_id,
+				a.borrow_period,
+				a.invest_amount,
+				a.invest_time,
+				a.invest_project_type
+			FROM
+				(
+				SELECT
+					t.user_id,
+					CASE WHEN b.borrow_style = 'endday' THEN CONCAT(b.borrow_period, '天') ELSE CONCAT(b.borrow_period, '个月') END borrow_period,
+					ten.account AS invest_amount,
+					ten.addtime AS invest_time,
+					'汇直投' AS invest_project_type
+				FROM
+					huiyingdai_utm_reg t
+				INNER JOIN huiyingdai_borrow_tender ten ON t.user_id = ten.user_id
+				INNER JOIN huiyingdai_borrow b ON ten.borrow_nid = b.borrow_nid
+				WHERE 
+					1=1
+					<if test="userId != null and userId !=''">
+						AND t.user_id = #{userId,jdbcType=VARCHAR}
+					</if>
+				UNION ALL
+					SELECT
+						t.user_id,
+						CONCAT(b.debt_lock_period,'个月') AS borrow_period,
+						ten.accede_account AS invest_amount,
+						ten.create_time AS invest_time,
+						'汇添金' AS invest_project_type
+					FROM
+						huiyingdai_utm_reg t
+					INNER JOIN hyjf_debt_plan_accede ten ON t.user_id = ten.user_id
+					INNER JOIN hyjf_debt_plan b ON ten.plan_nid = b.debt_plan_nid
+					WHERE 
+						1=1
+						<if test="userId != null and userId !=''">
+							AND t.user_id = #{userId,jdbcType=VARCHAR}
+						</if>
+					UNION ALL
+						SELECT
+							t.user_id,
+							CONCAT(b.credit_term, '天') AS borrow_period,
+							ten.assign_capital AS invest_amount,
+							ten.add_time AS invest_time,
+							'汇转让' AS invest_project_type
+						FROM
+							huiyingdai_utm_reg t
+						INNER JOIN huiyingdai_credit_tender ten ON t.user_id = ten.user_id
+						INNER JOIN huiyingdai_borrow_credit b ON ten.credit_nid = b.credit_nid
+						WHERE
+						1=1
+						<if test="userId != null and userId !=''">
+							AND t.user_id = #{userId,jdbcType=VARCHAR}
+						</if>
+				) AS a
+				order by a.invest_time ASC
+				limit 1
+	</select>
+	
+	
+	<select id="selectAppPromotionCustomizeList" resultMap="BatchPcPromotionCustomizeMap" parameterType="java.util.Map">
+		SELECT
+				a.user_id,
+				a.borrow_period,
+				a.invest_amount,
+				a.invest_time,
+				a.invest_project_type
+			FROM
+				(
+				SELECT
+					t.user_id,
+					CASE WHEN b.borrow_style = 'endday' THEN CONCAT(b.borrow_period, '天') ELSE CONCAT(b.borrow_period, '个月') END borrow_period,
+					ten.account AS invest_amount,
+					ten.addtime AS invest_time,
+					'汇直投' AS invest_project_type
+				FROM
+					hyjf_app_channel_statistics_detail t
+				INNER JOIN huiyingdai_borrow_tender ten ON t.user_id = ten.user_id
+				INNER JOIN huiyingdai_borrow b ON ten.borrow_nid = b.borrow_nid
+				WHERE
+					1=1 
+					<if test="userId != null and userId !=''">
+						AND t.user_id = #{userId,jdbcType=VARCHAR}
+					</if>
+				UNION ALL
+					SELECT
+						t.user_id,
+						CONCAT(b.debt_lock_period,'个月') AS borrow_period,
+						ten.accede_account AS invest_amount,
+						ten.create_time AS invest_time,
+						'汇添金' AS invest_project_type
+					FROM
+						hyjf_app_channel_statistics_detail t
+					INNER JOIN hyjf_debt_plan_accede ten ON t.user_id = ten.user_id
+					INNER JOIN hyjf_debt_plan b ON ten.plan_nid = b.debt_plan_nid
+					WHERE
+						1=1 
+					<if test="userId != null and userId !=''">
+						AND t.user_id = #{userId,jdbcType=VARCHAR}
+					</if>
+				UNION ALL
+					SELECT
+						t.user_id,
+						CONCAT(b.credit_term, '天') AS borrow_period,
+						ten.assign_capital AS invest_amount,
+						ten.add_time AS invest_time,
+						'汇转让' AS invest_project_type
+					FROM
+						hyjf_app_channel_statistics_detail t
+					INNER JOIN huiyingdai_credit_tender ten ON t.user_id = ten.user_id
+					INNER JOIN huiyingdai_borrow_credit b ON ten.credit_nid = b.credit_nid
+					WHERE
+						1=1 
+					<if test="userId != null and userId !=''">
+						AND t.user_id = #{userId,jdbcType=VARCHAR}
+					</if>
+				) AS a
+				order by a.invest_time ASC
+				limit 1
+	</select>
+	
+ 
+</mapper>

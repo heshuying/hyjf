@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.hyjf.mybatis.mapper.customize.admin.htj.DebtPlanAccedeCustomizeMapper">
+
+	<update id="updateDebtPlanAccede" parameterType="com.hyjf.mybatis.model.auto.DebtPlanAccede">
+		update
+		hyjf_debt_plan_accede set accede_balance =
+		accede_balance +
+		#{accedeBalance,jdbcType=DECIMAL},accede_frost =
+		accede_frost -
+		#{accedeBalance,jdbcType=DECIMAL} where id =
+		#{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateDebtPlanBalance" parameterType="com.hyjf.mybatis.model.auto.DebtPlan">
+		update
+		hyjf_debt_plan set debt_plan_balance =
+		debt_plan_balance +
+		#{debtPlanBalance,jdbcType=DECIMAL},debt_plan_frost =
+		debt_plan_frost -
+		#{debtPlanBalance,jdbcType=DECIMAL} where debt_plan_nid =
+		#{debtPlanNid}
+	</update>
+</mapper>

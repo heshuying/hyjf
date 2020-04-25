@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.PrizeListMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.PrizeList" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="prize_self_code" property="prizeSelfCode" jdbcType="VARCHAR" />
+    <result column="prize_name" property="prizeName" jdbcType="VARCHAR" />
+    <result column="all_person_count" property="allPersonCount" jdbcType="INTEGER" />
+    <result column="joined_person_count" property="joinedPersonCount" jdbcType="INTEGER" />
+    <result column="prize_status" property="prizeStatus" jdbcType="INTEGER" />
+    <result column="prize_quantity" property="prizeQuantity" jdbcType="INTEGER" />
+    <result column="prize_code" property="prizeCode" jdbcType="VARCHAR" />
+    <result column="add_time" property="addTime" jdbcType="INTEGER" />
+    <result column="add_user" property="addUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flg" property="delFlg" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, prize_self_code, prize_name, all_person_count, joined_person_count, prize_status, 
+    prize_quantity, prize_code, add_time, add_user, update_time, update_user, del_flg
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.PrizeListExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_prize_list
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_prize_list
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_prize_list
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.PrizeListExample" >
+    delete from hyjf_prize_list
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.PrizeList" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_prize_list (prize_self_code, prize_name, all_person_count, 
+      joined_person_count, prize_status, prize_quantity, 
+      prize_code, add_time, add_user, 
+      update_time, update_user, del_flg
+      )
+    values (#{prizeSelfCode,jdbcType=VARCHAR}, #{prizeName,jdbcType=VARCHAR}, #{allPersonCount,jdbcType=INTEGER}, 
+      #{joinedPersonCount,jdbcType=INTEGER}, #{prizeStatus,jdbcType=INTEGER}, #{prizeQuantity,jdbcType=INTEGER}, 
+      #{prizeCode,jdbcType=VARCHAR}, #{addTime,jdbcType=INTEGER}, #{addUser,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=INTEGER}, #{updateUser,jdbcType=VARCHAR}, #{delFlg,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.PrizeList" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_prize_list
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="prizeSelfCode != null" >
+        prize_self_code,
+      </if>
+      <if test="prizeName != null" >
+        prize_name,
+      </if>
+      <if test="allPersonCount != null" >
+        all_person_count,
+      </if>
+      <if test="joinedPersonCount != null" >
+        joined_person_count,
+      </if>
+      <if test="prizeStatus != null" >
+        prize_status,
+      </if>
+      <if test="prizeQuantity != null" >
+        prize_quantity,
+      </if>
+      <if test="prizeCode != null" >
+        prize_code,
+      </if>
+      <if test="addTime != null" >
+        add_time,
+      </if>
+      <if test="addUser != null" >
+        add_user,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="delFlg != null" >
+        del_flg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="prizeSelfCode != null" >
+        #{prizeSelfCode,jdbcType=VARCHAR},
+      </if>
+      <if test="prizeName != null" >
+        #{prizeName,jdbcType=VARCHAR},
+      </if>
+      <if test="allPersonCount != null" >
+        #{allPersonCount,jdbcType=INTEGER},
+      </if>
+      <if test="joinedPersonCount != null" >
+        #{joinedPersonCount,jdbcType=INTEGER},
+      </if>
+      <if test="prizeStatus != null" >
+        #{prizeStatus,jdbcType=INTEGER},
+      </if>
+      <if test="prizeQuantity != null" >
+        #{prizeQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="prizeCode != null" >
+        #{prizeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="addTime != null" >
+        #{addTime,jdbcType=INTEGER},
+      </if>
+      <if test="addUser != null" >
+        #{addUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlg != null" >
+        #{delFlg,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.PrizeListExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_prize_list
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_prize_list
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.prizeSelfCode != null" >
+        prize_self_code = #{record.prizeSelfCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.prizeName != null" >
+        prize_name = #{record.prizeName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.allPersonCount != null" >
+        all_person_count = #{record.allPersonCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.joinedPersonCount != null" >
+        joined_person_count = #{record.joinedPersonCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.prizeStatus != null" >
+        prize_status = #{record.prizeStatus,jdbcType=INTEGER},
+      </if>
+      <if test="record.prizeQuantity != null" >
+        prize_quantity = #{record.prizeQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="record.prizeCode != null" >
+        prize_code = #{record.prizeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.addTime != null" >
+        add_time = #{record.addTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.addUser != null" >
+        add_user = #{record.addUser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateUser != null" >
+        update_user = #{record.updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.delFlg != null" >
+        del_flg = #{record.delFlg,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_prize_list
+    set id = #{record.id,jdbcType=INTEGER},
+      prize_self_code = #{record.prizeSelfCode,jdbcType=VARCHAR},
+      prize_name = #{record.prizeName,jdbcType=VARCHAR},
+      all_person_count = #{record.allPersonCount,jdbcType=INTEGER},
+      joined_person_count = #{record.joinedPersonCount,jdbcType=INTEGER},
+      prize_status = #{record.prizeStatus,jdbcType=INTEGER},
+      prize_quantity = #{record.prizeQuantity,jdbcType=INTEGER},
+      prize_code = #{record.prizeCode,jdbcType=VARCHAR},
+      add_time = #{record.addTime,jdbcType=INTEGER},
+      add_user = #{record.addUser,jdbcType=VARCHAR},
+      update_time = #{record.updateTime,jdbcType=INTEGER},
+      update_user = #{record.updateUser,jdbcType=VARCHAR},
+      del_flg = #{record.delFlg,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.PrizeList" >
+    update hyjf_prize_list
+    <set >
+      <if test="prizeSelfCode != null" >
+        prize_self_code = #{prizeSelfCode,jdbcType=VARCHAR},
+      </if>
+      <if test="prizeName != null" >
+        prize_name = #{prizeName,jdbcType=VARCHAR},
+      </if>
+      <if test="allPersonCount != null" >
+        all_person_count = #{allPersonCount,jdbcType=INTEGER},
+      </if>
+      <if test="joinedPersonCount != null" >
+        joined_person_count = #{joinedPersonCount,jdbcType=INTEGER},
+      </if>
+      <if test="prizeStatus != null" >
+        prize_status = #{prizeStatus,jdbcType=INTEGER},
+      </if>
+      <if test="prizeQuantity != null" >
+        prize_quantity = #{prizeQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="prizeCode != null" >
+        prize_code = #{prizeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="addTime != null" >
+        add_time = #{addTime,jdbcType=INTEGER},
+      </if>
+      <if test="addUser != null" >
+        add_user = #{addUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlg != null" >
+        del_flg = #{delFlg,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.PrizeList" >
+    update hyjf_prize_list
+    set prize_self_code = #{prizeSelfCode,jdbcType=VARCHAR},
+      prize_name = #{prizeName,jdbcType=VARCHAR},
+      all_person_count = #{allPersonCount,jdbcType=INTEGER},
+      joined_person_count = #{joinedPersonCount,jdbcType=INTEGER},
+      prize_status = #{prizeStatus,jdbcType=INTEGER},
+      prize_quantity = #{prizeQuantity,jdbcType=INTEGER},
+      prize_code = #{prizeCode,jdbcType=VARCHAR},
+      add_time = #{addTime,jdbcType=INTEGER},
+      add_user = #{addUser,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=INTEGER},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      del_flg = #{delFlg,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

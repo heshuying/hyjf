@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.FinserChargeCustomizeMapper">
+
+	
+	<select id="selectAll" resultType="com.hyjf.mybatis.model.customize.FinserChargeCustomize" parameterType="java.util.Map">
+		SELECT
+		   c.charge_cd as chargeCd,
+		   c.charge_type as chargeType,
+		   c.charge_time as chargeTime,
+		   c.charge_time_type as chargeTimeType, 
+		   c.charge_rate as chargeRate,
+		   c.project_type as projectType,
+		   t.borrow_name as projectName,
+		   c.status,
+		   c.remark,
+		   c.create_time as createTime,
+		   c.update_time as updateTime
+		 FROM huiyingdai_borrow_finser_charge c INNER JOIN huiyingdai_borrow_project_type t on t.borrow_cd=c.project_type
+		 <if test="limitStart >= 0">
+			LIMIT #{limitStart} , #{limitEnd}
+		 </if>
+	</select>
+	
+	<select id="countRecordTotal" resultType="java.lang.Integer">
+	    SELECT
+		   count(1)
+		 FROM huiyingdai_borrow_finser_charge c INNER JOIN huiyingdai_borrow_project_type t on t.borrow_cd=c.project_type
+	</select>
+</mapper>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.ProductInterestCustomizeMapper">
+	<resultMap id="selectInterestRecordsMap" type="com.hyjf.mybatis.model.customize.ProductInterestCustomize">
+	    <id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="user_id" property="userId" jdbcType="INTEGER" />
+	    <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+	    <result column="amount" property="amount" jdbcType="DECIMAL" />
+	    <result column="interest_days" property="interestDays" jdbcType="INTEGER" />
+	    <result column="interest_rate" property="interestRate" jdbcType="DECIMAL" />
+	    <result column="interest" property="interest" jdbcType="DECIMAL" />
+	    <result column="interest_time" property="interestTime" jdbcType="VARCHAR" />
+	    <result column="username" property="username" jdbcType="VARCHAR" />
+	    <result column="refername" property="refername" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="Where_Clause">
+			<where>
+			<if test="userId != null" >
+		      AND p.user_id = #{userId}
+		    </if>
+		    <if test="username != null" >
+		      AND u.username LIKE CONCAT('%', #{username}, '%')
+		    </if>
+		    <if test="refername != null" >
+		      AND ur.username LIKE CONCAT('%', #{refername}, '%')
+		    </if>
+		    <if test="timeStartSrch != null">
+				AND p.interest_time <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null">
+				AND p.interest_time <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+			</where>
+	</sql>
+	
+   <select id="countInterestRecord" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.ProductInterestCustomize">
+		SELECT
+		  COUNT(1)
+			  FROM
+				huiyingdai_product_interest p
+			LEFT JOIN huiyingdai_users u ON p.user_id = u.user_id
+			LEFT JOIN huiyingdai_users ur ON u.referrer = ur.user_id
+		<include refid="Where_Clause" />
+	</select>
+	
+	<select id="selectInterestRecords" resultMap="selectInterestRecordsMap" parameterType="com.hyjf.mybatis.model.customize.ProductInterestCustomize">
+				SELECT
+					p.id,
+					p.user_id,
+					p.order_id,
+					TRUNCATE(p.amount,2) AS amount,
+					p.interest_days,
+					p.interest_rate,
+					TRUNCATE(p.interest,2) AS interest,
+				    FROM_UNIXTIME(p.interest_time,'%Y-%m-%d %H:%i:%s') AS interest_time,	
+					u.username,
+					ur.username AS refername
+				  FROM
+					huiyingdai_product_interest p
+				LEFT JOIN huiyingdai_users u ON p.user_id = u.user_id
+				LEFT JOIN huiyingdai_users ur ON u.referrer = ur.user_id
+			<include refid="Where_Clause" />
+				ORDER BY p.interest_time DESC
+		    <if test="limitStart >= 0" >
+		      LIMIT #{limitStart} , #{limitEnd}
+		    </if>
+	</select>
+	
+</mapper>

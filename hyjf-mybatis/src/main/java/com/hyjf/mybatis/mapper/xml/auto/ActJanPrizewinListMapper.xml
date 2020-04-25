@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.ActJanPrizewinListMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.ActJanPrizewinList" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="wechat_name" property="wechatName" jdbcType="VARCHAR" />
+    <result column="wechat_nickname" property="wechatNickname" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="prize_id" property="prizeId" jdbcType="INTEGER" />
+    <result column="prize_name" property="prizeName" jdbcType="VARCHAR" />
+    <result column="booking_address" property="bookingAddress" jdbcType="VARCHAR" />
+    <result column="booking_name" property="bookingName" jdbcType="VARCHAR" />
+    <result column="booking_mobile" property="bookingMobile" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+    <result column="del_flg" property="delFlg" jdbcType="TINYINT" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, wechat_name, wechat_nickname, mobile, prize_id, prize_name, booking_address, 
+    booking_name, booking_mobile, create_time, update_time, del_flg
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.ActJanPrizewinListExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_act_jan_prizewin_list
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_act_jan_prizewin_list
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_act_jan_prizewin_list
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.ActJanPrizewinListExample" >
+    delete from hyjf_act_jan_prizewin_list
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.ActJanPrizewinList" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_act_jan_prizewin_list (wechat_name, wechat_nickname, mobile, 
+      prize_id, prize_name, booking_address, 
+      booking_name, booking_mobile, create_time, 
+      update_time, del_flg)
+    values (#{wechatName,jdbcType=VARCHAR}, #{wechatNickname,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, 
+      #{prizeId,jdbcType=INTEGER}, #{prizeName,jdbcType=VARCHAR}, #{bookingAddress,jdbcType=VARCHAR}, 
+      #{bookingName,jdbcType=VARCHAR}, #{bookingMobile,jdbcType=VARCHAR}, #{createTime,jdbcType=INTEGER}, 
+      #{updateTime,jdbcType=INTEGER}, #{delFlg,jdbcType=TINYINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.ActJanPrizewinList" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_act_jan_prizewin_list
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="wechatName != null" >
+        wechat_name,
+      </if>
+      <if test="wechatNickname != null" >
+        wechat_nickname,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="prizeId != null" >
+        prize_id,
+      </if>
+      <if test="prizeName != null" >
+        prize_name,
+      </if>
+      <if test="bookingAddress != null" >
+        booking_address,
+      </if>
+      <if test="bookingName != null" >
+        booking_name,
+      </if>
+      <if test="bookingMobile != null" >
+        booking_mobile,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="delFlg != null" >
+        del_flg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="wechatName != null" >
+        #{wechatName,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatNickname != null" >
+        #{wechatNickname,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="prizeId != null" >
+        #{prizeId,jdbcType=INTEGER},
+      </if>
+      <if test="prizeName != null" >
+        #{prizeName,jdbcType=VARCHAR},
+      </if>
+      <if test="bookingAddress != null" >
+        #{bookingAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="bookingName != null" >
+        #{bookingName,jdbcType=VARCHAR},
+      </if>
+      <if test="bookingMobile != null" >
+        #{bookingMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="delFlg != null" >
+        #{delFlg,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.ActJanPrizewinListExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_act_jan_prizewin_list
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_act_jan_prizewin_list
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.wechatName != null" >
+        wechat_name = #{record.wechatName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.wechatNickname != null" >
+        wechat_nickname = #{record.wechatNickname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mobile != null" >
+        mobile = #{record.mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="record.prizeId != null" >
+        prize_id = #{record.prizeId,jdbcType=INTEGER},
+      </if>
+      <if test="record.prizeName != null" >
+        prize_name = #{record.prizeName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bookingAddress != null" >
+        booking_address = #{record.bookingAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bookingName != null" >
+        booking_name = #{record.bookingName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bookingMobile != null" >
+        booking_mobile = #{record.bookingMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.delFlg != null" >
+        del_flg = #{record.delFlg,jdbcType=TINYINT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_act_jan_prizewin_list
+    set id = #{record.id,jdbcType=INTEGER},
+      wechat_name = #{record.wechatName,jdbcType=VARCHAR},
+      wechat_nickname = #{record.wechatNickname,jdbcType=VARCHAR},
+      mobile = #{record.mobile,jdbcType=VARCHAR},
+      prize_id = #{record.prizeId,jdbcType=INTEGER},
+      prize_name = #{record.prizeName,jdbcType=VARCHAR},
+      booking_address = #{record.bookingAddress,jdbcType=VARCHAR},
+      booking_name = #{record.bookingName,jdbcType=VARCHAR},
+      booking_mobile = #{record.bookingMobile,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=INTEGER},
+      update_time = #{record.updateTime,jdbcType=INTEGER},
+      del_flg = #{record.delFlg,jdbcType=TINYINT}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.ActJanPrizewinList" >
+    update hyjf_act_jan_prizewin_list
+    <set >
+      <if test="wechatName != null" >
+        wechat_name = #{wechatName,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatNickname != null" >
+        wechat_nickname = #{wechatNickname,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="prizeId != null" >
+        prize_id = #{prizeId,jdbcType=INTEGER},
+      </if>
+      <if test="prizeName != null" >
+        prize_name = #{prizeName,jdbcType=VARCHAR},
+      </if>
+      <if test="bookingAddress != null" >
+        booking_address = #{bookingAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="bookingName != null" >
+        booking_name = #{bookingName,jdbcType=VARCHAR},
+      </if>
+      <if test="bookingMobile != null" >
+        booking_mobile = #{bookingMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="delFlg != null" >
+        del_flg = #{delFlg,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.ActJanPrizewinList" >
+    update hyjf_act_jan_prizewin_list
+    set wechat_name = #{wechatName,jdbcType=VARCHAR},
+      wechat_nickname = #{wechatNickname,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      prize_id = #{prizeId,jdbcType=INTEGER},
+      prize_name = #{prizeName,jdbcType=VARCHAR},
+      booking_address = #{bookingAddress,jdbcType=VARCHAR},
+      booking_name = #{bookingName,jdbcType=VARCHAR},
+      booking_mobile = #{bookingMobile,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=INTEGER},
+      del_flg = #{delFlg,jdbcType=TINYINT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

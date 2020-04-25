@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.ChannelCountCustomizeMapper">
+
+	<sql id="Select_Clause">
+		SELECT
+			b.utm_source AS source_name,
+			b.source_id,
+			FORMAT(SUM(access_number), 0) AS access_number,
+			FORMAT(SUM(regist_number), 0) AS regist_number,
+			FORMAT(SUM(account_number), 0) AS account_number,
+			FORMAT(SUM(tender_number), 0) AS tender_number,
+			FORMAT(SUM(recharge_price), 2) AS recharge_price,
+		    FORMAT(SUM(hzt_tender_price) + SUM(hxf_tender_price) + SUM(htl_tender_price)+ SUM(htj_tender_price) + SUM(rtb_tender_price) + SUM(hzr_tender_price), 2) AS tender_price,
+			FORMAT(SUM(hzt_tender_price), 2) AS hzt_tender_price,
+			FORMAT(SUM(hxf_tender_price), 2) AS hxf_tender_price,
+			FORMAT(SUM(htl_tender_price), 2) AS htl_tender_price,
+			FORMAT(SUM(htj_tender_price), 2) AS htj_tender_price,
+			FORMAT(SUM(rtb_tender_price), 2) AS rtb_tender_price,
+			FORMAT(SUM(hzr_tender_price), 2) AS hzr_tender_price
+		FROM
+			(
+				SELECT
+					a.utm_source,
+					a.utm_id,
+					a.source_id,
+					(
+						SELECT
+							COUNT(visit.id)
+						FROM
+							huiyingdai_utm_visit visit
+						WHERE
+							visit.utm_id = a.utm_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( visit.create_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( visit.create_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS access_number,
+					(
+						(
+						SELECT
+							COUNT(reg.id) regid
+						FROM
+							huiyingdai_utm_reg reg
+						WHERE
+							reg.utm_id = a.utm_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( reg.create_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( reg.create_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>)
+						+
+						(SELECT
+								COUNT(reg.id) regid
+							FROM
+								huiyingdai_users_plat reg
+							INNER JOIN huiyingdai_account_chinapnr nr ON nr.user_id = reg.user_id
+							WHERE
+								reg.pid = '26'
+							AND a.utm_source = '投之家'
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( reg.addtime, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( reg.addtime, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+							)
+					) AS regist_number,
+					(
+						SELECT
+							COUNT(nr.user_id)
+						FROM
+							huiyingdai_utm_reg reg
+		        			INNER JOIN huiyingdai_account_chinapnr nr ON nr.user_id = reg.user_id
+						WHERE
+							reg.utm_id = a.utm_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( nr.addtime, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( nr.addtime, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS account_number,
+					(
+						SELECT
+							COUNT(DISTINCT c.user_id)
+						FROM
+							(
+								SELECT
+									reg.utm_id,
+									reg.user_id
+								FROM
+									huiyingdai_utm_reg reg
+								INNER JOIN huiyingdai_borrow_tender tender ON tender.user_id = reg.user_id
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+								UNION ALL
+								SELECT
+									reg.utm_id,
+									reg.user_id
+								FROM
+									huiyingdai_utm_reg reg
+								INNER JOIN huiyingdai_product_list list ON list.user_id = reg.user_id
+								AND list.invest_status = 0
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+								UNION ALL
+								SELECT
+									reg.utm_id,
+									reg.user_id
+								FROM
+									huiyingdai_utm_reg reg
+								INNER JOIN hyjf_debt_plan_accede pa ON pa.user_id = reg.user_id
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( pa.create_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( pa.create_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+								UNION ALL
+								SELECT
+									reg.utm_id,
+									reg.user_id
+								FROM
+									huiyingdai_utm_reg reg
+								INNER JOIN huiyingdai_credit_tender hct ON hct.user_id = reg.user_id
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+							) c
+						WHERE
+							c.utm_id = a.utm_id
+					) AS tender_number,
+					(
+						SELECT
+							CASE
+						WHEN SUM(recharge.money) IS NULL THEN
+							0
+						ELSE
+							SUM(recharge.money)
+						END money
+						FROM
+							huiyingdai_utm_reg reg
+						INNER JOIN huiyingdai_account_recharge recharge ON recharge.user_id = reg.user_id
+						AND recharge.`status` = 1
+						WHERE
+							reg.utm_id = a.utm_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( recharge.create_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( recharge.create_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS recharge_price,
+					(
+						SELECT
+							CASE
+						WHEN SUM(tender.account) IS NULL THEN
+							0
+						ELSE
+							SUM(tender.account)
+						END account
+						FROM
+							huiyingdai_utm_reg reg
+						INNER JOIN huiyingdai_borrow_tender tender ON tender.user_id = reg.user_id
+						INNER JOIN huiyingdai_borrow borrow ON borrow.borrow_nid = tender.borrow_nid
+						AND borrow.project_type <![CDATA[<>]]> 8
+						AND borrow.project_type <![CDATA[<>]]> 13
+						WHERE
+							reg.utm_id = a.utm_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS hzt_tender_price,
+					(
+						SELECT
+							CASE
+						WHEN SUM(tender.account) IS NULL THEN
+							0
+						ELSE
+							SUM(tender.account)
+						END account
+						FROM
+							huiyingdai_utm_reg reg
+						INNER JOIN huiyingdai_borrow_tender tender ON tender.user_id = reg.user_id
+						INNER JOIN huiyingdai_borrow borrow ON borrow.borrow_nid = tender.borrow_nid
+						AND borrow.project_type = 8
+						WHERE
+							reg.utm_id = a.utm_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS hxf_tender_price,
+					(
+						SELECT
+							CASE
+						WHEN SUM(list.amount) IS NULL THEN
+							0
+						ELSE
+							SUM(list.amount)
+						END amount
+						FROM
+							huiyingdai_utm_reg reg
+						INNER JOIN huiyingdai_product_list list ON list.user_id = reg.user_id
+						AND list.invest_status = 0
+						WHERE
+							reg.utm_id = a.utm_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS htl_tender_price,
+					(
+						SELECT
+							CASE
+						WHEN SUM(hdpa.accede_account) IS NULL THEN
+							0
+						ELSE
+							SUM(hdpa.accede_account)
+						END amount
+						FROM
+							huiyingdai_utm_reg reg
+						INNER JOIN hyjf_debt_plan_accede hdpa ON hdpa.user_id = reg.user_id
+						WHERE
+							reg.utm_id = a.utm_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS htj_tender_price,
+					(
+						SELECT
+							CASE
+						WHEN SUM(tender.account) IS NULL THEN
+							0
+						ELSE
+							SUM(tender.account)
+						END account
+						FROM
+							huiyingdai_utm_reg reg
+						INNER JOIN huiyingdai_borrow_tender tender ON tender.user_id = reg.user_id
+						INNER JOIN huiyingdai_borrow borrow ON borrow.borrow_nid = tender.borrow_nid
+						AND borrow.project_type = 13
+						WHERE
+							reg.utm_id = a.utm_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS rtb_tender_price,
+					(
+						SELECT
+							CASE
+						WHEN SUM(hct.assign_capital) IS NULL THEN
+							0
+						ELSE
+							SUM(hct.assign_capital)
+						END account
+						FROM
+							huiyingdai_utm_reg reg
+						INNER JOIN huiyingdai_credit_tender hct ON hct.user_id = reg.user_id
+						WHERE
+							reg.utm_id = a.utm_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS hzr_tender_price
+				FROM
+					(
+						SELECT DISTINCT
+							utm.utm_source,
+							utm.utm_id,
+							utm.source_id
+						FROM
+							huiyingdai_utm utm
+					) a
+			) b
+		WHERE
+		  b.utm_source IS NOT NULL AND b.utm_source <![CDATA[<>]]> ''
+		  	<if test="utmIdsSrch != null and utmIdsSrch != ''">
+				AND b.source_id in
+				<foreach collection="utmIdsSrch" open="(" close=")" separator="," item="utmId">
+					#{utmId}
+				</foreach>
+			</if>
+		GROUP BY
+			b.source_id
+	</sql>
+	
+	<select id="countList" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.ChannelCountCustomize">
+		<!--  SELECT COUNT(1) FROM ( <include refid="Select_Clause" /> ) a -->
+		SELECT
+			COUNT(1)
+		FROM
+			(
+				SELECT
+					b.utm_source
+				FROM
+					huiyingdai_utm b
+				WHERE
+					b.utm_source IS NOT NULL
+				AND b.utm_source <![CDATA[<>]]> ''
+				<if test="utmIdsSrch != null and utmIdsSrch != ''">
+					AND b.source_id in
+					<foreach collection="utmIdsSrch" open="(" close=")" separator="," item="utmId">
+						#{utmId}
+					</foreach>
+				</if>
+				GROUP BY
+					b.source_id
+			) a
+	</select>
+
+	<resultMap id="selectListMap" type="com.hyjf.mybatis.model.customize.ChannelCountCustomize">
+		<result column="source_name" property="sourceName" jdbcType="VARCHAR" />
+		<result column="source_id" property="sourceId" jdbcType="VARCHAR" />
+		<result column="access_number" property="accessNumber" jdbcType="VARCHAR" />
+		<result column="regist_number" property="registNumber" jdbcType="VARCHAR" />
+		<result column="account_number" property="accountNumber" jdbcType="VARCHAR" />
+		<result column="tender_number" property="tenderNumber" jdbcType="VARCHAR" />
+		<result column="recharge_price" property="rechargePrice" jdbcType="VARCHAR" />
+		<result column="tender_price" property="tenderPrice" jdbcType="VARCHAR" />
+		<result column="hzt_tender_price" property="hztTenderPrice" jdbcType="VARCHAR" />
+		<result column="hxf_tender_price" property="hxfTenderPrice" jdbcType="VARCHAR" />
+		<result column="htl_tender_price" property="htlTenderPrice" jdbcType="VARCHAR" />
+		<result column="htj_tender_price" property="htjTenderPrice" jdbcType="VARCHAR" />
+		<result column="rtb_tender_price" property="rtbTenderPrice" jdbcType="VARCHAR" />
+		<result column="hzr_tender_price" property="hzrTenderPrice" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectList" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.ChannelCountCustomize">
+		<include refid="Select_Clause" />
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<select id="exportList" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.ChannelCountCustomize">
+		<include refid="Select_Clause" />
+	</select>
+</mapper>

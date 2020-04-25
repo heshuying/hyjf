@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.RechargeFeeStatisticsMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.RechargeFeeStatistics" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="stat_date" property="statDate" jdbcType="VARCHAR" />
+    <result column="recharge_amount" property="rechargeAmount" jdbcType="DECIMAL" />
+    <result column="quick_amount" property="quickAmount" jdbcType="DECIMAL" />
+    <result column="personal_amount" property="personalAmount" jdbcType="DECIMAL" />
+    <result column="com_amount" property="comAmount" jdbcType="DECIMAL" />
+    <result column="fee" property="fee" jdbcType="DECIMAL" />
+    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, stat_date, recharge_amount, quick_amount, personal_amount, com_amount, fee, update_time
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.RechargeFeeStatisticsExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_recharge_fee_statistics
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_recharge_fee_statistics
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_recharge_fee_statistics
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.RechargeFeeStatisticsExample" >
+    delete from hyjf_recharge_fee_statistics
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.RechargeFeeStatistics" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_recharge_fee_statistics (stat_date, recharge_amount, quick_amount, 
+      personal_amount, com_amount, fee, 
+      update_time)
+    values (#{statDate,jdbcType=VARCHAR}, #{rechargeAmount,jdbcType=DECIMAL}, #{quickAmount,jdbcType=DECIMAL}, 
+      #{personalAmount,jdbcType=DECIMAL}, #{comAmount,jdbcType=DECIMAL}, #{fee,jdbcType=DECIMAL}, 
+      #{updateTime,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.RechargeFeeStatistics" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_recharge_fee_statistics
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="statDate != null" >
+        stat_date,
+      </if>
+      <if test="rechargeAmount != null" >
+        recharge_amount,
+      </if>
+      <if test="quickAmount != null" >
+        quick_amount,
+      </if>
+      <if test="personalAmount != null" >
+        personal_amount,
+      </if>
+      <if test="comAmount != null" >
+        com_amount,
+      </if>
+      <if test="fee != null" >
+        fee,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="statDate != null" >
+        #{statDate,jdbcType=VARCHAR},
+      </if>
+      <if test="rechargeAmount != null" >
+        #{rechargeAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="quickAmount != null" >
+        #{quickAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="personalAmount != null" >
+        #{personalAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="comAmount != null" >
+        #{comAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="fee != null" >
+        #{fee,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.RechargeFeeStatisticsExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_recharge_fee_statistics
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_recharge_fee_statistics
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.statDate != null" >
+        stat_date = #{record.statDate,jdbcType=VARCHAR},
+      </if>
+      <if test="record.rechargeAmount != null" >
+        recharge_amount = #{record.rechargeAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.quickAmount != null" >
+        quick_amount = #{record.quickAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.personalAmount != null" >
+        personal_amount = #{record.personalAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.comAmount != null" >
+        com_amount = #{record.comAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.fee != null" >
+        fee = #{record.fee,jdbcType=DECIMAL},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_recharge_fee_statistics
+    set id = #{record.id,jdbcType=INTEGER},
+      stat_date = #{record.statDate,jdbcType=VARCHAR},
+      recharge_amount = #{record.rechargeAmount,jdbcType=DECIMAL},
+      quick_amount = #{record.quickAmount,jdbcType=DECIMAL},
+      personal_amount = #{record.personalAmount,jdbcType=DECIMAL},
+      com_amount = #{record.comAmount,jdbcType=DECIMAL},
+      fee = #{record.fee,jdbcType=DECIMAL},
+      update_time = #{record.updateTime,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.RechargeFeeStatistics" >
+    update hyjf_recharge_fee_statistics
+    <set >
+      <if test="statDate != null" >
+        stat_date = #{statDate,jdbcType=VARCHAR},
+      </if>
+      <if test="rechargeAmount != null" >
+        recharge_amount = #{rechargeAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="quickAmount != null" >
+        quick_amount = #{quickAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="personalAmount != null" >
+        personal_amount = #{personalAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="comAmount != null" >
+        com_amount = #{comAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="fee != null" >
+        fee = #{fee,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.RechargeFeeStatistics" >
+    update hyjf_recharge_fee_statistics
+    set stat_date = #{statDate,jdbcType=VARCHAR},
+      recharge_amount = #{rechargeAmount,jdbcType=DECIMAL},
+      quick_amount = #{quickAmount,jdbcType=DECIMAL},
+      personal_amount = #{personalAmount,jdbcType=DECIMAL},
+      com_amount = #{comAmount,jdbcType=DECIMAL},
+      fee = #{fee,jdbcType=DECIMAL},
+      update_time = #{updateTime,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

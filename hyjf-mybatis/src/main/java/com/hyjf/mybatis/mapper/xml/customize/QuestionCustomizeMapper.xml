@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.QuestionCustomizeMapper" >
+    <resultMap id="QuestionCustomizeResultMap" type="com.hyjf.mybatis.model.customize.QuestionCustomize" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="typeString" property="typeString" jdbcType="VARCHAR" />
+        <result column="question" property="question" jdbcType="VARCHAR" />
+        <result column="sort" property="sort" jdbcType="VARCHAR" />
+        <association property="answers" column="id"  select="getAnswerList"/>
+    </resultMap>
+
+    <resultMap id="NewQuestionCustomizeResultMap" type="com.hyjf.mybatis.model.customize.QuestionCustomize" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="typeString" property="typeString" jdbcType="VARCHAR" />
+        <result column="question" property="question" jdbcType="VARCHAR" />
+        <result column="sort" property="sort" jdbcType="VARCHAR" />
+        <association property="answers" column="id"  select="getNewAnswerList"/>
+    </resultMap>
+
+    <resultMap id="AnswerCustomizeResultMap" type="com.hyjf.mybatis.model.customize.AnswerCustomize" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="question_id" property="questionId" jdbcType="INTEGER" />
+        <result column="answer" property="answer" jdbcType="VARCHAR" />
+        <result column="score" property="score" jdbcType="INTEGER" />
+    </resultMap>
+
+    <select id="getQuestionList" resultMap="QuestionCustomizeResultMap">
+        select id,type as typeString,question,sort from huiyingdai_question where status=0
+    </select>
+
+    <select id="getAnswerList" parameterType="java.lang.Integer" resultMap="AnswerCustomizeResultMap">
+        select id,question_id,
+        /*answer*/
+         CONCAT(
+          REPLACE(answer,"."," "),"   （",score,"分）") AS answer
+        ,score from huiyingdai_answer where question_id=#{id} AND status=0
+        ORDER BY answer desc
+    </select>
+
+
+    <select id="getNewQuestionList" resultMap="NewQuestionCustomizeResultMap">
+        select id,type as typeString,question,sort from huiyingdai_question where status=0
+    </select>
+
+
+
+    <select id="getNewAnswerList" parameterType="java.lang.Integer" resultMap="AnswerCustomizeResultMap">
+        select id,question_id,
+        /*answer*/
+         CONCAT(
+          REPLACE(answer,"."," "),"   （",score,"分）") AS answer
+        ,score from huiyingdai_answer where question_id=#{id} AND status=0
+    </select>
+
+    <select id="getTypeList" resultType="java.lang.String">
+        select type from huiyingdai_question where status=0 GROUP BY type
+    </select>
+
+
+    <select id="countScore"  parameterType="map" resultType="java.lang.Integer">
+        Select
+        SUM(score)
+        from huiyingdai_answer where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+
+    <!-- app 改版 -->
+    <resultMap id="NewAppQuestionResultMap" type="com.hyjf.mybatis.model.customize.app.NewAppQuestionCustomize" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="question" property="title" jdbcType="VARCHAR" />
+        <association property="selection" column="id"  select="getNewAppAnswerList"/>
+    </resultMap>
+
+    <resultMap id="NewAppAnswerResultMap" type="com.hyjf.mybatis.model.customize.app.NewAppAnswerCustomize" >
+        <result column="ques_id" property="quesId" jdbcType="VARCHAR" />
+        <result column="answer" property="quesText" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <select id="getNewAppQuestionList" resultMap="NewAppQuestionResultMap">
+        select id,question from huiyingdai_question where status=0
+    </select>
+
+    <select id="getNewAppAnswerList" parameterType="java.lang.Integer" resultMap="NewAppAnswerResultMap">
+        select CONCAT(question_id,"_",id) as ques_id,
+        /*replace(answer,"."," ") as answer */
+        CONCAT(
+          REPLACE(answer,"."," "),"   （",score,"分）") AS answer
+        from huiyingdai_answer where question_id=#{id} AND status=0
+    </select>
+
+</mapper>

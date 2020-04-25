@@ -1,0 +1,1118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.app.AppTenderCreditCustomizeMapper">
+
+	<sql id="Credit_Base_Column_List" >
+		credit_id, 
+		credit_nid, 
+		credit_user_id,
+		bid_nid, 
+		bid_apr, 
+		bid_name, 
+		borrow_style,
+		hbs.name AS borrow_style_name,
+		huiyingdai_borrow_credit.tender_nid, 
+		credit_status, 
+		credit_order, 
+		credit_period, 
+		credit_term, 
+		credit_capital, 
+		credit_account, 
+		credit_interest, 
+		credit_interest_advance, 
+		credit_discount, 
+		credit_income, 
+		credit_fee, 
+		credit_price, 
+		credit_capital_assigned, 
+		credit_interest_assigned, 
+		credit_repay_account, 
+		credit_repay_capital, 
+		credit_repay_interest, 
+		CASE
+		WHEN credit_repay_end_time != 0 THEN
+			FROM_UNIXTIME(credit_repay_end_time, '%Y-%m-%d')
+		ELSE
+			''
+		END AS credit_repay_end_time,
+		CASE
+		WHEN credit_repay_last_time != 0 THEN
+			FROM_UNIXTIME(credit_repay_last_time, '%Y-%m-%d')
+		ELSE
+			''
+		END AS credit_repay_last_time,
+		CASE
+		WHEN credit_repay_next_time != 0 THEN
+			FROM_UNIXTIME(credit_repay_next_time, '%Y-%m-%d')
+		ELSE
+			''
+		END AS credit_repay_next_time,
+		CASE
+		WHEN credit_repay_yes_time != 0 THEN
+			FROM_UNIXTIME(credit_repay_yes_time, '%Y-%m-%d')
+		ELSE
+			''
+		END AS credit_repay_yes_time,
+	    create_date, 
+	    CASE
+		WHEN add_time != 0 THEN
+			FROM_UNIXTIME(add_time, '%Y-%m-%d %H:%i:%s')
+		ELSE
+			''
+		END AS add_time,
+		add_time AS add_time_int,
+		CASE
+		WHEN end_time != 0 THEN
+			FROM_UNIXTIME(end_time, '%Y-%m-%d %H:%i:%s')
+		ELSE
+			''
+		END AS end_time,
+		CASE
+		WHEN assign_time != 0 THEN
+			FROM_UNIXTIME(assign_time, '%Y-%m-%d %H:%i:%s')
+		ELSE
+			''
+		END AS assign_time,
+		assign_num, 
+		recover_period,
+		TRUNCATE(credit_capital_assigned/credit_capital,2)*100 AS credit_inProgress,
+		CONCAT(#{host},'?creditNid=',credit_nid) AS borrow_url
+	</sql>
+	
+	<!-- 获取可转让的投资查询条件 -->
+	<sql id="TenderToCredit_Where_Clause">
+		<where>
+			<if test="borrowNid != null and borrowNid != ''">
+				AND hbr.borrow_nid = #{borrowNid}
+			</if>
+			<if test="tenderNid != null and tenderNid != ''">
+				AND hbr.nid = #{tenderNid}
+			</if>
+			AND	hbr.recover_status = 0
+			AND hb.project_type != 8
+			AND hb.project_type != 13
+			AND hb.repay_last_time <![CDATA[>=]]> (#{nowTime} + 24 * 3600 * 30)
+			AND hb.borrow_style != 'month'
+			AND hb.borrow_style != 'principal'
+			AND hb.plan_nid IS NULL
+			AND hb.inst_code = 10000000
+			AND hbr.advance_status != 3
+			AND hbr.delay_days = 0
+			AND hbr.credit_time <![CDATA[<=]]> (#{nowTime} - 3600 * 24 * 3)
+			AND hbr.recover_capital <![CDATA[>=]]> 1000
+			AND (hbr.recover_capital-credit_amount) <![CDATA[>=]]> 1000
+			AND hbr.create_time <![CDATA[<=]]> (#{nowTime} - 3600 * 24 * 30) 
+			AND hbr.recover_time <![CDATA[>=]]> (#{nowTime} + 24 * 3600 * 3)
+			AND hbr.addtime <![CDATA[<=]]> (#{nowTime} - 24 * 3600 * 3)
+			AND CAST(IFNULL(hbr.repay_orddate,0) AS SIGNED)  <![CDATA[<]]> FROM_UNIXTIME((#{nowTime} - 24 * 3600 * 3),'%Y%m%d')
+			AND hbr.user_id = #{userId}
+			<!-- 分期标提前还款该月不允许债转 -->
+			AND (
+				CASE
+				WHEN hb.borrow_style = 'endmonth' THEN
+					(
+						SELECT
+							hbrp.recover_status AS recoverPlanStatus
+						FROM
+							huiyingdai_borrow_recover_plan hbrp
+						WHERE
+							hbrp.borrow_nid = hbr.borrow_nid
+						AND hbrp.tender_id = hbr.tender_id
+						AND hbrp.recover_period = (
+							hb.borrow_period - hbr.recover_period + 1
+						)
+					)
+				ELSE
+					(hbr.recover_status)
+				END
+			)<![CDATA[<>]]>1
+		</where>
+	</sql>
+	<resultMap id="CreditBaseResultMap" type="com.hyjf.mybatis.model.customize.app.AppTenderCreditDetailCustomize" >
+	    <id column="credit_id" property="creditId" />
+	    <result column="credit_nid" property="creditNid" />
+	    <result column="credit_user_id" property="creditUserId" />
+	    <result column="bid_nid" property="bidNid" />
+	    <result column="bid_apr" property="bidApr" />
+	    <result column="bid_name" property="bidName" />
+	    <result column="borrow_style" property="borrowStyle" />
+	    <result column="borrow_style_name" property="borrowStyleName" />
+	    <result column="tender_nid" property="tenderNid" />
+	    <result column="credit_status" property="creditStatus" />
+	    <result column="credit_order" property="creditOrder" />
+	    <result column="credit_period" property="creditPeriod" />
+	    <result column="credit_term" property="creditTerm" />
+	    <result column="credit_capital" property="creditCapital" />
+	    <result column="credit_account" property="creditAccount" />
+	    <result column="credit_interest" property="creditInterest" />
+	    <result column="credit_interest_advance" property="creditInterestAdvance" />
+	    <result column="credit_discount" property="creditDiscount" />
+	    <result column="credit_income" property="creditIncome" />
+	    <result column="credit_fee" property="creditFee" />
+	    <result column="credit_price" property="creditPrice" />
+	    <result column="credit_capital_assigned" property="creditCapitalAssigned" />
+	    <result column="credit_interest_assigned" property="creditInterestAssigned" />
+	    <result column="credit_repay_account" property="creditRepayAccount" />
+	    <result column="credit_repay_capital" property="creditRepayCapital" />
+	    <result column="credit_repay_interest" property="creditRepayInterest" />
+	    <result column="credit_repay_end_time" property="creditRepayEndTime" />
+	    <result column="credit_repay_last_time" property="creditRepayLastTime" />
+	    <result column="credit_repay_next_time" property="creditRepayNextTime" />
+	    <result column="credit_repay_yes_time" property="creditRepayYesTime" />
+	    <result column="create_date" property="createDate" />
+	    <result column="add_time" property="addTime" />
+	    <result column="add_time_int" property="addTimeInt" />
+	    <result column="end_time" property="endTime" />
+	    <result column="assign_time" property="assignTime" />
+	    <result column="assign_num" property="assignNum" />
+	    <result column="recover_period" property="recoverPeriod" />
+	    <result column="credit_inProgress" property="creditInProgress" />
+	    <result column="tenderTime" property="tenderTime" />
+	    <result column="borrow_url" property="borrowUrl" />
+	</resultMap>
+	
+	<!--查询汇转让投资列表数据总数 -->
+	<select id="countTenderCreditListRecordCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		SELECT (
+			(SELECT 
+		    COUNT(credit_nid)
+		    from huiyingdai_borrow_credit INNER JOIN huiyingdai_borrow ON huiyingdai_borrow_credit.bid_nid = huiyingdai_borrow.borrow_nid
+		    <where>
+		    	huiyingdai_borrow.is_show <![CDATA[<>]]> 1
+				<if test="creditStatus != null and creditStatus != ''">
+					AND credit_status = #{creditStatus}
+				</if>
+				<if test="borrowPeriodMin != null and borrowPeriodMin != ''">
+					AND borrow_period <![CDATA[>=]]> #{borrowPeriodMin}
+					<if test="borrowPeriodMax != null and borrowPeriodMax != ''">
+						AND borrow_period <![CDATA[<]]> #{borrowPeriodMax}
+					</if>
+				</if>
+				<if test="borrowAprMin != null and borrowAprMin != ''">
+					AND huiyingdai_borrow_credit.bid_apr <![CDATA[>=]]> #{borrowAprMin}
+					<if test="borrowAprMax != null and borrowAprMax != ''">
+						AND huiyingdai_borrow_credit.bid_apr <![CDATA[<]]> #{borrowAprMax}
+					</if>
+				</if>
+					AND huiyingdai_borrow.borrow_style!='endday'
+			</where>
+			)
+		+ (
+			select 
+		    COUNT(credit_nid)
+		    from huiyingdai_borrow_credit INNER JOIN huiyingdai_borrow ON huiyingdai_borrow_credit.bid_nid = huiyingdai_borrow.borrow_nid
+		    <where>
+		    	huiyingdai_borrow.is_show <![CDATA[<>]]> 1
+				<if test="creditStatus != null and creditStatus != ''">
+					AND credit_status = #{creditStatus}
+				</if>
+				<if test="borrowPeriodMin != null and borrowPeriodMin != ''">
+					AND borrow_period <![CDATA[>=]]> #{borrowPeriodMin}*30
+					<if test="borrowPeriodMax != null and borrowPeriodMax != ''">
+						AND borrow_period <![CDATA[<]]> #{borrowPeriodMax}*30
+					</if>
+				</if>
+				<if test="borrowAprMin != null and borrowAprMin != ''">
+					AND huiyingdai_borrow_credit.bid_apr <![CDATA[>=]]> #{borrowAprMin}
+					<if test="borrowAprMax != null and borrowAprMax != ''">
+						AND huiyingdai_borrow_credit.bid_apr <![CDATA[<]]> #{borrowAprMax}
+					</if>
+				</if>
+					AND huiyingdai_borrow.borrow_style='endday'
+			</where>		
+		)
+		)AS total
+	</select>
+	
+	<resultMap id="AppProjectListMap" type="com.hyjf.mybatis.model.customize.app.AppProjectListCustomize">
+		<!-- 项目id-->
+		<id column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<!-- 项目标题 -->
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<!-- 子项目类型 -->
+		<result column="borrow_desc" property="borrowDesc" jdbcType="VARCHAR" />
+		<!-- 项目类型 (HZT,HXF)-->
+		<result column="borrow_type" property="borrowType" jdbcType="VARCHAR" />
+		<!-- 项目年华收益率-->
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<!-- 项目总金额-->
+		<result column="borrow_total" property="borrowTotalMoney" jdbcType="VARCHAR" />
+		<!-- 项目期限-->
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<!-- 项目状态-->
+		<result column="tstatus" property="status" jdbcType="VARCHAR" />
+		<!-- 定时发标时间-->
+		<result column="on_time" property="onTime" jdbcType="VARCHAR" />
+		<!-- 项目进度-->
+		<result column="borrow_schedule" property="borrowSchedule" jdbcType="VARCHAR" />
+		<!-- 项目详情H5url-->
+		<result column="borrow_url" property="borrowUrl" jdbcType="VARCHAR" />
+		<!-- 是否用优惠券-->
+		<result column="couponEnable" property="couponEnable" jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- 获取Web页面查询汇转让数据列表资源 -->
+	<select id="searchTenderCreditList" resultMap="AppProjectListMap" parameterType="java.util.Map">
+		select
+			CONCAT('HZR',hydc.credit_nid ) AS borrow_nid,
+			CONCAT('HZR',hydc.credit_nid ) AS borrow_name,
+			'汇转让' AS borrow_desc,
+			'HZR' AS borrow_type,
+			hydc.bid_apr AS borrow_apr,
+            hydc.credit_capital-hydc.credit_capital_assigned AS credit_inProgress,
+			<!-- add by nxl 债转记录排序用-->
+		CASE
+			WHEN hydc.credit_capital > hydc.credit_capital_assigned AND TRUNCATE (hydc.credit_capital_assigned / hydc.credit_capital * 100,2) = 100.00 	THEN	99
+			ELSE TRUNCATE (hydc.credit_capital_assigned / hydc.credit_capital * 100,2) END AS credit_inProgressOrdery,
+			<!-- add by nxl 债转记录排序用 End-->
+		CASE
+			WHEN hydc.credit_capital >= 10000 THEN
+					CASE
+			WHEN hydc.credit_capital % 10000 = 0 THEN
+				CONCAT(
+					FORMAT((hydc.credit_capital / 10000), 0),
+					'万'
+				)
+			WHEN hydc.credit_capital % 10000 <![CDATA[<>]]> 0
+			AND hydc.credit_capital % 1000 = 0 THEN
+				CONCAT(
+					FORMAT(hydc.credit_capital / 10000, 1),
+					'万'
+				)
+			WHEN hydc.credit_capital % 10000 <![CDATA[<>]]> 0
+			AND hydc.credit_capital % 1000 <![CDATA[<>]]> 0
+			AND hydc.credit_capital % 100 = 0 THEN
+				CONCAT(
+					FORMAT(hydc.credit_capital / 10000, 2),
+					'万'
+				)
+			WHEN hydc.credit_capital % 10000 <![CDATA[<>]]> 0
+			AND hydc.credit_capital % 1000 <![CDATA[<>]]> 0
+			AND hydc.credit_capital % 100 <![CDATA[<>]]> 0
+			AND hydc.credit_capital % 10 = 0 THEN
+				CONCAT(
+					FORMAT(hydc.credit_capital / 10000, 3),
+					'万'
+				)
+			ELSE
+				CONCAT(
+					FORMAT(hydc.credit_capital/ 10000, 4),
+					'万'
+				)
+			END
+			ELSE
+				CONCAT(
+					FORMAT(hydc.credit_capital, 0),
+					'元'
+				)
+			END AS borrow_total,
+			hydc.credit_term AS borrow_period,
+			'11' AS tstatus,
+			'' AS on_time,
+			truncate(hydc.credit_capital_assigned/hydc.credit_capital,2)*100 AS borrow_schedule,
+			CONCAT(#{host},'?creditNid=',hydc.credit_nid) AS borrow_url,
+			hydc.add_time AS add_time,
+			'0' AS couponEnable,
+		   hydc.credit_order AS creditOrder
+		from huiyingdai_borrow_credit hydc
+		INNER JOIN huiyingdai_borrow hydb
+			ON hydc.bid_nid = hydb.borrow_nid
+		INNER JOIN huiyingdai_borrow_style hbs 
+			ON hydb.borrow_style = hbs.nid
+		<where>
+			hydb.is_show <![CDATA[<>]]> 1
+			<if test="creditStatus != null and creditStatus != ''">
+				AND credit_status = #{creditStatus}
+			</if>
+			<if test="borrowPeriodMin != null and borrowPeriodMin != ''">
+				AND borrow_period <![CDATA[>=]]> #{borrowPeriodMin}
+				<if test="borrowPeriodMax != null and borrowPeriodMax != ''">
+					AND borrow_period <![CDATA[<]]> #{borrowPeriodMax}
+				</if>
+			</if>
+			<if test="borrowAprMin != null and borrowAprMin != ''">
+				AND huiyingdai_borrow_credit.bid_apr <![CDATA[>=]]> #{borrowAprMin}
+				<if test="borrowAprMax != null and borrowAprMax != ''">
+					AND huiyingdai_borrow_credit.bid_apr <![CDATA[<]]> #{borrowAprMax}
+				</if>
+			</if>
+				AND hydb.borrow_style!='endday'
+		</where>
+		UNION (
+			select 
+				CONCAT('HZR',huiyingdai_borrow_credit.credit_nid ) AS borrow_nid,
+				CONCAT('HZR',huiyingdai_borrow_credit.credit_nid ) AS borrow_name,
+				'' AS borrow_desc,
+				'HZR' AS borrow_type,
+				huiyingdai_borrow_credit.bid_apr AS borrow_apr,
+				huiyingdai_borrow_credit.credit_capital-huiyingdai_borrow_credit.credit_capital_assigned AS credit_inProgress,
+				<!-- add by nxl 债转记录排序用 Start-->
+				CASE
+				WHEN huiyingdai_borrow_credit.credit_capital > huiyingdai_borrow_credit.credit_capital_assigned AND TRUNCATE (huiyingdai_borrow_credit.credit_capital_assigned / huiyingdai_borrow_credit.credit_capital * 100,2) = 100.00
+				THEN	99
+				ELSE TRUNCATE (huiyingdai_borrow_credit.credit_capital_assigned / huiyingdai_borrow_credit.credit_capital * 100,2) END AS credit_inProgressOrdery,
+				<!-- add by nxl 债转记录排序用 End-->
+				huiyingdai_borrow_credit.credit_capital AS borrow_total,
+				huiyingdai_borrow_credit.credit_term AS borrow_period,
+				huiyingdai_borrow_credit.credit_status AS status,
+				<!--mod by nxl 此语句位置不对,提上 -->
+               <!-- huiyingdai_borrow_credit.credit_capital-huiyingdai_borrow_credit.credit_capital_assigned AS credit_inProgress,-->
+				'' AS on_time,
+				ROUND(huiyingdai_borrow_credit.credit_capital_assigned/huiyingdai_borrow_credit.credit_capital*100 ,2) AS borrow_schedule,
+				CONCAT(#{host},'?creditNid=',credit_nid) AS borrow_url,
+				huiyingdai_borrow_credit.add_time AS add_time,
+				'0' AS couponEnable,
+				huiyingdai_borrow_credit.credit_order AS creditOrder
+			from huiyingdai_borrow_credit 
+			INNER JOIN huiyingdai_borrow 
+				ON huiyingdai_borrow_credit.bid_nid = huiyingdai_borrow.borrow_nid
+			INNER JOIN huiyingdai_borrow_style hbs 
+				ON huiyingdai_borrow.borrow_style = hbs.nid
+			<where>
+				huiyingdai_borrow.is_show <![CDATA[<>]]> 1
+				<if test="creditStatus != null and creditStatus != ''">
+					AND credit_status = #{creditStatus}
+				</if>
+				<if test="borrowPeriodMin != null and borrowPeriodMin != ''">
+					AND borrow_period <![CDATA[>=]]> #{borrowPeriodMin}*30
+					<if test="borrowPeriodMax != null and borrowPeriodMax != ''">
+						AND borrow_period <![CDATA[<]]> #{borrowPeriodMax}*30
+					</if>
+				</if>
+				<if test="borrowAprMin != null and borrowAprMin != ''">
+					AND huiyingdai_borrow_credit.bid_apr <![CDATA[>=]]> #{borrowAprMin}
+					<if test="borrowAprMax != null and borrowAprMax != ''">
+						AND huiyingdai_borrow_credit.bid_apr <![CDATA[<]]> #{borrowAprMax}
+					</if>
+				</if>
+					AND huiyingdai_borrow.borrow_style='endday'
+			</where>		
+		)
+		ORDER BY
+		<!--borrow_schedule DESC, borrow_period DESC-->
+		<!--mod by nxl 修改债转列表排序-->
+		creditOrder DESC,
+		credit_inProgressOrdery DESC,
+		borrow_period DESC,
+		add_time ASC
+		<if test="limitStart != null and limitEnd !=null" >
+			LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<!-- 点击购买后对债转进行投资详情 -->
+	<select id="selectCreditTenderDetail" resultType="com.hyjf.mybatis.model.customize.app.AppTenderToCreditDetailCustomize" parameterType="java.util.Map">
+		SELECT
+			<!-- 项目编号 -->
+			hbc.credit_nid AS creditNid,
+			<!-- 画面表示的项目编号 -->
+			CONCAT('HZR',hbc.credit_nid ) AS creditNidPage,
+			<!-- 项目期限 -->
+			CONCAT(hbc.credit_term ,'天') AS borrowPeriod,
+			<!-- 项目期限 -->
+			hbc.credit_term AS creditTerm,
+			<!-- 债权已 持有天数 -->
+			hbc.credit_term_hold creditTermHold,
+			<!-- 债转状态 -->
+			hbc.credit_status AS status,
+			<!-- 债转本金 -->
+			hbc.credit_capital AS creditCapital,
+			<!-- 项目剩余 可投资金额 -->
+			(hbc.credit_capital - hbc.credit_capital_assigned) AS investAccount,
+			<!-- 折价比率 -->
+			hbc.credit_discount AS creditDiscount,
+			<!-- 还款方式 -->
+			hydbs.name AS repayStyle,
+			<!-- 原项目 -->
+			hbc.bid_nid AS bidNid,
+			<!-- 原表年化利率 -->
+			hbc.bid_apr AS bidApr,
+			<!-- 转让时间 -->
+			FROM_UNIXTIME(hbc.add_time,'%Y-%m-%d %H:%i:%s') AS creditTime,
+			<!-- 截止时间 -->
+			FROM_UNIXTIME(hbc.end_time,'%Y-%m-%d %H:%i:%s') AS endTime,
+			<!-- 成功时间 -->
+			FROM_UNIXTIME(hbc.assign_time,'%Y-%m-%d %H:%i:%s') AS assignTime,
+			<!-- 投资进度 -->
+			truncate(hbc.credit_capital_assigned/hbc.credit_capital*100,2) AS borrowSchedule
+		FROM
+			huiyingdai_borrow_credit hbc
+		LEFT JOIN huiyingdai_borrow hb ON hbc.bid_nid = hb.borrow_nid
+		LEFT JOIN huiyingdai_borrow_style hydbs ON hydbs.nid = hb.borrow_style
+		LEFT JOIN huiyingdai_users hu ON hu.user_id = hbc.credit_user_id
+		LEFT JOIN huiyingdai_users_info hui ON hui.user_id = hu.user_id
+		WHERE
+			hbc.credit_nid = #{creditNid}
+	</select>
+	
+	<!-- 获取投资记录的投资件数 -->
+	<select id="countTenderCreditInvestRecordTotal" resultType="java.lang.Integer" parameterType="Map">
+		SELECT
+			COUNT(*)
+			FROM huiyingdai_credit_tender hydct
+			LEFT JOIN huiyingdai_users hydu ON hydct.user_id = hydu.user_id
+		<where>
+			hydct.credit_nid = #{creditNid,jdbcType=VARCHAR}
+		</where>
+	</select>
+	
+	<!-- 获取投资记录列表 -->
+	<resultMap id="AppCreditTenderInvestMap" type="com.hyjf.mybatis.model.customize.app.AppTenderCreditInvestListCustomize">
+		<id column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="vip_id" property="vipId" jdbcType="VARCHAR" />
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<result column="invest_time" property="investTime" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="searchTenderCreditInvestList" resultMap="AppCreditTenderInvestMap" parameterType="Map">
+		SELECT
+			CONCAT(substring(hydu.username,1,1),'**') AS user_name,
+			IFNULL(hydui.vip_id,0) vip_id,
+			SUBSTRING(FORMAT(hydct.assign_capital,4),1,LENGTH(FORMAT(hydct.assign_capital,4))-2) AS account,
+			from_unixtime(
+					hydct.add_time,
+					'%Y-%m-%d %H:%i:%s'
+				) AS invest_time
+			FROM huiyingdai_credit_tender hydct
+			LEFT JOIN huiyingdai_users hydu ON hydct.user_id = hydu.user_id
+			LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id=hydui.user_id
+		<where>
+			hydct.credit_nid = #{creditNid,jdbcType=VARCHAR}
+		</where>
+		ORDER BY hydct.add_time DESC
+		<if test="limitStart != null and limitEnd !=null" >
+			LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<!-- 获取可转让的投资列表总数 -->
+	<select id="countTenderToCredit" resultType="java.lang.Integer" parameterType="java.util.Map">
+		SELECT
+			 COUNT(hbr.nid) AS total
+		FROM
+			huiyingdai_borrow_recover hbr
+		LEFT JOIN huiyingdai_borrow hb ON hbr.borrow_nid = hb.borrow_nid
+		<include refid="TenderToCredit_Where_Clause" /> 
+	</select>
+	
+	<!-- 获取可转让的投资返回MAP -->
+	<resultMap id="selectTenderToCreditListMap" type="com.hyjf.mybatis.model.customize.app.AppTenderToCreditListCustomize">
+		<!-- 项目编号-->
+		<result column="borrow_nid" property="bidNid" jdbcType="VARCHAR" />
+		<!-- 预期年化收益率 -->
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<!-- 项目期限-->
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<result column="recover_time" property="recoverTime" jdbcType="VARCHAR" />
+		<!-- 可转让本金-->
+		<result column="credit_account" property="creditAccount" jdbcType="VARCHAR" />
+		<!-- 剩余天数 -->
+		<result column="last_days" property="lastDays" jdbcType="VARCHAR" />
+		<!-- 立即转让URL -->
+		<result column="tender_credit_url" property="tenderCreditUrl" jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- 获取可转让的投资列表 -->
+	<select id="selectTenderToCreditList" resultMap="selectTenderToCreditListMap" parameterType="java.util.Map">
+		SELECT
+			hb.borrow_nid AS borrow_nid,
+			CONCAT(hb.borrow_apr,'%') AS borrow_apr,
+			CONCAT(hb.borrow_period,'个月') AS borrow_period,
+			hbr.recover_time AS recover_time,
+			FORMAT((
+				IFNULL(hbr.recover_capital, 0) - IFNULL(hbr.recover_capital_yes, 0) - IFNULL(hbr.credit_amount, 0)
+			),2) AS credit_account,
+			CONCAT('剩余',(DATEDIFF(
+				FROM_UNIXTIME(
+					CAST(hb.repay_last_time AS SIGNED),
+					'%Y-%m-%d 00:00:00'
+				),
+				FROM_UNIXTIME(#{nowTime}, '%Y-%m-%d 00:00:00')
+			)),'天') AS last_days,
+			CONCAT(#{host},'?borrowNid=',hb.borrow_nid,'&amp;tenderNid=',ht.nid,'&amp;sign=',#{sign},'&amp;platform=',#{platform}) AS tender_credit_url
+		FROM
+			huiyingdai_borrow_recover hbr
+		LEFT JOIN huiyingdai_borrow_tender ht ON ht.borrow_nid = hbr.borrow_nid AND ht.nid = hbr.nid
+		LEFT JOIN huiyingdai_borrow hb ON hbr.borrow_nid = hb.borrow_nid
+		<include refid="TenderToCredit_Where_Clause" /> 
+		ORDER BY
+			ht.addtime ASC
+		<if test="limitStart != null and limitEnd !=null" >
+			LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<!-- 获取投资人当天债转的条数 -->
+	<select id="tenderAbleToCredit" resultType="java.lang.Integer" parameterType="java.util.Map">
+		SELECT
+			COUNT(hbc.credit_id)
+		FROM
+			huiyingdai_borrow_credit hbc
+		<where>
+			<if test="userId != null and userId != '' and userId != 0">
+				AND hbc.credit_user_id = #{userId}
+			</if>
+			<if test="nowDate != null and nowDate != '' and nowDate !=0">
+				AND hbc.create_date = #{nowDate}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 获取可转让的投资返回MAP -->
+	<resultMap id="selectBorrowRecoverListMap" type="com.hyjf.mybatis.model.customize.app.AppTenderCreditCustomize">
+		<!-- 借款标题 -->
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<!-- 借款编号 -->
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<!-- 项目类型 -->
+		<result column="borrow_type" property="borrowType" jdbcType="VARCHAR" />
+		<!-- 年化收益 -->
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<!-- 借款总金额 -->
+		<result column="borrow_account" property="borrowAccount" jdbcType="VARCHAR" />
+		<!-- 还款方式 -->
+		<result column="borrow_style" property="borrowStyle" jdbcType="VARCHAR" />
+		<!-- 投资时间 -->
+		<result column="tender_time" property="tenderTime" jdbcType="VARCHAR" />
+		<!-- 时间 -->
+		<result column="recover_time" property="recoverTime" jdbcType="VARCHAR" />
+		<!-- 投资订单号 -->
+		<result column="tender_nid" property="tenderNid" jdbcType="VARCHAR" />
+		<!-- 投资本金 -->
+		<result column="invest_account" property="investAccount" jdbcType="VARCHAR" />
+		<!-- 债转本金 -->
+		<result column="credit_account" property="creditAccount" jdbcType="VARCHAR" />
+		<!-- 最后还款时间 -->
+		<result column="repay_last_time" property="repayLastTime" jdbcType="VARCHAR" />
+		<!-- 剩余天数 -->
+		<result column="last_days" property="lastDays" jdbcType="VARCHAR" />
+		<!-- 融资期限 -->
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<!-- 持有期限 -->
+		<result column="tender_period" property="tenderPeriod" jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- 获取转让的投资详情 -->
+	<select id="selectTenderToCreditDetail" resultMap="selectBorrowRecoverListMap" parameterType="java.util.Map">
+		SELECT
+			hb.name AS borrow_name,
+			hb.borrow_nid AS borrow_nid,
+			hb.project_type AS borrow_type,
+			hb.borrow_apr AS borrow_apr,
+			hb.account AS borrow_account,
+			hb.borrow_period AS borrow_period,
+			hb.borrow_style AS borrow_style,
+			hbr.recover_time AS recoverTime,
+			(DATEDIFF(
+				FROM_UNIXTIME(
+					CAST(#{nowTime} AS SIGNED),
+					'%Y-%m-%d 00:00:00'
+				),
+				FROM_UNIXTIME(hb.recover_last_time, '%Y-%m-%d 00:00:00')
+			)) AS tender_period,
+			FROM_UNIXTIME( IFNULL(ht.addtime,0), '%Y-%m-%d %H:%i:%s' ) AS tender_time,
+			hbr.nid AS tender_nid,
+			hbr.recover_capital AS invest_account,
+			(
+				IFNULL(hbr.recover_capital, 0) - IFNULL(hbr.recover_capital_yes, 0) - IFNULL(hbr.credit_amount, 0)
+			) AS credit_account,
+			FROM_UNIXTIME(
+				CAST(hb.repay_last_time AS SIGNED),
+				'%Y-%m-%d'
+			) AS repay_last_time,
+			(DATEDIFF(
+				FROM_UNIXTIME(
+					CAST(hb.repay_last_time AS SIGNED),
+					'%Y-%m-%d 00:00:00'
+				),
+				FROM_UNIXTIME(#{nowTime}, '%Y-%m-%d 00:00:00')
+			)) AS last_days
+		FROM
+			huiyingdai_borrow_recover hbr
+		LEFT JOIN huiyingdai_borrow_tender ht ON ht.borrow_nid = hbr.borrow_nid AND ht.nid = hbr.nid
+		LEFT JOIN huiyingdai_borrow hb ON hbr.borrow_nid = hb.borrow_nid
+		<include refid="TenderToCredit_Where_Clause" /> 
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	
+	<!-- 已承接或查看购买债转总数 -->
+	<select id="countCreditTenderAssigned" resultType="java.lang.Integer" parameterType="java.util.Map">
+		SELECT
+			 COUNT(hct.assign_id) AS total
+		FROM
+			huiyingdai_credit_tender hct
+		LEFT JOIN huiyingdai_borrow_credit hbc 
+			ON hct.credit_nid = hbc.credit_nid 
+			AND hct.credit_tender_nid = hbc.tender_nid
+		<where>
+			<if test="userId != null and userId != ''">
+				AND hct.user_id = #{userId}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 已承接债转列表-->
+	<select id="selectCreditTenderAssigned" resultType="com.hyjf.mybatis.model.customize.app.AppTenderCreditAssignedListCustomize" parameterType="java.util.Map">
+		SELECT
+			DISTINCT
+			<!-- 项目编号 -->
+			hct.bid_nid AS bidNid,
+			<!-- 债转编号 -->
+			hct.credit_nid AS creditNid,
+			<!-- 还款状态 0:还款中 1:已还款 -->
+			hct.status AS status,
+			<!--投资本金-->
+			FORMAT(hct.assign_capital,2) AS assignCapital,
+			<!--回收总额-->
+			hct.assign_account AS assignAccount,
+			<!-- 已还总额 -->
+			hct.assign_repay_account AS assignRepayAccount,
+			<!-- 待收金额 -->
+			CASE WHEN hct.status = 0 THEN
+				FORMAT(ROUND(hct.assign_account - hct.assign_repay_account,2),2)
+			WHEN hct.status = 1 THEN
+				FORMAT(hct.assign_repay_account,2)
+			END AS awaitMoney,
+			<!-- 下次还款时间 -->
+			CASE WHEN hct.status = 0 THEN
+				FROM_UNIXTIME( hcr.repay_time, '%Y-%m-%d' ) 
+			WHEN hct.status = 1 THEN
+				FROM_UNIXTIME( hcr.repay_action_time, '%Y-%m-%d' )
+			END AS assignRepayNextTime,
+			hct.credit_nid AS borrowNid,
+			hct.assign_nid AS orderId,
+			CONCAT(#{host},'?creditNid=',hct.credit_nid,'&amp;assignNid=', hct.assign_nid,'&amp;userId=',#{userId}) AS creditUrl,
+			CONCAT(#{creditContractUrl},'?creditNid=',hct.credit_nid,'&amp;assignNid=', hct.assign_nid,'&amp;creditTenderNid=',hct.credit_tender_nid,'&amp;bidNid=',hct.bid_nid,'&amp;sign=',#{sign}) AS creditContractUrl
+		FROM
+			huiyingdai_credit_tender hct
+		LEFT JOIN huiyingdai_borrow_credit hbc ON hct.credit_nid=hbc.credit_nid AND hct.credit_tender_nid=hbc.tender_nid
+		LEFT JOIN huiyingdai_borrow_tender hbt ON hbc.tender_nid=hbt.nid AND hbc.bid_nid=hbt.borrow_nid
+		LEFT JOIN huiyingdai_users hui ON hui.user_id = hct.user_id
+		LEFT JOIN huiyingdai_borrow_repay hcr on hcr.borrow_nid = hct.bid_nid
+		<where>
+			<if test="userId != null and userId != ''">
+				AND hct.user_id = #{userId}
+			</if>
+		</where>
+		ORDER BY
+			status ASC,assignRepayNextTime ASC
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	
+	<!-- 承接债转详情 -->
+	<select id="getCreditAssignDetail" resultType="com.hyjf.mybatis.model.customize.app.AppTenderCreditAssignedDetailCustomize" parameterType="java.util.Map">
+		SELECT
+			DISTINCT
+			<!-- 承接债权的原项目编号 -->
+			hbc.bid_nid AS bidNid,
+			<!-- 预期年化收益率 -->
+			hbc.bid_apr AS bidApr,
+			<!-- 项目期限 -->
+			hbc.credit_term AS creditTerm,
+			<!-- 还款状态 0:还款中 1:已还款 -->
+			hct.status AS status,
+			<!-- 投资本金 -->
+			hct.assign_capital AS assignCapital,
+			<!-- 折价率 -->
+			hbc.credit_discount AS creditDiscount,
+			<!-- 垫付利息 -->
+			hct.assign_interest_advance AS assigninterestAdvance,
+			<!-- 支付金额 -->
+			hct.assign_pay AS assignPay,
+			<!-- 支付时间 -->
+			FROM_UNIXTIME(hct.add_time, '%Y-%m-%d %H:%i:%s') AS addTime,
+			<!-- 到期预估本息(回收总额) -->
+			CASE WHEN hct.status = 0 THEN 
+				hct.assign_account - hct.assign_repay_account 
+			WHEN hct.status = 1 THEN
+				hct.assign_repay_account
+			END AS assignAccount,
+			<!--到期预估收益  -->
+			CASE WHEN hct.status = 0 THEN 
+				hct.assign_interest - hct.assign_repay_interest
+			WHEN hct.status = 1 THEN
+				hct.assign_repay_interest
+			END AS assignInterest,
+			<!-- 下次还款时间 -->
+			CASE WHEN hct.status = 0 THEN
+				FROM_UNIXTIME( hcr.repay_time, '%Y-%m-%d' )
+			WHEN hct.status = 1 THEN
+				FROM_UNIXTIME( hcr.repay_action_time, '%Y-%m-%d' )
+			END AS latelyRepayTime,
+			<!-- 已还总额 累计到账金额 -->
+			hct.assign_repay_account AS assignRepayAccount,
+			<!-- 还款期数 -->
+			hct.assign_repay_period AS assignRepayPeriod,
+			<!-- 已还款期数 -->
+			hct.recover_period AS recoverPeriod,
+			<!-- 还款状态 -->
+			CASE WHEN hct.create_repay = hct.assign_repay_period THEN 2
+			WHEN hct.create_repay = 0 THEN 1
+			WHEN hct.create_repay <![CDATA[<>]]> 0 AND hct.recover_period <![CDATA[<]]> hct.assign_repay_period THEN 0
+			END AS recoverStatus
+		FROM
+			huiyingdai_credit_tender hct
+		LEFT JOIN huiyingdai_borrow_credit hbc on hbc.tender_nid = hct.credit_tender_nid and hbc.credit_nid=hct.credit_nid
+		LEFT JOIN huiyingdai_borrow_repay hcr on hcr.borrow_nid = hct.bid_nid
+		<where>
+			<if test="userId != null and userId != ''">
+				AND hct.user_id = #{userId}
+			</if>
+			<if test="assignNid != null and assignNid != ''">
+				AND hct.assign_nid = #{assignNid}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 不分期债转的还款计划件数 -->
+	<select id="countRepayRecoverListRecordTotal" resultType="java.lang.Integer" parameterType="Map">
+		SELECT
+			count(*)
+		FROM
+			(
+				SELECT
+					'本金' AS repay_name,
+					<!-- 应还本金 -->
+					hcr.assign_capital AS account,
+					<!-- 还款时间 -->
+					CASE WHEN hcr.status = 0 THEN
+						FROM_UNIXTIME(hcr.assign_repay_next_time, '%Y-%m-%d')
+					WHEN hcr.status = 1 THEN
+						FROM_UNIXTIME(hcr.assign_repay_yes_time, '%Y-%m-%d')
+					END AS repay_time,
+					<!-- 还款状态 -->
+					hcr.status As recover_status
+				FROM huiyingdai_credit_repay hcr
+				<where>
+					<if test="userId != null and userId != ''">
+						AND hcr.user_id = #{userId}
+					</if>
+					<if test="creditNid != null and creditNid != ''">
+						AND hcr.credit_nid = #{creditNid}
+					</if>
+					<if test="assignNid != null and assignNid != ''">
+						AND hcr.assign_nid = #{assignNid}
+					</if>
+				</where>
+				UNION
+					SELECT
+						'利息' AS repay_name,
+						<!-- 应还利息 -->
+						hcr.assign_interest AS account,
+						<!-- 还款时间 -->
+						CASE WHEN hcr.status = 0 THEN
+							FROM_UNIXTIME(hcr.assign_repay_next_time, '%Y-%m-%d')
+						WHEN hcr.status = 1 THEN
+							FROM_UNIXTIME(hcr.assign_repay_yes_time, '%Y-%m-%d')
+						END AS repay_time,
+						<!-- 还款状态 -->
+						hcr.status As recover_status
+					FROM huiyingdai_credit_repay hcr
+				<where>
+					<if test="userId != null and userId != ''">
+						AND hcr.user_id = #{userId}
+					</if>
+					<if test="creditNid != null and creditNid != ''">
+						AND hcr.credit_nid = #{creditNid}
+					</if>
+					<if test="assignNid != null and assignNid != ''">
+						AND hcr.assign_nid = #{assignNid}
+					</if>
+				</where>
+			) AS hydbr
+	</select>
+	
+	<!-- 不分期债转的还款计划列表 -->
+	<select id="selectRepayRecoverList" resultType="com.hyjf.mybatis.model.customize.app.AppTenderCreditRepayPlanListCustomize" parameterType="Map">
+		SELECT
+			hydbr.repay_name AS repayName,
+			hydbr.account AS account,
+			hydbr.repay_time AS repayTime,
+			hydbr.recover_status AS repayStatus
+		FROM
+			(
+				SELECT
+					'本金' AS repay_name,
+					<!-- 应还本金 -->
+					hcr.assign_capital AS account,
+					<!-- 还款时间 -->
+					CASE WHEN hcr.status = 0 THEN
+						FROM_UNIXTIME(hcr.assign_repay_next_time, '%Y-%m-%d')
+					WHEN hcr.status = 1 THEN
+						FROM_UNIXTIME(hcr.assign_repay_yes_time, '%Y-%m-%d')
+					END AS repay_time,
+					<!-- 还款状态 -->
+					hcr.status AS recover_status
+				FROM huiyingdai_credit_repay hcr
+				<where>
+					<if test="userId != null and userId != ''">
+						AND hcr.user_id = #{userId}
+					</if>
+					<if test="creditNid != null and creditNid != ''">
+						AND hcr.credit_nid = #{creditNid}
+					</if>
+					<if test="assignNid != null and assignNid != ''">
+						AND hcr.assign_nid = #{assignNid}
+					</if>
+				</where>
+				UNION
+					SELECT
+						'利息' AS repay_name,
+						<!-- 应还利息 -->
+						hcr.assign_interest AS account,
+						<!-- 还款时间 -->
+						CASE WHEN hcr.status = 0 THEN
+							FROM_UNIXTIME(hcr.assign_repay_next_time, '%Y-%m-%d')
+						WHEN hcr.status = 1 THEN
+							FROM_UNIXTIME(hcr.assign_repay_yes_time, '%Y-%m-%d')
+						END AS repay_time,
+						<!-- 还款状态 -->
+						hcr.status As recover_status
+					FROM huiyingdai_credit_repay hcr
+				<where>
+					<if test="userId != null and userId != ''">
+						AND hcr.user_id = #{userId}
+					</if>
+					<if test="creditNid != null and creditNid != ''">
+						AND hcr.credit_nid = #{creditNid}
+					</if>
+					<if test="assignNid != null and assignNid != ''">
+						AND hcr.assign_nid = #{assignNid}
+					</if>
+				</where>
+			) AS hydbr
+			ORDER BY hydbr.repay_time DESC
+		<if test="limitStart != null and limitEnd !=null" >
+			LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<!-- 分期债转的还款计划列表 -->
+	<select id="selectRepayRecoverPlanList" resultType="com.hyjf.mybatis.model.customize.app.AppTenderCreditRepayPlanListCustomize" parameterType="Map">
+		SELECT
+			CASE WHEN #{borrowStyle,jdbcType=VARCHAR}='month' 
+			THEN
+				'本息'
+			WHEN #{borrowStyle,jdbcType=VARCHAR}='principal'
+			THEN
+				'本息'
+			WHEN #{borrowStyle,jdbcType=VARCHAR}='endmonth'
+			THEN
+				CASE
+					WHEN hcr.assign_capital > 0  THEN '本息'
+				ELSE
+					'利息'
+				END
+			ELSE
+				''
+			END AS repayName,
+			<!-- 应还金额 -->
+			hcr.assign_capital + hcr.assign_interest AS account,
+			<!-- 还款时间 -->
+			CASE WHEN hcr.status = 0 THEN
+				FROM_UNIXTIME(hcr.assign_repay_next_time, '%Y-%m-%d')
+			WHEN hcr.status = 1 THEN
+				FROM_UNIXTIME(hcr.assign_repay_yes_time, '%Y-%m-%d')
+			END AS repayTime,
+			<!-- 还款状态 -->
+			hcr.status As repayStatus
+		FROM huiyingdai_credit_repay hcr
+		<where>
+			<if test="userId != null and userId != ''">
+				AND hcr.user_id = #{userId}
+			</if>
+			<if test="creditNid != null and creditNid != ''">
+				AND hcr.credit_nid = #{creditNid}
+			</if>
+			<if test="assignNid != null and assignNid != ''">
+				AND hcr.assign_nid = #{assignNid}
+			</if>
+		</where>
+	</select>
+
+	<!-- 获取转让记录列表资源总数 -->
+	<select id="countCreditRecordTotal" resultType="java.lang.Integer" parameterType="java.util.Map">
+		SELECT
+		COUNT(credit_nid) AS total
+		FROM
+		huiyingdai_borrow_credit
+		<where>
+			<if test="userId != null and userId != '' and userId != 0">
+				AND credit_user_id = #{userId}
+			</if>
+		</where>
+	</select>
+
+	<!-- 获取用户转让记录列表 -->
+	<select id="searchCreditRecordList" resultType="com.hyjf.mybatis.model.customize.app.AppTenderCreditRecordListCustomize" parameterType="java.util.Map">
+		SELECT
+			<!-- 债转编号 -->
+			hbc.bid_nid AS creditNid,
+			<!-- 债转时间 -->
+			FROM_UNIXTIME( hbc.add_time, '%Y-%m-%d %H:%i' ) AS creditTime,
+			<!-- 债权本金 -->
+			FORMAT(hbc.credit_capital,2) AS creditCapital,
+			<!-- 已认购金额 -->
+			FORMAT(hbc.credit_capital_assigned,2) AS creditCapitalAssigned,
+
+			<!-- 债转状态 -->
+			CASE WHEN hbc.credit_status = 0 THEN '转让中'
+			WHEN hbc.credit_status = 1 THEN CONCAT(TRUNCATE(hbc.credit_capital_assigned/hbc.credit_capital,2)*100,'%')
+			WHEN hbc.credit_status = 2 THEN '已还款'
+			END
+				AS creditStatus,
+
+			hbc.credit_nid AS realCreditNid,
+
+			<!-- 债转状态2 -->
+			CASE WHEN hbc.credit_status = 0 THEN '转让中'
+			WHEN hbc.credit_capital_assigned = hbc.credit_capital THEN '已完成'
+			else '已结束'
+			END
+			AS creditStatusDesc,
+			CASE WHEN hbc.credit_status = 0 THEN 0
+			ELSE 1
+			END
+			AS orderByCreditStatus,
+			<!-- 债转详情URL -->
+			CONCAT(#{host},'?creditNid=',hbc.credit_nid,'&amp;sign=',#{sign}) AS creditRecordInfoUrl
+		FROM
+			huiyingdai_borrow_credit hbc
+		<where>
+			<if test="userId != null and userId != ''">
+				AND hbc.credit_user_id = #{userId}
+			</if>
+			<!-- 转让中列表 -->
+			<if test="status != null and status !=''">
+				<!-- 转让中 -->
+				AND hbc.credit_status = #{status}
+			</if>
+			<if test="successStatus != null and successStatus !=''">
+				<!-- 转让成功-->
+				AND hbc.credit_status != #{successStatus}
+			</if>
+			<if test="creditCapitalAssigned != null and creditCapitalAssigned != '' ">
+				<!-- 并且认购金额>0 -->
+				AND hbc.credit_capital_assigned <![CDATA[>]]> #{creditCapitalAssigned}
+			</if>
+		</where>
+		ORDER BY orderByCreditStatus ASC , creditTime DESC
+		<if test="limitStart != null and limitEnd !=null" >
+			LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<!-- 获取用户转让记录详情 -->
+	<select id="selectTenderCreditRecordDetail" resultType="com.hyjf.mybatis.model.customize.app.AppTenderCreditRecordDetailCustomize" parameterType="java.util.Map">
+		SELECT
+			<!-- 债转编号 -->
+			hbc.credit_nid AS creditNid,
+			<!-- 原标标号 -->
+			hbc.bid_nid AS bidNid,
+			<!-- 债权本金 -->
+			hbc.credit_capital AS creditCapital,
+			<!-- 原标年化利率 -->
+			hbc.bid_apr AS bidApr,
+			<!-- 债转期限 -->
+			hbc.credit_term AS creditTerm,
+			<!-- 折价率 -->
+			hbc.credit_discount AS creditDiscount,
+			<!-- 本金转让价格 -->
+			hbc.credit_price AS creditPrice,
+			<!-- 已认购本金 -->
+			FORMAT(hbc.credit_capital_assigned,2) AS creditCapitalAssigned,
+			<!-- 承接进度 -->
+			ROUND(hbc.credit_capital_assigned/hbc.credit_capital*100 ,2) AS borrowSchedule,
+			<!-- 服务费 -->
+			CASE WHEN hbc.credit_capital_assigned = 0 THEN 0.00
+			ELSE
+			(select sum(hct.credit_fee) from huiyingdai_credit_tender hct
+			where 1=1
+			<!-- 债转编号-->
+			<if test="creditNid != null and creditNid !=''">
+				AND hct.credit_nid = #{creditNid}
+			</if>
+			) END AS creditFee,
+			CASE WHEN hbc.credit_capital_assigned = 0 THEN 0.00
+			ELSE
+			(select  sum(hct.assign_pay)-sum(hct.credit_fee) from huiyingdai_credit_tender hct
+			where 1=1
+			<!-- 债转编号-->
+			<if test="creditNid != null and creditNid !=''">
+				AND hct.credit_nid = #{creditNid}
+			</if>
+			)
+			END AS assignPay,
+			<!-- 垫付利息 -->
+			CASE WHEN hbc.credit_capital_assigned = 0 THEN 0.00
+			ELSE
+			(select sum(hct.assign_interest_advance) from huiyingdai_credit_tender hct
+			where 1=1
+			<!-- 债转编号-->
+			<if test="creditNid != null and creditNid !=''">
+				AND hct.credit_nid = #{creditNid}
+			</if>
+			)
+			END AS creditInterestAssigned
+		FROM
+			huiyingdai_borrow_credit hbc
+		<where>
+			<if test="userId != null and userId != ''">
+				AND hbc.credit_user_id = #{userId}
+			</if>
+			<!-- 债转编号-->
+			<if test="creditNid != null and creditNid !=''">
+				AND hbc.credit_nid = #{creditNid}
+			</if>
+		</where>
+	</select>
+	<!-- 获取用户转让明细列表件数-->
+	<select id="countCreditRecordDetailList" resultType="java.lang.Integer" parameterType="java.util.Map">
+		SELECT
+			count(*)
+		FROM
+			huiyingdai_credit_tender hct
+		<where>
+			<if test="userId != null and userId != ''">
+				AND hct.credit_user_id = #{userId}
+			</if>
+			<!-- 债转编号-->
+			<if test="creditNid != null and creditNid !=''">
+				AND hct.credit_nid = #{creditNid}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 获取用户转让明细列表 -->
+	<select id="getCreditRecordDetailList" resultType="com.hyjf.mybatis.model.customize.app.AppTenderCreditRecordDetailListCustomize" parameterType="java.util.Map">
+		SELECT
+			<!-- 承接人姓名 -->
+			CONCAT(substring(hydu.truename,1,1),'**') AS assignUserName,
+			<!-- 认购时间 -->
+			FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%s' )  AS addTime,
+			<!-- 支付金额 -->
+			FORMAT(hct.assign_pay,2) AS assignPay,
+			<!-- 服务费 -->
+			FORMAT(hct.credit_fee,2) AS creditFee,
+			<!-- 认购本金 -->
+			FORMAT(hct.assign_price,2) AS assignPrice,
+			<!-- 实际到账金额 :支付金额-服务费-->
+			FORMAT((hct.assign_pay - hct.credit_fee),2) AS actualMoney,
+			<!-- 查看协议 -->
+			CONCAT(#{host},'?creditNid=',hct.credit_nid,'&amp;assignNid=', hct.assign_nid,'&amp;creditTenderNid=',hct.credit_tender_nid,'&amp;bidNid=',hct.bid_nid,'&amp;sign=',#{sign}) AS url
+		FROM
+			huiyingdai_credit_tender hct
+		LEFT JOIN huiyingdai_users_info hydu on hct.user_id = hydu.user_id
+		<where>
+			<if test="userId != null and userId != ''">
+				AND hct.credit_user_id = #{userId}
+			</if>
+			<!-- 债转编号-->
+			<if test="creditNid != null and creditNid !=''">
+				AND hct.credit_nid = #{creditNid}
+			</if>
+		</where>
+		ORDER BY
+			addTime DESC
+	</select>
+</mapper>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.ProductStatisCustomizeMapper">
+	<resultMap id="selectProductStatisRecordsMap" type="com.hyjf.mybatis.model.customize.ProductStatisCustomize">
+	    <id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="in_count" property="inCount" jdbcType="INTEGER" />
+	    <result column="out_count" property="outCount" jdbcType="INTEGER" />
+	    <result column="in_amount" property="inAmount" jdbcType="DECIMAL" />
+	    <result column="out_amount" property="outAmount" jdbcType="DECIMAL" />
+	    <result column="out_interest" property="outInterest" jdbcType="DECIMAL" />
+	    <result column="loan_balance" property="loanBalance" jdbcType="DECIMAL" />
+	    <result column="invest_amount" property="investAmount" jdbcType="DECIMAL" />
+	    <result column="create_time" property="createTime" jdbcType="INTEGER" />
+	    <result column="data_date" property="dataDate" jdbcType="VARCHAR" />
+	    <result column="data_month" property="dataMonth" jdbcType="VARCHAR" />
+	    <result column="user_id" property="userId" jdbcType="INTEGER" />
+	    <result column="principal" property="principal" jdbcType="DECIMAL" />
+	    <result column="amount" property="amount" jdbcType="DECIMAL" />
+	    <result column="reg_time" property="regTime" jdbcType="INTEGER" />
+	    
+	</resultMap>	
+	   <select id="selectProductStatisRecord" resultMap="selectProductStatisRecordsMap" parameterType="com.hyjf.mybatis.model.customize.ProductStatisCustomize">
+			SELECT
+				p.id,
+				p.in_count,
+				p.out_count,
+				p.in_amount,
+				p.out_amount,
+				p.out_interest,
+				p.loan_balance,
+				p.invest_amount,
+				p.create_time,
+				p.data_date,
+				p.data_month
+			FROM
+				huiyingdai_product_info p
+		    <if test="vFlag != null" >
+		        GROUP BY data_month
+		    </if>
+	</select>
+
+    <!-- 获取汇天利本金  group by userid-->
+	<select id="selectUserProductPrincipal" resultMap="selectProductStatisRecordsMap" parameterType="com.hyjf.mybatis.model.customize.ProductStatisCustomize">
+		SELECT 
+		  p.user_id, 
+		  TRUNCATE (SUM(p.rest_amount), 2) AS principal
+		  FROM huiyingdai_product_list p
+		<where>
+		  p.`status` = 0 AND p.invest_status=0
+	    <if test="timeStart != null">
+		  AND p.invest_time <![CDATA[>=]]> #{timeStart}
+		</if>
+	    <if test="timeEnd!= null">
+		  AND p.invest_time <![CDATA[<=]]> #{timeEnd}
+		</if>
+	    GROUP BY p.user_id
+		</where>
+	</select>
+	
+    <!-- 新老客户 投资人数分布、转入金额分布-->
+	<select id="selectUserIsNewBuy" resultMap="selectProductStatisRecordsMap" parameterType="com.hyjf.mybatis.model.customize.ProductStatisCustomize">
+		SELECT 
+		   p.user_id, u.reg_time,p.amount
+		  FROM huiyingdai_product_list p
+		  LEFT JOIN huiyingdai_users u ON  p.user_id = u.user_id
+		<where>
+		  p.`status` = 0 AND p.invest_status=0
+	    <if test="timeStart != null">
+		  AND p.invest_time <![CDATA[>=]]> #{timeStart}
+		</if>
+	   <if test="timeEnd != null">
+		  AND p.invest_time <![CDATA[<=]]> #{timeEnd}
+		</if>
+		</where>
+	</select>	
+
+    <!-- 新老客户 本金金额分布-->
+	<select id="selectUserIsNewPrincipal" resultMap="selectProductStatisRecordsMap" parameterType="com.hyjf.mybatis.model.customize.ProductStatisCustomize">
+		SELECT 
+		  p.user_id, u.reg_time,
+		  TRUNCATE (p.rest_amount, 2) AS principal
+		  FROM huiyingdai_product_list p
+		  LEFT JOIN huiyingdai_users u ON  p.user_id = u.user_id
+		<where>
+		  p.`status` = 0 AND p.invest_status=0
+	    <if test="timeStart != null">
+		  AND p.invest_time <![CDATA[>=]]> #{timeStart}
+		</if>
+		<if test="timeEnd != null">
+		  AND p.invest_time <![CDATA[<=]]> #{timeEnd}
+		</if>
+		</where>
+		 GROUP BY p.user_id
+	</select>	
+
+	<!-- 新老客户 转出分布-->
+	<select id="selectUserIsNewRedeem" resultMap="selectProductStatisRecordsMap" parameterType="com.hyjf.mybatis.model.customize.ProductStatisCustomize">
+		SELECT 
+		  p.user_id, u.reg_time,p.amount
+		  FROM huiyingdai_product_redeem p
+     	  LEFT JOIN huiyingdai_users u ON  p.user_id = u.user_id
+		<where>
+		  p.`status` = 0
+	    <if test="timeStart != null">
+		  AND p.redeem_time <![CDATA[>=]]> #{timeStart}
+		</if>
+	    <if test="timeEnd!= null">
+		  AND p.redeem_time <![CDATA[<=]]> #{timeEnd}
+		</if>
+		</where>
+		 GROUP BY p.user_id
+	</select>	
+
+	
+	
+</mapper>

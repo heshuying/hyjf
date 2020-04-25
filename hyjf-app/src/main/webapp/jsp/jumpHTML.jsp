@@ -1,0 +1,23 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page isELIgnored="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ page session="false"%>
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+	</head>
+	<body>
+		<div style="width:100vw;height:100vh;background:url('${ctx}/images/utils/loading.gif') center center no-repeat;background-size:40%"></div>
+		<script>
+			var link = ["${callBackForm.callBackAction}?"];
+			link.push('jumpcommend=${jumpcommend}');
+			<c:if test="${!empty callBackForm.allParams}">
+				<c:forEach items="${callBackForm.allParams }" var="record" begin="0" step="1" varStatus="status">
+					link.push('${record.key}=${record.value}');
+				</c:forEach>
+			</c:if>
+			location.href = link.join("&"); 
+		</script>
+	</body>
+</html>

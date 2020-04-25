@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.QixiActivityCustomizeMapper">
+    <sql id="Where_Clause">
+        <if test="username != null and username != ''">
+            AND u.username = #{username}
+        </if>
+        <if test="truename != null and truename != ''">
+            AND ui.truename  = #{truename}
+        </if>
+        <!--<if test="username != null and username != ''">-->
+            <!--AND u.username LIKE CONCAT('%', #{username}, '%')-->
+        <!--</if>-->
+        <if test="mobile != null and mobile != '' ">
+            AND u.mobile =#{ mobile}
+        </if>
+        <if test="type != null and type == '汇直投'">
+            AND a.accede_order_id is  null
+        </if>
+        <if test="type != null and type == '汇计划'">
+            AND a.accede_order_id is not null
+        </if>
+        <if test="awardType != null and awardType != ''">
+            AND qx.reward_type = #{awardType}
+        </if>
+        <if test="awardId != null and awardId != ''">
+            AND qx.reward_id = #{awardId}
+        </if>
+        <if test="grandWay != null ">
+            AND qx.distribution_status = #{grandWay}
+        </if>
+        <if test="status != null">
+            AND qx.reward_status = #{status}
+        </if>
+    </sql>
+    <resultMap id="QixiActivityCustomizeResult"
+               type="com.hyjf.mybatis.model.customize.admin.QixiActivityCustomize">
+        <!--<result column="user_id" property="userId" />-->
+        <result column="mobile" property="mobile" />
+        <result column="username" property="userName" />
+        <result column="truename" property="realName" />
+        <result column="borrow_nid" property="borrowNid" />
+        <result column="single_money" property="singleMoney" />
+        <result column="total_money" property="totalMoney" />
+        <result column="addtime" property="investTime" />
+        <result column="accede_order_id" property="borrowType" />
+        <result column="reward_name" property="awardName" />
+        <result column="reward_id" property="rewardId" />
+        <result column="reward_type" property="rewardType" />
+        <result column="distribution_status" property="distributionStatus" />
+        <result column="reward_status" property="rewardStatus" />
+        <result column="send_time" property="awardTime" />
+        <result column="update_time" property="distributionTime" />
+        <!--<result column="referername" property="singleMoney" />-->
+    </resultMap>
+    <select id="selectQixiActivityCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+
+        SELECT count(a.user_id) from
+        (
+        SELECT  bt.user_id ,bt.account as single_money,bt.accede_order_id,bt.borrow_nid ,bt.addtime
+        From huiyingdai_borrow_tender bt
+        LEFT JOIN huiyingdai_borrow bb ON bt.borrow_nid = bb.borrow_nid
+        WHERE bb.borrow_style != 'endday' AND bb.borrow_period <![CDATA[>=]]> 3
+        AND bt.accede_order_id is null
+        AND   bt.addtime <![CDATA[>=]]> unix_timestamp(#{startTime})
+        AND bt.addtime <![CDATA[<=]]> unix_timestamp(#{endTime})
+        union all
+        SELECT  hjha.user_id as user_id ,hjha.accede_account as single_money,hjha.accede_order_id,hjha.plan_nid as borrow_nid,hjha.add_time as addtime
+        from hyjf_hjh_accede hjha
+        LEFT JOIN hyjf_hjh_plan hhp ON hhp.plan_nid = hjha.plan_nid
+        WHERE  hjha.add_time <![CDATA[>=]]> unix_timestamp(#{startTime})
+        AND hjha.add_time <![CDATA[<=]]> unix_timestamp(#{endTime})
+        AND hhp.lock_period<![CDATA[>=]]>3 AND hhp.is_month=1
+        ) a
+        LEFT JOIN huiyingdai_users u ON u.user_id = a.user_id
+        LEFT JOIN huiyingdai_users_info ui ON ui.user_id = a.user_id
+        where 1=1
+        <include refid="Where_Clause"/>
+    </select>
+
+    <select id="selectQixiActivityList" resultMap="QixiActivityCustomizeResult"
+            parameterType="java.util.HashMap">
+        SELECT a.*,u.mobile,u.username,ui.truename from
+        (
+        SELECT  bt.user_id ,bt.account as single_money,bt.accede_order_id,bt.borrow_nid ,
+        from_unixtime(bt.addtime, '%Y-%m-%d %H:%i:%s') as addtime
+        From huiyingdai_borrow_tender bt
+        LEFT JOIN huiyingdai_borrow bb ON bt.borrow_nid = bb.borrow_nid
+        WHERE bb.borrow_style != 'endday' AND bb.borrow_period <![CDATA[>=]]> 3
+        AND bt.accede_order_id is null
+        AND   bt.addtime <![CDATA[>=]]> unix_timestamp(#{startTime})
+        AND bt.addtime <![CDATA[<=]]> unix_timestamp(#{endTime})
+        union all
+        SELECT  hjha.user_id as user_id ,hjha.accede_account as single_money,hjha.accede_order_id,hjha.plan_nid as borrow_nid,
+        from_unixtime(hjha.add_time, '%Y-%m-%d %H:%i:%s')  as addtime
+        from hyjf_hjh_accede hjha
+        LEFT JOIN hyjf_hjh_plan hhp ON hhp.plan_nid = hjha.plan_nid
+        WHERE  hjha.add_time <![CDATA[>=]]> unix_timestamp(#{startTime})
+        AND hjha.add_time <![CDATA[<=]]> unix_timestamp(#{endTime})
+        AND hhp.lock_period<![CDATA[>=]]>3 AND hhp.is_month=1
+        ) a
+        LEFT JOIN huiyingdai_users u ON u.user_id = a.user_id
+        LEFT JOIN huiyingdai_users_info ui ON ui.user_id = a.user_id
+        where 1=1
+        <include refid="Where_Clause"/>
+        ORDER BY a.addtime
+        <if test="sort != null and sort != ''">
+            ${sort}
+        </if>
+        <if test="sort == null||sort ==  ''">
+            DESC
+        </if>
+        <if test="limitStart >= 0" >
+            LIMIT #{limitStart} , #{limitEnd}
+        </if>
+    </select>
+
+    <select id="selectQixiActivityTotalCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+        select count(mm.user_id) from (
+        SELECT a.user_id,u.mobile,u.username,ui.truename,a.reward_name,DATE_FORMAT(a.send_time,'%Y-%m-%d %H:%i:%s') as send_time,sum(total_money) as total_money  from
+        (
+        SELECT  bt.user_id ,qx.reward_name,qx.send_time,
+        bt.account as  total_money
+        FROM huiyingdai_borrow_tender bt
+        LEFT  JOIN hyjf_activity_qixi qx ON bt.user_id = qx.user_id
+        LEFT JOIN huiyingdai_borrow bb ON bb.borrow_nid = bt.borrow_nid
+        WHERE  bb.borrow_style != 'endday' AND bb.borrow_period <![CDATA[>=]]>3
+        AND bt.accede_order_id is null
+        AND   bt.addtime <![CDATA[>=]]> unix_timestamp(#{startTime})
+        AND bt.addtime <![CDATA[<=]]> unix_timestamp(#{endTime})
+        union all
+        SELECT  hjha.user_id as user_id ,qx.reward_name,qx.send_time,
+        hjha.accede_account as  total_money
+        FROM hyjf_hjh_accede hjha
+        LEFT JOIN hyjf_activity_qixi qx ON hjha.user_id = qx.user_id
+        LEFT JOIN hyjf_hjh_plan hhp ON hhp.plan_nid = hjha.plan_nid
+        WHERE  hjha.add_time <![CDATA[>=]]> unix_timestamp(#{startTime})
+        AND hjha.add_time <![CDATA[<=]]> unix_timestamp(#{endTime})
+        AND hhp.lock_period<![CDATA[>=]]>3 AND hhp.is_month=1
+        ) a
+        LEFT JOIN huiyingdai_users u ON u.user_id = a.user_id
+        LEFT JOIN huiyingdai_users_info ui ON ui.user_id = a.user_id
+        where 1=1
+        <include refid="Where_Clause"/>
+        group by a.user_id,u.mobile,u.username,ui.truename,a.reward_name,DATE_FORMAT(a.send_time,'%Y-%m-%d %H:%i:%s')
+        order by a.send_time DESC,
+        user_id DESC
+        )mm
+    </select>
+    <select id="selectQixiActivityTotalList" resultMap="QixiActivityCustomizeResult"
+            parameterType="java.util.HashMap">
+        SELECT a.user_id,u.mobile,u.username,ui.truename,a.reward_name,DATE_FORMAT(a.send_time,'%Y-%m-%d %H:%i:%s') as send_time,sum(total_money) as total_money  from
+        (
+        SELECT  bt.user_id ,qx.reward_name,qx.send_time,
+        bt.account as  total_money
+        FROM huiyingdai_borrow_tender bt
+        LEFT  JOIN hyjf_activity_qixi qx ON bt.user_id = qx.user_id
+        LEFT JOIN huiyingdai_borrow bb ON bb.borrow_nid = bt.borrow_nid
+        WHERE  bb.borrow_style != 'endday' AND bb.borrow_period <![CDATA[>=]]>3
+        AND bt.accede_order_id is null
+        AND   bt.addtime <![CDATA[>=]]> unix_timestamp(#{startTime})
+        AND bt.addtime <![CDATA[<=]]> unix_timestamp(#{endTime})
+        union all
+        SELECT  hjha.user_id as user_id ,qx.reward_name,qx.send_time,
+        hjha.accede_account as  total_money
+        FROM hyjf_hjh_accede hjha
+        LEFT JOIN hyjf_activity_qixi qx ON hjha.user_id = qx.user_id
+        LEFT JOIN hyjf_hjh_plan hhp ON hhp.plan_nid = hjha.plan_nid
+        WHERE  hjha.add_time <![CDATA[>=]]> unix_timestamp(#{startTime})
+        AND hjha.add_time <![CDATA[<=]]> unix_timestamp(#{endTime})
+        AND hhp.lock_period<![CDATA[>=]]>3 AND hhp.is_month=1
+        ) a
+        LEFT JOIN huiyingdai_users u ON u.user_id = a.user_id
+        LEFT JOIN huiyingdai_users_info ui ON ui.user_id = a.user_id
+        where 1=1
+        <include refid="Where_Clause"/>
+        group by a.user_id,u.mobile,u.username,ui.truename,a.reward_name,DATE_FORMAT(a.send_time,'%Y-%m-%d %H:%i:%s')
+        order by a.send_time
+        <if test="sort != null and sort != ''">
+            ${sort},
+        </if>
+        <if test="sort == null|| sort ==  ''">
+            DESC,
+        </if>
+        user_id DESC
+        <if test="limitStart >= 0" >
+            LIMIT #{limitStart} , #{limitEnd}
+        </if>
+    </select>
+
+    <select id="selectQixiActivityAwardCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+        SELECT
+        count(qx.id)
+        FROM
+        hyjf_activity_qixi qx
+        LEFT JOIN huiyingdai_users_info ui ON ui.user_id = qx.user_id
+        LEFT JOIN huiyingdai_users u ON u.user_id = qx.user_id
+        where 1=1 and reward_name is not null and reward_name != ' ' and qx.reward_type is not null and qx.reward_type != ' '
+        <include refid="Where_Clause"/>
+    </select>
+    <select id="selectQixiActivityAwardList" resultMap="QixiActivityCustomizeResult"
+            parameterType="java.util.HashMap">
+        SELECT
+        qx.id,
+        qx.user_id  as user_id ,
+        u.mobile,
+        u.username,
+        ui.truename,
+        qx.reward_name,
+        qx.reward_type,
+        qx.reward_id,
+        qx.distribution_status,
+        qx.reward_status,
+        qx.send_time,
+        qx.update_time
+        FROM
+        hyjf_activity_qixi qx
+        LEFT JOIN huiyingdai_users_info ui ON ui.user_id = qx.user_id
+        LEFT JOIN huiyingdai_users u ON u.user_id = qx.user_id
+        where 1=1 and reward_name is not null and reward_name != ' ' and qx.reward_type is not null and qx.reward_type != ' '
+        <include refid="Where_Clause"/>
+        order by
+        <if test="sort == null|| sort ==  ''">
+            qx.send_time DESC
+        </if>
+        <if test="sort != null and sort != ''">
+            ${col} ${sort}
+        </if>
+        <if test="limitStart >= 0" >
+            LIMIT #{limitStart} , #{limitEnd}
+        </if>
+    </select>
+</mapper>
+

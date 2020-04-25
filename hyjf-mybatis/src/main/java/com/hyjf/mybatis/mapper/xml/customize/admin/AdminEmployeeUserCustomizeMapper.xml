@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.AdminEmployeeUserCustomizeMapper">
+	<resultMap id="EmployeeMapResult" type="com.hyjf.mybatis.model.customize.admin.AdminEmployeeUserCustomize">
+		<result column="user_id" property="userId" /> <!-- 员工ID -->
+		<result column="user_name" property="userName" />
+		<result column="region_id" property="regionId" />
+		<result column="region_name" property="regionName" />
+		<result column="branch_name" property="branchName" />
+		<result column="branch_id" property="branchId" />
+		<result column="department_id" property="departmentId" />
+		<result column="department_name" property="departmentName" />
+	</resultMap>
+
+	<select id="selectEmployeeByUserId" resultMap="EmployeeMapResult" parameterType="java.lang.Integer">
+		SELECT distinct u.hyd_id as user_id, u.hyd_name as user_name, 
+		d3.id as region_id, d3.name as region_name, 
+		d2.id as branch_id, d2.name as branch_name, 
+		d1.id as department_id, d1.name as department_name
+		FROM hyjf_crm.oa_users u
+		LEFT JOIN  hyjf_crm.oa_department d1 ON d1.id= u.departmentid
+		LEFT JOIN  hyjf_crm.oa_department d2 ON d2.id= d1.parentid
+		LEFT JOIN  hyjf_crm.oa_department d3 ON d3.id= d2.parentid
+		WHERE u.user_status !='E1' AND  u.user_status !='E11' AND u.user_status !='E2' AND u.user_status !='E21' AND u.user_status !='E3'   
+		<if test="userId != null">
+			AND u.hyd_id = #{userId}
+		</if>
+		<if test="userId == null or userId == 0">
+			AND 0=1
+		</if>
+	</select>
+
+</mapper>
+

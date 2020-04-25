@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.PrizeResetCustomizeMapper">
+
+	<!-- 重置奖品数量 -->
+	<update id="updatePrizeReset">
+		UPDATE hyjf_invite_prize_conf c
+		SET c.prize_reminder_quantity = c.prize_quantity,
+		 	c.update_time = UNIX_TIMESTAMP(NOW())
+		WHERE
+			c.del_flg = 0
+	</update>
+
+</mapper>

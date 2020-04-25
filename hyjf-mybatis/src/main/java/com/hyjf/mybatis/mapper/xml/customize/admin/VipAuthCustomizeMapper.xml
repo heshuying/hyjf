@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.VipAuthCustomizeMapper">
+
+	<resultMap id="VipAuthCustomizeMap" type="com.hyjf.mybatis.model.customize.admin.VipAuthCustomize">
+		<result column="id" property="id" jdbcType="INTEGER" />
+		<result column="vip_id" property="vipId" jdbcType="INTEGER" />
+		<result column="vip_name" property="vipName" jdbcType="VARCHAR" />
+		<result column="vip_level" property="vipLevel" jdbcType="INTEGER" />
+		<result column="coupon_code" property="couponCode" jdbcType="VARCHAR" />
+		<result column="coupon_name" property="couponName" jdbcType="VARCHAR" />
+		<result column="coupon_type" property="couponType" jdbcType="INTEGER" />
+		<result column="coupon_quota" property="couponQuota" jdbcType="VARCHAR" />
+		<result column="coupon_quantity" property="couponQuantity" jdbcType="INTEGER" />
+	</resultMap>
+	<select id="getRecordList" resultMap="VipAuthCustomizeMap" parameterType="com.hyjf.mybatis.model.customize.admin.VipAuthCustomize">
+		SELECT
+			hva.id id,
+			hva.vip_id vip_id,
+			hvi.vip_name vip_name,
+			hvi.vip_level vip_level,
+			hva.coupon_quantity coupon_quantity,
+			hcc.coupon_code coupon_code,
+			hcc.coupon_name coupon_name,
+			hcc.coupon_type coupon_type,
+			CASE hcc.coupon_type 
+			WHEN 1 THEN FORMAT(hcc.coupon_quota, 2) 
+			ELSE hcc.coupon_quota 
+			END AS coupon_quota,
+			hva.del_flg
+		FROM
+			hyjf_vip_auth hva
+		LEFT JOIN hyjf_vip_info hvi ON hva.vip_id = hvi.id
+		LEFT JOIN hyjf_coupon_config hcc ON hva.coupon_code = hcc.coupon_code
+		where hva.del_flg=0
+		ORDER BY hvi.vip_level 
+		<if test="limitStart != null and limitEnd !=null" >
+	     		LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	
+	<select id="selectByPrimaryKey" resultMap="VipAuthCustomizeMap" parameterType="java.lang.Integer">
+		SELECT
+			hva.id id,
+			hva.vip_id vip_id,
+			hvi.vip_name vip_name,
+			hvi.vip_level vip_level,
+			hva.coupon_quantity coupon_quantity,
+			hcc.coupon_code coupon_code,
+			hcc.coupon_name coupon_name,
+			hcc.coupon_type coupon_type,
+			CASE hcc.coupon_type 
+			WHEN 1 THEN FORMAT(hcc.coupon_quota, 2) 
+			ELSE hcc.coupon_quota 
+			END AS coupon_quota,
+			hva.del_flg
+		FROM
+			hyjf_vip_auth hva
+		LEFT JOIN hyjf_vip_info hvi ON hva.vip_id = hvi.id
+		LEFT JOIN hyjf_coupon_config hcc ON hva.coupon_code = hcc.coupon_code
+		where hva.del_flg=0
+		and hva.id=#{record}
+	</select>
+	
+</mapper>

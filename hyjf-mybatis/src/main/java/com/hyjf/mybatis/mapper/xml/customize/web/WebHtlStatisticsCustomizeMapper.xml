@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.web.WebHtlStatisticsCustomizeMapper">
+	<resultMap id="HtlTotalStatisticsMap" type="com.hyjf.mybatis.model.customize.web.WebHtlStatisticsCustomize">
+		<id column="total_sum" property="totalSum" jdbcType="VARCHAR" />
+		<result column="total_interest" property="totalInterest" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="countHtlTotalStatistics" resultMap="HtlTotalStatisticsMap" parameterType="Map">
+	SELECT
+		(
+			SELECT
+				SUM(hydpl.amount)
+			FROM
+				huiyingdai_product_list hydpl where hydpl.invest_status = 0
+		) AS total_sum,
+		(
+			SELECT
+				SUM(hydpi.interest)
+			FROM
+				huiyingdai_product_interest hydpi
+		) AS total_interest
+	</select>
+</mapper>

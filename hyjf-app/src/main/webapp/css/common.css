@@ -1,0 +1,92 @@
+
+/**
+ * liang
+ * 2016-1-21
+ */
+@charset "utf-8";
+
+/*消除浏览器兼容*/
+*{margin:0;padding:0}
+
+body{margin:0;font:12px/2 "Microsoft YaHei","微软雅黑",Arial, sans-serif,Tahoma,Helvetica;color:#525252;width: 100%; }
+ .inner{ width: 1060px; margin: 0 auto; padding:0; position:relative; }
+ 
+/*links*/
+a{color:#666;text-decoration:none;outline:0;}
+a:hover{color:#44c7ff; text-decoration:none}
+.binding{color:#2ea7e0 !important}
+body,dl,dt,dd,ol,ul,li,p,h1,h2,h3,h4{margin:0;padding:0}
+ul{list-style:none}
+em,i{font-style:normal}
+table{border-spacing:0;border-collapse:collapse; width:100%}
+img{border:0;vertical-align:middle}
+button,input,select,textarea{font-size:100%;font-family:"Microsoft YaHei";margin:0;outline:0 none;vertical-align:baseline;*vertical-align:middle}
+textarea{overflow:auto;vertical-align:top;resize:none}
+button,input{line-height:normal}
+button[disabled],input[disabled],.disable{cursor: no-drop; opacity:.7}
+input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0;*height:13px;*width:13px}
+button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
+article,aside,details,figcaption,figure,footer,header,hgroup,nav,section,summary{display:block}
+.fr{float:right!important}
+.fl{float:left!important}
+select,input { padding:4px 6px; height:20px; line-height:20px; display:inline-block;box-sizing:content-box; font-family:"Microsoft YaHei"; color:#555;background-color: #fff;border: 1px solid #ccc;border-radius:2px}
+input:focus{border-color:#20a8e2}
+.inner:before,.inner:after,.clf:before,.clf:after,.inner:after{content:"";display:table}
+.clf:after,.inner:after{clear:both}
+.clf{zoom:1}
+hr{margin:20px 0;border:0;border-top:1px solid #e3e3e3;border-bottom:1px solid #fff}
+hr.dashed{margin:20px 0;border:0;border-top:1px dashed #e0e0e0;border-bottom:1px dashed #fff}
+.tac{text-align: center;}
+/* @font-face { 
+	font-family: STHEITI-LIGHT; 
+	src: url('../font/STHEITI-LIGHT.TTC'); 
+}
+.specialFont{ 
+	font-family: STHEITI-LIGHT, "微软雅黑", Arial, sans-serif; 
+}  */ 
+
+
+/*公共的元素*/
+.colorOrange{color:#ff8700}/*字体橙色*/
+.colorBlue{color:#01a7ee}/*字体蓝色*/
+.text_blue{color: #49a7f6;}
+.white_bg{background: #fff;}
+.gray_bg{background: #f3f3f3;}
+.pl5{padding-left: 5px;}
+.clearPadding{padding:0 !important;}
+.borderNone{border:none !important;}
+.clearBoth{font-size:0;line-height: 0;height:0;clear:both;}
+.hide{display: none;}
+.show{display: block;}
+a.letter{letter-spacing: 3px;}
+.m20{ margin-top: 20px;}
+
+.specialFont{ 
+	font-family:"微软雅黑", Arial, sans-serif; 
+} 
+
+.container{padding: 0 15px 0;margin: 0 auto;letter-spacing: 0.5px;}
+.font16{font-size: 16px !important;}
+.small-size{font-size: 12px !important;}
+.normal-size{font-size: 16px !important;}
+.fw6{font-weight: 600;}
+
+/*响应式样式开始*/
+body{font-size:62.5%;}
+@media only screen and (max-width: 480px) {
+	.response{
+		font-size:1.4em;
+	}
+	.response_small{
+		font-size: 1em;
+	}
+}
+@media only screen and (min-width: 480px) {
+	.response{
+		font-size:1.8em;
+	}
+	.response_small{
+		font-size: 1em;
+	}
+}
+/*响应式样式结束*/

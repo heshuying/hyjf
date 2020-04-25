@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.AdminStockInfoCustomizeMapper">
+ 
+	<resultMap id="RM_AdminStockInfo" type="com.hyjf.mybatis.model.customize.admin.AdminStockInfoCustomize">
+        <result property="id" column="id"/>
+        <result property="nowPrice" column="now_price"/>
+        <result property="increase" column="increase"/>
+        <result property="decline" column="decline"/>
+        <result property="volume" column="volume"/>
+        <result property="date" column="date"/>
+        <result property="previousClosePrice" column="previous_close_price"/>
+        <result property="dayLow" column="day_low"/>
+        <result property="dayHigh" column="day_high"/>
+        <result property="openPrice" column="open_price"/>
+        <result property="marketCap" column="market_cap"/>
+        <result property="peRatio" column="pe_ratio"/>
+        <result property="eps" column="eps"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="AdminStockInfo_columns">
+	    <![CDATA[
+		id,now_price,increase,decline,volume,date,previous_close_price,day_low,day_high,open_price,market_cap,pe_ratio,eps
+	    ]]>
+	</sql>
+	
+	 <!-- mysql 分页尾 -->
+	<sql id="pagination_Tail">
+	   <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</sql>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insertAdminStockInfo" useGeneratedKeys="true" keyProperty="id">
+    <![CDATA[
+        INSERT INTO hyjf_stock_info (
+         id, now_price, increase, decline, volume, date, previous_close_price, day_low, day_high, open_price, market_cap, pe_ratio, eps
+        ) VALUES (
+         #{id}, #{nowPrice}, #{increase}, #{decline}, #{volume}, #{date}, #{previousClosePrice}, #{dayLow}, #{dayHigh}, #{openPrice}, #{marketCap}, #{peRatio}, #{eps}        
+        )
+    ]]>
+	</insert>
+    
+	<update id="updateAdminStockInfo" >
+    <![CDATA[
+        UPDATE hyjf_stock_info SET
+	        now_price = #{nowPrice} , increase = #{increase} , decline = #{decline} , volume = #{volume} , date = #{date} , previous_close_price = #{previousClosePrice} , day_low = #{dayLow} , day_high = #{dayHigh} , open_price = #{openPrice} , market_cap = #{marketCap} , pe_ratio = #{peRatio} , eps = #{eps}  
+        WHERE 
+        	id = #{id}  	        
+    ]]>
+	</update>
+
+    <delete id="deleteAdminStockInfo">
+    <![CDATA[
+        DELETE FROM hyjf_stock_info WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+    
+    <select id="getAdminStockInfoById" resultMap="RM_AdminStockInfo">
+		SELECT <include refid="AdminStockInfo_columns" />
+	    <![CDATA[
+		    FROM hyjf_stock_info 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+	</select>
+	
+	<sql id="AdminStockInfo_findPage_where">
+		<where>	      				
+	       <if test="idSer != null and idSer != ''">	
+				AND AdminStockInfo.id = #{idSer}
+			</if>
+	       <if test="nowPriceSer != null and nowPriceSer != ''">	
+				AND AdminStockInfo.now_price = #{nowPriceSer}
+			</if>
+	       <if test="increaseSer != null and increaseSer != ''">	
+				AND AdminStockInfo.increase = #{increaseSer}
+			</if>
+	       <if test="declineSer != null and declineSer != ''">	
+				AND AdminStockInfo.decline = #{declineSer}
+			</if>
+	       <if test="volumeSer != null and volumeSer != ''">	
+				AND AdminStockInfo.volume = #{volumeSer}
+			</if>
+	       <if test="dateSer != null and dateSer != ''">	
+				AND AdminStockInfo.date = #{dateSer}
+			</if>
+	       <if test="previousClosePriceSer != null and previousClosePriceSer != ''">	
+				AND AdminStockInfo.previous_close_price = #{previousClosePriceSer}
+			</if>
+	       <if test="dayLowSer != null and dayLowSer != ''">	
+				AND AdminStockInfo.day_low = #{dayLowSer}
+			</if>
+	       <if test="dayHighSer != null and dayHighSer != ''">	
+				AND AdminStockInfo.day_high = #{dayHighSer}
+			</if>
+	       <if test="openPriceSer != null and openPriceSer != ''">	
+				AND AdminStockInfo.open_price = #{openPriceSer}
+			</if>
+	       <if test="marketCapSer != null and marketCapSer != ''">	
+				AND AdminStockInfo.market_cap = #{marketCapSer}
+			</if>
+	       <if test="peRatioSer != null and peRatioSer != ''">	
+				AND AdminStockInfo.pe_ratio = #{peRatioSer}
+			</if>
+	       <if test="epsSer != null and epsSer != ''">	
+				AND AdminStockInfo.eps = #{epsSer}
+			</if>
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND FROM_UNIXTIME( date, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch != ''">
+				AND FROM_UNIXTIME( date, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+		</where>
+	</sql>
+		
+    <select id="getAdminStockInfocount" resultType="java.lang.Integer">
+        SELECT count(*) FROM hyjf_stock_info AdminStockInfo
+		<include refid="AdminStockInfo_findPage_where"/>    
+    </select>
+    
+    <select id="getAdminStockInfoList" resultMap="RM_AdminStockInfo">
+    	SELECT (@i:=@i+1)   as   id,now_price,increase,decline,volume,date,previous_close_price,day_low,day_high,open_price,market_cap,pe_ratio,eps
+	    FROM hyjf_stock_info  AdminStockInfo,(select   @i:=0)   as   it
+		<include refid="AdminStockInfo_findPage_where"/>
+    	<include refid="pagination_Tail"/>
+    </select>
+    
+    
+    <select id="getAdminStockInfoPage" resultMap="RM_AdminStockInfo">
+    	SELECT <include refid="AdminStockInfo_columns" />
+	    FROM hyjf_stock_info AdminStockInfo
+		<include refid="AdminStockInfo_findPage_where"/>
+    	<include refid="pagination_Tail"/>
+		
+    </select>
+
+	
+</mapper>
+

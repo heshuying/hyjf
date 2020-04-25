@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.act.ActNovBargainCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+			<!-- 用户名 -->
+			<if test="userName != null and userName != ''">
+				AND u.username LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<!-- 手机号 -->
+			<if test="mobile != null and mobile != ''">
+				AND u.mobile LIKE CONCAT('%', #{mobile}, '%')
+			</if>
+		</where>
+	</sql>
+
+	<resultMap id="prizeListResultMap" type="com.hyjf.mybatis.model.customize.act.ActNovPrizeCustomize">
+		<id column="id" property="prizeId" jdbcType="INTEGER" />
+	    <result column="prize_name" property="prizeName" jdbcType="VARCHAR" />
+	    <result column="price" property="price" jdbcType="DECIMAL" />
+	    <result column="price_goal" property="priceGoal" jdbcType="DECIMAL" />
+	    <result column="remain_count" property="remainCount"/>
+	    <result column="hasBargain" property="hasBargain" />
+	</resultMap>
+	
+	<select id="selectPrizeList" resultMap="prizeListResultMap" parameterType="map">
+		SELECT
+			ajp.*,
+		IF (
+			(
+				SELECT
+					COUNT(ajb.id)
+				FROM
+					hyjf_act_jan_bargain ajb
+				WHERE
+					ajb.prize_id = ajp.id
+				<choose>
+			        <when test="wechatId != null and wechatId != ''">
+			            AND ajb.wechat_name = #{wechatId}
+			        </when>
+			        <otherwise>
+			            AND 1=2
+			        </otherwise>
+			    </choose>
+			) > 0,
+			1,
+			0
+		) AS hasBargain
+		FROM
+			hyjf_act_jan_prize ajp
+		WHERE ajp.del_flg = 0
+		ORDER BY
+			ajp.order_weight ASC
+	</select>
+
+	<resultMap id="prizeDetailResultMap" type="com.hyjf.mybatis.model.customize.act.ActNovPrizeDetailCustomize">
+		<id column="prize_id" property="prizeId" jdbcType="INTEGER" />
+	    <result column="prize_name" property="prizeName" jdbcType="VARCHAR" />
+	    <result column="price" property="price" jdbcType="DECIMAL" />
+	    <result column="price_goal" property="priceGoal" jdbcType="DECIMAL" />
+	    <result column="amount_total" property="amountTotal" />
+	    <result column="remain_count" property="remainCount" />
+	    <result column="prizeNow" property="prizeNow" />
+	    <result column="isCanBuy" property="isCanBuy" />
+	    <result column="hasBargain" property="hasBargain" />
+	    <result column="isCanHelpBargain" property="isCanHelpBargain" />
+	</resultMap>
+
+	<select id="selectPrizeDetail" resultMap="prizeDetailResultMap" parameterType="map">
+		SELECT
+			ajp.id AS prize_id,
+			ajp.prize_name,
+			ajp.price,
+			ajp.price_goal,
+			ajp.amount_total,
+			ajp.remain_count,
+			ajp.price - (
+				IFNULL(
+					(
+						SELECT
+							SUM(t1.money_bargain)
+						FROM
+							hyjf_act_jan_bargain t1
+						WHERE
+							t1.prize_id = ajp.id
+						<choose>
+					        <when test="wechatId != null and wechatId != ''">
+					            AND t1.wechat_name = #{wechatId}
+					        </when>
+					        <otherwise>
+					            AND 1=2
+					        </otherwise>
+					    </choose>
+					),
+					0
+				)
+			) AS prizeNow,
+		
+		IF (
+			ajp.price - (
+				IFNULL(
+					(
+						SELECT
+							SUM(t1.money_bargain)
+						FROM
+							hyjf_act_jan_bargain t1
+						WHERE
+							t1.prize_id = ajp.id
+						<choose>
+					        <when test="wechatId != null and wechatId != ''">
+					            AND t1.wechat_name = #{wechatId}
+					        </when>
+					        <otherwise>
+					            AND 1=2
+					        </otherwise>
+					    </choose>
+					),
+					0
+				)
+			) <![CDATA[<=]]> 0 
+			AND (
+				SELECT
+					IFNULL(count(t2.id),0)
+				FROM
+					hyjf_act_jan_prizewin_list t2
+				WHERE
+					t2.prize_id = ajp.id
+				<choose>
+			        <when test="wechatId != null and wechatId != ''">
+			            AND t2.wechat_name = #{wechatId}
+			        </when>
+			        <otherwise>
+			            AND 1=2
+			        </otherwise>
+			    </choose>
+			) <![CDATA[<=]]> 0 AND ajp.remain_count > 0,
+			1,
+			0
+		) AS isCanBuy,
+
+		IF (
+			(
+				SELECT
+					COUNT(ajb.id)
+				FROM
+					hyjf_act_jan_bargain ajb
+				WHERE
+					ajb.prize_id = ajp.id
+				<choose>
+			        <when test="wechatId != null and wechatId != ''">
+			            AND ajb.wechat_name = #{wechatId}
+			        </when>
+			        <otherwise>
+			            AND 1=2
+			        </otherwise>
+			    </choose>
+			) > 0,
+			1,
+			0
+		) AS hasBargain,
+		IF (
+			(
+				SELECT
+					COUNT(t1.id)
+				FROM
+					hyjf_act_jan_bargain t1
+				WHERE
+					t1.wechat_name !=  #{wechatIdHelp}
+				AND t1.wechat_name_help =  #{wechatIdHelp}
+			) > 0,
+			0,
+			1
+		) AS isCanHelpBargain
+		FROM
+			hyjf_act_jan_prize ajp
+		WHERE
+			ajp.id = #{prizeId}
+	</select>
+	
+	<resultMap id="bargainListResultMap" type="com.hyjf.mybatis.model.customize.act.ActNovBargainCustomize">
+	    <result column="wechat_name" property="wechatName" jdbcType="VARCHAR" />
+	    <result column="wechat_nickname" property="wechatNickname" />
+	    <result column="wechat_name_help" property="wechatNameHelp" jdbcType="VARCHAR" />
+	    <result column="wechat_nickname_help" property="wechatNicknameHelp" />
+	    <result column="money_bargain" property="moneyBargain" jdbcType="DECIMAL" />
+	</resultMap>
+	
+	<select id="selectBargainList" resultMap="bargainListResultMap" parameterType="map">
+		SELECT
+			ajb.wechat_name,
+			ajb.wechat_nickname,
+			ajb.wechat_name_help,
+			ajb.wechat_nickname_help,
+			ajb.money_bargain
+		FROM
+			hyjf_act_jan_bargain ajb
+		WHERE
+			ajb.prize_id = #{prizeId}
+		AND ajb.wechat_name = #{wechatId}
+		ORDER BY
+			ajb.update_time DESC;	
+		<if test="limitStart != null and limitEnd != null">
+			limit ${limitStart},${limitEnd}
+		</if>
+	</select>
+	
+	<select id="countBargainList" resultType="int" parameterType="map">
+		SELECT
+			count(ajb.id)
+		FROM
+			hyjf_act_jan_bargain ajb
+		WHERE
+			ajb.prize_id = #{prizeId}
+		AND ajb.wechat_name = #{wechatId}
+	</select>
+	
+	<select id="selectCurrentBargainMoney" resultType="decimal" parameterType="map">
+		SELECT
+			IFNULL(sum(ajb.money_bargain),0)
+		FROM
+			hyjf_act_jan_bargain ajb
+		WHERE
+			ajb.prize_id = #{prizeId}
+		AND ajb.wechat_name = #{wechatId}
+	</select>
+	
+</mapper>

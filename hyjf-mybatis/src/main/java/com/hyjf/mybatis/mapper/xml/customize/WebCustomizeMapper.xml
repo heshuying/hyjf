@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.WebCustomizeMapper">
+	<resultMap id="WebMapResult"
+		type="com.hyjf.mybatis.model.customize.WebCustomize">
+		<result column="id" property="id" />
+		<result column="ordid" property="ordid" /> <!-- 订单号 -->
+		<result column="borrow_nid" property="borrowNid" /> <!-- 相关借款号 -->
+		<result column="amount" property="amount" /> <!-- 操作金额 -->
+		<result column="type" property="type" /> <!-- 类型1收入2支出 -->
+		<result column="type_name" property="typeName" /> <!-- 类型1收入2支出 -->
+		<result column="trade" property="trade" />
+		<result column="trade_type" property="tradeType" /> <!-- 交易类型 -->
+		<result column="user_id" property="userId" /> <!-- 对方用户ID -->
+		<result column="usrcustid" property="usrcustid" /> <!-- 客户号 -->
+		<result column="truename" property="truename" />
+		<result column="region_name" property="regionName" />
+		<result column="branch_name" property="branchName" />
+		<result column="department_name" property="departmentName" />
+		<result column="remark" property="remark" /> <!-- 说明 -->
+		<result column="note" property="note" />
+		<result column="create_time" property="createTime" /> <!-- 发生时间 -->
+		<result column="operator" property="operator" /> <!-- 操作员 -->
+		<result column="flag" property="flag" />
+		<result column="username" property="username" />
+	</resultMap>
+
+	<sql id="where-all-page-condition">
+		<if test="truenameSearch != null and truenameSearch != ''">
+			AND t.truename = #{truenameSearch}
+		</if>
+		<if test="usernameSearch != null and usernameSearch != ''">
+			AND u.username = #{usernameSearch}
+		</if>
+		<if test="tradeTypeSearch != null and tradeTypeSearch != ''">
+			AND UPPER(t.trade) = UPPER(#{tradeTypeSearch})
+		</if>
+		<if test="startDate != null and startDate != ''">
+			AND FROM_UNIXTIME(t.create_time, '%Y-%m-%d %H:%i:%S') &gt;= STR_TO_DATE(CONCAT(#{startDate},'00:00:00'
+			),'%Y-%m-%d %H:%i:%s')
+		</if>
+		<if test="endDate != null and endDate != ''">
+			AND FROM_UNIXTIME(t.create_time, '%Y-%m-%d %H:%i:%S') &lt;= STR_TO_DATE(CONCAT(#{endDate},'23:59:59'
+			),'%Y-%m-%d %H:%i:%s')
+		</if>
+
+	</sql>
+
+	<select id="queryWebCount" resultType="java.lang.Integer"
+		parameterType="com.hyjf.mybatis.mapper.customize.WebCustomizeMapper">
+		SELECT COUNT(1)
+		
+		FROM huiyingdai_account_web_list t 
+		LEFT JOIN huiyingdai_users u ON t.user_id= u.user_id
+
+		WHERE 1=1
+		<include refid="where-all-page-condition"/>
+	</select>
+
+	<select id="queryWebList" resultMap="WebMapResult" parameterType="com.hyjf.mybatis.mapper.customize.WebCustomizeMapper">
+		SELECT t.ordid, t.region_name, t.branch_name, t.department_name,
+		u.username, t.truename , t.type, t.amount, t.trade_type, t.remark, t.note,
+		FROM_UNIXTIME(t.create_time, '%Y-%m-%d %H:%i:%S')  as create_time,
+		CASE t.type WHEN 1 THEN '收入' WHEN 2 THEN '支出' ELSE t.type END AS type_name 
+		FROM huiyingdai_account_web_list t 
+		LEFT JOIN huiyingdai_users u ON t.user_id= u.user_id
+		WHERE 1=1
+		<include refid="where-all-page-condition"/>
+		ORDER BY t.create_time DESC, id DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+
+	<select id="selectBorrowInvestAccount" resultType="java.lang.String" parameterType="com.hyjf.mybatis.mapper.customize.WebCustomizeMapper">
+		SELECT 
+		FORMAT(SUM(t.amount), 2) AS account
+		FROM huiyingdai_account_web_list t 
+		LEFT JOIN huiyingdai_users u ON t.user_id= u.user_id
+		WHERE 1=1
+		<include refid="where-all-page-condition"/>
+
+	</select>
+	
+
+
+</mapper>
+

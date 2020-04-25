@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.ProductRedeemCustomizeMapper">
+	<resultMap id="selectOutRecordsMap" type="com.hyjf.mybatis.model.customize.ProductRedeemCustomize">
+	    <id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="user_id" property="userId" jdbcType="INTEGER" />
+	    <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+	    <result column="amount" property="amount" jdbcType="DECIMAL" />
+	    <result column="redeem_time" property="redeemTime" jdbcType="VARCHAR" />
+	    <result column="interest" property="interest" jdbcType="DECIMAL" />
+	    <result column="total" property="total" jdbcType="DECIMAL" />
+	    <result column="referee" property="referee" jdbcType="INTEGER" />
+	    <result column="area" property="area" jdbcType="INTEGER" />
+	    <result column="company" property="company" jdbcType="INTEGER" />
+	    <result column="department" property="department" jdbcType="INTEGER" />
+	    <result column="remark" property="remark" jdbcType="VARCHAR" />
+	    <result column="client" property="client" jdbcType="INTEGER" />
+	    <result column="username" property="username" jdbcType="VARCHAR" />
+	    <result column="refername" property="refername" jdbcType="VARCHAR" />
+	    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+	    <result column="turename" property="turename" jdbcType="VARCHAR" />
+	    <result column="status" property="status" jdbcType="INTEGER" />
+	    <result column="region_name" property="regionName" jdbcType="VARCHAR" />
+	    <result column="brance_name" property="branceName" jdbcType="VARCHAR" />
+	    <result column="department_name" property="departmentName" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="exportOutRecordsMap" type="com.hyjf.mybatis.model.customize.ProductExportOutRecordCustomize">
+	    <id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="user_id" property="userId" jdbcType="INTEGER" />
+	    <result column="username" property="username" jdbcType="VARCHAR" />
+	    <result column="cur_refer_id" property="curReferId" jdbcType="INTEGER" />
+	    <result column="cur_refer_name" property="curReferName" jdbcType="VARCHAR" />
+	    <result column="ivt_refer_id" property="ivtReferId" jdbcType="INTEGER" />
+	    <result column="ivt_refer_name" property="ivtReferName" jdbcType="VARCHAR" />
+	    <result column="amount" property="amount" jdbcType="DECIMAL" />
+	    <result column="redeem_time" property="redeemTime" jdbcType="VARCHAR" />
+	    <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+	    <result column="interest" property="interest" jdbcType="DECIMAL" />
+	    <result column="real_amount" property="realAmount" jdbcType="DECIMAL" />
+	    <result column="status" property="status" jdbcType="VARCHAR" />
+	    <result column="region_name" property="regionName" jdbcType="VARCHAR" />
+	    <result column="brance_name" property="branceName" jdbcType="VARCHAR" />
+	    <result column="department_name" property="departmentName" jdbcType="VARCHAR" />
+	     <result column="client" property="client" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	  <sql id="Where_Clause">
+			<where>
+			<if test="userId != null" >
+		      AND p.user_id = #{userId}
+		    </if>
+		    <if test="username != null" >
+		      AND u.username LIKE CONCAT('%', #{username}, '%')
+		    </if>
+		    <if test="refername != null" >
+		      AND ur.username LIKE CONCAT('%', #{refername}, '%')
+		    </if>
+		    <if test="orderId != null" >
+		      AND p.order_id = #{orderId}
+		    </if>
+		    <if test="client != null" >
+		      AND p.client = #{client}
+		    </if>
+		    <if test="status != null" >
+		      AND p.status = #{status}
+		    </if>
+		    <if test="timeStartSrch != null">
+			  AND p.redeem_time <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+		    <if test="timeEndSrch != null">
+			  AND p.redeem_time <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+			</where>
+		</sql>
+	
+   <select id="countProductRedeemRecord" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.ProductRedeemCustomize">
+		SELECT
+		  COUNT(1)
+			FROM
+				huiyingdai_product_redeem p
+			LEFT JOIN huiyingdai_users u ON p.user_id = u.user_id
+			LEFT JOIN huiyingdai_users_info ui ON p.user_id = ui.user_id
+			LEFT JOIN huiyingdai_users ur ON p.referee = ur.user_id
+		<include refid="Where_Clause" />
+	</select>
+	
+	
+	
+	<select id="selectOutRecords" resultMap="selectOutRecordsMap" parameterType="com.hyjf.mybatis.model.customize.ProductRedeemCustomize">
+			SELECT
+				p.id,
+				p.user_id,
+				p.order_id,
+				p.amount,
+				FROM_UNIXTIME(p.redeem_time,'%Y-%m-%d %H:%i:%s') AS redeem_time,
+				TRUNCATE (p.interest, 2) AS interest,
+				TRUNCATE (p.total, 2) AS total,
+				p.referee,
+				p.area,
+				p.company,
+				p.department,
+				p.remark,
+				p.client,
+				u.username,
+				ur.username AS refername,
+				u.mobile,
+				ui.truename,
+				p.status,
+				d3. NAME AS region_name,
+				d2. NAME AS brance_name,
+				d1. NAME AS department_name
+			FROM
+				huiyingdai_product_redeem p
+			LEFT JOIN huiyingdai_users u ON p.user_id = u.user_id
+			LEFT JOIN huiyingdai_users_info ui ON p.user_id = ui.user_id
+			LEFT JOIN huiyingdai_users ur ON p.referee = ur.user_id
+			LEFT JOIN hyjf_crm.oa_department d1 ON d1.id = p.department
+			LEFT JOIN hyjf_crm.oa_department d2 ON d2.id = d1.parentid
+			LEFT JOIN hyjf_crm.oa_department d3 ON d3.id = d2.parentid
+			<include refid="Where_Clause" />
+				ORDER BY  p.redeem_time DESC  
+		    <if test="limitStart >= 0" >
+		      LIMIT #{limitStart} , #{limitEnd}
+		    </if>
+	</select>
+	
+		<select id="exportOutRecords" resultMap="exportOutRecordsMap" parameterType="com.hyjf.mybatis.model.customize.ProductRedeemCustomize">
+					SELECT
+					p.id,
+					u.username,
+					TRUNCATE (p.amount, 2) AS amount,
+					TRUNCATE (p.interest, 2) AS interest,
+					FROM_UNIXTIME(
+						p.redeem_time,
+						'%Y-%m-%d %H:%i:%s'
+					) AS redeem_time,
+					su.spreads_userid AS cur_refer_id,
+					uu.username AS cur_refer_name,
+					p.referee AS ivt_refer_id,
+					ur.username AS ivt_refer_name,
+					p.order_id,
+					CASE p.`status`
+				WHEN 0 THEN
+					'成功'
+				WHEN 1 THEN
+					'失败'
+				END AS `status`,
+				 TRUNCATE (p.total, 2) AS real_amount,
+				 CASE p.client
+				WHEN 0 THEN
+					'PC'
+				WHEN 1 THEN
+					'微信'
+				WHEN 2 THEN
+					'安卓'
+				WHEN 3 THEN
+					'IOS'
+				END AS client,
+				 d3.NAME AS region_name,
+				 d2.NAME AS brance_name,
+				 d1.NAME AS department_name
+				FROM
+					huiyingdai_product_redeem p
+				LEFT JOIN huiyingdai_users u ON p.user_id = u.user_id
+				LEFT JOIN huiyingdai_users ur ON p.referee = ur.user_id
+				LEFT JOIN huiyingdai_spreads_users su ON p.user_id = su.user_id
+				LEFT JOIN huiyingdai_users uu ON su.spreads_userid = uu.user_id	
+				LEFT JOIN hyjf_crm.oa_department d1 ON d1.id = p.department
+				LEFT JOIN hyjf_crm.oa_department d2 ON d2.id = d1.parentid
+				LEFT JOIN hyjf_crm.oa_department d3 ON d3.id = d2.parentid
+			<include refid="Where_Clause" />
+				ORDER BY  p.redeem_time DESC  
+		    <if test="limitStart >= 0" >
+		      LIMIT #{limitStart} , #{limitEnd}
+		    </if>
+	</select>
+	
+</mapper>

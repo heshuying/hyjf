@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.GuessingWinningRankMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.GuessingWinning" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="true_name" property="trueName" jdbcType="VARCHAR" />
+    <result column="guessing_match_id" property="guessingMatchId" jdbcType="INTEGER" />
+    <result column="user_match_team_id" property="userMatchTeamId" jdbcType="INTEGER" />
+    <result column="guessing_match_result" property="guessingMatchResult" jdbcType="TINYINT" />
+    <result column="guessing_match_num" property="guessingMatchNum" jdbcType="INTEGER" />
+    <result column="guessing_field_num" property="guessingFieldNum" jdbcType="INTEGER" />
+    <result column="guessing_rankings" property="guessingRankings" jdbcType="INTEGER" />
+    <result column="guessing_time" property="guessingTime" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, user_id, true_name, guessing_match_id, user_match_team_id, guessing_match_result, 
+    guessing_match_num, guessing_field_num, guessing_rankings, guessing_time, create_time
+  </sql>
+  <select id="selectGuessRank" resultType="java.util.HashMap"  >
+	  SELECT CONCAT(LEFT(usernames, 1),'**') userName,GuessNum,@rownum:=@rownum+1 AS ranking FROM (
+
+		SELECT u.username AS usernames,MAX(g.guessing_field_num) GuessNum,r.*
+		FROM (SELECT @rownum:=0  ) r ,hyjf_guessing_winning g,huiyingdai_users u
+		WHERE u.user_id = g.user_id
+		GROUP BY g.user_id
+		ORDER BY GuessNum DESC,g.guessing_time ASC 
+		 LIMIT 10
+	 ) a
+  </select>
+
+  <select id="searchTeam" resultType="java.util.HashMap" parameterType="java.util.Map"  >
+     SELECT
+          t1.id teamMatchId,
+          t1.home_match_team homeMatchTeam,
+          t1.visiting_match_team visitingMatchTeam,
+          t2.team_name homeTeamName,
+          t3.team_name visitingTeamName,
+          t1.win_team_id winTeamId,
+          t2.team_logo homeTeamLogo,
+          t3.team_logo visitingTeamLogo,
+          t1.match_type as matchType
+      FROM
+          `hyjf_world_team_match` t1
+      LEFT JOIN `hyjf_world_cup_team` t2
+        on t1.home_match_team =t2.id
+      LEFT JOIN `hyjf_world_cup_team` t3
+        on t1.visiting_match_team = t3.id
+      WHERE
+      1 = 1
+    <if test="matchType != null ">
+      AND t1.match_type = #{matchType}
+    </if>
+    AND t1.home_match_team IS NOT NULL 
+    AND t1.visiting_match_team IS NOT NULL 
+    ORDER BY t1.match_type DESC 
+  </select>
+  <select id="searchRecord" resultType="java.util.HashMap" parameterType="java.util.Map"  >
+    SELECT
+      t2.batch_name batchName,
+      t3.team_name userTeamWin,
+      t2.match_result matchResult,
+      t1.guessing_match_result guessingMatchResult
+    FROM
+    `hyjf_guessing_winning` t1
+    LEFT JOIN `hyjf_world_team_match` t2 ON  t1.guessing_match_id=t2.id
+    LEFT JOIN `hyjf_world_cup_team` t3 ON t3.id=t1.user_match_team_id
+    WHERE
+    1 = 1
+    <if test="userId != null ">
+      AND t1.user_id = #{userId}
+    </if>
+    ORDER BY t1.id desc
+  </select>
+  <select id="getTeamByType" resultType="java.lang.Integer">
+    SELECT COUNT(id)
+	FROM hyjf_world_team_match
+	WHERE win_team_id IS NULL AND match_type = #{matchType}
+  </select>
+  <resultMap id="ReturnBaseResultMap" type="com.hyjf.mybatis.model.auto.WorldTeamMatch" >
+	    <id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="match_team" property="matchTeam" jdbcType="TINYINT" />
+	    <result column="match_type" property="matchType" jdbcType="TINYINT" />
+	    <result column="home_match_team" property="homeMatchTeam" jdbcType="INTEGER" />
+	    <result column="visiting_match_team" property="visitingMatchTeam" jdbcType="INTEGER" />
+	    <result column="batch_name" property="batchName" jdbcType="VARCHAR" />
+	    <result column="match_time" property="matchTime" jdbcType="INTEGER" />
+	    <result column="match_result" property="matchResult" jdbcType="VARCHAR" />
+	    <result column="win_team_id" property="winTeamId" jdbcType="INTEGER" />
+	    <result column="create_time" property="createTime" jdbcType="INTEGER" />
+	  </resultMap>
+  <select id="getMatchTeamByParam" resultMap="ReturnBaseResultMap" >
+    SELECT * 
+	FROM hyjf_world_team_match 
+	WHERE 1=1
+	<if test="matchTime != null ">
+	  and match_time > #{matchTime}
+    </if>
+	<if test="guessingChampionId != null ">
+	  AND (home_match_team = #{guessingChampionId} OR visiting_match_team = #{guessingChampionId})
+    </if>
+	<if test="orderBy != null ">
+	  order by id desc
+    </if>
+	<if test="limitStart != null and offset != null">
+		limit #{limitStart},#{offset}
+    </if>
+  </select>
+</mapper>

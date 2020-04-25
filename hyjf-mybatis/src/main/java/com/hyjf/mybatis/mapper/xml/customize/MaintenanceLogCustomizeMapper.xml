@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.MaintenanceLogCustomizeMapper">
+	<resultMap id="selectLog" type="com.hyjf.mybatis.model.customize.MaintenanceLogCustomize">
+		<result column="id" 			property="id" 	  	 	  jdbcType="INTEGER" />
+		<result column="type" 			property="type" 	   	  jdbcType="CHAR" />
+		<result column="operatorname"   property="operatorname"   jdbcType="VARCHAR" />
+		<result column="beoperatorname" property="beoperatorname" jdbcType="VARCHAR" />
+		<result column="method"  		property="method"  		  jdbcType="VARCHAR" />
+		<result column="status" 		property="status" 	   	  jdbcType="VARCHAR" />
+		<result column="ipaddress"  	property="ipaddress"  	  jdbcType="VARCHAR" />
+		<result column="times" 			property="times" 	   	  jdbcType="CHAR" />
+	</resultMap>
+	<select id="selectAllLog" resultMap="selectLog">
+		SELECT id, type, operatorname, beoperatorname, method, status, ipaddress, FROM_UNIXTIME(times,'%Y-%m-%d %H:%i:%s') AS times 
+		FROM hyjf_crm.oa_logs
+		WHERE id IS NOT NULL 
+			<if test="id != null and id != ''">
+				AND id = #{id}
+			</if>
+			<if test="operatornameSrch != null and operatornameSrch != ''">
+				AND operatorname like CONCAT('%', #{operatornameSrch}, '%')
+			</if>
+			<if test="beoperatornameSrch != null and beoperatornameSrch != ''">
+				AND beoperatorname like CONCAT('%', #{beoperatornameSrch}, '%')
+			</if>
+			<if test="timesStartSrch != null and timesStartSrch != ''">
+				AND FROM_UNIXTIME(times, '%Y-%m-%d %H:%i:%S') &gt;= STR_TO_DATE(CONCAT(#{timesStartSrch},'00:00:00'),'%Y-%m-%d %H:%i:%s') 
+			</if>
+			<if test="timesEndSrch != null and timesEndSrch != ''">
+				AND FROM_UNIXTIME(times, '%Y-%m-%d %H:%i:%S') &lt;= STR_TO_DATE(CONCAT(#{timesEndSrch},'23:59:59'),'%Y-%m-%d %H:%i:%s')
+			</if>
+		<if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+
+</mapper>

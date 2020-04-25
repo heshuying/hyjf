@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.AdminBankAccountCheckCustomizeMapper">
+	<resultMap id="AccountCheckMapResult"
+		type="com.hyjf.mybatis.model.customize.admin.AdminBankAccountCheckCustomize">
+		<result column="id" property="id" />
+		<result column="user_id" property="userId" /> <!-- 用户id -->
+		<result column="username" property="userName" /> <!-- 用户名 -->
+		<result column="create_date" property="createDate" /> <!-- 日期 -->
+		<result column="nid" property="nId" /> <!-- 订单号 -->
+		<result column="trade_type" property="tradeType" /> <!-- 交易类型  -->
+		<result column="amount" property="amount" /> <!-- 交易金额  -->
+		<result column="check_balance" property="accountBalance" /> <!-- 到帐金额  -->
+		<result column="account_date" property="acountTime" /> <!-- 到账时间  -->
+		<result column="check_date" property="checkDate" /> <!-- 对账时间  -->
+		<result column="account_id" property="accountId" /> <!-- 电子账号 -->
+		<result column="bank_seq_no" property="bankSeqNo" /> <!-- 交易流水号  -->
+		<result column="check_status" property="checkStatus" /> <!-- 对账状态 -->
+		<result column="trade_status" property="tradeStatus" /> <!-- 交易状态  -->
+		<result column="type_id" property="typeId" /> <!-- 交易状态  -->
+	</resultMap>
+
+	<sql id="where-all-page-condition">
+		<if test="userId != null and userId != 0">
+			AND l.user_id = #{userId}
+		</if>
+		<if test="tradeTypeSearch != null and tradeTypeSearch != ''">
+			AND t.id = #{tradeTypeSearch}
+		</if>
+		<if test="userName != null and userName != ''">
+			AND u.username = #{userName}
+		</if>
+		<if test="nId != null and nId != ''">
+			AND l.nid = #{nId}
+		</if>
+		<if test="typeSearch != null and typeSearch != ''">
+			AND l.type = #{typeSearch}
+		</if>
+		<if test="checkStatus != null and checkStatus != ''">
+			AND l.check_status = #{checkStatus}
+		</if>
+		<if test="tradeStatus != null and tradeStatus != ''">
+			AND l.trade_status = #{tradeStatus}
+		</if>
+		<if test="accountId != null and accountId != ''">
+			AND l.account_id = #{accountId}
+		</if>
+		<if test="bankSeqNo != null and bankSeqNo != ''">
+			AND l.bank_seq_no = #{bankSeqNo}
+		</if>
+		<if test="startDate != null and startDate != ''">
+			AND l.create_time >= UNIX_TIMESTAMP(CONCAT(#{startDate},' 00:00:00'))
+		</if>
+		<if test="endDate != null and endDate != ''">
+			AND l.create_time <![CDATA[<=]]> UNIX_TIMESTAMP(CONCAT(#{endDate},' 23:59:59'))
+		</if>
+	</sql>
+	
+	<select id="queryBankAccountCheckListCount" resultType="java.lang.Integer"
+		parameterType="com.hyjf.mybatis.model.customize.admin.AdminBankAccountCheckCustomize">
+		SELECT COUNT(1)
+		FROM
+		huiyingdai_account_list l
+		LEFT JOIN huiyingdai_users u ON l.user_id = u.user_id
+		LEFT JOIN huiyingdai_account_trade t ON l.trade = t.`value`
+		WHERE
+			1 = 1
+		<include refid="where-all-page-condition"/>
+		
+	</select>
+	
+	
+	<select id="queryBankAccountCheckList" resultMap="AccountCheckMapResult"
+		parameterType="com.hyjf.mybatis.model.customize.admin.AdminBankAccountCheckCustomize">
+		SELECT
+			l.id,
+			FROM_UNIXTIME(
+			l.create_time,
+			'%Y-%m-%d'
+			) AS 'create_date', 
+		 	l.bank_seq_no, 
+			u.username,  
+			l.account_id, 	
+			l.nid,
+			 t.`name` AS trade_type, 
+			 l.amount, 
+			 l.check_balance, 
+			l.trade_status, 
+			FROM_UNIXTIME(
+				l.account_date,
+				'%Y-%m-%d %H:%i:%S'
+			) AS 'account_date', 
+			FROM_UNIXTIME(
+				l.check_date,
+				'%Y-%m-%d %H:%i:%S'
+			) AS 'check_date', 
+		 l.check_status
+		FROM
+			huiyingdai_account_list l
+		LEFT JOIN huiyingdai_users u ON l.user_id = u.user_id
+		LEFT JOIN huiyingdai_account_trade t ON l.trade = t.`value`
+		WHERE
+			1 = 1
+		<include refid="where-all-page-condition"/>
+		ORDER BY l.create_time DESC, l.id DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	 <select id="queryAllBankOpenAccount" resultMap="AccountCheckMapResult"
+	 	parameterType="com.hyjf.mybatis.model.customize.admin.AdminBankAccountCheckCustomize">
+		SELECT
+			a.account AS 'account_id',
+			u.user_id,
+			u.username
+		FROM
+			hyjf_bank_open_account a
+		LEFT JOIN huiyingdai_users u ON u.user_id = a.user_id
+		WHERE u.bank_open_account = 1 
+		<if test="userId != null and userId != 0">
+			AND u.user_id = #{userId}
+		</if>
+	</select> 
+	
+	<select id="queryAccountDeatilByBankSeqNo" resultMap="AccountCheckMapResult"
+		parameterType="java.lang.String">
+		SELECT
+			a.id,
+			a.bank_seq_no,
+			a.amount,
+			t.type_id,
+			a.user_id
+		FROM
+			huiyingdai_account_list a
+		LEFT JOIN huiyingdai_account_trade t
+		ON t.`value` = a.trade
+		WHERE
+			1=1
+		AND a.bank_seq_no = #{value}
+	</select> 
+	
+	<insert id="insert" parameterType="com.hyjf.mybatis.model.auto.AccountList" >
+	    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+	    insert into huiyingdai_account_bank_check_exception (user_id, amount, 
+	      `type`,  
+	      remark, create_time, `operator`, 
+	       is_update, base_update, 
+	      account_id, seq_no, 
+	       check_status, 
+	      trade_status, tx_date, tx_time, 
+	      bank_seq_no)
+	    values (#{userId,jdbcType=INTEGER}, #{amount,jdbcType=DECIMAL}, 
+	      #{type,jdbcType=TINYINT},  
+	      #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=INTEGER}, #{operator,jdbcType=VARCHAR}, 
+	      #{isUpdate,jdbcType=TINYINT}, #{baseUpdate,jdbcType=TINYINT}, 
+	      #{accountId,jdbcType=VARCHAR}, #{seqNo,jdbcType=VARCHAR}, 
+	       #{checkStatus,jdbcType=INTEGER}, 
+	      #{tradeStatus,jdbcType=INTEGER}, #{txDate,jdbcType=INTEGER}, #{txTime,jdbcType=INTEGER}, 
+	      #{bankSeqNo,jdbcType=VARCHAR})
+	  </insert>
+  
+  	
+  	<select id="queryAccountIdByUserId" resultType="com.hyjf.mybatis.model.auto.Account"
+		parameterType="java.lang.Integer">
+		SELECT
+			a.id,
+			a.total,
+			a.bank_balance AS 'bankBalance',
+			a.income,
+			a.balance,
+			a.bank_interest_sum AS 'bankInterestSum'
+		FROM
+			huiyingdai_account a
+		WHERE
+			a.user_id = #{value}
+	</select> 
+  
+</mapper>
+

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.AdminRedisProjectListCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+			(hydbpt.borrow_project_type ='HZT' OR hydbpt.borrow_project_type ='HXF')
+			<if test="status == null or status == ''">
+				AND
+		        (
+		           ( ( hydb.`status` = 0 AND ( hydb.verify_status = 1 ) AND ( EXISTS ( SELECT 1 FROM huiyingdai_borrow_bail bb WHERE bb.borrow_nid = hydb.borrow_nid ) ) ) )
+						OR ( hydb.`status` = 1 AND hydb.borrow_status = 1 AND hydb.borrow_account_yes <![CDATA[<]]> hydb.account AND hydb.verify_time + ( borrow_valid_time * 24 * 60 *60 ) <![CDATA[>]]> UNIX_TIMESTAMP( NOW() ) )
+
+						OR (hydb.`status` = 1 AND hydb.reverify_time = '0'AND ((hydb.reverify_status = 0 AND hydb.borrow_account_yes <![CDATA[>=]]> hydb.account) OR (hydb.verify_time + ( hydb.borrow_valid_time * 24 * 60 * 60) <![CDATA[<]]> UNIX_TIMESTAMP(NOW()))))
+
+						OR ( hydb.`status` = 3 AND hydb.repay_full_status = 0 )
+						OR ( hydb.`status` = 3 AND hydb.repay_full_status = 1 )
+						OR ( hydb.`status` = 2 )
+		        )
+			</if>
+			<if test="status != null and status != ''">
+				<!-- 获取待发布 -->
+				<if test="status == '10'.toString()">
+				AND ( hydb.`status` = 0 AND ( hydb.verify_status = 1 ) AND ( EXISTS ( SELECT 1 FROM huiyingdai_borrow_bail bb WHERE bb.borrow_nid = hydb.borrow_nid ) ) )
+				</if>
+				<!-- 获取 投资中 -->
+				<if test="status == '11'.toString()">
+				AND ( hydb.`status` = 1 AND hydb.borrow_status = 1 AND hydb.borrow_account_yes <![CDATA[<]]> hydb.account AND hydb.verify_time + ( hydb.borrow_valid_time * 24 * 60 *60 ) <![CDATA[>]]> UNIX_TIMESTAMP( NOW() ) )
+				</if>
+				<!-- 获取 投标结束 -->
+				<if test="status == '12'.toString()">
+				AND (hydb.`status` = 1 AND hydb.reverify_time = '0' AND ((hydb.reverify_status = 0 AND hydb.borrow_account_yes <![CDATA[>=]]> hydb.account) OR (hydb.verify_time + ( hydb.borrow_valid_time * 24 * 60 * 60) <![CDATA[<]]> UNIX_TIMESTAMP(NOW()))))
+				</if>
+				<!-- 获取 还款中 -->
+				<if test="status == '13'.toString()">
+				AND ( hydb.`status` = 3 AND hydb.repay_full_status = 0 )
+				</if>
+				<!-- 已还款 -->
+				<if test="statusSrch == '14'.toString()">
+					AND ( hydb.`status` = 3 AND hydb.repay_full_status = 1 )
+				</if>
+				<!-- 已流标 -->
+				<if test="statusSrch == '15'.toString()">
+					AND hydb.`status` = 2
+				</if>
+				<!-- 标的编号 -->
+				<if test="borrowNid != '' and borrowNid != null">
+					AND hydb.borrow_nid = #{borrowNid}
+				</if>
+			</if>
+		</where>
+	</sql>
+
+	<resultMap id="RedisProjectListMap" type="com.hyjf.mybatis.model.customize.admin.AdminRedisProjectListCustomize">
+		<!-- 项目id-->
+		<id column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<!-- 项目标题 -->
+		<result column="borrow_account_wait" property="accountWait" jdbcType="VARCHAR" />
+		<!-- 项目状态-->
+		<result column="status" property="status" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectRedisProjectList" resultMap="RedisProjectListMap" parameterType="Map">
+		SELECT
+			hydb.borrow_nid,
+			hydb.borrow_account_wait,
+			CASE
+				WHEN hydb.`status` = 0 AND hydb.verify_status = 1 THEN '10'
+        		WHEN hydb.`status` = 1 AND hydb.borrow_status = 1 AND hydb.borrow_account_yes <![CDATA[<]]> hydb.account AND ( hydb.verify_time + ( hydb.borrow_valid_time * 24 * 60 *60 ) <![CDATA[>]]> UNIX_TIMESTAMP( NOW() ) ) THEN '11'
+        		WHEN hydb.`status` = 1 AND hydb.reverify_time = '0' AND ((hydb.reverify_status = 0 AND hydb.borrow_account_yes <![CDATA[>=]]> hydb.account) OR (hydb.verify_time + ( hydb.borrow_valid_time * 24 * 60 * 60) <![CDATA[<]]> UNIX_TIMESTAMP(NOW()))) THEN '12'
+        		WHEN hydb.`status` = 3 AND hydb.repay_full_status = 0 THEN '13'
+        		WHEN hydb.`status` = 3 AND hydb.repay_full_status = 1 THEN '14'
+				WHEN hydb.`status` = 2 THEN '15'
+			ELSE
+			  ''
+			END AS `status`
+		FROM
+			huiyingdai_borrow hydb
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		<include refid="Where_Clause" />
+		ORDER BY
+			`status` ASC,
+			CASE
+				WHEN
+					ISNULL(hydb.ontime) OR LENGTH(trim(hydb.ontime)) <![CDATA[<]]> 1
+				THEN hydb.ontime
+			END ASC,
+			hydb.borrow_account_scale DESC,
+			hydb.borrow_valid_time DESC,
+			hydb.reverify_time DESC,
+			hydb.repay_last_time ASC
+	</select>
+</mapper>

@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<!-- 总管理类 如果将lazy-init='false'那么容器启动就会执行调度程序 -->
+	<bean id="startTestTask" lazy-init="false" autowire="no"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="planLoansJobTime" />
+				<ref bean="planRestartJobTime" />
+				<ref bean="releasePlanJobTime" />
+				<ref bean="raisePlanJobTime" />
+				<ref bean="debtOntimeBorrowTaskTime" />
+				<ref bean="debtAutoReviewJobTime" />
+				<ref bean="debtBorrowRepayJobTime" />
+				<ref bean="autoTenderTaskTime" />
+				<ref bean="planActualAprJobTime" />
+				<ref bean="planRepayJobTime" />
+				<ref bean="weakAssetTaskJobTime" />
+				<ref bean="gatherAssetTaskTaskJobTime" />
+				<ref bean="planExpireFairValueJobTime" />
+				<ref bean="planCreditRepayJobTime" />
+				<ref bean="PlanDataInfoTaskTime" />
+				<ref bean="UnableLiquidatesTaskTime" />
+				<ref bean="LiquidateWillTaskTime" />
+				<ref bean="LiquidatesFinishTaskTime" />
+			</list>
+		</property>
+	</bean>
+	
+	<!-- ******************** 专属标(放款)定时任务 ******************** -->
+	<bean id="planLoansTask" class="com.hyjf.batch.htj.planloans.PlanLoansTask"></bean>
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="planLoansJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject" ref="planLoansTask" />
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="run" />
+	</bean>
+	<!-- 定义触发时间 -->
+	<bean id="planLoansJobTime"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="planLoansJob" />
+		<!-- cron表达式 -->
+		<property name="cronExpression" value="0 0/1 * * * ?" />
+	</bean>
+
+	<!-- ******************** 专属标(放还款失败后重新执行)定时任务 ******************** -->
+	<bean id="planRestartTask" class="com.hyjf.batch.htj.planloans.PlanLoansTask"></bean>
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="planRestartJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject" ref="planRestartTask" />
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="autoloans" />
+	</bean>
+	<!-- 定义触发时间 -->
+	<bean id="planRestartJobTime"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="planRestartJob" />
+		<!-- cron表达式 -->
+		<property name="cronExpression" value="0 0 19,21,23,1,3,5,7  * * ?" />
+	</bean>
+	<!-- ******************** 待开放的计划变更定时 ******************** -->
+	<bean id="releasePlanTask" class="com.hyjf.batch.htj.releaseplan.AutoReleasePlanTask"></bean>
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="releasePlanJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject" ref="releasePlanTask" />
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="run" />
+	</bean>
+	<!-- 定义触发时间 -->
+	<bean id="releasePlanJobTime"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="releasePlanJob" />
+		<!-- cron表达式 -->
+		<property name="cronExpression" value="0 0/1 * * * ?" />
+	</bean>
+	<!-- ******************** 募集中的计划变更定时 ******************** -->
+	<bean id="raisePlanTask" class="com.hyjf.batch.htj.raiseplan.AutoRaisePlanTask"></bean>
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="raisePlanJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject" ref="raisePlanTask" />
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="run" />
+	</bean>
+	<!-- 定义触发时间 -->
+	<bean id="raisePlanJobTime"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="raisePlanJob" />
+		<!-- cron表达式 -->
+		<property name="cronExpression" value="0 0/1 * * * ?" />
+	</bean>
+
+	<!-- ******************** 汇添金专属标(发标)定时任务 ******************** -->
+	<bean id="debtOntimeBorrowTask" class="com.hyjf.batch.htj.debttender.DebtOntimeBorrowTask"></bean>
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="debtOntimeBorrowTaskJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject" ref="debtOntimeBorrowTask" />
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="run" />
+	</bean>
+	<!-- 定义触发时间 -->
+	<bean id="debtOntimeBorrowTaskTime"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="debtOntimeBorrowTaskJob" />
+		<!-- cron表达式 每分钟执行一次 -->
+		<property name="cronExpression" value="0 0/1 * * * ?" />
+	</bean>
+	<!-- ******************** 汇添金专属标自动复审定时任务 ******************** -->
+	<bean id="debtAutoReviewTask" class="com.hyjf.batch.htj.debtautoreview.DebtAutoReviewTask"></bean>
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="debtAutoReviewJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject" ref="debtAutoReviewTask" />
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="run" />
+	</bean>
+	<!-- 定义触发时间 -->
+	<bean id="debtAutoReviewJobTime"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="debtAutoReviewJob" />
+		<!-- cron表达式 5分钟执行一次 -->
+		<property name="cronExpression" value="0 0/5 * * * ?" />
+	</bean>
+	<!-- ******************** 汇添金(还款)定时任务 ******************** -->
+	<bean id="debtBorrowRepayTask" class="com.hyjf.batch.htj.debtrepay.DebtBorrowRepayTask"></bean>
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="debtBorrowRepayJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject" ref="debtBorrowRepayTask" />
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="run" />
+	</bean>
+	<!-- 定义触发时间 -->
+	<bean id="debtBorrowRepayJobTime"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="debtBorrowRepayJob" />
+		<!-- cron表达式 -->
+		<property name="cronExpression" value="0 0/1 * * * ?" />
+	</bean>
+	<!-- ******************** 汇添金计划自动投标定时任务 ******************** -->
+	<bean id="autoTenderTask" class="com.hyjf.batch.htj.autotender.AutoTenderTask"></bean>
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="autoTenderTaskJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject" ref="autoTenderTask" />
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="run" />
+	</bean>
+	<!-- 定义触发时间 -->
+	<bean id="autoTenderTaskTime"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="autoTenderTaskJob" />
+		<!-- cron表达式 每分钟执行一次 -->
+		<property name="cronExpression" value="0 0/1 * * * ?" />
+	</bean>
+
+	<!-- ******************** 汇添金计划计算当前年化定时任务定时任务 ******************** -->
+	<bean id="planActualAprTask" class="com.hyjf.batch.htj.planActualApr.PlanActualAprTask"></bean>
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="planActualAprJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject" ref="planActualAprTask" />
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="run" />
+	</bean>
+	<!-- 定义触发时间 -->
+	<bean id="planActualAprJobTime"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="planActualAprJob" />
+		<!-- cron表达式,每天1时执行一次 -->
+		 <property name="cronExpression" value="0 0 01 * * ?" /> 
+		<!--<property name="cronExpression" value="0 0/10 * * * ?" />-->
+	</bean>
+	<!-- ******************** 汇添金自动发送协议定时任务 ******************** -->
+	<bean id="autoSendAgreementTask" class="com.hyjf.batch.htj.sendagreement.AutoSendAgreementTask"></bean>
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="autoSendAgreementTaskJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject" ref="autoSendAgreementTask" />
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="sendAgreement" />
+	</bean>
+	<!-- 定义触发时间 -->
+	<bean id="autoSendAgreementJobTime"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="autoSendAgreementTaskJob" />
+		<!-- cron表达式 每分钟执行一次 -->
+		<property name="cronExpression" value="0 0/1 * * * ?" />
+	</bean>
+	<!-- ******************** 关联资产不足，手动投资警报定时任务 ******************** -->
+	<bean id="weakAssetTask" class="com.hyjf.batch.htj.planweakasset.WeakAssetTask"></bean>
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="weakAssetTaskJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject" ref="weakAssetTask" />
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="run" />
+	</bean>
+	<!-- 定义触发时间 -->
+	<bean id="weakAssetTaskJobTime"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="weakAssetTaskJob" />
+		<!-- cron表达式 每9点执行一次 -->
+		 <property name="cronExpression" value="0 0 9 * * ?" /> 
+		<!-- 	<property name="cronExpression" value="0 0/30 * * * ?" />  -->
+	</bean>
+	<!-- ******************** 资产部分募集警报定时任务 ******************** -->
+	<bean id="gatherAssetTask" class="com.hyjf.batch.htj.plangatherasset.GatherAssetTask"></bean>
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="gatherAssetTaskTaskJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject" ref="gatherAssetTask" />
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="run" />
+	</bean>
+	<!-- 定义触发时间 -->
+	<bean id="gatherAssetTaskTaskJobTime"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="gatherAssetTaskTaskJob" />
+		<!-- cron表达式 每天15点执行一次 -->
+		 <property name="cronExpression" value="0 0 15 * * ?" /> 
+		<!-- <property name="cronExpression" value="0 0/30 * * * ?" />  -->
+	</bean>
+	
+		<!-- ******************** 汇添金到期公允价值的计算定时任务 ******************** -->
+	<bean id="planExpireFairValueTask" class="com.hyjf.batch.htj.expirefairvalue.PlanExpireFairValueTask"></bean>
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="planExpireFairValueJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject" ref="planExpireFairValueTask" />
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="run" />
+	</bean>
+	<!-- 定义触发时间 -->
+	<bean id="planExpireFairValueJobTime"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="planExpireFairValueJob" />
+		<!-- cron表达式 -->
+		<property name="cronExpression" value="0 0/1 * * * ?" />
+	</bean>
+	
+	<!-- ******************** 汇添金债转还款的定时任务 ******************** -->
+	<bean id="planCreditRepayTask" class="com.hyjf.batch.htj.plancreditrepay.PlanCreditRepayTask"></bean>
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="planCreditRepayJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject" ref="planCreditRepayTask" />
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="run" />
+	</bean>
+	<!-- 定义触发时间 -->
+	<bean id="planCreditRepayJobTime"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="planCreditRepayJob" />
+		<!-- cron表达式 -->
+		<property name="cronExpression" value="0 0/1 * * * ?" />
+	</bean>
+	
+	
+	<!-- ******************** 汇添金计划还款定时任务 ******************** -->
+	<bean id="planRepayTask" class="com.hyjf.batch.htj.planrepay.PlanRepayTask"></bean>
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="planRepayJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject" ref="planRepayTask" />
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="run" />
+	</bean>
+	<!-- 定义触发时间 -->
+	<bean id="planRepayJobTime"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="planRepayJob" />
+		<!-- cron表达式 -->
+		<property name="cronExpression" value="0 0/1 * * * ?" />
+	</bean>
+	<!-- ******************** 平台计划数据定时任务 ******************** -->
+	<bean id="PlanDataInfoTask" class="com.hyjf.batch.htj.statis.PlanDataInfoTask"></bean>
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="PlanDataInfoTaskJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject" ref="PlanDataInfoTask" />
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="dataTask" />
+	</bean>
+	<!-- 定义触发时间 -->
+	<bean id="PlanDataInfoTaskTime"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="PlanDataInfoTaskJob" />
+		<!-- cron表达式,一小时执行一次 -->
+		<property name="cronExpression" value="0 0 0/1 * * ?" />
+	</bean>
+	<!-- ******************** 平台计划清算未完成定时任务 ******************** -->
+	<bean id="UnableLiquidatesTask" class="com.hyjf.batch.htj.unableliquidates.UnableLiquidatesTask"></bean>
+	<!-- 计划清算未完成 -->
+	<bean id="UnableLiquidatesTaskJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject" ref="UnableLiquidatesTask" />
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="run" />
+	</bean>
+	<!-- 定义触发时间 -->
+	<bean id="UnableLiquidatesTaskTime" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="UnableLiquidatesTaskJob" />
+		<!-- cron表达式,一小时执行一次 -->
+		<property name="cronExpression" value="0 0 15 * * ?" />
+	</bean>
+	<!-- ******************** 平台计划清算完成定时任务 ******************** -->
+	<bean id="LiquidatesFinishTask" class="com.hyjf.batch.htj.liquidatesfinish.AutoFinishTask"></bean>
+	<!-- 计划清算未完成 -->
+	<bean id="LiquidatesFinishTaskJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject" ref="LiquidatesFinishTask" />
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="run" />
+	</bean>
+	<!-- 定义触发时间 -->
+	<bean id="LiquidatesFinishTaskTime" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="LiquidatesFinishTaskJob" />
+		<!-- cron表达式,一分钟执行一次 -->
+		<property name="cronExpression" value="0 0/1 * * * ?" />
+	</bean>
+	<!-- ******************** 计划即将清算定时任务 ******************** -->
+	<bean id="LiquidateWillTask" class="com.hyjf.batch.htj.liquidatewill.LiquidateWillTask"></bean>
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="LiquidateWillTaskJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject" ref="LiquidateWillTask" />
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="dataTask" />
+	</bean>
+	<!-- 定义触发时间 -->
+	<bean id="LiquidateWillTaskTime"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="LiquidateWillTaskJob" />
+		<!-- cron表达式,一小时执行一次 -->
+		<property name="cronExpression" value="0 0 09 * * ?" />
+	</bean>
+</beans>

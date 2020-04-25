@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.AdminCustomizeMapper">
+	<resultMap id="selectAdminListMap" type="com.hyjf.mybatis.model.customize.AdminCustomize">
+	    <id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="username" property="username" jdbcType="VARCHAR" />
+	    <result column="truename" property="truename" jdbcType="VARCHAR" />
+	    <result column="department_id" property="departmentId" jdbcType="INTEGER" />
+	    <result column="sex" property="sex" jdbcType="VARCHAR" />
+	    <result column="password" property="password" jdbcType="VARCHAR" />
+	    <result column="phone" property="phone" jdbcType="VARCHAR" />
+	    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+	    <result column="qq" property="qq" jdbcType="VARCHAR" />
+	    <result column="email" property="email" jdbcType="VARCHAR" />
+	    <result column="fax" property="fax" jdbcType="VARCHAR" />
+	    <result column="address" property="address" jdbcType="VARCHAR" />
+	    <result column="state" property="state" jdbcType="VARCHAR" />
+	    <result column="login_num" property="loginNum" jdbcType="INTEGER" />
+	    <result column="last_login_time" property="lastLoginTime" jdbcType="TIMESTAMP" />
+	    <result column="last_login_ip" property="lastLoginIp" jdbcType="VARCHAR" />
+	    <result column="addtime" property="addtime" jdbcType="TIMESTAMP" />
+	    <result column="operator" property="operator" jdbcType="VARCHAR" />
+	    <result column="role" property="role" jdbcType="VARCHAR" />
+	    <result column="status" property="status" jdbcType="BIT" />
+	    <result column="posttime" property="posttime" jdbcType="INTEGER" />
+	    <result column="group_id" property="groupId" jdbcType="INTEGER" />
+	    <result column="accredit" property="accredit" jdbcType="VARCHAR" />
+	    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+	    <result column="createtime" property="createtime" jdbcType="VARCHAR" />
+	    <result column="updatetime" property="updatetime" jdbcType="VARCHAR" />
+	    <result column="createuser" property="createuser" jdbcType="VARCHAR" />
+	    <result column="updateuser" property="updateuser" jdbcType="VARCHAR" />
+		<result column="departmentname" property="departmentName" jdbcType="VARCHAR" />
+		<result column="role_id" property="roleId" jdbcType="VARCHAR" />
+		<result column="role_name" property="roleName" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectAdminList" resultMap="selectAdminListMap" parameterType="com.hyjf.mybatis.model.customize.AdminCustomize">
+		SELECT
+			admin.id,
+			admin.username,
+			admin.truename,
+			admin.department_id,
+			admin.sex,
+			admin.`password`,
+			admin.phone,
+			admin.mobile,
+			admin.qq,
+			admin.email,
+			admin.fax,
+			admin.address,
+			admin.`state`,
+			admin.login_num,
+			admin.last_login_time,
+			admin.last_login_ip,
+			admin.addtime,
+			admin.`operator`,
+			admin.`role`,
+			admin.`status`,
+			admin.posttime,
+			admin.group_id,
+			admin.accredit,
+			admin.del_flag,
+			admin.createtime,
+			admin.updatetime,
+			admin.`createuser`,
+			admin.updateuser,
+			dep.`name` AS departmentname,
+			role.id as role_id,
+			role.role_name
+		FROM
+			hyjf_admin admin
+			LEFT JOIN huiyingdai_department dep ON admin.department_id = dep.id
+			LEFT JOIN hyjf_admin_and_role aar ON aar.user_id = admin.id
+			LEFT JOIN hyjf_admin_role role ON aar.role_id = role.id and role.state = '0'
+			AND role.del_flag = '0'
+		WHERE
+			admin.del_flag = '0'
+			<if test="id != null and id != ''">
+				AND admin.id = #{id}
+			</if>
+			<if test="usernameSrch != null and usernameSrch != ''">
+				AND admin.username like CONCAT('%', #{usernameSrch}, '%')
+			</if>
+			<if test="truenameSrch != null and truenameSrch != ''">
+				AND admin.truename like CONCAT('%', #{truenameSrch}, '%')
+			</if>
+			<if test="mobileSrch != null and mobileSrch != ''">
+				AND admin.mobile = #{mobileSrch}
+			</if>
+			<if test="departmentSrch != null and departmentSrch != ''">
+				AND dep.`name` like CONCAT('%', #{departmentSrch}, '%')
+			</if>
+          	<if test="stateSrchOn != null and stateSrchOn != '' and stateSrchOff != null and stateSrchOff != ''" >
+          		AND (admin.state = #{stateSrchOn} or admin.state = #{stateSrchOff})
+          	</if>
+          	<if test="stateSrchOn != null and stateSrchOn != '' and (stateSrchOff == null or stateSrchOff == '')" >
+          		AND admin.state = #{stateSrchOn}
+          	</if>
+          	<if test="stateSrchOff != null and stateSrchOff != '' and (stateSrchOn == null or stateSrchOn == '')" >
+          		AND admin.state = #{stateSrchOff}
+          	</if>
+          	<if test="stateSrch != null and stateSrch != ''">
+          		AND admin.state = #{stateSrch}
+          	</if>
+			<if test="addtimeStartSrch != null and addtimeStartSrch != ''">
+				AND DATE_FORMAT( admin.addtime, '%Y-%m-%d' ) <![CDATA[>=]]> #{addtimeStartSrch}
+			</if>
+			<if test="addtimeEndSrch != null and addtimeEndSrch != ''">
+				AND DATE_FORMAT( admin.addtime, '%Y-%m-%d' ) <![CDATA[<=]]> #{addtimeEndSrch}
+			</if>
+		ORDER BY
+			admin.addtime DESC
+		<if test="limitStart >= 0" >
+	      limit #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+
+</mapper>

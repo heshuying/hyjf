@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.MessagePushPlatStaticsMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.MessagePushPlatStatics" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="tag_id" property="tagId" jdbcType="INTEGER" />
+    <result column="sta_date" property="staDate" jdbcType="INTEGER" />
+    <result column="destination_count" property="destinationCount" jdbcType="INTEGER" />
+    <result column="send_count" property="sendCount" jdbcType="INTEGER" />
+    <result column="read_count" property="readCount" jdbcType="INTEGER" />
+    <result column="ios_destination_count" property="iosDestinationCount" jdbcType="INTEGER" />
+    <result column="ios_send_count" property="iosSendCount" jdbcType="INTEGER" />
+    <result column="ios_read_count" property="iosReadCount" jdbcType="INTEGER" />
+    <result column="android_destination_count" property="androidDestinationCount" jdbcType="INTEGER" />
+    <result column="android_send_count" property="androidSendCount" jdbcType="INTEGER" />
+    <result column="android_read_count" property="androidReadCount" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, tag_id, sta_date, destination_count, send_count, read_count, ios_destination_count, 
+    ios_send_count, ios_read_count, android_destination_count, android_send_count, android_read_count
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.MessagePushPlatStaticsExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_message_push_plat_statics
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_message_push_plat_statics
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_message_push_plat_statics
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.MessagePushPlatStaticsExample" >
+    delete from hyjf_message_push_plat_statics
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.MessagePushPlatStatics" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_message_push_plat_statics (tag_id, sta_date, destination_count, 
+      send_count, read_count, ios_destination_count, 
+      ios_send_count, ios_read_count, android_destination_count, 
+      android_send_count, android_read_count)
+    values (#{tagId,jdbcType=INTEGER}, #{staDate,jdbcType=INTEGER}, #{destinationCount,jdbcType=INTEGER}, 
+      #{sendCount,jdbcType=INTEGER}, #{readCount,jdbcType=INTEGER}, #{iosDestinationCount,jdbcType=INTEGER}, 
+      #{iosSendCount,jdbcType=INTEGER}, #{iosReadCount,jdbcType=INTEGER}, #{androidDestinationCount,jdbcType=INTEGER}, 
+      #{androidSendCount,jdbcType=INTEGER}, #{androidReadCount,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.MessagePushPlatStatics" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_message_push_plat_statics
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="tagId != null" >
+        tag_id,
+      </if>
+      <if test="staDate != null" >
+        sta_date,
+      </if>
+      <if test="destinationCount != null" >
+        destination_count,
+      </if>
+      <if test="sendCount != null" >
+        send_count,
+      </if>
+      <if test="readCount != null" >
+        read_count,
+      </if>
+      <if test="iosDestinationCount != null" >
+        ios_destination_count,
+      </if>
+      <if test="iosSendCount != null" >
+        ios_send_count,
+      </if>
+      <if test="iosReadCount != null" >
+        ios_read_count,
+      </if>
+      <if test="androidDestinationCount != null" >
+        android_destination_count,
+      </if>
+      <if test="androidSendCount != null" >
+        android_send_count,
+      </if>
+      <if test="androidReadCount != null" >
+        android_read_count,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="tagId != null" >
+        #{tagId,jdbcType=INTEGER},
+      </if>
+      <if test="staDate != null" >
+        #{staDate,jdbcType=INTEGER},
+      </if>
+      <if test="destinationCount != null" >
+        #{destinationCount,jdbcType=INTEGER},
+      </if>
+      <if test="sendCount != null" >
+        #{sendCount,jdbcType=INTEGER},
+      </if>
+      <if test="readCount != null" >
+        #{readCount,jdbcType=INTEGER},
+      </if>
+      <if test="iosDestinationCount != null" >
+        #{iosDestinationCount,jdbcType=INTEGER},
+      </if>
+      <if test="iosSendCount != null" >
+        #{iosSendCount,jdbcType=INTEGER},
+      </if>
+      <if test="iosReadCount != null" >
+        #{iosReadCount,jdbcType=INTEGER},
+      </if>
+      <if test="androidDestinationCount != null" >
+        #{androidDestinationCount,jdbcType=INTEGER},
+      </if>
+      <if test="androidSendCount != null" >
+        #{androidSendCount,jdbcType=INTEGER},
+      </if>
+      <if test="androidReadCount != null" >
+        #{androidReadCount,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.MessagePushPlatStaticsExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_message_push_plat_statics
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_message_push_plat_statics
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.tagId != null" >
+        tag_id = #{record.tagId,jdbcType=INTEGER},
+      </if>
+      <if test="record.staDate != null" >
+        sta_date = #{record.staDate,jdbcType=INTEGER},
+      </if>
+      <if test="record.destinationCount != null" >
+        destination_count = #{record.destinationCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.sendCount != null" >
+        send_count = #{record.sendCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.readCount != null" >
+        read_count = #{record.readCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.iosDestinationCount != null" >
+        ios_destination_count = #{record.iosDestinationCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.iosSendCount != null" >
+        ios_send_count = #{record.iosSendCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.iosReadCount != null" >
+        ios_read_count = #{record.iosReadCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.androidDestinationCount != null" >
+        android_destination_count = #{record.androidDestinationCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.androidSendCount != null" >
+        android_send_count = #{record.androidSendCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.androidReadCount != null" >
+        android_read_count = #{record.androidReadCount,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_message_push_plat_statics
+    set id = #{record.id,jdbcType=INTEGER},
+      tag_id = #{record.tagId,jdbcType=INTEGER},
+      sta_date = #{record.staDate,jdbcType=INTEGER},
+      destination_count = #{record.destinationCount,jdbcType=INTEGER},
+      send_count = #{record.sendCount,jdbcType=INTEGER},
+      read_count = #{record.readCount,jdbcType=INTEGER},
+      ios_destination_count = #{record.iosDestinationCount,jdbcType=INTEGER},
+      ios_send_count = #{record.iosSendCount,jdbcType=INTEGER},
+      ios_read_count = #{record.iosReadCount,jdbcType=INTEGER},
+      android_destination_count = #{record.androidDestinationCount,jdbcType=INTEGER},
+      android_send_count = #{record.androidSendCount,jdbcType=INTEGER},
+      android_read_count = #{record.androidReadCount,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.MessagePushPlatStatics" >
+    update hyjf_message_push_plat_statics
+    <set >
+      <if test="tagId != null" >
+        tag_id = #{tagId,jdbcType=INTEGER},
+      </if>
+      <if test="staDate != null" >
+        sta_date = #{staDate,jdbcType=INTEGER},
+      </if>
+      <if test="destinationCount != null" >
+        destination_count = #{destinationCount,jdbcType=INTEGER},
+      </if>
+      <if test="sendCount != null" >
+        send_count = #{sendCount,jdbcType=INTEGER},
+      </if>
+      <if test="readCount != null" >
+        read_count = #{readCount,jdbcType=INTEGER},
+      </if>
+      <if test="iosDestinationCount != null" >
+        ios_destination_count = #{iosDestinationCount,jdbcType=INTEGER},
+      </if>
+      <if test="iosSendCount != null" >
+        ios_send_count = #{iosSendCount,jdbcType=INTEGER},
+      </if>
+      <if test="iosReadCount != null" >
+        ios_read_count = #{iosReadCount,jdbcType=INTEGER},
+      </if>
+      <if test="androidDestinationCount != null" >
+        android_destination_count = #{androidDestinationCount,jdbcType=INTEGER},
+      </if>
+      <if test="androidSendCount != null" >
+        android_send_count = #{androidSendCount,jdbcType=INTEGER},
+      </if>
+      <if test="androidReadCount != null" >
+        android_read_count = #{androidReadCount,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.MessagePushPlatStatics" >
+    update hyjf_message_push_plat_statics
+    set tag_id = #{tagId,jdbcType=INTEGER},
+      sta_date = #{staDate,jdbcType=INTEGER},
+      destination_count = #{destinationCount,jdbcType=INTEGER},
+      send_count = #{sendCount,jdbcType=INTEGER},
+      read_count = #{readCount,jdbcType=INTEGER},
+      ios_destination_count = #{iosDestinationCount,jdbcType=INTEGER},
+      ios_send_count = #{iosSendCount,jdbcType=INTEGER},
+      ios_read_count = #{iosReadCount,jdbcType=INTEGER},
+      android_destination_count = #{androidDestinationCount,jdbcType=INTEGER},
+      android_send_count = #{androidSendCount,jdbcType=INTEGER},
+      android_read_count = #{androidReadCount,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

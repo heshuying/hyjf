@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.PlanStatisCustomizeMapper">
+	<resultMap id="selectProductStatisRecordsMap" type="com.hyjf.mybatis.model.customize.PlanStatisCustomize">
+	    <id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="wait_invest" property="waitInvest" jdbcType="DECIMAL" />
+	    <result column="wait_credit" property="waitCredit" jdbcType="DECIMAL" />
+	    <result column="yes_invest" property="yesInvest" jdbcType="DECIMAL" />
+	    <result column="yes_credit" property="yesCredit" jdbcType="DECIMAL" />
+	    <result column="wait_repay" property="waitRepay" jdbcType="DECIMAL" />
+	    <result column="yes_repay" property="yesRepay" jdbcType="DECIMAL" />
+	    <result column="invest_period_one" property="investPeriodOne" jdbcType="INTEGER" />
+	    <result column="invest_period_two_four" property="investPeriodTwoFour" jdbcType="INTEGER" />
+	    <result column="invest_period_five_eight" property="investPeriodFiveEight" jdbcType="INTEGER" />
+	    <result column="invest_period_nine_twel" property="investPeriodNineTwel" jdbcType="INTEGER" />
+	    <result column="invest_period_twel_tf" property="investPeriodTwelTf" jdbcType="INTEGER" />
+	    <result column="invest_period_tf" property="investPeriodTf" jdbcType="INTEGER" />
+	    <result column="credit_period_one" property="creditPeriodOne" jdbcType="INTEGER" />
+	    <result column="credit_period_two_four" property="creditPeriodTwoFour" jdbcType="INTEGER" />
+	    <result column="credit_period_five_eight" property="creditPeriodFiveEight" jdbcType="INTEGER" />
+	    <result column="credit_period_nine_twel" property="creditPeriodNineTwel" jdbcType="INTEGER" />
+	    <result column="credit_period_twel_tf" property="creditPeriodTwelTf" jdbcType="INTEGER" />
+	    <result column="credit_period_tf" property="creditPeriodTf" jdbcType="INTEGER" />
+	    <result column="create_time" property="createTime" jdbcType="INTEGER" />
+	    <result column="data_date" property="dataDate" jdbcType="VARCHAR" />
+	    <result column="data_month" property="dataMonth" jdbcType="VARCHAR" />
+	    <result column="data_hour" property="dataHour" jdbcType="VARCHAR" />
+	    <result column="plan_repay_wait" property="planRepayWait" jdbcType="DECIMAL" />
+	    <result column="plan_repay_yes" property="planRepayYes" jdbcType="DECIMAL" />
+	    <result column="plan_accede_all" property="planAccedeAll" jdbcType="DECIMAL" />
+	    <result column="expire_fair_value" property="expireFairValue" jdbcType="DECIMAL" />
+	    
+	</resultMap>	
+	   <select id="selectProductStatisRecord" resultMap="selectProductStatisRecordsMap" parameterType="com.hyjf.mybatis.model.customize.PlanStatisCustomize">
+			SELECT
+			id,
+			<if test="vFlag != null" >
+			sum(wait_invest) wait_invest,
+			sum(wait_credit) wait_credit,
+			sum(yes_invest) yes_invest,
+			sum(yes_credit) yes_credit,
+			sum(wait_repay) wait_repay,
+			sum(yes_repay) yes_repay,
+			sum(plan_repay_wait) plan_repay_wait,
+			sum(plan_repay_yes) plan_repay_yes,
+			sum(plan_accede_all) plan_accede_all,
+			sum(expire_fair_value) expire_fair_value,
+			sum(invest_period_one) invest_period_one,      
+			sum(invest_period_two_four) invest_period_two_four	,
+			sum(invest_period_five_eight) invest_period_five_eight,
+			sum(invest_period_nine_twel) invest_period_nine_twel	,
+			sum(invest_period_twel_tf) invest_period_twel_tf	,
+			sum(invest_period_tf) invest_period_tf		,
+			sum(credit_period_one) credit_period_one	    ,
+			sum(credit_period_two_four) credit_period_two_four	,
+			sum(credit_period_five_eight) credit_period_five_eight,
+			sum(credit_period_nine_twel) credit_period_nine_twel	,
+			sum(credit_period_twel_tf) credit_period_twel_tf	,
+			sum(credit_period_tf) credit_period_tf	    ,
+		    </if>
+		    <if test="vFlag == null" >
+			wait_invest,
+			wait_credit,
+			yes_invest,
+			yes_credit,
+			wait_repay,
+			yes_repay,
+			plan_repay_wait,
+			plan_repay_yes,
+			plan_accede_all ,
+			expire_fair_value,
+			invest_period_one,      
+			invest_period_two_four	,
+			invest_period_five_eight,
+			invest_period_nine_twel	,
+			invest_period_twel_tf	,
+			invest_period_tf		,
+			credit_period_one	    ,
+			credit_period_two_four	,
+			credit_period_five_eight,
+			credit_period_nine_twel	,
+			credit_period_twel_tf	,
+			credit_period_tf	    ,
+		    </if>
+			 create_time	            ,
+			 data_date	            ,
+			 data_month	            ,
+			data_hour	            
+			 FROM
+				hyjf_debt_plan_info_static 
+			where 1=1
+			<if test="timeStart != null">
+			  AND data_date <![CDATA[>=]]> #{timeStart}
+			</if>
+		    <if test="timeEnd!= null">
+			  AND data_date <![CDATA[<=]]> #{timeEnd}
+			</if>
+		    <if test="daySearch!= null">
+			  AND data_date = #{daySearch}
+			</if>
+			<if test="hourSearch!= null">
+			  AND data_hour LIKE CONCAT('%', #{hourSearch}, '%')
+			</if>
+		    <if test="vFlag != null" >
+		        GROUP BY data_date
+		    </if>
+		       order by create_time ${sort}
+		      <if test="limitStart != null and limitStart>=0" >
+		       limit #{limitStart},#{limitEnd}
+		    </if>
+	</select>
+  <select id="countPlanStatic" resultType="java.lang.Long" parameterType="com.hyjf.mybatis.model.customize.PlanStatisCustomize">
+			SELECT
+				count(1)
+			FROM
+				hyjf_debt_plan_info_static 
+			where 1=1
+			<if test="timeStart != null">
+			  AND data_date <![CDATA[>=]]> #{timeStart}
+			</if>
+		    <if test="timeEnd!= null">
+			  AND data_date <![CDATA[<=]]> #{timeEnd}
+			</if>
+	</select>
+    <!-- 获取汇天利本金  group by userid-->
+	<select id="selectUserProductPrincipal" resultMap="selectProductStatisRecordsMap" parameterType="com.hyjf.mybatis.model.customize.PlanStatisCustomize">
+		SELECT 
+		  p.user_id, 
+		  TRUNCATE (SUM(p.rest_amount), 2) AS principal
+		  FROM huiyingdai_product_list p
+		<where>
+		  p.`status` = 0 AND p.invest_status=0
+	    <if test="timeStart != null">
+		  AND p.invest_time <![CDATA[>=]]> #{timeStart}
+		</if>
+	    <if test="timeEnd!= null">
+		  AND p.invest_time <![CDATA[<=]]> #{timeEnd}
+		</if>
+	    GROUP BY p.user_id
+		</where>
+	</select>
+    <!-- 获取加入金额分布-->
+	<select id="getAccedeInfo" resultType="java.util.HashMap" parameterType="com.hyjf.mybatis.model.customize.PlanStatisCustomize">
+		SELECT 
+		 id,												
+		accede_money_one           ,       
+		accede_money_two           ,
+		accede_money_three         ,
+		accede_money_four          ,
+		accede_money_five          ,
+		accede_money_five_up       ,
+		accede_money_count_one     ,
+		accede_money_count_two     ,
+		accede_money_count_three   ,
+		accede_money_count_four    ,
+		accede_money_count_five    ,
+		accede_money_count_five_up ,
+		accede_count_one           ,
+		accede_count_two_four      ,
+		accede_count_five_egiht    ,
+		accede_count_nine_fifteen  ,
+		accede_count_sixteen_thirty,
+		accede_count_thirtyfirst_up,
+		accede_client_money_pc     ,
+		accede_client_money_wei    ,
+		accede_client_money_ios    ,
+		accede_client_money_android,
+		accede_client_count_pc     ,
+		accede_client_count_wei    ,
+		accede_client_count_ios    ,
+		accede_client_count_android,
+		create_time                ,
+		update_time    
+		  FROM hyjf_debt_plan_info_static_count 
+	</select>
+	
+    <!-- 新老客户 投资人数分布、转入金额分布-->
+	<select id="selectUserIsNewBuy" resultMap="selectProductStatisRecordsMap" parameterType="com.hyjf.mybatis.model.customize.PlanStatisCustomize">
+		SELECT 
+		   p.user_id, u.reg_time,p.amount
+		  FROM huiyingdai_product_list p
+		  LEFT JOIN huiyingdai_users u ON  p.user_id = u.user_id
+		<where>
+		  p.`status` = 0 AND p.invest_status=0
+	    <if test="timeStart != null">
+		  AND p.invest_time <![CDATA[>=]]> #{timeStart}
+		</if>
+	   <if test="timeEnd != null">
+		  AND p.invest_time <![CDATA[<=]]> #{timeEnd}
+		</if>
+		</where>
+	</select>	
+
+    <!-- 新老客户 本金金额分布-->
+	<select id="selectUserIsNewPrincipal" resultMap="selectProductStatisRecordsMap" parameterType="com.hyjf.mybatis.model.customize.PlanStatisCustomize">
+		SELECT 
+		  p.user_id, u.reg_time,
+		  TRUNCATE (p.rest_amount, 2) AS principal
+		  FROM huiyingdai_product_list p
+		  LEFT JOIN huiyingdai_users u ON  p.user_id = u.user_id
+		<where>
+		  p.`status` = 0 AND p.invest_status=0
+	    <if test="timeStart != null">
+		  AND p.invest_time <![CDATA[>=]]> #{timeStart}
+		</if>
+		<if test="timeEnd != null">
+		  AND p.invest_time <![CDATA[<=]]> #{timeEnd}
+		</if>
+		</where>
+		 GROUP BY p.user_id
+	</select>	
+
+	<!-- 新老客户 转出分布-->
+	<select id="selectUserIsNewRedeem" resultMap="selectProductStatisRecordsMap" parameterType="com.hyjf.mybatis.model.customize.PlanStatisCustomize">
+		SELECT 
+		  p.user_id, u.reg_time,p.amount
+		  FROM huiyingdai_product_redeem p
+     	  LEFT JOIN huiyingdai_users u ON  p.user_id = u.user_id
+		<where>
+		  p.`status` = 0
+	    <if test="timeStart != null">
+		  AND p.redeem_time <![CDATA[>=]]> #{timeStart}
+		</if>
+	    <if test="timeEnd!= null">
+		  AND p.redeem_time <![CDATA[<=]]> #{timeEnd}
+		</if>
+		</where>
+		 GROUP BY p.user_id
+	</select>	
+
+	
+	
+</mapper>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.UsedRecommendCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+			<!-- 用户名 -->
+			<if test="userName != null and userName != ''">
+				AND u.username LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<!-- 手机号 -->
+			<if test="mobile != null and mobile != ''">
+				AND u.mobile LIKE CONCAT('%', #{mobile}, '%')
+			</if>
+			<!-- 部门 -->
+			<if test="combotreeListSrch != null and combotreeListSrch != ''">
+				AND od2.id in
+				<foreach collection="combotreeListSrch" open="(" close=")" separator="," item="dep">
+					#{dep}
+				</foreach>
+			</if>
+			
+			<!-- 奖品类别 -->
+			<if test="prizeKindCd != null">
+				AND  rp.prize_kind = #{prizeKindCd}
+			</if>
+			
+			<!-- 获得奖品 -->
+			<if test="prizeName != null and prizeName != ''">
+				AND pc.prize_name LIKE CONCAT('%', #{prizeName}, '%')
+			</if>
+			
+			<!-- 线上奖品发放状态 -->
+			<if test="prizeSendFlagSrch != null">
+				AND rp.prize_send_flag = #{prizeSendFlagSrch}
+			</if>
+			<!-- 获得时间 -->
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND FROM_UNIXTIME( rp.add_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch != ''">
+				AND FROM_UNIXTIME( rp.add_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+		</where>
+	</sql>
+
+	<resultMap id="InviteUser" type="com.hyjf.mybatis.model.customize.admin.UsedRecommendCustomize">
+		<id column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="username" property="userName" />
+		<result column="truename" property="trueName" />
+		<result column="mobile" property="mobile" />
+		<result column="departmentName" property="departmentName" />
+		<result column="prizeKindName" property="prizeKindName" />
+		<result column="prize_count" property="prizeCount" />
+		<result column="used_recommend_count" property="usedRecommendCount" />
+		<result column="prize_name" property="prizeName" />
+		<result column="remark" property="remark" />
+		<result column="add_time" property="addTime" />
+		<result column="prize_send_flag" property="prizeSendFlag" />
+	</resultMap>
+	<select id="selectInviteRecommendList" resultMap="InviteUser" parameterType="com.hyjf.mybatis.model.customize.admin.UsedRecommendCustomize">
+		SELECT
+			rp.user_id,
+			u.username,
+			ui.truename,
+			u.mobile,
+			od2.`name` AS departmentName,
+			pn.`name` AS prizeKindName,
+			rp.prize_count,
+			rp.used_recommend_count,
+			pc.prize_name,
+			rp.remark,
+			FROM_UNIXTIME(
+				rp.add_time,
+				'%Y-%m-%d %H:%i:%S'
+			) AS add_time,
+			CASE
+		WHEN rp.prize_send_flag = 1
+		AND rp.prize_type <![CDATA[<>]]> 1 THEN
+			'已发放'
+		WHEN rp.prize_send_flag = 0
+		AND rp.prize_type <![CDATA[<>]]> 1 THEN
+			'未发放'
+		ELSE
+			'人工发放'
+		END AS prize_send_flag
+		FROM
+			hyjf_invite_recommend_prize rp
+		INNER JOIN huiyingdai_users u ON rp.user_id = u.user_id
+		LEFT JOIN huiyingdai_users_info ui ON ui.user_id = u.user_id 
+		LEFT JOIN `hyjf_crm`.`oa_users` `ou` ON `ou`.hyd_id = u.referrer
+		AND ou.user_status IN ('E', 'Q1', 'Q11', 'Q2', 'Q21')
+		LEFT JOIN `hyjf_crm`.`oa_department` `od` ON `od`.`id` = `ou`.`departmentid`
+		AND `od`.id IS NOT NULL
+		LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+		LEFT JOIN hyjf_param_name pn ON rp.prize_kind = pn.name_cd
+		AND pn.name_class = 'PRIZE_KIND'
+		LEFT JOIN (
+			SELECT
+				conf.prize_group_code prize_group_code,
+				conf.prize_name prize_name
+			FROM
+				hyjf_invite_prize_conf conf
+			GROUP BY
+				prize_group_code
+		) pc ON rp.prize_group = pc.prize_group_code
+		<include refid="Where_Clause" />
+		ORDER BY
+			rp.update_time DESC
+		<if test="limitStart != null and limitStart >= 0 and limitEnd !=null and limitEnd >= 0" >
+    		LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+    	</if>
+	</select>
+	
+	<select id="selectInviteRecommendTotal" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.admin.UsedRecommendCustomize">
+		SELECT
+			COUNT(1)
+		FROM
+			hyjf_invite_recommend_prize rp
+		INNER JOIN huiyingdai_users u ON rp.user_id = u.user_id
+		LEFT JOIN `hyjf_crm`.`oa_users` `ou` ON `ou`.hyd_id = u.referrer
+		AND ou.user_status IN ('E', 'Q1', 'Q11', 'Q2', 'Q21')
+		LEFT JOIN `hyjf_crm`.`oa_department` `od` ON `od`.`id` = `ou`.`departmentid`
+		AND `od`.id IS NOT NULL
+		LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+		LEFT JOIN hyjf_param_name pn ON rp.prize_kind = pn.name_cd
+		AND pn.name_class = 'PRIZE_KIND'
+		LEFT JOIN (
+			SELECT
+				conf.prize_group_code,
+				conf.prize_name prize_name
+			FROM
+				hyjf_invite_prize_conf conf
+			GROUP BY
+				prize_group_code
+		) pc ON rp.prize_group = pc.prize_group_code
+		<include refid="Where_Clause" />
+	</select>
+
+	
+</mapper>

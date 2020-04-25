@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.AdminBorrowRegistExceptionMapper">
+
+	<sql id="Where_Clause">
+		<where>
+			<!-- 备案中,备案失败 -->
+			b.`status` = 0 AND b.`regist_status` IN (1,4) 
+			<if test="borrowNidSrch != null and borrowNidSrch != ''">
+				AND b.borrow_nid LIKE CONCAT('%', #{borrowNidSrch}, '%')
+			</if>
+			<if test="borrowNameSrch != null and borrowNameSrch != ''">
+				AND b.`name` LIKE CONCAT('%', #{borrowNameSrch}, '%')
+			</if>
+			<if test="usernameSrch != null and usernameSrch != ''">
+				AND b.borrow_user_name LIKE CONCAT('%', #{usernameSrch}, '%')
+			</if>
+			<if test="projectTypeSrch != null and projectTypeSrch != ''">
+				AND b.project_type = #{projectTypeSrch}
+			</if>
+			<if test="borrowStyleSrch != null and borrowStyleSrch != ''">
+				AND b.borrow_style = #{borrowStyleSrch}
+			</if>
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND FROM_UNIXTIME( b.addtime, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch != ''">
+				AND FROM_UNIXTIME( b.addtime, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+		</where>
+	</sql>
+	<select id="countBorrow" resultType="java.lang.Long" parameterType="com.hyjf.mybatis.model.customize.BorrowCommonCustomize">
+		SELECT
+		  	COUNT(1)
+		FROM
+			huiyingdai_borrow b
+		LEFT JOIN huiyingdai_borrow_style bs ON bs.nid = b.borrow_style
+		LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = CAST(b.project_type AS CHAR)
+		LEFT JOIN hyjf_param_name pn ON cast(b.regist_status AS CHAR) = pn.name_cd AND pn.name_class = 'REGIST_STATUS'
+		<include refid="Where_Clause" />
+	</select>
+
+	<resultMap id="selectBorrowListMap" type="com.hyjf.mybatis.model.customize.admin.BorrowRegistCustomize">
+	<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<result column="project_type" property="projectType" jdbcType="VARCHAR" />
+		<result column="project_type_name" property="projectTypeName" jdbcType="VARCHAR" />
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<result column="borrow_style" property="borrowStyle" jdbcType="VARCHAR" />
+		<result column="borrow_style_name" property="borrowStyleName" jdbcType="VARCHAR" />
+		<result column="regist_status_name" property="registStatusName" jdbcType="VARCHAR" />
+		<result column="regist_status" property="registStatus" jdbcType="VARCHAR" />
+		<result column="addtime" property="addtime" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectBorrowList" resultMap="selectBorrowListMap" parameterType="com.hyjf.mybatis.model.customize.BorrowCommonCustomize">
+		SELECT
+			b.borrow_nid,
+			b.`name` AS borrow_name,
+			b.borrow_user_name AS username,
+			FORMAT(b.account, 2) AS account,
+			CONCAT(b.borrow_apr, '%') borrow_apr,
+			CASE
+				WHEN borrow_style = 'endday' THEN
+					CONCAT(b.borrow_period, '天')
+				ELSE
+					CONCAT(b.borrow_period, '个月')
+			END borrow_period,
+			CONCAT(b.borrow_account_scale, '%') borrow_account_scale,
+			b.borrow_style,
+			bs.`name` AS borrow_style_name,
+			bpt.borrow_name AS project_type_name,
+			FROM_UNIXTIME( b.addtime, '%Y-%m-%d %H:%i:%s' ) AS addtime,
+			pn.name AS regist_status_name,
+		    b.regist_status,
+		    b.project_type
+		FROM
+		    huiyingdai_borrow b
+		LEFT JOIN huiyingdai_borrow_style bs ON bs.nid = b.borrow_style
+		LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = CAST(b.project_type AS CHAR)
+		LEFT JOIN hyjf_param_name pn ON cast(b.regist_status AS CHAR) = pn.name_cd AND pn.name_class = 'REGIST_STATUS'
+		<include refid="Where_Clause" />
+		ORDER BY
+		  b.addtime DESC, b.id DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+</mapper>

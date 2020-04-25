@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.billion.BillionCustomizeMapper">
+	<resultMap id="selectBillionThirdMap" type="com.hyjf.mybatis.model.customize.billion.ActivityBillionThirdCustomize">
+		<result column="id" property="id" jdbcType="INTEGER" />
+		<result column="coupon_quota" property="couponQuota" jdbcType="VARCHAR" />
+		<result column="coupon_type" property="couponType" jdbcType="VARCHAR" />
+		<result column="sec_kill_time" property="secKillTime" jdbcType="VARCHAR" />
+		<result column="prize_name" property="prizeName" jdbcType="VARCHAR" />
+		<result column="coupon_code" property="couponCode" jdbcType="VARCHAR" />
+		<result column="tender_quota" property="tenderQuota" jdbcType="VARCHAR" />
+		<result column="remaining_num" property="remainingNum" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="kill_status" property="killStatus" jdbcType="VARCHAR" />
+	</resultMap> 
+	<select id="getBillionThirdActivityList" resultMap="selectBillionThirdMap">
+			SELECT
+				habtc.id id,
+				hcc.coupon_quota coupon_quota,
+				hcc.coupon_type coupon_type,
+				habtc.sec_kill_time sec_kill_time,
+				habtc.prize_name prize_name,
+				hcc.coupon_code coupon_code,
+				CASE
+			WHEN hcc.tender_quota_type = 0 THEN
+				'出借金额不限'
+			WHEN hcc.tender_quota_type = 1 THEN
+				CONCAT(
+					hcc.tender_quota_min,
+					'元~',
+					hcc.tender_quota_max,
+					'元可用'
+				)
+			WHEN hcc.tender_quota_type = 2 THEN
+				CONCAT('满',
+					hcc.tender_quota,
+					'元可用'
+				)
+			WHEN hcc.tender_quota_type = 3 THEN
+				CONCAT(
+					hcc.tender_quota,
+					'元（含）内可用'
+				)
+			ELSE
+				'出借金额不限'
+			END tender_quota,
+			 habtc.coupon_num - habtc.sec_kill_num remaining_num,
+			 habtc. STATUS status,
+		     habtc.kill_status kill_status
+			FROM
+				hyjf_activity_billion_third_config habtc
+			LEFT JOIN hyjf_coupon_config hcc ON habtc.coupon_code = hcc.coupon_code
+	</select>
+	
+
+	
+</mapper>

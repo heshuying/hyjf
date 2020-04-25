@@ -1,0 +1,762 @@
+@charset "UTF-8";
+@font-face {
+  font-family: "iconfont";
+  src: url("../../fonts/iconfont/iconfont.eot?t=1502336001062");
+  /* IE9*/
+  src: url("../../fonts/iconfont/iconfont.eot?t=1502336001062#iefix") format("embedded-opentype"), url("../../fonts/iconfont/iconfont.woff?t=1502336001062") format("woff"), url("../../fonts/iconfont/iconfont.ttf?t=1502336001062") format("truetype"), url("../../fonts/iconfont/iconfont.svg?t=1502336001062#iconfont") format("svg");
+  /* iOS 4.1- */
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-jinzhi:before { content: "\e603"; }
+
+.icon-duihao:before { content: "\e602"; }
+
+.icon-tuichu:before { content: "\e605"; }
+
+.icon-shuzi11:before { content: "\e729"; }
+
+.icon-phone:before { content: "\e601"; }
+
+.icon-bangzhu:before { content: "\e608"; }
+
+.icon-dianhua:before { content: "\e67d"; }
+
+.icon-sanjiao:before { content: "\e676"; }
+
+.icon-shape3:before { content: "\e627"; }
+
+.icon-cha:before { content: "\e607"; }
+
+.icon-jiantou:before { content: "\e610"; }
+
+.icon-ananzuiconv265:before { content: "\e604"; }
+
+.icon-chahao1:before { content: "\e697"; }
+
+.icon-xiazai:before { content: "\e6c4"; }
+
+.icon-custom-wechat:before { content: "\e642"; }
+
+.icon-xiazai1:before { content: "\e60a"; }
+
+.icon-kefu:before { content: "\e613"; }
+
+.icon-qq:before { content: "\e60b"; }
+
+.icon-xiayibu63:before { content: "\e6a5"; }
+
+.icon-shijian:before { content: "\e6ae"; }
+
+.icon-top-copy:before { content: "\e600"; }
+
+.icon-circulation:before { content: "\e67a"; }
+
+.icon-bulb:before { content: "\e7d4"; }
+
+.icon-scancode:before { content: "\e631"; }
+
+.icon-jisuanqi:before { content: "\e638"; }
+
+.icon-gupiao:before { content: "\e630"; }
+
+.icon-file-1:before { content: "\e625"; }
+
+.icon-tongzhi:before { content: "\e60c"; }
+
+.icon-jian:before { content: "\e620"; }
+
+.icon-tianjia:before { content: "\e622"; }
+
+.icon-xuanze:before { content: "\e668"; }
+
+.icon-yanjing:before { content: "\e657"; }
+
+.icon-yanjing1:before { content: "\e6b5"; }
+
+.icon-zhushi:before { content: "\e636"; }
+
+.icon-more:before { content: "\e61e"; }
+
+.icon-piaofang:before { content: "\e606"; }
+
+.icon-zhu:before { content: "\e61d"; }
+
+.icon-add:before { content: "\e6df"; }
+
+.icon-addition:before { content: "\e6e0"; }
+
+.icon-offline-fill:before { content: "\e714"; }
+
+.icon-offline:before { content: "\e712"; }
+
+.icon-tanhao:before { content: "\e713"; }
+
+.icon-gantanhao:before { content: "\e609"; }
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.percent-describe::before {
+  content: '增长';
+}
+
+.percent-describe.fall::before {
+  content: '下降';
+}
+
+#body-section .section-content {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.section {
+  background-position: center center;
+  -webkit-background-size: cover;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.authors img {
+  display: block;
+}
+
+.box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.flex1 {
+  flex: 1;
+  text-align: left;
+  display: inline-block;
+}
+
+.content-center {
+  text-align: center;
+}
+
+.content-right {
+  text-align: right;
+}
+
+.main-color {
+  color: #00b7ee;
+}
+
+.margin10 {
+  margin: 10px;
+}
+
+.lrmargin10 {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.tbmargin100 {
+  margin: 100px auto;
+}
+
+.padright10p {
+  padding-right: 10%;
+}
+
+.lpadding10 {
+  padding-left: 10px;
+}
+
+.double-column {
+  vertical-align: middle;
+  width: 49%;
+}
+
+.amount {
+  height: 76px;
+  line-height: 76px;
+  font-size: 1.5em;
+  white-space: nowrap;
+}
+
+.amount-bg {
+  background: url("/hyjfReport/images/data-box.png") no-repeat center;
+  background-size: contain;
+  min-width: 341px;
+}
+
+.section {
+  color: #fff;
+  padding: 60px 10%;
+}
+
+.section .section-content {
+  padding: 40px 0;
+  overflow: hidden;
+  text-align: center;
+}
+
+.section:nth-of-type(2n+1) {
+  background: url("/hyjfReport/images/oddt.png") no-repeat center top, url("/hyjfReport/images/oddb.png") no-repeat center bottom;
+  background-color: #151c3a;
+}
+
+.section:nth-of-type(2n) {
+  background: url("/hyjfReport/images/evenl.png") no-repeat left top, url("/hyjfReport/images/evenr.png") no-repeat right bottom;
+  background-color: #202c62;
+}
+
+.section-odd {
+  background-color: #151c3a;
+  background: url("/hyjfReport/images/oddt.png") no-repeat center top, url("/hyjfReport/images/oddb.png") no-repeat center bottom;
+  -pie-background: #151c3a url("/hyjfReport/images/oddt.png") no-repeat center top, url("/hyjfReport/images/oddb.png") no-repeat center bottom;
+  position: relative;
+  behavior: url(/hyjfReport/PIE.htc);
+}
+
+.section-even {
+  background-color: #202c62;
+  background: url("/hyjfReport/images/evenl.png") no-repeat left top, url("/hyjfReport/images/evenr.png") no-repeat right bottom;
+  -pie-background: #202c62 url("/hyjfReport/images/evenl.png") no-repeat left top, url("/hyjfReport/images/evenr.png") no-repeat right bottom;
+  position: relative;
+  behavior: url(/hyjfReport/PIE.htc);
+}
+
+.title {
+  border-bottom: 1px solid #484e65;
+  margin: 20px auto;
+  flex-wrap: nowrap;
+}
+
+.title h2 {
+  border-bottom: 5px solid #00b7ee;
+  font-size: 4em;
+  margin-bottom: -3px;
+  display: inline-block;
+}
+
+.title div {
+  display: inline-block;
+}
+
+.title span {
+  font-size: 2em;
+  margin: 20px;
+  font-weight: lighter;
+}
+
+.title p {
+  font-size: 0.8em;
+  line-height: 1.1em;
+  font-weight: lighter;
+}
+
+.title .en-title {
+  color: #c4c6ce;
+}
+
+.sub-title {
+  color: #c4c6ce;
+}
+
+.swiper-exciting-events .nowrap {
+  white-space: nowrap;
+}
+
+.echart-title {
+  color: #00eea8;
+  font-weight: lighter;
+}
+
+/* swiper
+-----------------------------------------------------*/
+.section-content .swiper-slide {
+  float: left;
+}
+
+.pagination {
+  clear: both;
+}
+
+.swiper-pagination-switch {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  position: relative;
+  z-index: 2;
+  behavior: url("/hyjfReport/PIE.htc");
+  border-radius: 8px;
+  background: #555;
+  margin: 0 5px;
+  opacity: 0.8;
+  border: 1px solid #fff;
+  cursor: pointer;
+}
+
+.swiper-active-switch {
+  background: #fff;
+}
+
+header img, footer img {
+  width: 100%;
+}
+
+.img100 {
+  width: 100%;
+}
+
+.img-max100 {
+  max-width: 100%;
+}
+
+/*header
+-----------------------------------------------------*/
+.header-top {
+  background: url("/hyjfReport/images/header/header-bg.png") no-repeat center bottom;
+  background-color: #151c3a;
+  background-size: cover;
+  padding: 100px 0;
+  color: #fff;
+}
+
+.header-top .header-circle {
+  background: url("/hyjfReport/images/header/header-circle.png") no-repeat center center;
+  width:750px;
+	height:750px;
+	margin:auto;
+	padding-top: 220px;
+	box-sizing: border-box;
+}
+.header-top .header-cname .year-number-header{
+			font-size: 70px;
+			margin-bottom: 20px;
+      margin-top:-70px;
+		}
+.header-top .header-cname .logo {
+  width: 60px;
+}
+
+.header-top .header-cname .logo-text {
+  width: 120px;
+}
+
+.header-top .header-cname .cname-line {
+  display: inline-block;
+  border-right: 1px solid #fff;
+  padding-right: 30px;
+}
+
+.header-top .header-cname .cname {
+  margin-left: 30px;
+  letter-spacing: 10px;
+  font-size: 2.5em;
+}
+
+.header-top .header-cname img {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.header-top .header-cname span {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.header-top .header-circle-line {
+  width: 60%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.header-top .report-title {
+  font-size: 120px;
+  letter-spacing: 20px;
+}
+
+.header-top .ename {
+  padding: 10px 80px;
+  font-size: 2.25em;
+  margin-bottom: 10px;
+	font-weight: normal;
+}
+
+/*业绩总览*/
+.earn-gantanhao {
+  vertical-align: middle;
+}
+
+.earn-gantanhao .gantanhao-tips {
+  color:transparent;
+	position: absolute;
+	margin-left: 10px;
+	line-height: 1.95em;
+	font-size: 0.8em;
+	padding:5px 10px;
+	border-radius: 10px;
+	margin-top: -35px;
+	margin-left: -16px;
+	z-index: 1000;
+}
+
+.earn-gantanhao:hover .gantanhao-tips {
+  color: #fff;
+	background: #6474cb;
+}
+
+/* 当月业绩
+-----------------------------------------------------*/
+.amount-large {
+  font-size: 1.5em;
+  line-height: 2em;
+}
+
+.quarter-box {
+  width: 60%;
+  margin-left: 20%;
+}
+
+.quarter-title {
+  color: #00eec4;
+  padding: 20px;
+  border-bottom: 1px solid #484e65;
+  margin-bottom: 20px;
+}
+
+/* 渠道分析
+-----------------------------------------------------*/
+.channelbox {
+  padding: 10px;
+  background-color: #181f43;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  z-index: 2;
+  position: relative;
+  behavior: url(/hyjfReport/PIE.htc);
+  border-top: 7px solid #1d264f;
+  border-left: 7px solid #1d264f;
+  box-shadow: 5px 5px 5px 5px #111731;
+  margin-bottom: 40px;
+}
+
+/* 当月之最
+-----------------------------------------------------*/
+.topten-customer-info{
+	width:330px;
+	margin:10px auto;
+	text-align: center;
+}
+.topten-table {
+  border: 1px solid #00eea8;
+  behavior: url("/hyjfReport/PIE.htc");
+  border-radius: 10px;
+  margin-top: 40px;
+  display: inline-block;
+}
+
+.topten-title {
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.topten-li {
+  list-style-type: none;
+  padding-left: 30px;
+	padding-right: 20px;
+}
+
+.topten-li li {
+  margin-top: 10px;
+  font-weight: lighter;
+  vertical-align: middle;
+  box-sizing: border-box;
+  white-space: nowrap;
+  padding-left: 32px;
+  position: relative;
+}
+
+.topten-li li:last-child {
+  margin-bottom: 20px;
+}
+
+.topten-li li:nth-of-type(1)::before {
+  content: url("/hyjfReport/images/year/1.png");
+  position: absolute;
+  left: 0;
+}
+
+.topten-li li:nth-of-type(2)::before {
+  content: url("/hyjfReport/images/year/2.png");
+  position: absolute;
+  left: 0;
+}
+
+.topten-li li:nth-of-type(3)::before {
+  content: url("/hyjfReport/images/year/3.png");
+  position: absolute;
+  left: 0;
+}
+
+.topten-li li .topten-li-num {
+  width: 10%;
+}
+
+.topten-li li .topten-li-name {
+  width: 20%;
+}
+
+.topten-li li .topten-li-amount {
+  width: 30%;
+  text-align: left;
+}
+
+.topten-li li span {
+  padding-left: 20px;
+  padding-right: 20px;
+  line-height: 32px;
+  vertical-align: top;
+  display: inline-block;
+}
+
+/* 用户分析
+-----------------------------------------------------*/
+.section6-box,
+.exciting-events-box {
+  text-align: left;
+}
+
+.section6-box .content-center,
+.exciting-events-box .content-center {
+  width: 30%;
+  margin: 1.5%;
+  display: inline-block;
+}
+
+.line {
+  width: 100%;
+}
+
+.quarter-section6 .content-center,
+.experience-optimization-box .content-center {
+  background: url("/hyjfReport/images/rect-angle.png") no-repeat -5px -5px, url("/hyjfReport/images/rect-angle-lb.png") no-repeat left -5px bottom -5px, url("/hyjfReport/images/rect-angle-rt.png") no-repeat right -5px top -5px, url("/hyjfReport/images/rect-angle-rb.png") no-repeat right -5px bottom -5px;
+  -pie-background: url("/hyjfReport/images/rect-angle.png") no-repeat left top, url("/hyjfReport/images/rect-angle-lb.png") no-repeat left bottom, url("/hyjfReport/images/rect-angle-rt.png") no-repeat right top, url("/hyjfReport/images/rect-angle-rb.png") no-repeat right bottom;
+  -webkit-box-shadow: 1px 1px 20px 1px #1d3a70 inset;
+  -moz-box-shadow: 1px 1px 20px 1px #1d3a70 inset;
+  box-shadow: 1px 1px 20px 1px #1d3a70 inset;
+  position: relative;
+  behavior: url(/hyjfReport/PIE.htc);
+  border: 8px solid transparent;
+  padding: 20px;
+  width: 30%;
+  margin: 1.5%;
+  display: inline-block;
+}
+
+.quarter-section6 .content-center:nth-of-type(2n) .sub-title-date,
+.experience-optimization-box .content-center:nth-of-type(2n) .sub-title-date {
+  color: #00b7ee;
+}
+
+.quarter-section6 .content-center:nth-of-type(2n+1) .sub-title-date,
+.experience-optimization-box .content-center:nth-of-type(2n+1) .sub-title-date {
+  color: #00eea8;
+}
+
+.quarter-section6 .content-center .sub-title,
+.experience-optimization-box .content-center .sub-title {
+  line-height: 2em;
+  font-size: 1.5em;
+  font-weight: lighter;
+}
+
+/* 足迹
+-----------------------------------------------------*/
+.footerprints-title img {
+  width: 100px;
+}
+
+.footerprints .section7 {
+  padding: 20px;
+}
+
+.footerprints .section7 .section7-box {
+  margin: 10px auto;
+}
+
+.footerprints .section7 .section7-box .month-num {
+  font-size: 1.5em;
+  padding: 25px 20px;
+  behavior: url("/hyjfReport/PIE.htc");
+  border-radius: 80%;
+  border: 2px solid #0f9396;
+  display: inline-block;
+  position: relative;
+  z-index: 2;
+}
+
+.footerprints .section7 .section7-box .month-list {
+  background: url("/hyjfReport/images/dot-active.png") no-repeat center;
+}
+
+.footerprints .section7 .section7-box .month-list .sub-title {
+  position: relative;
+  z-index: 2;
+  behavior: url("/hyjfReport/PIE.htc");
+  background-color: #253a97;
+  border-radius: 3px;
+  padding: 10px 20px;
+  line-height: 1.5em;
+}
+
+.footerprints .section7 .section7-box .month-list .sub-title:hover {
+  background-color: #2d48c1;
+  color: #fff;
+}
+
+.footerprints .section7 .section7-box .month-list .sub-title:hover .stitle {
+  color: #00eea8;
+}
+
+.footerprints .section7 .section7-box .month-list .sub-title .stitle {
+  font-size: small;
+}
+
+.footerprints .section7 .section7-box .month-list:nth-of-type(2n+1) .sub-title {
+  width: 40%;
+  text-align: right;
+}
+
+.footerprints .section7 .section7-box .month-list:nth-of-type(2n) .sub-title {
+  margin-left: 55%;
+  width: 40%;
+  text-align: left;
+}
+
+.footerprints .section7 .section7-box .month-list-odd .sub-title {
+  width: 40%;
+  text-align: right;
+}
+
+.footerprints .section7 .section7-box .month-list-even .sub-title {
+  margin-left: 55%;
+  width: 40%;
+}
+
+.customer-service-section > div {
+  background: url("/hyjfReport/images/rect-angle.png") no-repeat -5px -5px, url("/hyjfReport/images/rect-angle-lb.png") no-repeat left -5px bottom -5px, url("/hyjfReport/images/rect-angle-rt.png") no-repeat right -5px top -5px, url("/hyjfReport/images/rect-angle-rb.png") no-repeat right -5px bottom -5px;
+  -pie-background: url("/hyjfReport/images/rect-angle.png") no-repeat, url("/hyjfReport/images/rect-angle-lb.png") no-repeat left bottom, url("/hyjfReport/images/rect-angle-rt.png") no-repeat right top, url("/hyjfReport/images/rect-angle-rb.png") no-repeat right bottom;
+  position: relative;
+  behavior: url(/hyjfReport/PIE.htc);
+  box-shadow: 1px 1px 20px 1px #132c4c inset;
+  border: 8px solid transparent;
+  padding: 20px;
+  width: 46%;
+  margin: 1.5%;
+  box-sizing: border-box;
+  display: inline-block;
+}
+
+.customer-service-section > div i {
+  margin-right: 10px;
+}
+
+.customer-service-section > div .sub-statistics {
+  color: #00eea8;
+}
+
+.customer-service-section > div .sub-statistics span {
+  font-size: 2em;
+}
+
+/* 导航
+------------------------------------------------------*/
+.right-nav {
+  position: fixed;
+  top: 95px;
+  right: 100px;
+  z-index: 999;
+  color: #fff;
+}
+
+.right-nav ul {
+  display: block;
+  list-style: none;
+  margin: 0;
+}
+
+.right-nav ul li span {
+  cursor: pointer;
+  display: block;
+  box-sizing: border-box;
+  vertical-align: middle;
+  text-align: center;
+  font-size: 15px;
+  padding: 10px;
+  width: 65px;
+  behavior: url("/hyjfReport/PIE.htc");
+  border-radius: 100%;
+  text-decoration: none;
+}
+
+.right-nav ul li span.double-height {
+  line-height: 2em;
+}
+
+.right-nav ul li.li-even {
+  margin-left: 65px;
+}
+
+.right-nav ul li.li-even span {
+  border: 5px solid #0f79ae;
+  background-color: #00b7ee;
+  box-shadow: 0px 0px 2px 7px #1e386a;
+}
+
+.right-nav ul li.li-even span.active {
+  background-color: #066c8a;
+}
+
+.right-nav ul li.li-odd span {
+  border: 5px solid #3655b0;
+  background-color: #4c7aff;
+  box-shadow: 0px 0px 2px 7px #22336a;
+}
+
+.right-nav ul li.li-odd span.active {
+  background-color: #2d499a;
+}
+
+.right-nav ul li:nth-of-type(2n) {
+  margin-left: 65px;
+}
+
+.right-nav ul li:nth-of-type(2n) span {
+  border: 5px solid #0f79ae;
+  background-color: #00b7ee;
+  box-shadow: 0px 0px 2px 7px #1e386a;
+}
+
+.right-nav ul li:nth-of-type(2n) span.active {
+  background-color: #066c8a;
+}
+
+.right-nav ul li:nth-of-type(2n+1) span {
+  border: 5px solid #3655b0;
+  background-color: #4c7aff;
+  box-shadow: 0px 0px 2px 7px #22336a;
+}
+
+.right-nav ul li:nth-of-type(2n+1) span.active {
+  background-color: #2d499a;
+}
+
+/*# sourceMappingURL=../maps/reports/reports.css.map */

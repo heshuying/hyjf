@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.BorrowManinfoCustomizeMapper">
+    <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.BorrowManinfo">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="sex" property="sex" jdbcType="INTEGER"/>
+        <result column="old" property="old" jdbcType="INTEGER"/>
+        <result column="merry" property="merry" jdbcType="INTEGER"/>
+        <result column="pro" property="pro" jdbcType="VARCHAR"/>
+        <result column="city" property="city" jdbcType="VARCHAR"/>
+        <result column="industry" property="industry" jdbcType="VARCHAR"/>
+        <result column="position" property="position" jdbcType="VARCHAR"/>
+        <result column="credit" property="credit" jdbcType="INTEGER"/>
+        <result column="size" property="size" jdbcType="VARCHAR"/>
+        <result column="business" property="business" jdbcType="DECIMAL"/>
+        <result column="wtime" property="wtime" jdbcType="VARCHAR"/>
+        <result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR"/>
+        <result column="borrow_pre_nid" property="borrowPreNid" jdbcType="VARCHAR"/>
+        <result column="card_no" property="cardNo" jdbcType="VARCHAR"/>
+        <result column="domicile" property="domicile" jdbcType="VARCHAR"/>
+        <result column="overdue_times" property="overdueTimes" jdbcType="VARCHAR"/>
+        <result column="overdue_amount" property="overdueAmount" jdbcType="VARCHAR"/>
+        <result column="litigation" property="litigation" jdbcType="VARCHAR"/>
+        <result column="is_card" property="isCard" jdbcType="TINYINT"/>
+        <result column="is_income" property="isIncome" jdbcType="TINYINT"/>
+        <result column="is_credit" property="isCredit" jdbcType="TINYINT"/>
+        <result column="is_asset" property="isAsset" jdbcType="TINYINT"/>
+        <result column="is_vehicle" property="isVehicle" jdbcType="TINYINT"/>
+        <result column="is_driving_license" property="isDrivingLicense" jdbcType="TINYINT"/>
+        <result column="is_vehicle_registration" property="isVehicleRegistration" jdbcType="TINYINT"/>
+        <result column="is_merry" property="isMerry" jdbcType="TINYINT"/>
+        <result column="is_work" property="isWork" jdbcType="TINYINT"/>
+        <result column="is_account_book" property="isAccountBook" jdbcType="TINYINT"/>
+        <result column="annual_income" property="annualIncome" jdbcType="VARCHAR"/>
+        <result column="overdue_report" property="overdueReport" jdbcType="VARCHAR"/>
+        <result column="debt_situation" property="debtSituation" jdbcType="VARCHAR"/>
+        <result column="other_borrowed" property="otherBorrowed" jdbcType="VARCHAR"/>
+        <result column="is_funds" property="isFunds" jdbcType="VARCHAR"/>
+        <result column="is_managed" property="isManaged" jdbcType="VARCHAR"/>
+        <result column="is_ability" property="isAbility" jdbcType="VARCHAR"/>
+        <result column="is_overdue" property="isOverdue" jdbcType="VARCHAR"/>
+        <result column="is_complaint" property="isComplaint" jdbcType="VARCHAR"/>
+        <result column="is_punished" property="isPunished" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+    </resultMap>
+    <select id="selectBorrowManInfoByBorrowNid" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT
+            hbm.id,
+            hbm.`name`,
+            hbm.sex,
+            hbm.`old`,
+            hbm.merry,
+            hbm.pro,
+            hbm.city,
+            hbm.industry,
+            hpn.`name` as `position`,
+            hbm.credit,
+            hbm.`size`,
+            hbm.business,
+            hbm.wtime,
+            hbm.borrow_nid,
+            hbm.borrow_pre_nid,
+            hbm.card_no,
+            hbm.domicile,
+            hbm.overdue_times,
+            hbm.overdue_amount,
+            hbm.litigation,
+            hbm.is_card,
+            hbm.is_income,
+            hbm.is_credit,
+            hbm.is_asset,
+            hbm.is_vehicle,
+            hbm.is_driving_license,
+            hbm.is_vehicle_registration,
+            hbm.is_merry,
+            hbm.is_work,
+            hbm.is_account_book,
+            hbm.annual_income,
+            hbm.overdue_report,
+            hbm.debt_situation,
+            hbm.other_borrowed,
+            hbm.is_funds,
+            hbm.is_managed,
+            hbm.is_ability,
+            hbm.is_overdue,
+            hbm.is_complaint,
+            hbm.is_punished,
+            hbm.address
+        FROM
+            huiyingdai_borrow_maninfo hbm
+        LEFT JOIN hyjf_param_name hpn ON hbm.position = hpn.name_cd
+        AND hpn.name_class = 'POSITION'
+        WHERE
+            hbm.borrow_nid = #{borrowNid}
+    </select>
+</mapper>

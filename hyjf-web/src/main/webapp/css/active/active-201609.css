@@ -1,0 +1,87 @@
+.active-201609-1{
+	width: 100%;
+	height: 704px;
+	float: left;
+	background: url(../../img/active/active_201609/active_201609_1.jpg) center 0 no-repeat;
+}
+.active-201609-2{
+	width: 100%;
+	height: 186px;
+	float: left;
+	background: url(../../img/active/active_201609/active_201609_2.jpg) center 0 no-repeat;
+}
+.active-201609-2.step2{
+	background: url(../../img/active/active_201609/active_201609_2_2.jpg) center 0 no-repeat;
+}
+.active-201609-2.unava{
+	background: url(../../img/active/active_201609/active_201609_2_3.jpg) center 0 no-repeat;
+}
+.active-201609-3{
+	width: 100%;
+	height: 900px;
+	float: left;
+}
+.active-201609-3.step1{
+	background: url(../../img/active/active_201609/active_201609_3_1.jpg) center 0 no-repeat;
+}
+.active-201609-3.step2{
+	background: url(../../img/active/active_201609/active_201609_3_2.jpg) center 0 no-repeat;
+}
+.active-201609-3.unava{
+	background: url(../../img/active/active_201609/active_201609_3_3.jpg) center 0 no-repeat;
+}
+.active-201609-4{
+	width: 100%;
+	height: 383px;
+	float: left;
+	background: url(../../img/active/active_201609/active_201609_4.jpg) center 0 no-repeat;
+}
+.active-201609-5{
+	width: 100%;
+	height: 971px;
+	float: left;
+	background: url(../../img/active/active_201609/active_201609_5.jpg) center 0 no-repeat;
+}
+.active-201609-btn{
+	width: 362px;
+	height: 78px;
+	float: left;
+	display: block;
+}
+.btn-step1{
+	background: url(../../img/active/active_201609/btn_register.png) 0 0 no-repeat;
+	float: left;
+	margin-top: 558px;
+	margin-left: 145px;
+}
+.btn-step2{
+	background: url(../../img/active/active_201609/btn_detail.png) 0 0 no-repeat;
+	float: left;
+	margin-top: 558px;
+	margin-left: 800px;
+}
+.btn-experence{
+	background: url(../../img/active/active_201609/btn_experence.png) 0 0 no-repeat;
+	float: right;
+	margin-right: 100px;
+	margin-top: 165px;
+}
+.btn-invest{
+	background: url(../../img/active/active_201609/btn_invest.png) 0 0 no-repeat;
+	margin-top: 558px;
+	margin-left: 800px;
+}
+.active-201609-rules{
+	margin-top: 238px;
+	color: #fff;
+	font-size: 24px;
+}
+.active-201609-rules .active-201609-rules-title{
+	color: #e8b04e;
+}
+.active-201609-rules .active-201609-rules-content{
+	margin-bottom: 60px;
+}
+.active-201609-rules-copyright{
+	color: #384573;
+}

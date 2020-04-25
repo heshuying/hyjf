@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>新手指引</title>
+		<link rel="stylesheet" type="text/css" href="../css/global.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/page.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/base.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/style.css"/>
+	</head>
+	<body class="index">
+		<div class="topA">
+			<div class="space">
+				<span>
+					<a href="#">新手汇</a>
+					<a href="#" class="activity-font">新手指引</a>
+				</span>
+			</div>
+		</div>
+		<div class="topB"></div>
+		<div class="topC"></div>
+		
+		<div class="chooseC">
+			<div class="containerC">
+				<div class="new">
+					<img src="../img/type05.png"/>
+					<span class="title">资金安全</span>
+					<p>十二重安全盾建立最强大风险防控严格评估相应足值抵/质押物</p>
+					<a href="#">立即体验 &gt;</a>
+				</div>
+				<div class="new">
+					<img src="../img/type06.png"/>
+					<span class="title">收益稳健</span>
+					<p>汇盈金服尊重每一位投资者的未来1元即刻投资，历史回报100%</p>
+					<a href="#">立即体验 &gt;</a>
+				</div>
+				
+				<div class="new lastNew">
+					<img src="../img/type07.png"/>
+					<span class="title">流动性强</span>
+					<p>汇盈金服尊重每一位投资者的未来1元即刻投资，历史回报100%</p>
+					<a href="#">立即体验 &gt;</a>
+				</div>
+			</div>
+		</div>
+		<!--特效开始-->
+		<div class="container">
+	        <div id="effect-1" class="effects clearfix newOver">
+	            <div class="img">
+	            	<img src="../img/introduce01.jpg"/>
+	                <div class="overlay">
+						<p class="overTitle">汇理财</p>
+						<p class="overContentNew">十二重安全盾建立最强大风险防控，<br /> 严格评估相应足值抵/质押物。</p>
+	                    <!-- <a class="close-overlay hidden">x</a> -->
+	                </div>
+	            </div>
+	            <div class="img">
+	            	<img src="../img/introduce02.jpg"/>
+	                <div class="overlay">
+						<p class="overTitle">尊享汇</p>
+						<p class="overContentNew">特设的管家式礼宾服务，<br /> 尽享多项尊贵权益和独特礼遇，<br />开启您心享旅程的私人管家服务。</p>
+	                    <!-- <a class="close-overlay hidden">x</a> -->
+	                </div>
+	            </div>
+	            <div class="img">
+	            	<img src="../img/introduce03.jpg"/>
+	                <div class="overlay">
+						<p class="overTitle">基金汇</p>
+						<p class="overContentNew">汇盈金服携手全球与国内领先的基金机构，<br /> 为境内投资者提供多区域、多种类的基金产品投资服务。</p>
+	                    <!-- <a class="close-overlay hidden">x</a> -->
+	                </div>
+	            </div>
+	            <div class="img">
+	            	<img src="../img/introduce04.jpg"/>
+	                <div class="overlay">
+						<p class="overTitle">保险汇 </p>
+						<p class="overContentNew">根据您对人身保障和财富管理的不同需求，<br /> 我们为您提供量身定制的保险产品和服务。</p>
+	                    <!-- <a class="close-overlay hidden">x</a> -->
+	                </div>
+	            </div>
+	            <div class="img">
+	            	<img src="../img/introduce05.jpg"/>
+	                <div class="overlay">
+						<p class="overTitle">汇借款</p>
+						<p class="overContentNew">为响应国家扶植中小微企业政策，<br /> 各类符合产业政策和平台要求的企业均可在平台获得融资支持。</p>
+	                    <!-- <a class="close-overlay hidden">x</a> -->
+	                </div>
+	            </div>
+	            <div class="img">
+	            	<img src="../img/introduce06.jpg"/>
+	                <div class="overlay">
+						<p class="overTitle">汇领投</p>
+						<p class="overContentNew">携手专业机构联手打造<br /> 让普通投资者作为跟投人跟着知名的领投投资人一起向领投人<br />发掘出来的优质投资项目进行投资。</p>
+	                    <!-- <a class="close-overlay hidden">x</a> -->
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+		<!--特效结束-->
+		<div class="flowContainer">
+			<div class="flow"></div>
+		</div>
+		
+		<div class="joinUS bgA">
+			<div class="content contentA">
+				<div id="about_deal">
+					
+				</div>
+				
+				<div class="joinB">
+					<img class="scaleout" src="../img/joinUSB.png" width="242" height="63"/>
+				</div>
+			</div>
+		</div>
+		<script src="../js/doT.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/fill.js" type="text/javascript" charset="utf-8"></script>
+		
+		<script id="tmpl-data" type="text/x-dot-template">
+			<i class="font30">已为用户创造<span>&nbsp;{{=it.data.homeStatistics.totalInterest}}&nbsp;</span>元收益</i>
+			<div class="earnUl">
+				<ul class="news_li">
+					<!--<marquee direction="up" behavior="scroll" scrollamount="2" scrolldelay="100" loop="-1"  height="56"  >-->
+						<li class="font42">平台用户累计投资<span>&nbsp;{{=it.data.homeStatistics.totalSum}}&nbsp;</span>元</li>
+						<li class="font42">平台风险保证金为<span>&nbsp;{{=it.data.homeStatistics.bailTotal}}&nbsp;</span>元</li>
+					<!--</marquee>-->
+					
+				</ul>
+				<ul class="swap"></ul>
+			</div>
+		</script>
+		<script>
+		$.fillTmplByAjax("http://www.hyjf.com/hyjf-web/homepage/investstatistics",null, "#about_deal", "#tmpl-data");
+		</script>
+		
+		<script type="text/javascript" src="../js/over.js" charset="utf-8"></script>
+		<script src="../js/jq22.js" type="text/javascript" charset="utf-8"></script>
+	</body>
+</html>

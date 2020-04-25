@@ -1,0 +1,49 @@
+*{margin:0;padding:0;font-family: Helvetica,Arial,"Microsoft YaHei","Hiragino Sans GB","Heiti SC","黑体",sans-serif;}
+i{font-style: normal;}
+a{text-decoration: none;}
+ul{list-style: none;}
+/*五月活动*/
+.may-Top{width:100%;height:513px;background:url(../img/imagemay/may_active01.jpg) no-repeat center;float:left;}
+.may-Top .may-text{color:#FFFFFF;font-size:36px;text-align: center;margin-top:127px}
+.may-Top .may-text span{display:inline-block;margin-left:85px}
+.may-Top .may-time{text-align: center;font-size: 22px;px;color: #FFFFFF;margin-top:140px;letter-spacing: 1px;}
+.may-Ban{width:100%;height:527px;background:url(../img/imagemay/may_active02.jpg) no-repeat center;float:left;}
+.may-Ban .may-ban-speed{width:1018px;margin:30px auto 105px auto;padding-top:30px}
+.may-Ban .may-speed-left{width:565px;float:left}
+.may-Ban .may-ranking{width:220px;height:45px;background:url(../img/imagemay/may_active05.png) no-repeat center;}
+.may-Ban .may-list{width:100%;margin-top:25px;}
+.may-Ban .may-list .may-line{position:relative;float:left;width:100%;}
+.may-Ban .may-list .may-list-title{width:100%;height:40px;background:#E6E4E2;}
+.may-Ban .may-list .may-line ul{display:block;list-style: none;width: 565px}
+.may-Ban .may-list ul li{display:block;height: 40px; width: 100%;margin-top:12px}
+.may-Ban .may-list li:nth-child(even){background: #e6e4e2;}
+.may-Ban .may-list li:nth-child(odd){background: #c9c1b4;}
+.may-Ban .may-list  p{line-height: 46px;color:#000000;font-size:18px;}
+.may-Ban .may-list  p span{display: block;float:left;width:145px;text-align: center;}
+.may-Ban .may-list  p span.may-list-rank{width:100px}
+.may-Ban .may-speed-right{width:388px;height:160px;margin-left:47px;float:left;background:url(../img/imagemay/may_active06.png) no-repeat -10px 22px;padding-top: 215px;}
+.may-Ban .may-speed-right p{text-align: center;color:#FFFFFF;font-size:22px;}
+.may-Ban .may-speed-right .may-log-show{display:inline-block;width:48px;color:#FFFFFF;font-size:22px;margin:0 auto;text-align: center;border-bottom: solid 2px #FFFFFF;}
+.may-speed-hidden{display: none;}
+.may-Ban .may-list .may-list-none{width:100%;height:275px;background:rgba(201,194,180,0.4);margin-top:25px;float: left;}
+.may-Ban .may-list .may-list-none a.may-touzi-show{display:block;text-align: center;margin-top:95px;color:#000000;font-size:18px}
+.may-Ban .may-list .may-list-bg{background:rgba(255,255,255,0.6)}
+.may-Ban .may-speed-right.logined {
+	width: 384px;
+	height: 331px;
+    background: none;
+    padding-top: 0;
+    margin-top: 45px;
+}
+.may-Bot{width:100%;background:#343434;float:left;}
+.may-Bot .may-active-con{width:1000px;margin:40px auto 72px auto;}
+.may-Bot .may-active-rule {border-bottom: 2px dashed #959595;}
+.may-Bot .may-active-rule .rule-img{display: block;width:175px;height:45px;background:url(../img/imagemay/may_active03.png) no-repeat center}
+.may-Bot .may-active-rule p{color:#959595;font-size:18px;line-height: 32px;margin-bottom:45px}
+.may-Bot .may-active-rule .rule-top{margin-top:30px}
+.may-Bot .may-active-con .may-reward p{color:#959595;font-size:18px;margin:45px 0px 30px 0px}
+.may-Bot .may-active-con .may-reward table{height:195px;border-top:solid 1px #959595;border-left:solid 1px #959595;width:100%;border-spacing: 0;}
+.may-Bot .may-active-con .may-reward table td{color:#959595;font-size:18px;border-bottom:solid 1px #959595;border-right:solid 1px #959595;text-align: center;}
+.may-Bot .may-active-con .may-rank-table table{height:140px}
+.may-Bot .may-active-con .may-rank-table table td{height:40px}
+.may-Bot .may-active-con .may-bot-text p{margin-top:45px;line-height: 32px;}

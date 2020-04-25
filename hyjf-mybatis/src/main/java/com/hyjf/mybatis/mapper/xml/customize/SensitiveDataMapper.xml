@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.SensitiveDataMapper">
+
+	<resultMap id="sesitiveDataMap" type="com.hyjf.mybatis.model.customize.SensitiveDataDto">
+		<result property="userId" column="userId" jdbcType="INTEGER"/>
+		<result property="mobile" column="mobile" jdbcType="VARCHAR"/>
+		<result property="userName" column="userName" jdbcType="VARCHAR"/>
+		<result property="idCard" column="idCard" jdbcType="VARCHAR"/>
+		<result property="bankNo" column="bankNo" jdbcType="VARCHAR"/>
+		<result property="registerDate" column="registerDate" jdbcType="VARCHAR"/>
+		<result property="openAccountDate" column="openAccountDate" jdbcType="VARCHAR"/>
+		<result property="rechargeAmount" column="rechargeAmount" jdbcType="VARCHAR"/>
+		<result property="withDrawAmount" column="withDrawAmount" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<select id="selectOpenUsersByDate" resultMap="sesitiveDataMap">
+		SELECT
+			u.user_id userId,
+			u.mobile mobile,
+			u.username userName,
+			u1.idcard idCard,
+			b.card_no bankNo,
+			FROM_UNIXTIME(u.reg_time, '%Y-%m-%d %H:%i:%s') registerDate,
+			DATE_FORMAT(o.create_time,'%Y-%m-%d %H:%i:%s') openAccountDate
+		FROM
+			huiyingdai_users u
+		INNER JOIN huiyingdai_users_info u1 ON u.user_id = u1.user_id
+		INNER JOIN hyjf_bank_card b ON u.user_id = b.user_id
+		INNER JOIN hyjf_bank_open_account o ON u.user_id = o.user_id
+		WHERE
+			u.bank_open_account = '1'
+		AND b.`status` = '1'
+		AND FROM_UNIXTIME(u.reg_time, '%Y-%m-%d') = #{date}
+		and DATE_FORMAT(o.create_time,'%Y-%m-%d') = #{date}
+	</select>
+
+	<select id="selectRechargeTotalByDate" resultType="java.lang.Double">
+		select
+			ROUND(IFNULL(SUM(r.money),0),2)
+		from
+		huiyingdai_account_recharge r
+		where r.user_id=#{userId}
+		and r.`status`='2'
+		and FROM_UNIXTIME(r.addtime,'%Y-%m-%d')=#{date}
+	</select>
+
+	<select id="selectTenderCount" resultType="java.lang.Integer">
+		SELECT
+		IFNULL(SUM(a),0)
+		FROM (
+			SELECT COUNT(*) a FROM huiyingdai_borrow_tender WHERE user_id = #{userId}
+				UNION ALL
+			SELECT COUNT(*) a FROM huiyingdai_credit_tender WHERE user_id = #{userId}
+				UNION ALL
+			SELECT COUNT(*) a FROM hyjf_borrow_tender_cpn WHERE user_id = #{userId}
+				UNION ALL
+			SELECT COUNT(*) a FROM hyjf_hjh_accede WHERE user_id =  #{userId}
+		 ) b
+	</select>
+
+	<select id="selectWithTotalByDate" resultType="java.lang.Double">
+		SELECT
+		  ROUND(IFNULL(SUM(h.total),0),2)
+		FROM
+			huiyingdai_account_withdraw h
+		WHERE
+			h.`status` = '2'
+		AND h.user_id = #{userId}
+		AND FROM_UNIXTIME(h.addtime, '%Y-%m-%d') = #{date}
+	</select>
+
+</mapper>

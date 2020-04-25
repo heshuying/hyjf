@@ -1,0 +1,1152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.hyjf.mybatis.mapper.customize.admin.statistics.AdminTZJStatisticsDayReportCustomizeMapper">
+	<!-- 统计日注册人数 -->
+	<select id="getRegistCount" resultType="java.lang.Integer">
+		SELECT
+			IFNULL(count(hydu.user_id),0) total_num
+		FROM
+			huiyingdai_users hydu
+		LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+		LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+		LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+		LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+		LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+		WHERE
+			#{statisticDay} = DATE(
+				FROM_UNIXTIME(hydu.reg_time)
+			)
+		AND hydu.reg_time >= 1490544000
+		AND hydui.attribute = 0
+		AND (
+			hydup.source_name LIKE '%投之家推广%'
+			OR hacsd.source_name LIKE '%投之家推广%'
+		)
+
+	</select>
+	
+	<!-- 统计日开户人数 -->
+	<select id="getOpenCount" resultType="java.lang.Integer">
+		SELECT
+			IFNULL(count(hydu.user_id),0) total_num
+		FROM
+			huiyingdai_users hydu
+		LEFT JOIN hyjf_bank_open_account ac ON ac.user_id = hydu.user_id
+		LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+		LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+		LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+		LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+		LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+		WHERE 
+			#{statisticDay} = date_format(ac.create_time,'%Y-%m-%d')
+		AND hydu.reg_time >= 1490544000
+		AND hydu.bank_open_account = 1
+		AND hydui.attribute = 0
+		AND (
+			hydup.source_name LIKE '%投之家推广%'
+			OR hacsd.source_name LIKE '%投之家推广%'
+		)
+	
+	</select>
+
+	<!-- 统计日绑卡人数 -->
+	<select id="getCardBindCount" resultType="java.lang.Integer">
+		SELECT
+			IFNULL(count(user_id),0) total_num
+		FROM
+		(SELECT
+			hydu.user_id
+		FROM
+			huiyingdai_users hydu
+		INNER JOIN hyjf_bank_card bc ON hydu.user_id = bc.user_id
+		LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+		LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+		LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+		LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+		LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+		WHERE
+			#{statisticDay} = date_format(bc.create_time,'%Y-%m-%d')
+		AND hydu.reg_time >= 1490544000
+		AND bc.`status` = 1
+		AND hydui.attribute = 0
+		AND (
+			hydup.source_name LIKE '%投之家推广%'
+			OR hacsd.source_name LIKE '%投之家推广%'
+		)
+		GROUP BY
+			hydu.user_id) tempt
+	
+	</select>
+	<!-- 统计日充值人数 -->
+	<select id="getRechargeCount" resultType="java.lang.Integer">
+		SELECT
+			IFNULL(count(user_id),0) total_num
+		FROM
+			(
+				SELECT
+					r.user_id
+				FROM
+					huiyingdai_account_recharge r
+				JOIN huiyingdai_users hydu ON r.user_id = hydu.user_id
+				LEFT JOIN huiyingdai_users_info hydui ON r.user_id = hydui.user_id
+				LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = r.user_id
+				LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+				LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+				LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = r.user_id
+				WHERE
+					#{statisticDay} = DATE(
+						FROM_UNIXTIME(r.create_time)
+					)
+				AND hydu.reg_time >= 1490544000
+				AND hydui.attribute = 0
+				AND (
+					hydup.source_name LIKE '%投之家推广%'
+					OR hacsd.source_name LIKE '%投之家推广%'
+				)
+				GROUP BY
+					r.user_id
+			) recharge_temp
+	
+	</select>
+	<!-- 统计日新充人数 -->
+	<select id="getRechargeNewCount" resultType="java.lang.Integer">
+		SELECT
+			IFNULL(count(user_id),0) total_num
+		FROM
+			(
+				SELECT
+					r.user_id
+				FROM
+					huiyingdai_account_recharge r
+				JOIN huiyingdai_users hydu ON r.user_id = hydu.user_id
+				LEFT JOIN huiyingdai_users_info hydui ON r.user_id = hydui.user_id
+				LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = r.user_id
+				LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+				LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+				LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = r.user_id
+				WHERE
+				    #{statisticDay} = DATE(
+						FROM_UNIXTIME(hydu.reg_time)
+					)
+				AND hydu.reg_time >= 1490544000
+				AND
+					#{statisticDay} = DATE(
+						FROM_UNIXTIME(r.create_time)
+					)
+				AND hydui.attribute = 0
+				AND (
+					hydup.source_name LIKE '%投之家推广%'
+					OR hacsd.source_name LIKE '%投之家推广%'
+				)
+				GROUP BY
+					r.user_id
+			) recharge_temp
+	</select>
+	
+	<!-- 统计日投资人数 -->
+	<select id="getTenderCount" resultType="java.lang.Integer">
+		SELECT
+			IFNULL(COUNT(user_id),0) total_num
+		FROM
+			(
+				SELECT
+					t.user_id
+				FROM
+					huiyingdai_borrow_tender t
+				JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+				LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+				LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+				LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+				LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+				LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+				WHERE
+					#{statisticDay} = DATE(FROM_UNIXTIME(t.addtime))
+				AND hydu.reg_time >= 1490544000
+				AND hydui.attribute = 0
+				AND (
+					hydup.source_name LIKE '%投之家推广%'
+					OR hacsd.source_name LIKE '%投之家推广%'
+				)
+				GROUP BY
+					t.user_id
+				UNION
+					SELECT
+						t.user_id
+					FROM
+						huiyingdai_credit_tender t
+					JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+					LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+					LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+					LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+					LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+					LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+					WHERE
+						#{statisticDay} = DATE(FROM_UNIXTIME(t.add_time))
+					AND hydu.reg_time >= 1490544000
+					AND hydui.attribute = 0
+					AND (
+						hydup.source_name LIKE '%投之家推广%'
+						OR hacsd.source_name LIKE '%投之家推广%'
+					)
+					GROUP BY
+						t.user_id
+						UNION
+							SELECT
+								t.user_id
+							FROM
+								hyjf_debt_plan_accede t
+							JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+							LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+							LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+							LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+							LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+							LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+							WHERE
+								#{statisticDay} = DATE(
+									FROM_UNIXTIME(t.create_time)
+								)
+							AND hydu.reg_time >= 1490544000
+							AND hydui.attribute = 0
+							AND (
+								hydup.source_name LIKE '%投之家推广%'
+								OR hacsd.source_name LIKE '%投之家推广%'
+							)
+							GROUP BY
+								t.user_id
+							UNION
+								SELECT
+									t.user_id
+								FROM
+									hyjf_debt_credit_tender t
+								JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+								LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+								LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+								LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+								LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+								LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+								WHERE
+									t.del_flag = 1
+								AND #{statisticDay} = DATE(
+									FROM_UNIXTIME(t.create_time)
+								)
+								AND hydu.reg_time >= 1490544000
+								AND hydui.attribute = 0
+								AND (
+									hydup.source_name LIKE '%投之家推广%'
+									OR hacsd.source_name LIKE '%投之家推广%'
+								)
+								GROUP BY
+									t.user_id
+			) tempt
+	</select>
+	
+	<!-- 统计日新投人数 -->
+	<select id="getTenderNewCount" resultType="java.lang.Integer">
+		SELECT
+			IFNULL(COUNT(user_id),0) total_num
+		FROM
+			(
+				SELECT
+					t.user_id
+				FROM
+					huiyingdai_borrow_tender t
+				JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+				LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+				LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+				LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+				LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+				LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+				WHERE
+					#{statisticDay} = DATE(
+						FROM_UNIXTIME(hydu.reg_time)
+					)
+				AND hydu.reg_time >= 1490544000
+				AND #{statisticDay} = DATE(FROM_UNIXTIME(t.addtime))
+				AND hydui.attribute = 0
+				AND (
+					hydup.source_name LIKE '%投之家推广%'
+					OR hacsd.source_name LIKE '%投之家推广%'
+				)
+				GROUP BY
+					t.user_id
+				UNION
+					SELECT
+						t.user_id
+					FROM
+						huiyingdai_credit_tender t
+					JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+					LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+					LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+					LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+					LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+					LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+					WHERE
+						#{statisticDay} = DATE(
+							FROM_UNIXTIME(hydu.reg_time)
+						)
+					AND hydu.reg_time >= 1490544000
+					AND #{statisticDay} = DATE(FROM_UNIXTIME(t.add_time))
+					AND hydui.attribute = 0
+					AND (
+						hydup.source_name LIKE '%投之家推广%'
+						OR hacsd.source_name LIKE '%投之家推广%'
+					)
+					GROUP BY
+						t.user_id
+						UNION
+							SELECT
+								t.user_id
+							FROM
+								hyjf_debt_plan_accede t
+							JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+							LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+							LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+							LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+							LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+							LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+							WHERE
+								#{statisticDay} = DATE(
+									FROM_UNIXTIME(hydu.reg_time)
+								)
+							AND hydu.reg_time >= 1490544000
+							AND #{statisticDay} = DATE(
+								FROM_UNIXTIME(t.create_time)
+							)
+							AND hydui.attribute = 0
+							AND (
+								hydup.source_name LIKE '%投之家推广%'
+								OR hacsd.source_name LIKE '%投之家推广%'
+							)
+							GROUP BY
+								t.user_id
+							UNION
+								SELECT
+									t.user_id
+								FROM
+									hyjf_debt_credit_tender t
+								JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+								LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+								LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+								LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+								LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+								LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+								WHERE
+									t.del_flag = 1
+								AND #{statisticDay} = DATE(
+									FROM_UNIXTIME(hydu.reg_time)
+								)
+								AND hydu.reg_time >= 1490544000
+								AND #{statisticDay} = DATE(
+									FROM_UNIXTIME(t.create_time)
+								)
+								AND hydui.attribute = 0
+								AND (
+									hydup.source_name LIKE '%投之家推广%'
+									OR hacsd.source_name LIKE '%投之家推广%'
+								)
+								GROUP BY
+									t.user_id
+			) tempt
+	</select>
+	
+	<!-- 统计日首投人数 -->
+	<select id="getTenderFirstCount" resultType="java.lang.Integer">
+		SELECT
+			IFNULL(COUNT(user_id),0) total_num
+		FROM
+			(
+				SELECT
+					t.user_id
+				FROM
+					huiyingdai_borrow_tender t
+				JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+				LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+				LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+				LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+				LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+				LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+				WHERE
+					#{statisticDay} = DATE(FROM_UNIXTIME(t.addtime))
+				AND hydu.reg_time >= 1490544000
+				AND hydui.attribute = 0
+				AND (
+					hydup.source_name LIKE '%投之家推广%'
+					OR hacsd.source_name LIKE '%投之家推广%'
+				)
+				AND NOT EXISTS (
+					SELECT
+						t1.user_id
+					FROM
+						huiyingdai_borrow_tender t1
+					WHERE
+						t1.user_id = t.user_id
+					AND t1.addtime <![CDATA[<]]> unix_timestamp(#{statisticDay})
+				)
+				AND NOT EXISTS (
+					SELECT
+						t1.user_id
+					FROM
+						huiyingdai_credit_tender t1
+					WHERE
+						t1.user_id = t.user_id
+					AND t1.add_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+				)
+				AND NOT EXISTS (
+					SELECT
+						t1.user_id
+					FROM
+						hyjf_debt_plan_accede t1
+					WHERE
+						t1.user_id = t.user_id
+					AND t1.create_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+				)
+				AND NOT EXISTS (
+					SELECT
+						t1.user_id
+					FROM
+						hyjf_debt_credit_tender t1
+					WHERE
+						t1.user_id = t.user_id
+					AND del_flag = 1
+					AND t1.create_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+				)
+				GROUP BY
+					t.user_id
+				UNION
+					SELECT
+						t.user_id
+					FROM
+						huiyingdai_credit_tender t
+					JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+					LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+					LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+					LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+					LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+					LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+					WHERE
+						#{statisticDay} = DATE(FROM_UNIXTIME(t.add_time))
+					AND hydu.reg_time >= 1490544000
+					AND hydui.attribute = 0
+					AND (
+						hydup.source_name LIKE '%投之家推广%'
+						OR hacsd.source_name LIKE '%投之家推广%'
+					)
+					AND NOT EXISTS (
+						SELECT
+							t1.user_id
+						FROM
+							huiyingdai_borrow_tender t1
+						WHERE
+							t1.user_id = t.user_id
+						AND t1.addtime <![CDATA[<]]> unix_timestamp(#{statisticDay})
+					)
+					AND NOT EXISTS (
+						SELECT
+							t1.user_id
+						FROM
+							huiyingdai_credit_tender t1
+						WHERE
+							t1.user_id = t.user_id
+						AND t1.add_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+					)
+					AND NOT EXISTS (
+						SELECT
+							t1.user_id
+						FROM
+							hyjf_debt_plan_accede t1
+						WHERE
+							t1.user_id = t.user_id
+						AND t1.create_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+					)
+					AND NOT EXISTS (
+						SELECT
+							t1.user_id
+						FROM
+							hyjf_debt_credit_tender t1
+						WHERE
+							t1.user_id = t.user_id
+						AND del_flag = 1
+						AND t1.create_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+					)
+					GROUP BY
+						t.user_id
+					UNION
+							SELECT
+								t.user_id
+							FROM
+								hyjf_debt_plan_accede t
+							JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+							LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+							LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+							LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+							LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+							LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+							WHERE
+								#{statisticDay} = DATE(
+									FROM_UNIXTIME(t.create_time)
+								)
+							AND hydu.reg_time >= 1490544000
+							AND hydui.attribute = 0
+							AND (
+								hydup.source_name LIKE '%投之家推广%'
+								OR hacsd.source_name LIKE '%投之家推广%'
+							)
+							AND NOT EXISTS (
+								SELECT
+									t1.user_id
+								FROM
+									huiyingdai_borrow_tender t1
+								WHERE
+									t1.user_id = t.user_id
+								AND t1.addtime <![CDATA[<]]> unix_timestamp(#{statisticDay})
+							)
+							AND NOT EXISTS (
+								SELECT
+									t1.user_id
+								FROM
+									huiyingdai_credit_tender t1
+								WHERE
+									t1.user_id = t.user_id
+								AND t1.add_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+							)
+							AND NOT EXISTS (
+								SELECT
+									t1.user_id
+								FROM
+									hyjf_debt_plan_accede t1
+								WHERE
+									t1.user_id = t.user_id
+								AND t1.create_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+							)
+							AND NOT EXISTS (
+								SELECT
+									t1.user_id
+								FROM
+									hyjf_debt_credit_tender t1
+								WHERE
+									t1.user_id = t.user_id
+								AND del_flag = 1
+								AND t1.create_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+							)
+							GROUP BY
+								t.user_id
+							UNION
+								SELECT
+									t.user_id
+								FROM
+									hyjf_debt_credit_tender t
+								JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+								LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+								LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+								LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+								LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+								LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+								WHERE
+									t.del_flag = 1
+								AND #{statisticDay} = DATE(
+									FROM_UNIXTIME(t.create_time)
+								)
+								AND hydu.reg_time >= 1490544000
+								AND hydui.attribute = 0
+								AND (
+									hydup.source_name LIKE '%投之家推广%'
+									OR hacsd.source_name LIKE '%投之家推广%'
+								)
+								AND NOT EXISTS (
+									SELECT
+										t1.user_id
+									FROM
+										huiyingdai_borrow_tender t1
+									WHERE
+										t1.user_id = t.user_id
+									AND t1.addtime <![CDATA[<]]> unix_timestamp(#{statisticDay})
+								)
+								AND NOT EXISTS (
+									SELECT
+										t1.user_id
+									FROM
+										huiyingdai_credit_tender t1
+									WHERE
+										t1.user_id = t.user_id
+									AND t1.add_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+								)
+								AND NOT EXISTS (
+									SELECT
+										t1.user_id
+									FROM
+										hyjf_debt_plan_accede t1
+									WHERE
+										t1.user_id = t.user_id
+									AND t1.create_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+								)
+								AND NOT EXISTS (
+									SELECT
+										t1.user_id
+									FROM
+										hyjf_debt_credit_tender t1
+									WHERE
+										t1.user_id = t.user_id
+									AND del_flag = 1
+									AND t1.create_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+								)
+								GROUP BY
+									t.user_id
+			) tempt
+	</select>
+	
+	<!-- 统计日复投人数 -->
+	<select id="getTenderAgainCount" resultType="java.lang.Integer">
+		SELECT
+			IFNULL(COUNT(user_id),0) total_num
+		FROM
+			(
+				SELECT
+					t.user_id
+				FROM
+					huiyingdai_borrow_tender t
+				JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+				LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+				LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+				LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+				LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+				LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+				WHERE
+					#{statisticDay} = DATE(FROM_UNIXTIME(t.addtime))
+				AND hydu.reg_time >= 1490544000
+				AND hydui.attribute = 0
+				AND (
+					hydup.source_name LIKE '%投之家推广%'
+					OR hacsd.source_name LIKE '%投之家推广%'
+				)
+				AND (
+					(
+						SELECT
+							count(t1.user_id)
+						FROM
+							huiyingdai_borrow_tender t1
+						WHERE
+							t1.user_id = t.user_id
+					) + (
+						SELECT
+							count(t1.user_id)
+						FROM
+							huiyingdai_credit_tender t1
+						WHERE
+							t1.user_id = t.user_id
+					) + (
+						SELECT
+							count(t1.user_id)
+						FROM
+							hyjf_debt_plan_accede t1
+						WHERE
+							t1.user_id = t.user_id
+					) + (
+						SELECT
+							count(t1.user_id)
+						FROM
+							hyjf_debt_credit_tender t1
+						WHERE
+							t1.user_id = t.user_id
+						AND del_flag = 1
+					)
+				) > 1
+				GROUP BY
+					t.user_id
+				UNION
+					SELECT
+						t.user_id
+					FROM
+						huiyingdai_credit_tender t
+					JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+					LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+					LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+					LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+					LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+					LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+					WHERE
+						#{statisticDay} = DATE(FROM_UNIXTIME(t.add_time))
+					AND hydu.reg_time >= 1490544000
+					AND hydui.attribute = 0
+					AND (
+						hydup.source_name LIKE '%投之家推广%'
+						OR hacsd.source_name LIKE '%投之家推广%'
+					)
+					AND (
+						(
+							SELECT
+								count(t1.user_id)
+							FROM
+								huiyingdai_borrow_tender t1
+							WHERE
+								t1.user_id = t.user_id
+						) + (
+							SELECT
+								count(t1.user_id)
+							FROM
+								huiyingdai_credit_tender t1
+							WHERE
+								t1.user_id = t.user_id
+						) + (
+							SELECT
+								count(t1.user_id)
+							FROM
+								hyjf_debt_plan_accede t1
+							WHERE
+								t1.user_id = t.user_id
+						) + (
+							SELECT
+								count(t1.user_id)
+							FROM
+								hyjf_debt_credit_tender t1
+							WHERE
+								t1.user_id = t.user_id
+							AND del_flag = 1
+						)
+					) > 1
+					GROUP BY
+						t.user_id
+					UNION
+							SELECT
+								t.user_id
+							FROM
+								hyjf_debt_plan_accede t
+							JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+							LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+							LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+							LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+							LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+							LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+							WHERE
+								#{statisticDay} = DATE(
+									FROM_UNIXTIME(t.create_time)
+								)
+							AND hydu.reg_time >= 1490544000
+							AND hydui.attribute = 0
+							AND (
+								hydup.source_name LIKE '%投之家推广%'
+								OR hacsd.source_name LIKE '%投之家推广%'
+							)
+							AND (
+								(
+									SELECT
+										count(t1.user_id)
+									FROM
+										huiyingdai_borrow_tender t1
+									WHERE
+										t1.user_id = t.user_id
+								) + (
+									SELECT
+										count(t1.user_id)
+									FROM
+										huiyingdai_credit_tender t1
+									WHERE
+										t1.user_id = t.user_id
+								) + (
+									SELECT
+										count(t1.user_id)
+									FROM
+										hyjf_debt_plan_accede t1
+									WHERE
+										t1.user_id = t.user_id
+								) + (
+									SELECT
+										count(t1.user_id)
+									FROM
+										hyjf_debt_credit_tender t1
+									WHERE
+										t1.user_id = t.user_id
+									AND del_flag = 1
+								)
+							) > 1
+							GROUP BY
+								t.user_id
+							UNION
+								SELECT
+									t.user_id
+								FROM
+									hyjf_debt_credit_tender t
+								JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+								LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+								LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+								LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+								LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+								LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+								WHERE
+									t.del_flag = 1
+								AND #{statisticDay} = DATE(
+									FROM_UNIXTIME(t.create_time)
+								)
+								AND hydu.reg_time >= 1490544000
+								AND hydui.attribute = 0
+								AND (
+									hydup.source_name LIKE '%投之家推广%'
+									OR hacsd.source_name LIKE '%投之家推广%'
+								)
+								AND (
+									(
+										SELECT
+											count(t1.user_id)
+										FROM
+											huiyingdai_borrow_tender t1
+										WHERE
+											t1.user_id = t.user_id
+									) + (
+										SELECT
+											count(t1.user_id)
+										FROM
+											huiyingdai_credit_tender t1
+										WHERE
+											t1.user_id = t.user_id
+									) + (
+										SELECT
+											count(t1.user_id)
+										FROM
+											hyjf_debt_plan_accede t1
+										WHERE
+											t1.user_id = t.user_id
+									) + (
+										SELECT
+											count(t1.user_id)
+										FROM
+											hyjf_debt_credit_tender t1
+										WHERE
+											t1.user_id = t.user_id
+										AND del_flag = 1
+									)
+								) > 1
+								GROUP BY
+									t.user_id
+			) tempt
+	</select>
+	
+	<!-- 统计日投资金额 -->
+	<select id="getTenderMoney" resultType="java.lang.Double">
+		SELECT
+			IFNULL(SUM(accountSum),0) accountSum
+		FROM
+			(
+				SELECT
+					IFNULL(SUM(t.account),0) accountSum
+				FROM
+					huiyingdai_borrow_tender t
+				JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+				LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+				LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+				LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+				LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+				LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+				WHERE
+					#{statisticDay} = DATE(FROM_UNIXTIME(t.addtime))
+				AND hydu.reg_time >= 1490544000
+				AND hydui.attribute = 0
+				AND (
+					hydup.source_name LIKE '%投之家推广%'
+					OR hacsd.source_name LIKE '%投之家推广%'
+				)
+				UNION ALL
+					SELECT
+						IFNULL(SUM(t.assign_pay),0) accountSum
+					FROM
+						huiyingdai_credit_tender t
+					JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+					LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+					LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+					LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+					LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+					LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+					WHERE
+						#{statisticDay} = DATE(FROM_UNIXTIME(t.add_time))
+					AND hydu.reg_time >= 1490544000
+					AND hydui.attribute = 0
+					AND (
+						hydup.source_name LIKE '%投之家推广%'
+						OR hacsd.source_name LIKE '%投之家推广%'
+					)
+					UNION ALL
+							SELECT
+								IFNULL(SUM(t.accede_account),0) accountSum
+							FROM
+								hyjf_debt_plan_accede t
+							JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+							LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+							LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+							LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+							LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+							LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+							WHERE
+								#{statisticDay} = DATE(
+									FROM_UNIXTIME(t.create_time)
+								)
+							AND hydu.reg_time >= 1490544000
+							AND hydui.attribute = 0
+							AND (
+								hydup.source_name LIKE '%投之家推广%'
+								OR hacsd.source_name LIKE '%投之家推广%'
+							)
+							UNION ALL
+								SELECT
+									IFNULL(SUM(t.assign_capital),0) accountSum
+								FROM
+									hyjf_debt_credit_tender t
+								JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+								LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+								LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+								LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+								LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+								LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+								WHERE
+									t.del_flag = 1
+								AND #{statisticDay} = DATE(
+									FROM_UNIXTIME(t.create_time)
+								)
+								AND hydu.reg_time >= 1490544000
+								AND hydui.attribute = 0
+								AND (
+									hydup.source_name LIKE '%投之家推广%'
+									OR hacsd.source_name LIKE '%投之家推广%'
+								)
+			) tempt	
+	</select>
+	
+	<!-- 统计日首投金额 -->
+	<select id="getTenderFirstMoney" resultType="java.lang.Double">
+		SELECT
+			IFNULL(SUM(accountSum),0) accountSum
+		FROM
+			(
+				SELECT
+					IFNULL(SUM(t.account),0) accountSum
+				FROM
+					huiyingdai_borrow_tender t
+				JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+				LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+				LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+				LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+				LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+				LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+				WHERE
+					#{statisticDay} = DATE(FROM_UNIXTIME(t.addtime))
+				AND hydu.reg_time >= 1490544000
+				AND hydui.attribute = 0
+				AND (
+					hydup.source_name LIKE '%投之家推广%'
+					OR hacsd.source_name LIKE '%投之家推广%'
+				)
+				AND NOT EXISTS (
+					SELECT
+						t1.user_id
+					FROM
+						huiyingdai_borrow_tender t1
+					WHERE
+						t1.user_id = t.user_id
+					AND t1.addtime <![CDATA[<]]> unix_timestamp(#{statisticDay})
+				)
+				AND NOT EXISTS (
+					SELECT
+						t1.user_id
+					FROM
+						huiyingdai_credit_tender t1
+					WHERE
+						t1.user_id = t.user_id
+					AND t1.add_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+				)
+				AND NOT EXISTS (
+					SELECT
+						t1.user_id
+					FROM
+						hyjf_debt_plan_accede t1
+					WHERE
+						t1.user_id = t.user_id
+					AND t1.create_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+				)
+				AND NOT EXISTS (
+					SELECT
+						t1.user_id
+					FROM
+						hyjf_debt_credit_tender t1
+					WHERE
+						t1.user_id = t.user_id
+					AND del_flag = 1
+					AND t1.create_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+				)
+				UNION ALL
+					SELECT
+						IFNULL(SUM(t.assign_pay),0) accountSum
+					FROM
+						huiyingdai_credit_tender t
+					JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+					LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+					LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+					LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+					LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+					LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+					WHERE
+						#{statisticDay} = DATE(FROM_UNIXTIME(t.add_time))
+					AND hydu.reg_time >= 1490544000
+					AND hydui.attribute = 0
+					AND (
+						hydup.source_name LIKE '%投之家推广%'
+						OR hacsd.source_name LIKE '%投之家推广%'
+					)
+					AND NOT EXISTS (
+						SELECT
+							t1.user_id
+						FROM
+							huiyingdai_borrow_tender t1
+						WHERE
+							t1.user_id = t.user_id
+						AND t1.addtime <![CDATA[<]]> unix_timestamp(#{statisticDay})
+					)
+					AND NOT EXISTS (
+						SELECT
+							t1.user_id
+						FROM
+							huiyingdai_credit_tender t1
+						WHERE
+							t1.user_id = t.user_id
+						AND t1.add_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+					)
+					AND NOT EXISTS (
+						SELECT
+							t1.user_id
+						FROM
+							hyjf_debt_plan_accede t1
+						WHERE
+							t1.user_id = t.user_id
+						AND t1.create_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+					)
+					AND NOT EXISTS (
+						SELECT
+							t1.user_id
+						FROM
+							hyjf_debt_credit_tender t1
+						WHERE
+							t1.user_id = t.user_id
+						AND del_flag = 1
+						AND t1.create_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+					)
+					UNION ALL
+							SELECT
+								IFNULL(SUM(t.accede_account),0) accountSum
+							FROM
+								hyjf_debt_plan_accede t
+							JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+							LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+							LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+							LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+							LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+							LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+							WHERE
+								#{statisticDay} = DATE(
+									FROM_UNIXTIME(t.create_time)
+								)
+							AND hydu.reg_time >= 1490544000
+							AND hydui.attribute = 0
+							AND (
+								hydup.source_name LIKE '%投之家推广%'
+								OR hacsd.source_name LIKE '%投之家推广%'
+							)
+							AND NOT EXISTS (
+								SELECT
+									t1.user_id
+								FROM
+									huiyingdai_borrow_tender t1
+								WHERE
+									t1.user_id = t.user_id
+								AND t1.addtime <![CDATA[<]]> unix_timestamp(#{statisticDay})
+							)
+							AND NOT EXISTS (
+								SELECT
+									t1.user_id
+								FROM
+									huiyingdai_credit_tender t1
+								WHERE
+									t1.user_id = t.user_id
+								AND t1.add_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+							)
+							AND NOT EXISTS (
+								SELECT
+									t1.user_id
+								FROM
+									hyjf_debt_plan_accede t1
+								WHERE
+									t1.user_id = t.user_id
+								AND t1.create_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+							)
+							AND NOT EXISTS (
+								SELECT
+									t1.user_id
+								FROM
+									hyjf_debt_credit_tender t1
+								WHERE
+									t1.user_id = t.user_id
+								AND del_flag = 1
+								AND t1.create_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+							)
+							UNION ALL
+								SELECT
+									IFNULL(SUM(t.assign_capital),0) accountSum
+								FROM
+									hyjf_debt_credit_tender t
+								JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+								LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+								LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+								LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+								LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+								LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+								WHERE
+									t.del_flag = 1
+								AND #{statisticDay} = DATE(
+									FROM_UNIXTIME(t.create_time)
+								)
+								AND hydu.reg_time >= 1490544000
+								AND hydui.attribute = 0
+								AND (
+									hydup.source_name LIKE '%投之家推广%'
+									OR hacsd.source_name LIKE '%投之家推广%'
+								)
+								AND NOT EXISTS (
+									SELECT
+										t1.user_id
+									FROM
+										huiyingdai_borrow_tender t1
+									WHERE
+										t1.user_id = t.user_id
+									AND t1.addtime <![CDATA[<]]> unix_timestamp(#{statisticDay})
+								)
+								AND NOT EXISTS (
+									SELECT
+										t1.user_id
+									FROM
+										huiyingdai_credit_tender t1
+									WHERE
+										t1.user_id = t.user_id
+									AND t1.add_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+								)
+								AND NOT EXISTS (
+									SELECT
+										t1.user_id
+									FROM
+										hyjf_debt_plan_accede t1
+									WHERE
+										t1.user_id = t.user_id
+									AND t1.create_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+								)
+								AND NOT EXISTS (
+									SELECT
+										t1.user_id
+									FROM
+										hyjf_debt_credit_tender t1
+									WHERE
+										t1.user_id = t.user_id
+									AND del_flag = 1
+									AND t1.create_time <![CDATA[<]]> unix_timestamp(#{statisticDay})
+								)
+			) tempt
+		
+			
+	</select>
+	
+	
+</mapper>

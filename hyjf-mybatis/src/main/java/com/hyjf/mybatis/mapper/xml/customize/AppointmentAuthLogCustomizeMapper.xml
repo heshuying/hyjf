@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.AppointmentAuthLogCustomizeMapper">
+	
+	<select id="countAppointRecordTotalNum" 
+	parameterType="com.hyjf.mybatis.model.customize.AppointmentAuthLogCustomize" 
+	resultType="java.lang.Integer">
+			SELECT
+			count(hac.id)
+		FROM
+			huiyingdai_account_chinapnr hac
+		LEFT JOIN huiyingdai_users hu ON hac.user_id = hu.user_id
+		WHERE 1=1
+			<if test="username != null and username != ''">
+			AND  hu.username like '%#{username}%'
+			</if>
+			<if test="mobile != null and mobile != ''">
+			AND  hu.mobile like '%#{mobile}%'
+			</if>
+			<if test="addTime != null and addTime != ''">
+			AND DATE_FORMAT(	hu.auth_time, '%Y-%m-%d') = #{addTime}
+			</if>
+	</select>
+	<select id="countAppointRecordTotalNumMain" 
+	parameterType="java.util.HashMap" 
+	resultType="java.lang.Integer">
+			SELECT
+			count(hac.id)
+		FROM
+			huiyingdai_account_chinapnr hac
+		LEFT JOIN huiyingdai_users hu ON hac.user_id = hu.user_id
+		WHERE 1=1 AND ((hu.recod_total is not null AND hu.recod_time is not null)
+						 OR (hu.auth_status is not null AND hu.auth_time is not null))
+			<if test="username != null and username != ''">
+			AND  hu.username like '%#{username}%'
+			</if>
+			<if test="mobile != null and mobile != ''">
+			AND  hu.mobile like '%#{mobile}%'
+			</if>
+			<if test="addTime != null and addTime != ''">
+			AND DATE_FORMAT(	hu.recod_time, '%Y-%m-%d') <![CDATA[>=]]> #{addTime}
+			</if>
+			<if test="addTimeEnd != null and addTimeEnd != ''">
+			AND DATE_FORMAT(	hu.recod_time, '%Y-%m-%d') <![CDATA[<=]]> #{addTimeEnd}
+			</if>
+	</select>
+	<select id="countAuthAppointRecordTotalNum" 
+	parameterType="com.hyjf.mybatis.model.customize.AppointmentAuthLogCustomize" 
+	resultType="java.lang.Integer">
+			SELECT
+					COUNT(haal.id)
+			FROM
+				hyjf_appointment_auth_log haal
+			LEFT JOIN huiyingdai_users hu ON hu.user_id = haal.user_id
+			WHERE
+				1 = 1
+			<if test="userId != null and userId != ''">
+			AND hu.user_id  = #{userId}
+			</if>
+			<if test="username != null and username != ''">
+			AND  hu.username like '%#{username}%'
+			</if>
+			<if test="addTime != null and addTime != ''">
+			AND DATE_FORMAT(haal.add_time, '%Y-%m-%d')  = #{addTime}
+			</if>
+	</select>
+	<select id="countAppointRecordTotalRecordNumMain" parameterType="java.util.HashMap" 
+			resultType="java.lang.Integer">
+			SELECT
+				COUNT(harl.id)
+			FROM
+				hyjf_appointment_recod_log harl
+			LEFT JOIN huiyingdai_users hu ON hu.user_id = harl.user_id
+			WHERE
+				1 = 1 
+			<if test="userId != null and userId != ''">
+			AND hu.user_id  = #{userId}
+			</if>
+			<if test="username != null and username != ''">
+			AND  hu.username like '%#{username}%'
+			</if>
+			<if test="recodNid != null and recodNid != ''">
+			AND  harl.recod_nid like '%#{recodNid}%'
+			</if>
+			<if test="addTime != null and addTime != ''">
+			AND DATE_FORMAT(	harl.add_time, '%Y-%m-%d') <![CDATA[>=]]> #{addTime}
+			</if>
+			<if test="addTimeEnd != null and addTimeEnd != ''">
+			AND DATE_FORMAT(	harl.add_time, '%Y-%m-%d') <![CDATA[<=]]> #{addTimeEnd}
+			</if>
+	</select>
+	
+	<resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.customize.AppointmentAuthLogCustomize">
+		<result column="id" property="id" jdbcType="INTEGER" />
+		<result column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<result column="truename" property="truename" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="chinapnr_usrcustid" property="userCustId" jdbcType="VARCHAR" />
+		<result column="auth_type" property="authType" jdbcType="VARCHAR" />
+		<result column="auth_status" property="authStatus" jdbcType="VARCHAR" />
+		<result column="addTime" property="addTime" jdbcType="VARCHAR" />
+	</resultMap>
+
+
+	<select id="getAppointRecordList" parameterType="com.hyjf.mybatis.model.customize.AppointmentAuthLogCustomize" 
+			resultMap="BaseResultMap">
+			SELECT
+			hac.id,
+			hu.user_id,
+			hu.username,
+			hui.truename,
+			hu.mobile,
+			hac.chinapnr_usrcustid,
+			hu.auth_type,
+			hu.auth_status,
+			DATE_FORMAT(
+				hu.auth_time,
+				'%Y-%m-%d %H:%i:%s'
+			) addTime
+		FROM
+			huiyingdai_account_chinapnr hac
+		LEFT JOIN huiyingdai_users hu ON hac.user_id = hu.user_id
+		LEFT JOIN huiyingdai_users_info hui ON hui.user_id = hu.user_id
+		WHERE 1=1
+			<if test="username != null and username != ''">
+			AND  hu.username like '%#{username}%'
+			</if>
+			<if test="mobile != null and mobile != ''">
+			AND  hu.mobile like '%#{mobile}%'
+			</if>
+			<if test="addTime != null and addTime != ''">
+			AND DATE_FORMAT(	hu.auth_time, '%Y-%m-%d') = #{addTime}
+			</if>
+				order by hu.auth_time desc,hac.addtime desc 
+			<if test="limitStart != null and limitEnd != null">
+			limit ${limitStart},${limitEnd}
+			</if>
+		
+	</select>
+	<select id="getAuthAppointRecordList" parameterType="com.hyjf.mybatis.model.customize.AppointmentAuthLogCustomize" 
+			resultMap="BaseResultMap">
+			SELECT
+				hu.username,
+				haal.auth_type,
+				haal.auth_status,
+				DATE_FORMAT(
+					haal.add_time,
+					'%Y-%m-%d %H:%i:%s'
+				) addTime
+			FROM
+				hyjf_appointment_auth_log haal
+			LEFT JOIN huiyingdai_users hu ON hu.user_id = haal.user_id
+			WHERE
+				1 = 1
+			<if test="userId != null and userId != ''">
+			AND hu.user_id  = #{userId}
+			</if>
+			<if test="username != null and username != ''">
+			AND  hu.username like '%#{username}%'
+			</if>
+			<if test="addTime != null and addTime != ''">
+			AND DATE_FORMAT(haal.add_time, '%Y-%m-%d')  = #{addTime}
+			</if>
+				order by haal.add_time desc
+			<if test="limitStart != null and limitEnd != null">
+			limit ${limitStart},${limitEnd}
+			</if>
+	</select>
+	
+		<resultMap id="RecodResultMap" type="com.hyjf.mybatis.model.customize.AppointmentRecodLogCustomize">
+		<result column="id" property="id" jdbcType="INTEGER" />
+		<result column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="chinapnr_usrcustid" property="userCustId" jdbcType="VARCHAR" />
+		<result column="recod_total" property="recodTotal" jdbcType="INTEGER" />
+		<result column="recod_truncate_time" property="recodTruncateTime" jdbcType="VARCHAR" />
+		<result column="addTime" property="addTime" jdbcType="VARCHAR" />
+		<result column="recod_nid" property="recodNid" jdbcType="VARCHAR" />
+		<result column="recod" property="recod" jdbcType="INTEGER" />
+		<result column="recod_money" property="recodMoney" jdbcType="DECIMAL" />
+		<result column="recod_type" property="recodType" jdbcType="INTEGER" />
+		<result column="apoint_order_id" property="apointOrderId" jdbcType="VARCHAR" />
+		<result column="recod_remark" property="recodRemark" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getAppointRecordListMain" parameterType="java.util.HashMap" 
+			resultMap="RecodResultMap">
+			SELECT
+			hac.id,
+			hu.user_id,
+			hu.username,
+			hu.mobile,
+			hac.chinapnr_usrcustid,
+			hu.recod_total,
+			DATE_FORMAT(
+				hu.recod_truncate_time,
+				'%Y-%m-%d %H:%i:%s'
+			) recod_truncate_time,
+			DATE_FORMAT(
+				hu.recod_time,
+				'%Y-%m-%d %H:%i:%s'
+			) addTime
+		FROM
+			huiyingdai_account_chinapnr hac
+		LEFT JOIN huiyingdai_users hu ON hac.user_id = hu.user_id
+		LEFT JOIN huiyingdai_users_info hui ON hui.user_id = hu.user_id
+		WHERE 1=1 AND ((hu.recod_total is not null AND hu.recod_time is not null)
+						 OR (hu.auth_status is not null AND hu.auth_time is not null))
+			<if test="username != null and username != ''">
+			AND  hu.username like '%#{username}%'
+			</if>
+			<if test="mobile != null and mobile != ''">
+			AND  hu.mobile like '%#{mobile}%'
+			</if>
+			<if test="addTime != null and addTime != ''">
+			AND DATE_FORMAT(	hu.recod_time, '%Y-%m-%d') <![CDATA[>=]]> #{addTime}
+			</if>
+			<if test="addTimeEnd != null and addTimeEnd != ''">
+			AND DATE_FORMAT(	hu.recod_time, '%Y-%m-%d') <![CDATA[<=]]> #{addTimeEnd}
+			</if>
+				order by hu.recod_time desc,hac.addtime desc 
+			<if test="limitStart != null and limitEnd != null">
+			limit ${limitStart},${limitEnd}
+			</if>
+	</select>
+	<select id="getAppointRecordListRecordMain" parameterType="java.util.HashMap" 
+			resultMap="RecodResultMap">
+			SELECT
+				hu.username,
+				harl.recod,
+				harl.recod_total,
+				harl.recod_nid,
+				harl.recod_money,
+				harl.recod_type,
+				harl.apoint_order_id,
+				harl.recod_remark,
+				DATE_FORMAT(
+					harl.add_time,
+					'%Y-%m-%d %H:%i:%s'
+				) addTime
+			FROM
+				hyjf_appointment_recod_log harl
+			LEFT JOIN huiyingdai_users hu ON hu.user_id = harl.user_id
+			WHERE
+				1 = 1
+			<if test="userId != null and userId != ''">
+			AND hu.user_id  = #{userId}
+			</if>
+			<if test="username != null and username != ''">
+			AND  hu.username like '%#{username}%'
+			</if>
+			<if test="recodNid != null and recodNid != ''">
+			AND  harl.recod_nid like '%#{recodNid}%'
+			</if>
+			<if test="addTime != null and addTime != ''">
+			AND DATE_FORMAT(	harl.add_time, '%Y-%m-%d') <![CDATA[>=]]> #{addTime}
+			</if>
+			<if test="addTimeEnd != null and addTimeEnd != ''">
+			AND DATE_FORMAT(	harl.add_time, '%Y-%m-%d') <![CDATA[<=]]> #{addTimeEnd}
+			</if>
+				order by harl.add_time desc
+			<if test="limitStart != null and limitEnd != null">
+			limit ${limitStart},${limitEnd}
+			</if>
+	</select>
+
+</mapper>

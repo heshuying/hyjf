@@ -1,0 +1,3113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.app.AppChannelStatisticsCustomizeMapper">
+
+	<sql id="Select_Clause">
+		SELECT
+			b.source_name AS channel_name,
+			b.source_id,
+			SUM(access_number) AS visit_count,
+			SUM(regist_number) AS register_count,
+			SUM(regist_number_attr) AS register_attr_count,
+			SUM(account_number) AS open_account_count,
+			SUM(account_attr_number) AS open_account_attr_count,
+			SUM(tender_number) AS invest_number,
+			SUM(tender_attr_number) AS invest_attr_number,
+			SUM(recharge_price) AS cumulative_charge,
+			SUM(recharge_attr_price) AS cumulative_attr_charge,
+		    SUM(hzt_tender_price) + SUM(hxf_tender_price) + SUM(htl_tender_price) + SUM(htj_tender_price) + SUM(rtb_tender_price) + SUM(hzr_tender_price) AS cumulative_invest,
+			SUM(hzt_tender_price) AS hzt_invest_sum,
+			SUM(hxf_tender_price) AS hxf_invest_sum,
+			SUM(htl_tender_price) AS htl_invest_sum,
+			SUM(htj_tender_price) AS htj_invest_sum,
+			SUM(rtb_tender_price) AS rtb_invest_sum,
+			SUM(hzr_tender_price) AS hzr_invest_sum,
+			SUM(account_number_ios) AS account_number_ios,
+			SUM(account_number_android) AS account_number_android,
+			SUM(account_number_pc) AS account_number_pc,
+			SUM(account_number_wechat) AS account_number_wechat,
+			SUM(tender_number_android) AS tender_number_android,
+			SUM(tender_number_ios) AS tender_number_ios,
+			SUM(tender_number_pc) AS tender_number_pc,
+			SUM(tender_number_wechat) AS tender_number_wechat,
+			SUM(attr_tender_price) AS cumulative_attr_invest
+	
+		FROM
+			(
+				SELECT
+					a.source_id,
+					a.source_name,
+					(
+						SELECT
+							COUNT(visit.id)
+						FROM
+							hyjf_app_access_statistics visit
+						WHERE
+							visit.source_id = a.source_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND visit.access_time <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND  visit.access_time <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS access_number,
+					(
+						SELECT
+							COUNT(reg.id)
+						FROM
+							hyjf_app_channel_statistics_detail reg
+						WHERE
+							reg.source_id = a.source_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND reg.register_time <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND reg.register_time <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS regist_number,
+					
+					(
+						SELECT
+							COUNT(reg.id)
+						FROM
+							hyjf_app_channel_statistics_detail reg
+							LEFT JOIN huiyingdai_users_info ui ON reg.user_id = ui.user_id
+						WHERE
+							reg.source_id = a.source_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND reg.register_time <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND reg.register_time <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+								AND ui.attribute = 0
+					) AS regist_number_attr,
+					
+					(
+						SELECT
+							COUNT(reg.id)
+						FROM
+							hyjf_app_channel_statistics_detail reg
+						WHERE
+							reg.source_id = a.source_id
+							AND reg.open_account_time <![CDATA[<>]]> ''
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND reg.open_account_time <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND reg.open_account_time <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS account_number,
+					(
+						SELECT
+							COUNT(reg.id)
+						FROM
+							hyjf_app_channel_statistics_detail reg
+							LEFT JOIN huiyingdai_users_info ui ON reg.user_id = ui.user_id
+						WHERE
+							reg.source_id = a.source_id
+							AND reg.open_account_time <![CDATA[<>]]> ''
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND reg.open_account_time <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND reg.open_account_time <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+								AND ui.attribute = 0
+					) AS account_attr_number,
+					(
+						SELECT
+							COUNT(reg.id)
+						FROM
+							hyjf_app_channel_statistics_detail reg
+							INNER JOIN huiyingdai_users uu ON reg.user_id = uu.user_id AND uu.account_esb = 0
+						WHERE
+							reg.source_id = a.source_id
+							AND reg.open_account_time <![CDATA[<>]]> ''
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND reg.open_account_time <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND reg.open_account_time <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS account_number_pc,
+					(
+						SELECT
+							COUNT(reg.id)
+						FROM
+							hyjf_app_channel_statistics_detail reg
+							INNER JOIN huiyingdai_users uu ON reg.user_id = uu.user_id AND uu.account_esb = 1
+						WHERE
+							reg.source_id = a.source_id
+							AND reg.open_account_time <![CDATA[<>]]> ''
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND reg.open_account_time <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND reg.open_account_time <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+													
+					) AS account_number_wechat,
+					(
+						SELECT
+							COUNT(reg.id)
+						FROM
+							hyjf_app_channel_statistics_detail reg
+							INNER JOIN huiyingdai_users uu ON reg.user_id = uu.user_id AND uu.account_esb = 2
+						WHERE
+							reg.source_id = a.source_id
+							AND reg.open_account_time <![CDATA[<>]]> ''
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND reg.open_account_time <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND reg.open_account_time <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS account_number_android,
+
+					(
+						SELECT
+							COUNT(reg.id)
+						FROM
+							hyjf_app_channel_statistics_detail reg
+							INNER JOIN huiyingdai_users uu ON reg.user_id = uu.user_id AND uu.account_esb = 3
+						WHERE
+							reg.source_id = a.source_id
+							AND reg.open_account_time <![CDATA[<>]]> ''
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND reg.open_account_time <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND reg.open_account_time <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS account_number_ios,
+					(
+						SELECT
+							COUNT(DISTINCT c.user_id)
+						FROM
+							(
+								SELECT
+									reg.source_id,
+									reg.user_id
+								FROM
+									hyjf_app_channel_statistics_detail reg
+								INNER JOIN huiyingdai_borrow_tender tender ON tender.user_id = reg.user_id
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+								UNION ALL
+								SELECT
+									reg.source_id,
+									reg.user_id
+								FROM
+									hyjf_app_channel_statistics_detail reg
+								INNER JOIN huiyingdai_product_list list ON list.user_id = reg.user_id
+								AND list.invest_status = 0
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+								UNION ALL
+								SELECT
+									reg.source_id,
+									reg.user_id
+								FROM
+									hyjf_app_channel_statistics_detail reg
+								INNER JOIN hyjf_debt_plan_accede hdpa ON hdpa.user_id = reg.user_id
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+								UNION ALL
+								SELECT
+									reg.source_id,
+									reg.user_id
+								FROM
+									hyjf_app_channel_statistics_detail reg
+								INNER JOIN huiyingdai_credit_tender hct ON hct.user_id = reg.user_id
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+							) c
+						WHERE
+							c.source_id = a.source_id
+					) AS tender_number,
+					(
+						SELECT
+							COUNT(DISTINCT c.user_id)
+						FROM
+							(
+								SELECT
+									reg.source_id,
+									reg.user_id
+								FROM
+									hyjf_app_channel_statistics_detail reg
+									LEFT JOIN huiyingdai_users_info ui ON reg.user_id = ui.user_id
+								INNER JOIN huiyingdai_borrow_tender tender ON tender.user_id = reg.user_id
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+										AND ui.attribute = 0
+								</where>
+								UNION ALL
+								SELECT
+									reg.source_id,
+									reg.user_id
+								FROM
+									hyjf_app_channel_statistics_detail reg
+									LEFT JOIN huiyingdai_users_info ui ON reg.user_id = ui.user_id
+								INNER JOIN huiyingdai_product_list list ON list.user_id = reg.user_id
+								AND list.invest_status = 0
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+										AND ui.attribute = 0
+								</where>
+								
+								UNION ALL
+								SELECT
+									reg.source_id,
+									reg.user_id
+								FROM
+									hyjf_app_channel_statistics_detail reg
+								LEFT JOIN huiyingdai_users_info ui ON reg.user_id = ui.user_id
+								INNER JOIN hyjf_debt_plan_accede hdpa ON hdpa.user_id = reg.user_id
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+										AND ui.attribute = 0
+								</where>
+								UNION ALL
+								SELECT
+									reg.source_id,
+									reg.user_id
+								FROM
+									hyjf_app_channel_statistics_detail reg
+								LEFT JOIN huiyingdai_users_info ui ON reg.user_id = ui.user_id
+								INNER JOIN huiyingdai_credit_tender hct ON hct.user_id = reg.user_id
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+										AND ui.attribute = 0
+								</where>
+							) c
+						WHERE
+							c.source_id = a.source_id
+					) AS tender_attr_number,
+					
+					(
+						SELECT
+							COUNT(DISTINCT c.user_id)
+						FROM
+							(
+								SELECT
+									reg.source_id,
+									reg.user_id,
+									tender.client
+								FROM
+									hyjf_app_channel_statistics_detail reg
+								INNER JOIN huiyingdai_borrow_tender tender ON tender.user_id = reg.user_id
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+								UNION ALL
+								SELECT
+									reg.source_id,
+									reg.user_id,
+									list.client
+								FROM
+									hyjf_app_channel_statistics_detail reg
+								INNER JOIN huiyingdai_product_list list ON list.user_id = reg.user_id
+								AND list.invest_status = 0
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+								UNION ALL
+								SELECT
+									reg.source_id,
+									reg.user_id,
+									hdpa.client
+								FROM
+									hyjf_app_channel_statistics_detail reg
+								INNER JOIN hyjf_debt_plan_accede hdpa ON hdpa.user_id = reg.user_id
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+								UNION ALL
+								SELECT
+									reg.source_id,
+									reg.user_id,
+									hct.client
+								FROM
+									hyjf_app_channel_statistics_detail reg
+								INNER JOIN huiyingdai_credit_tender hct ON hct.user_id = reg.user_id
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+							) c
+						WHERE
+							c.source_id = a.source_id  AND c.client = 0
+					) AS tender_number_pc,
+
+					(
+						SELECT
+							COUNT(DISTINCT c.user_id)
+						FROM
+							(
+								SELECT
+									reg.source_id,
+									reg.user_id,
+									tender.client
+								FROM
+									hyjf_app_channel_statistics_detail reg
+								INNER JOIN huiyingdai_borrow_tender tender ON tender.user_id = reg.user_id
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+								UNION ALL
+								SELECT
+									reg.source_id,
+									reg.user_id,
+									list.client
+								FROM
+									hyjf_app_channel_statistics_detail reg
+								INNER JOIN huiyingdai_product_list list ON list.user_id = reg.user_id
+								AND list.invest_status = 0
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+								UNION ALL
+								SELECT
+									reg.source_id,
+									reg.user_id,
+									hdpa.client
+								FROM
+									hyjf_app_channel_statistics_detail reg
+								INNER JOIN hyjf_debt_plan_accede hdpa ON hdpa.user_id = reg.user_id
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+								UNION ALL
+								SELECT
+									reg.source_id,
+									reg.user_id,
+									hct.client
+								FROM
+									hyjf_app_channel_statistics_detail reg
+								INNER JOIN huiyingdai_credit_tender hct ON hct.user_id = reg.user_id
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+							) c
+						WHERE
+							c.source_id = a.source_id  AND c.client = 1
+					) AS tender_number_wechat,
+					(
+						SELECT
+							COUNT(DISTINCT c.user_id)
+						FROM
+							(
+								SELECT
+									reg.source_id,
+									reg.user_id,
+									tender.client
+								FROM
+									hyjf_app_channel_statistics_detail reg
+								INNER JOIN huiyingdai_borrow_tender tender ON tender.user_id = reg.user_id
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+								UNION ALL
+								SELECT
+									reg.source_id,
+									reg.user_id,
+									list.client
+								FROM
+									hyjf_app_channel_statistics_detail reg
+								INNER JOIN huiyingdai_product_list list ON list.user_id = reg.user_id
+								AND list.invest_status = 0
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+								UNION ALL
+								SELECT
+									reg.source_id,
+									reg.user_id,
+									hdpa.client
+								FROM
+									hyjf_app_channel_statistics_detail reg
+								INNER JOIN hyjf_debt_plan_accede hdpa ON hdpa.user_id = reg.user_id
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+								UNION ALL
+								SELECT
+									reg.source_id,
+									reg.user_id,
+									hct.client
+								FROM
+									hyjf_app_channel_statistics_detail reg
+								INNER JOIN huiyingdai_credit_tender hct ON hct.user_id = reg.user_id
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+							) c
+						WHERE
+							c.source_id = a.source_id  AND c.client = 2
+					) AS tender_number_android,
+					(
+						SELECT
+							COUNT(DISTINCT c.user_id)
+						FROM
+							(
+								SELECT
+									reg.source_id,
+									reg.user_id,
+									tender.client
+								FROM
+									hyjf_app_channel_statistics_detail reg
+								INNER JOIN huiyingdai_borrow_tender tender ON tender.user_id = reg.user_id
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+								UNION ALL
+								SELECT
+									reg.source_id,
+									reg.user_id,
+									list.client
+								FROM
+									hyjf_app_channel_statistics_detail reg
+								INNER JOIN huiyingdai_product_list list ON list.user_id = reg.user_id
+								AND list.invest_status = 0
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+								UNION ALL
+								SELECT
+									reg.source_id,
+									reg.user_id,
+									hdpa.client
+								FROM
+									hyjf_app_channel_statistics_detail reg
+								INNER JOIN hyjf_debt_plan_accede hdpa ON hdpa.user_id = reg.user_id
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+								UNION ALL
+								SELECT
+									reg.source_id,
+									reg.user_id,
+									hct.client
+								FROM
+									hyjf_app_channel_statistics_detail reg
+								INNER JOIN huiyingdai_credit_tender hct ON hct.user_id = reg.user_id
+								<where>
+									<if test="timeStartSrch != null and timeStartSrch != ''">
+										AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+									</if>
+									<if test="timeEndSrch != null and timeEndSrch != ''">
+										AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+									</if>
+								</where>
+							) c
+						WHERE
+							c.source_id = a.source_id  AND c.client = 3
+					) AS tender_number_ios,
+					
+					
+					(
+						SELECT
+							CASE
+						WHEN SUM(recharge.money) IS NULL THEN
+							0
+						ELSE
+							SUM(recharge.money)
+						END money
+						FROM
+							hyjf_app_channel_statistics_detail reg
+						INNER JOIN huiyingdai_account_recharge recharge ON recharge.user_id = reg.user_id
+						AND recharge.`status` = 1
+						WHERE
+							reg.source_id = a.source_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( recharge.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( recharge.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS recharge_price,
+					(
+						SELECT
+							CASE
+						WHEN SUM(recharge.money) IS NULL THEN
+							0
+						ELSE
+							SUM(recharge.money)
+						END money
+						FROM
+							hyjf_app_channel_statistics_detail reg
+							INNER JOIN huiyingdai_account_recharge recharge ON recharge.user_id = reg.user_id AND recharge.`status` = 1
+						    LEFT JOIN huiyingdai_users_info ui ON reg.user_id = ui.user_id
+						WHERE
+							reg.source_id = a.source_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( recharge.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( recharge.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+								AND ui.attribute = 0
+					) AS recharge_attr_price,
+					
+					(
+						SELECT
+							CASE
+						WHEN SUM(tender.account) IS NULL THEN
+							0
+						ELSE
+							SUM(tender.account)
+						END account
+						FROM
+							hyjf_app_channel_statistics_detail reg
+						INNER JOIN huiyingdai_borrow_tender tender ON tender.user_id = reg.user_id
+						INNER JOIN huiyingdai_borrow borrow ON borrow.borrow_nid = tender.borrow_nid
+						AND borrow.project_type <![CDATA[<>]]> 8
+						AND borrow.project_type <![CDATA[<>]]> 13
+						WHERE
+							reg.source_id = a.source_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS hzt_tender_price,
+					
+					
+					(
+						SELECT
+							CASE
+						WHEN SUM(tender.account) IS NULL THEN
+							0
+						ELSE
+							SUM(tender.account)
+						END account
+						FROM
+							hyjf_app_channel_statistics_detail reg
+						INNER JOIN huiyingdai_borrow_tender tender ON tender.user_id = reg.user_id
+						INNER JOIN huiyingdai_borrow borrow ON borrow.borrow_nid = tender.borrow_nid
+						AND borrow.project_type = 8
+						WHERE
+							reg.source_id = a.source_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS hxf_tender_price,
+					(
+						SELECT
+							CASE
+						WHEN SUM(list.amount) IS NULL THEN
+							0
+						ELSE
+							SUM(list.amount)
+						END amount
+						FROM
+							hyjf_app_channel_statistics_detail reg
+						INNER JOIN huiyingdai_product_list list ON list.user_id = reg.user_id
+						AND list.invest_status = 0
+						WHERE
+							reg.source_id = a.source_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS htl_tender_price,
+					(
+						SELECT
+							CASE
+						WHEN SUM(hdpa.accede_account) IS NULL THEN
+							0
+						ELSE
+							SUM(hdpa.accede_account)
+						END amount
+						FROM
+							hyjf_app_channel_statistics_detail reg
+						INNER JOIN hyjf_debt_plan_accede hdpa ON hdpa.user_id = reg.user_id
+						WHERE
+							reg.source_id = a.source_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS htj_tender_price,
+					(
+						SELECT
+							CASE
+						WHEN SUM(tender.account) IS NULL THEN
+							0
+						ELSE
+							SUM(tender.account)
+						END account
+						FROM
+							hyjf_app_channel_statistics_detail reg
+						INNER JOIN huiyingdai_borrow_tender tender ON tender.user_id = reg.user_id
+						INNER JOIN huiyingdai_borrow borrow ON borrow.borrow_nid = tender.borrow_nid
+						AND borrow.project_type = 13
+						WHERE
+							reg.source_id = a.source_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS rtb_tender_price,
+					(
+						SELECT
+							CASE
+						WHEN SUM(hct.assign_capital) IS NULL THEN
+							0
+						ELSE
+							SUM(hct.assign_capital)
+						END account
+						FROM
+							hyjf_app_channel_statistics_detail reg
+						INNER JOIN huiyingdai_credit_tender hct ON hct.user_id = reg.user_id
+						WHERE
+							reg.source_id = a.source_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS hzr_tender_price,
+					
+					(
+					
+						SELECT CASE
+							WHEN SUM(d.account) IS NULL THEN
+								0
+							ELSE
+								SUM(d.account) END account
+						    FROM ( 
+								SELECT
+									SUM(tender.account) AS account,
+									reg.source_id AS source_id
+									FROM
+										hyjf_app_channel_statistics_detail reg
+									INNER JOIN huiyingdai_borrow_tender tender ON tender.user_id = reg.user_id
+									LEFT JOIN huiyingdai_users_info ui ON reg.user_id = ui.user_id
+									WHERE 1=1
+										<if test="timeStartSrch != null and timeStartSrch != ''">
+											AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+										</if>
+										<if test="timeEndSrch != null and timeEndSrch != ''">
+											AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+										</if>
+									AND ui.attribute = 0
+									group by reg.source_id
+									UNION ALL 
+									SELECT
+								    SUM(list.amount) AS account,
+									reg.source_id AS source_id
+									FROM
+										hyjf_app_channel_statistics_detail reg
+									INNER JOIN huiyingdai_product_list list ON list.user_id = reg.user_id
+									AND list.invest_status = 0
+									LEFT JOIN huiyingdai_users_info ui ON reg.user_id = ui.user_id
+									WHERE
+										1=1
+										<if test="timeStartSrch != null and timeStartSrch != ''">
+											AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+										</if>
+										<if test="timeEndSrch != null and timeEndSrch != ''">
+											AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+										</if>	
+									AND ui.attribute = 0
+									group by reg.source_id
+									UNION ALL
+									SELECT
+										SUM(hdpa.accede_account) AS account,
+										reg.source_id AS source_id
+									FROM
+										hyjf_app_channel_statistics_detail reg
+									INNER JOIN hyjf_debt_plan_accede hdpa ON hdpa.user_id = reg.user_id
+									
+									LEFT JOIN huiyingdai_users_info ui ON reg.user_id = ui.user_id
+									WHERE
+										1=1
+										<if test="timeStartSrch != null and timeStartSrch != ''">
+											AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+										</if>
+										<if test="timeEndSrch != null and timeEndSrch != ''">
+											AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+										</if>	
+									AND ui.attribute = 0
+									group by reg.source_id
+									UNION ALL
+									
+									SELECT
+										SUM(tender.assign_capital) AS account,
+										reg.source_id AS source_id
+									FROM
+										hyjf_app_channel_statistics_detail reg
+									INNER JOIN huiyingdai_credit_tender tender ON tender.user_id = reg.user_id
+									LEFT JOIN huiyingdai_users_info ui ON reg.user_id = ui.user_id
+									WHERE
+										1=1
+										<if test="timeStartSrch != null and timeStartSrch != ''">
+											AND FROM_UNIXTIME( tender.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+										</if>
+										<if test="timeEndSrch != null and timeEndSrch != ''">
+											AND FROM_UNIXTIME( tender.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+										</if>	
+									AND ui.attribute = 0
+									group by reg.source_id
+									
+									
+									)d
+					WHERE
+							d.source_id = a.source_id
+					
+					) AS attr_tender_price
+					
+				FROM
+					(
+						SELECT DISTINCT
+							utm.source_id,
+							utm.source_name
+						FROM
+							huiyingdai_utm_plat utm  WHERE utm.source_type = 1
+					) a
+			) b
+		WHERE
+		  b.source_id IS NOT NULL AND b.source_id <![CDATA[<>]]> ''
+		GROUP BY
+			b.source_id
+		</sql>
+	<select id="countList" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+		  COUNT(1)
+		FROM (
+		<include refid="Select_Clause" />
+		) a
+	</select>
+
+	<resultMap id="selectListMap" type="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		<result column="channel_name" property="channelName" jdbcType="VARCHAR" />
+		<result column="source_id" property="sourceId" jdbcType="VARCHAR" />
+		<result column="visit_count" property="visitCount" jdbcType="VARCHAR" />
+		<result column="register_count" property="registerCount" jdbcType="VARCHAR" />
+		<result column="register_attr_count" property="registerAttrCount" jdbcType="VARCHAR" />
+		<result column="open_account_count" property="openAccountCount" jdbcType="VARCHAR" />
+		<result column="open_account_attr_count" property="openAccountAttrCount" jdbcType="VARCHAR" />
+		<result column="invest_number" property="investNumber" jdbcType="VARCHAR" />
+		<result column="invest_attr_number" property="investAttrNumber" jdbcType="VARCHAR" />
+		<result column="cumulative_charge" property="cumulativeCharge" jdbcType="VARCHAR" />
+		<result column="cumulative_attr_charge" property="cumulativeAttrCharge" jdbcType="VARCHAR" />
+		<result column="cumulative_invest" property="cumulativeInvest" jdbcType="VARCHAR" />
+		<result column="cumulative_attr_invest" property="cumulativeAttrInvest" jdbcType="VARCHAR" />
+		<result column="hzt_invest_sum" property="hztInvestSum" jdbcType="VARCHAR" />
+		<result column="hxf_invest_sum" property="hxfInvestSum" jdbcType="VARCHAR" />
+		<result column="htl_invest_sum" property="htlInvestSum" jdbcType="VARCHAR" />
+		<result column="htj_invest_sum" property="htjInvestSum" jdbcType="VARCHAR" />
+		<result column="rtb_invest_sum" property="rtbInvestSum" jdbcType="VARCHAR" />
+		<result column="hzr_invest_sum" property="hzrInvestSum" jdbcType="VARCHAR" />
+		<result column="account_number_ios" property="accountNumberIos" jdbcType="VARCHAR" />
+		<result column="account_number_pc" property="accountNumberPc" jdbcType="VARCHAR" />
+		<result column="account_number_wechat" property="accountNumberWechat" jdbcType="VARCHAR" />
+		<result column="account_number_android" property="accountNumberAndroid" jdbcType="VARCHAR" />
+		<result column="tender_number_pc" property="tenderNumberPc" jdbcType="VARCHAR" />
+		<result column="tender_number_wechat" property="tenderNumberWechat" jdbcType="VARCHAR" />
+		<result column="tender_number_android" property="tenderNumberAndroid" jdbcType="VARCHAR" />
+		<result column="tender_number_ios" property="tenderNumberIos" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectList" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		<include refid="Select_Clause" />
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	<!-- 查询相应的app渠道访问记录 -->
+	<select id="selectVisitCount" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+			SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			COUNT(visit.id) AS visit_count
+		FROM
+			(
+				SELECT
+					visit.id,
+					visit.source_id
+				FROM
+					hyjf_app_access_statistics visit
+				<where>
+					<if test="sourceIdSrch != null and sourceIdSrch != ''">
+						visit.source_id = #{sourceIdSrch}
+					</if>
+					<if test="timeStartSrch != null and timeStartSrch != ''">
+						AND visit.access_time <![CDATA[>=]]> #{timeStartSrch}
+					</if>
+					<if test="timeEndSrch != null and timeEndSrch != ''">
+						AND visit.access_time <![CDATA[<=]]> #{timeEndSrch}
+					</if>	
+				</where>	
+			) visit
+		INNER JOIN (
+			SELECT DISTINCT
+				utm.source_id,
+				utm.source_name
+			FROM
+				huiyingdai_utm_plat utm
+			<where>
+				utm.source_type = 1
+				AND utm.source_id IS NOT NULL
+				AND utm.source_id <![CDATA[<>]]> ''
+				<if test="sourceIdSrch != null and sourceIdSrch != ''">
+					AND utm.source_id = #{sourceIdSrch}
+				</if>
+			</where>
+		) a ON visit.source_id = a.source_id
+	</select>
+	<!-- 查询相应的app渠道注册数 -->
+	<select id="selectRegisterCount" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			COUNT(reg.id) AS register_count
+		FROM
+			(
+				SELECT
+					reg.id,
+					reg.source_id 
+				FROM
+					hyjf_app_channel_statistics_detail reg
+				<where>
+					<if test="sourceIdSrch != null and sourceIdSrch != ''">
+						reg.source_id = #{sourceIdSrch}
+					</if>
+					<if test="timeStartSrch != null and timeStartSrch != ''">
+						AND reg.register_time <![CDATA[>=]]> #{timeStartSrch}
+					</if>
+					<if test="timeEndSrch != null and timeEndSrch != ''">
+						AND reg.register_time <![CDATA[<=]]> #{timeEndSrch}
+					</if>	
+				</where>	
+			) AS reg
+		INNER JOIN (
+			SELECT DISTINCT
+				utm.source_id,
+				utm.source_name
+			FROM
+				huiyingdai_utm_plat utm
+			<where>
+				utm.source_type = 1
+				AND utm.source_id IS NOT NULL
+				AND utm.source_id <![CDATA[<>]]> ''
+				<if test="sourceIdSrch != null and sourceIdSrch != ''">
+					AND utm.source_id = #{sourceIdSrch}
+				</if>
+			</where>
+		) a ON reg.source_id = a.source_id
+	</select>
+	<!-- 查询相应的app渠道主单注册数 -->
+	<select id="selectRegisterAttrCount" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			COUNT(reg.id) AS register_attr_count
+		FROM
+			(
+				SELECT
+					reg.id,
+					reg.user_id,
+					reg.source_id 
+				FROM
+					hyjf_app_channel_statistics_detail reg
+				<where>
+					<if test="sourceIdSrch != null and sourceIdSrch != ''">
+						reg.source_id = #{sourceIdSrch}
+					</if>
+					<if test="timeStartSrch != null and timeStartSrch != ''">
+						AND reg.register_time <![CDATA[>=]]> #{timeStartSrch}
+					</if>
+					<if test="timeEndSrch != null and timeEndSrch != ''">
+						AND reg.register_time <![CDATA[<=]]> #{timeEndSrch}
+					</if>	
+				</where>
+			) AS reg
+		INNER JOIN (
+			SELECT DISTINCT
+				utm.source_id,
+				utm.source_name
+			FROM
+				huiyingdai_utm_plat utm
+			<where>
+				utm.source_type = 1
+				AND utm.source_id IS NOT NULL
+				AND utm.source_id <![CDATA[<>]]> ''
+				<if test="sourceIdSrch != null and sourceIdSrch != ''">
+					AND utm.source_id = #{sourceIdSrch}
+				</if>
+			</where>
+		) a ON reg.source_id = a.source_id
+		INNER JOIN (
+			SELECT
+				ui.user_id
+			FROM
+				huiyingdai_users_info ui
+			<where>
+				ui.attribute = 0
+			</where>
+		) AS ui ON reg.user_id = ui.user_id
+	</select>
+	<!-- 查询相应的app渠道开户数 -->
+	<select id="selectOpenAccountCount" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			COUNT(reg.id) AS open_account_count
+		FROM
+			(
+				SELECT
+					reg.id,
+					reg.user_id,
+					reg.source_id
+				FROM
+					hyjf_app_channel_statistics_detail reg
+				<where>
+					reg.open_account_time <![CDATA[<>]]> ''
+					<if test="sourceIdSrch != null and sourceIdSrch != ''">
+						AND reg.source_id = #{sourceIdSrch}
+					</if>
+					<if test="timeStartSrch != null and timeStartSrch != ''">
+						AND reg.open_account_time <![CDATA[>=]]> #{timeStartSrch}
+					</if>
+					<if test="timeEndSrch != null and timeEndSrch != ''">
+						AND reg.open_account_time <![CDATA[<=]]> #{timeEndSrch}
+					</if>	
+				</where>
+			) AS reg
+		INNER JOIN (
+			SELECT DISTINCT
+				utm.source_id,
+				utm.source_name
+			FROM
+				huiyingdai_utm_plat utm
+			<where>
+				utm.source_type = 1
+				AND utm.source_id IS NOT NULL
+				AND utm.source_id <![CDATA[<>]]> ''
+				<if test="sourceIdSrch != null and sourceIdSrch != ''">
+					AND utm.source_id = #{sourceIdSrch}
+				</if>
+			</where>
+		) a ON reg.source_id = a.source_id
+	</select>
+	<!-- 查询相应的app渠道无主单开户数 -->
+	<select id="selectOpenAccountAttrCount" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			COUNT(reg.id) AS open_account_attr_count
+		FROM
+			(
+				SELECT
+					reg.id,
+					reg.user_id,
+					reg.source_id
+				FROM
+					hyjf_app_channel_statistics_detail reg
+				<where>
+					reg.open_account_time <![CDATA[<>]]> ''
+					<if test="sourceIdSrch != null and sourceIdSrch != ''">
+						AND reg.source_id = #{sourceIdSrch}
+					</if>
+					<if test="timeStartSrch != null and timeStartSrch != ''">
+						AND reg.open_account_time <![CDATA[>=]]> #{timeStartSrch}
+					</if>
+					<if test="timeEndSrch != null and timeEndSrch != ''">
+						AND reg.open_account_time <![CDATA[<=]]> #{timeEndSrch}
+					</if>	
+				</where>
+			) AS reg
+		INNER JOIN (
+			SELECT DISTINCT
+				utm.source_id,
+				utm.source_name
+			FROM
+				huiyingdai_utm_plat utm
+			<where>
+				utm.source_type = 1
+				AND utm.source_id IS NOT NULL
+				AND utm.source_id <![CDATA[<>]]> ''
+				<if test="sourceIdSrch != null and sourceIdSrch != ''">
+					AND utm.source_id = #{sourceIdSrch}
+				</if>
+			</where>
+		) a ON reg.source_id = a.source_id
+		INNER JOIN (
+			SELECT
+				ui.user_id
+			FROM
+				huiyingdai_users_info ui
+			<where>
+				ui.attribute = 0
+			</where>
+		) AS ui ON reg.user_id = ui.user_id
+	</select>
+	<!-- 查询相应的app渠道PC开户数 -->
+	<select id="selectAccountNumberPC" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			COUNT(reg.id) AS account_number_pc
+		FROM
+			(
+				SELECT
+					reg.id,
+					reg.user_id,
+					reg.source_id
+				FROM
+					hyjf_app_channel_statistics_detail reg
+				<where>
+					reg.open_account_time <![CDATA[<>]]> ''
+					<if test="sourceIdSrch != null and sourceIdSrch != ''">
+						AND reg.source_id = #{sourceIdSrch}
+					</if>
+					<if test="timeStartSrch != null and timeStartSrch != ''">
+						AND reg.open_account_time <![CDATA[>=]]> #{timeStartSrch}
+					</if>
+					<if test="timeEndSrch != null and timeEndSrch != ''">
+						AND reg.open_account_time <![CDATA[<=]]> #{timeEndSrch}
+					</if>	
+				</where>
+			) AS reg
+		INNER JOIN (
+			SELECT
+				u.user_id
+			FROM
+				huiyingdai_users u
+			<where>
+				u.account_esb = 0
+			</where>
+		) AS u ON reg.user_id = u.user_id
+		INNER JOIN (
+			SELECT DISTINCT
+				utm.source_id,
+				utm.source_name
+			FROM
+				huiyingdai_utm_plat utm
+			<where>
+				utm.source_type = 1
+				AND utm.source_id IS NOT NULL
+				AND utm.source_id <![CDATA[<>]]> ''
+				<if test="sourceIdSrch != null and sourceIdSrch != ''">
+					AND utm.source_id = #{sourceIdSrch}
+				</if>
+			</where>
+		) a ON reg.source_id = a.source_id
+	</select>
+	<!-- 查询相应的app渠道微信开户数 -->
+	<select id="selectAccountNumberWechat" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			COUNT(reg.id) AS account_number_wechat
+		FROM
+			(
+				SELECT
+					reg.id,
+					reg.user_id,
+					reg.source_id
+				FROM
+					hyjf_app_channel_statistics_detail reg
+				<where>
+					reg.open_account_time <![CDATA[<>]]> ''
+					<if test="sourceIdSrch != null and sourceIdSrch != ''">
+						AND reg.source_id = #{sourceIdSrch}
+					</if>
+					<if test="timeStartSrch != null and timeStartSrch != ''">
+						AND reg.open_account_time <![CDATA[>=]]> #{timeStartSrch}
+					</if>
+					<if test="timeEndSrch != null and timeEndSrch != ''">
+						AND reg.open_account_time <![CDATA[<=]]> #{timeEndSrch}
+					</if>	
+				</where>
+			) AS reg
+		INNER JOIN (
+			SELECT
+				u.user_id
+			FROM
+				huiyingdai_users u
+			<where>
+				u.account_esb = 1
+			</where>
+		) AS u ON reg.user_id = u.user_id
+		INNER JOIN (
+			SELECT DISTINCT
+				utm.source_id,
+				utm.source_name
+			FROM
+				huiyingdai_utm_plat utm
+			<where>
+				utm.source_type = 1
+				AND utm.source_id IS NOT NULL
+				AND utm.source_id <![CDATA[<>]]> ''
+				<if test="sourceIdSrch != null and sourceIdSrch != ''">
+					AND utm.source_id = #{sourceIdSrch}
+				</if>
+			</where>
+		) a ON reg.source_id = a.source_id
+	</select>
+	<!-- 查询相应的app渠道Ios开户数 -->
+	<select id="selectAccountNumberIos" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			COUNT(reg.id) AS account_number_ios
+		FROM
+			(
+				SELECT
+					reg.id,
+					reg.user_id,
+					reg.source_id
+				FROM
+					hyjf_app_channel_statistics_detail reg
+				<where>
+					reg.open_account_time <![CDATA[<>]]> ''
+					<if test="sourceIdSrch != null and sourceIdSrch != ''">
+						AND reg.source_id = #{sourceIdSrch}
+					</if>
+					<if test="timeStartSrch != null and timeStartSrch != ''">
+						AND reg.open_account_time <![CDATA[>=]]> #{timeStartSrch}
+					</if>
+					<if test="timeEndSrch != null and timeEndSrch != ''">
+						AND reg.open_account_time <![CDATA[<=]]> #{timeEndSrch}
+					</if>	
+				</where>
+			) AS reg
+		INNER JOIN (
+			SELECT
+				u.user_id
+			FROM
+				huiyingdai_users u
+			<where>
+				u.account_esb = 3
+			</where>
+		) AS u ON reg.user_id = u.user_id
+		INNER JOIN (
+			SELECT DISTINCT
+				utm.source_id,
+				utm.source_name
+			FROM
+				huiyingdai_utm_plat utm
+			<where>
+				utm.source_type = 1
+				AND utm.source_id IS NOT NULL
+				AND utm.source_id <![CDATA[<>]]> ''
+				<if test="sourceIdSrch != null and sourceIdSrch != ''">
+					AND utm.source_id = #{sourceIdSrch}
+				</if>
+			</where>
+		) a ON reg.source_id = a.source_id
+	</select>
+	<!-- 查询相应的app渠道安卓开户数 -->
+	<select id="selectAccountNumberAndroid" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			COUNT(reg.id) AS account_number_android
+		FROM
+			(
+				SELECT
+					reg.id,
+					reg.user_id,
+					reg.source_id
+				FROM
+					hyjf_app_channel_statistics_detail reg
+				<where>
+					reg.open_account_time <![CDATA[<>]]> ''
+					<if test="sourceIdSrch != null and sourceIdSrch != ''">
+						AND reg.source_id = #{sourceIdSrch}
+					</if>
+					<if test="timeStartSrch != null and timeStartSrch != ''">
+						AND reg.open_account_time <![CDATA[>=]]> #{timeStartSrch}
+					</if>
+					<if test="timeEndSrch != null and timeEndSrch != ''">
+						AND reg.open_account_time <![CDATA[<=]]> #{timeEndSrch}
+					</if>	
+				</where>
+			) AS reg
+		INNER JOIN (
+			SELECT
+				u.user_id
+			FROM
+				huiyingdai_users u
+			<where>
+				u.account_esb = 2
+			</where>
+		) AS u ON reg.user_id = u.user_id
+		INNER JOIN (
+			SELECT DISTINCT
+				utm.source_id,
+				utm.source_name
+			FROM
+				huiyingdai_utm_plat utm
+			<where>
+				utm.source_type = 1
+				AND utm.source_id IS NOT NULL
+				AND utm.source_id <![CDATA[<>]]> ''
+				<if test="sourceIdSrch != null and sourceIdSrch != ''">
+					AND utm.source_id = #{sourceIdSrch}
+				</if>
+			</where>
+		) a ON reg.source_id = a.source_id
+	</select>
+	<!-- 查询相应的app渠道投资用户数 -->
+	<select id="selectInvestNumber" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			COUNT(DISTINCT c.user_id) AS invest_number
+		FROM
+			(
+				SELECT
+					reg.source_id,
+					reg.user_id
+				FROM
+					(
+						SELECT
+							reg.source_id,
+							reg.user_id
+						FROM
+							hyjf_app_channel_statistics_detail reg
+						<where>
+							<if test="sourceIdSrch != null and sourceIdSrch != ''">
+								AND reg.source_id = #{sourceIdSrch}
+							</if>
+						</where>
+					) AS reg
+				INNER JOIN (
+					SELECT
+						tender.user_id
+					FROM
+						huiyingdai_borrow_tender tender
+					<where>
+						<if test="timeStartSrch != null and timeStartSrch != ''">
+							AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+						</if>
+						<if test="timeEndSrch != null and timeEndSrch != ''">
+							AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+						</if>	
+					</where>
+				) AS tender ON tender.user_id = reg.user_id
+				UNION ALL
+					SELECT
+						reg.source_id,
+						reg.user_id
+					FROM
+						(
+							SELECT
+								reg.source_id,
+								reg.user_id
+							FROM
+								hyjf_app_channel_statistics_detail reg
+							<where>
+								<if test="sourceIdSrch != null and sourceIdSrch != ''">
+									AND reg.source_id = #{sourceIdSrch}
+								</if>
+							</where>
+						) AS reg
+					INNER JOIN (
+						SELECT
+							list.user_id 
+						FROM
+							huiyingdai_product_list list
+						<where>
+							list.invest_status = 0
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>	
+						</where>
+						) AS list ON list.user_id = reg.user_id
+				UNION ALL
+					SELECT
+						reg.source_id,
+						reg.user_id
+					FROM
+						(
+							SELECT
+								reg.source_id,
+								reg.user_id
+							FROM
+								hyjf_app_channel_statistics_detail reg
+							<where>
+								<if test="sourceIdSrch != null and sourceIdSrch != ''">
+									AND reg.source_id = #{sourceIdSrch}
+								</if>
+							</where>
+						) AS reg
+					INNER JOIN (
+						SELECT
+							hdpa.user_id
+						FROM
+							hyjf_debt_plan_accede hdpa
+						<where>
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>	
+						</where>
+					) hdpa ON hdpa.user_id = reg.user_id
+				UNION ALL
+					SELECT
+						reg.source_id,
+						reg.user_id
+					FROM
+						(
+							SELECT
+								reg.source_id,
+								reg.user_id
+							FROM
+								hyjf_app_channel_statistics_detail reg
+							<where>
+								<if test="sourceIdSrch != null and sourceIdSrch != ''">
+									AND reg.source_id = #{sourceIdSrch}
+								</if>
+							</where>
+						) AS reg
+					INNER JOIN (
+						SELECT
+							*
+						FROM
+							huiyingdai_credit_tender hct
+						<where>
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>	
+						</where>
+					) hct ON hct.user_id = reg.user_id
+				) c
+				INNER JOIN (
+					SELECT DISTINCT
+						utm.source_id,
+						utm.source_name
+					FROM
+						huiyingdai_utm_plat utm
+					<where>
+						utm.source_type = 1
+						AND utm.source_id IS NOT NULL
+						AND utm.source_id <![CDATA[<>]]> ''
+						<if test="sourceIdSrch != null and sourceIdSrch != ''">
+							AND utm.source_id = #{sourceIdSrch}
+						</if>
+					</where>
+				) a ON a.source_id = c.source_id
+	</select>
+	<!-- 查询相应的app渠道投资主单用户数 -->
+	<select id="selectInvestAttrNumber" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			COUNT(DISTINCT c.user_id) AS invest_attr_number
+		FROM
+			(
+				SELECT
+					reg.source_id,
+					reg.user_id
+				FROM
+					(
+						SELECT
+							reg.source_id,
+							reg.user_id
+						FROM
+							hyjf_app_channel_statistics_detail reg
+						<where>
+							<if test="sourceIdSrch != null and sourceIdSrch != ''">
+								AND reg.source_id = #{sourceIdSrch}
+							</if>
+						</where>
+					) AS reg
+				INNER JOIN (
+					SELECT
+						tender.user_id
+					FROM
+						huiyingdai_borrow_tender tender
+					<where>
+						<if test="timeStartSrch != null and timeStartSrch != ''">
+							AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+						</if>
+						<if test="timeEndSrch != null and timeEndSrch != ''">
+							AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+						</if>	
+					</where>
+				) AS tender ON tender.user_id = reg.user_id
+				LEFT JOIN (
+					SELECT
+						ui.user_id
+					FROM
+						huiyingdai_users_info ui
+					<where>
+						ui.attribute = 0
+					</where>
+				) AS ui ON reg.user_id = ui.user_id
+				UNION ALL
+					SELECT
+						reg.source_id,
+						reg.user_id
+					FROM
+						(
+							SELECT
+								reg.source_id,
+								reg.user_id
+							FROM
+								hyjf_app_channel_statistics_detail reg
+							<where>
+								<if test="sourceIdSrch != null and sourceIdSrch != ''">
+									AND reg.source_id = #{sourceIdSrch}
+								</if>
+							</where>
+						) AS reg
+					INNER JOIN (
+						SELECT
+							list.user_id
+						FROM
+							huiyingdai_product_list list
+						<where>
+							list.invest_status = 0
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>	
+						</where>
+						) AS list ON list.user_id = reg.user_id
+					LEFT JOIN (
+						SELECT
+							ui.user_id
+						FROM
+							huiyingdai_users_info ui
+						<where>
+							ui.attribute = 0
+						</where>
+					) AS ui ON reg.user_id = ui.user_id
+				UNION ALL
+					SELECT
+						reg.source_id,
+						reg.user_id
+					FROM
+						(
+							SELECT
+								reg.source_id,
+								reg.user_id
+							FROM
+								hyjf_app_channel_statistics_detail reg
+							<where>
+								<if test="sourceIdSrch != null and sourceIdSrch != ''">
+									AND reg.source_id = #{sourceIdSrch}
+								</if>
+							</where>
+						) AS reg
+					INNER JOIN (
+						SELECT
+							hdpa.user_id
+						FROM
+							hyjf_debt_plan_accede hdpa
+						<where>
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>	
+						</where>
+					) hdpa ON hdpa.user_id = reg.user_id
+				UNION ALL
+					SELECT
+						reg.source_id,
+						reg.user_id
+					FROM
+						(
+							SELECT
+								reg.source_id,
+								reg.user_id
+							FROM
+								hyjf_app_channel_statistics_detail reg
+							<where>
+								<if test="sourceIdSrch != null and sourceIdSrch != ''">
+									AND reg.source_id = #{sourceIdSrch}
+								</if>
+							</where>
+						) AS reg
+					INNER JOIN (
+						SELECT
+							hct.user_id 
+						FROM
+							huiyingdai_credit_tender hct
+						<where>
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>	
+						</where>
+					) hct ON hct.user_id = reg.user_id
+					LEFT JOIN (
+						SELECT
+							ui.user_id
+						FROM
+							huiyingdai_users_info ui
+						<where>
+							ui.attribute = 0
+						</where>
+					) AS ui ON reg.user_id = ui.user_id
+				) c
+			INNER JOIN (
+				SELECT DISTINCT
+					utm.source_id,
+					utm.source_name
+				FROM
+					huiyingdai_utm_plat utm
+				<where>
+					utm.source_type = 1
+					AND utm.source_id IS NOT NULL
+					AND utm.source_id <![CDATA[<>]]> ''
+					<if test="sourceIdSrch != null and sourceIdSrch != ''">
+						AND utm.source_id = #{sourceIdSrch}
+					</if>
+				</where>
+			) a ON a.source_id = c.source_id
+	</select>
+	<!-- 查询相应的app渠道用户充值数 -->
+	<select id="selectCumulativeCharge" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			CASE
+		WHEN SUM(recharge.money) IS NULL THEN
+			0
+		ELSE
+			SUM(recharge.money)
+		END AS cumulative_charge
+		FROM
+			(
+				SELECT
+					reg.source_id,
+					reg.user_id
+				FROM
+					hyjf_app_channel_statistics_detail reg
+				<where>
+					<if test="sourceIdSrch != null and sourceIdSrch != ''">
+						AND reg.source_id = #{sourceIdSrch}
+					</if>
+				</where>
+			) AS reg
+		INNER JOIN (
+			SELECT
+				recharge.user_id,
+				recharge.money
+			FROM
+				huiyingdai_account_recharge recharge
+			<where>
+				recharge.`status` = 1
+				<if test="timeStartSrch != null and timeStartSrch != ''">
+					AND FROM_UNIXTIME( recharge.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+				</if>
+				<if test="timeEndSrch != null and timeEndSrch != ''">
+					AND FROM_UNIXTIME( recharge.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+				</if>	
+			</where>
+		) AS recharge ON recharge.user_id = reg.user_id
+		INNER JOIN (
+			SELECT DISTINCT
+				utm.source_id,
+				utm.source_name
+			FROM
+				huiyingdai_utm_plat utm
+			<where>
+				utm.source_type = 1
+				AND utm.source_id IS NOT NULL
+				AND utm.source_id <![CDATA[<>]]> ''
+				<if test="sourceIdSrch != null and sourceIdSrch != ''">
+					AND utm.source_id = #{sourceIdSrch}
+				</if>
+			</where>
+		) a ON a.source_id = reg.source_id;
+	</select>
+	<!-- 查询相应的app渠道用户主单充值数 -->
+	<select id="selectCumulativeAttrCharge" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			CASE
+		WHEN SUM(recharge.money) IS NULL THEN
+			0
+		ELSE
+			SUM(recharge.money)
+		END AS cumulative_attr_charge
+		FROM
+			(
+				SELECT
+					reg.source_id,
+					reg.user_id
+				FROM
+					hyjf_app_channel_statistics_detail reg
+				<where>
+					<if test="sourceIdSrch != null and sourceIdSrch != ''">
+						AND reg.source_id = #{sourceIdSrch}
+					</if>
+				</where>
+			) AS reg
+		INNER JOIN (
+			SELECT
+				recharge.user_id,
+				recharge.money
+			FROM
+				huiyingdai_account_recharge recharge
+			<where>
+				recharge.`status` = 1
+				<if test="timeStartSrch != null and timeStartSrch != ''">
+					AND FROM_UNIXTIME( recharge.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+				</if>
+				<if test="timeEndSrch != null and timeEndSrch != ''">
+					AND FROM_UNIXTIME( recharge.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+				</if>	
+			</where>
+		) AS recharge ON recharge.user_id = reg.user_id
+		INNER JOIN (
+			SELECT
+				ui.user_id
+			FROM
+				huiyingdai_users_info ui
+			<where>
+				ui.attribute = 0
+			</where>
+		) AS ui ON reg.user_id = ui.user_id
+		INNER JOIN (
+			SELECT DISTINCT
+				utm.source_id,
+				utm.source_name
+			FROM
+				huiyingdai_utm_plat utm
+			<where>
+				utm.source_type = 1
+				AND utm.source_id IS NOT NULL
+				AND utm.source_id <![CDATA[<>]]> ''
+				<if test="sourceIdSrch != null and sourceIdSrch != ''">
+					AND utm.source_id = #{sourceIdSrch}
+				</if>
+			</where>
+		) a ON a.source_id = reg.source_id;
+	</select>
+	<!-- 查询相应的app渠道用户汇直投投资数 -->
+	<select id="selectHztInvestSum" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			CASE
+		WHEN SUM(tender.account) IS NULL THEN
+			0
+		ELSE
+			SUM(tender.account)
+		END AS hzt_invest_sum
+		FROM
+			(
+				SELECT
+					reg.source_id,
+					reg.user_id
+				FROM
+					hyjf_app_channel_statistics_detail reg
+				<where>
+					<if test="sourceIdSrch != null and sourceIdSrch != ''">
+						AND reg.source_id = #{sourceIdSrch}
+					</if>
+				</where>
+			) AS reg
+		INNER JOIN (
+			SELECT
+				tender.user_id,
+				tender.borrow_nid,
+				tender.account
+			FROM
+				huiyingdai_borrow_tender tender
+			<where>
+				<if test="timeStartSrch != null and timeStartSrch != ''">
+					AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' )  <![CDATA[>=]]> #{timeStartSrch}
+				</if>
+				<if test="timeEndSrch != null and timeEndSrch != ''">
+					AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' )  <![CDATA[<=]]> #{timeEndSrch}
+				</if>	
+			</where>
+		) tender ON tender.user_id = reg.user_id
+		INNER JOIN (
+			SELECT
+				borrow.borrow_nid
+			FROM
+				huiyingdai_borrow borrow
+			<where>
+					borrow.project_type <![CDATA[<>]]> 8
+				AND borrow.project_type <![CDATA[<>]]> 13
+			</where>
+		) borrow ON borrow.borrow_nid = tender.borrow_nid
+		INNER JOIN (
+			SELECT DISTINCT
+				utm.source_id,
+				utm.source_name
+			FROM
+				huiyingdai_utm_plat utm
+			<where>
+				utm.source_type = 1
+				AND utm.source_id IS NOT NULL
+				AND utm.source_id <![CDATA[<>]]> ''
+				<if test="sourceIdSrch != null and sourceIdSrch != ''">
+					AND utm.source_id = #{sourceIdSrch}
+				</if>
+			</where>
+		) a ON a.source_id = reg.source_id
+	</select>
+	<!-- 查询相应的app渠道用户汇消费投资数 -->
+	<select id="selectHxfInvestSum" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			CASE
+		WHEN SUM(tender.account) IS NULL THEN
+			0
+		ELSE
+			SUM(tender.account)
+		END AS hxf_invest_sum
+		FROM
+			(
+				SELECT
+					reg.source_id,
+					reg.user_id
+				FROM
+					hyjf_app_channel_statistics_detail reg
+				<where>
+					<if test="sourceIdSrch != null and sourceIdSrch != ''">
+						AND reg.source_id = #{sourceIdSrch}
+					</if>
+				</where>
+			) AS reg
+		INNER JOIN (
+			SELECT
+				tender.user_id,
+				tender.borrow_nid,
+				tender.account
+			FROM
+				huiyingdai_borrow_tender tender
+			<where>
+				<if test="timeStartSrch != null and timeStartSrch != ''">
+					AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' )  <![CDATA[>=]]> #{timeStartSrch}
+				</if>
+				<if test="timeEndSrch != null and timeEndSrch != ''">
+					AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' )  <![CDATA[<=]]> #{timeEndSrch}
+				</if>	
+			</where>
+		) tender ON tender.user_id = reg.user_id
+		INNER JOIN (
+			SELECT
+				borrow.borrow_nid
+			FROM
+				huiyingdai_borrow borrow
+			<where>
+				borrow.project_type = 8
+			</where>
+		) borrow ON borrow.borrow_nid = tender.borrow_nid
+		INNER JOIN (
+			SELECT DISTINCT
+				utm.source_id,
+				utm.source_name
+			FROM
+				huiyingdai_utm_plat utm
+			<where>
+				utm.source_type = 1
+				AND utm.source_id IS NOT NULL
+				AND utm.source_id <![CDATA[<>]]> ''
+				<if test="sourceIdSrch != null and sourceIdSrch != ''">
+					AND utm.source_id = #{sourceIdSrch}
+				</if>
+			</where>
+		) a ON a.source_id = reg.source_id
+	</select>
+	<!-- 查询相应的app渠道用户汇天利投资数 -->
+	<select id="selectHtlInvestSum" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			CASE
+		WHEN SUM(list.amount) IS NULL THEN
+			0
+		ELSE
+			SUM(list.amount)
+		END AS htl_invest_sum
+		FROM
+			(
+				SELECT
+					reg.source_id,
+					reg.user_id
+				FROM
+					hyjf_app_channel_statistics_detail reg
+				<where>
+					<if test="sourceIdSrch != null and sourceIdSrch != ''">
+						AND reg.source_id = #{sourceIdSrch}
+					</if>
+				</where>
+			) AS reg
+		INNER JOIN (
+			SELECT
+				list.user_id,
+				list.amount
+			FROM
+				huiyingdai_product_list list
+			<where>
+				<if test="timeStartSrch != null and timeStartSrch != ''">
+					AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' )  <![CDATA[>=]]> #{timeStartSrch}
+				</if>
+				<if test="timeEndSrch != null and timeEndSrch != ''">
+					AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' )  <![CDATA[<=]]> #{timeEndSrch}
+				</if>	
+			</where>
+		) list ON list.user_id = reg.user_id
+		INNER JOIN (
+			SELECT DISTINCT
+				utm.source_id,
+				utm.source_name
+			FROM
+				huiyingdai_utm_plat utm
+			<where>
+				utm.source_type = 1
+				AND utm.source_id IS NOT NULL
+				AND utm.source_id <![CDATA[<>]]> ''
+				<if test="sourceIdSrch != null and sourceIdSrch != ''">
+					AND utm.source_id = #{sourceIdSrch}
+				</if>
+			</where>
+		) a ON a.source_id = reg.source_id
+	</select>
+	<!-- 查询相应的app渠道用户汇添金投资数 -->
+	<select id="selectHtjInvestSum" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			CASE
+				WHEN SUM(hdpa.accede_account) IS NULL THEN
+					0
+				ELSE
+					SUM(hdpa.accede_account) 
+			END AS htj_tender_price
+		FROM
+			(
+				SELECT
+					reg.source_id,
+					reg.user_id
+				FROM
+					hyjf_app_channel_statistics_detail reg
+				<where>
+					<if test="sourceIdSrch != null and sourceIdSrch != ''">
+						AND reg.source_id = #{sourceIdSrch}
+					</if>
+				</where>
+			) AS reg
+		INNER JOIN (
+			SELECT
+				hdpa.user_id,
+				hdpa.accede_account
+			FROM
+				hyjf_debt_plan_accede hdpa 
+			<where>
+				<if test="timeStartSrch != null and timeStartSrch != ''">
+					AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+				</if>
+				<if test="timeEndSrch != null and timeEndSrch != ''">
+					AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+				</if>	
+			</where>
+		) hdpa ON hdpa.user_id = reg.user_id
+		INNER JOIN (
+			SELECT DISTINCT
+				utm.source_id,
+				utm.source_name
+			FROM
+				huiyingdai_utm_plat utm
+			<where>
+				utm.source_type = 1
+				AND utm.source_id IS NOT NULL
+				AND utm.source_id <![CDATA[<>]]> ''
+				<if test="sourceIdSrch != null and sourceIdSrch != ''">
+					AND utm.source_id = #{sourceIdSrch}
+				</if>
+			</where>
+		) a ON a.source_id = reg.source_id
+	</select>
+	<!-- 查询相应的app渠道用户融通宝投资数 -->
+	<select id="selectRtbInvestSum" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			CASE
+				WHEN SUM(tender.account) IS NULL THEN
+					0
+				ELSE
+					SUM(tender.account)
+				END AS rtb_tender_price
+		FROM
+			(
+				SELECT
+					reg.source_id,
+					reg.user_id
+				FROM
+					hyjf_app_channel_statistics_detail reg
+				<where>
+					<if test="sourceIdSrch != null and sourceIdSrch != ''">
+						AND reg.source_id = #{sourceIdSrch}
+					</if>
+				</where>
+			) AS reg
+		INNER JOIN (
+			SELECT
+				tender.user_id,
+				tender.borrow_nid,
+				tender.account
+			FROM
+				huiyingdai_borrow_tender tender
+			<where>
+				<if test="timeStartSrch != null and timeStartSrch != ''">
+					AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+				</if>
+				<if test="timeEndSrch != null and timeEndSrch != ''">
+					AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+				</if>	
+			</where>
+		) tender ON tender.user_id = reg.user_id
+		INNER JOIN (
+			SELECT
+				borrow.borrow_nid 
+			FROM
+				huiyingdai_borrow borrow
+			<where>
+				borrow.project_type = 13
+			</where>
+		) borrow ON borrow.borrow_nid = tender.borrow_nid
+		INNER JOIN (
+			SELECT DISTINCT
+				utm.source_id,
+				utm.source_name
+			FROM
+				huiyingdai_utm_plat utm
+			<where>
+				utm.source_type = 1
+				AND utm.source_id IS NOT NULL
+				AND utm.source_id <![CDATA[<>]]> ''
+				<if test="sourceIdSrch != null and sourceIdSrch != ''">
+					AND utm.source_id = #{sourceIdSrch}
+				</if>
+			</where>
+		) a ON a.source_id = reg.source_id
+	</select>
+	<!-- 查询相应的app渠道用户融通宝投资数 -->
+	<select id="selectHzrInvestSum" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			CASE
+				WHEN SUM(hct.assign_capital) IS NULL THEN
+					0
+				ELSE
+					SUM(hct.assign_capital)
+				END AS hzr_tender_price
+		FROM
+			(
+				SELECT
+					reg.source_id,
+					reg.user_id
+				FROM
+					hyjf_app_channel_statistics_detail reg
+				<where>
+					<if test="sourceIdSrch != null and sourceIdSrch != ''">
+						AND reg.source_id = #{sourceIdSrch}
+					</if>
+				</where>
+			) AS reg
+		INNER JOIN (
+			SELECT
+				hct.user_id,
+				hct.assign_capital
+			FROM
+				huiyingdai_credit_tender hct
+			<where>
+				<if test="timeStartSrch != null and timeStartSrch != ''">
+					AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+				</if>
+				<if test="timeEndSrch != null and timeEndSrch != ''">
+					AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+				</if>	
+			</where>
+		) hct ON hct.user_id = reg.user_id
+		INNER JOIN (
+			SELECT DISTINCT
+				utm.source_id,
+				utm.source_name
+			FROM
+				huiyingdai_utm_plat utm
+			<where>
+				utm.source_type = 1
+				AND utm.source_id IS NOT NULL
+				AND utm.source_id <![CDATA[<>]]> ''
+				<if test="sourceIdSrch != null and sourceIdSrch != ''">
+					AND utm.source_id = #{sourceIdSrch}
+				</if>
+			</where>
+		) a ON a.source_id = reg.source_id
+	</select>
+	<!-- 查询相应的app渠道用户PC投资数 -->
+	<select id="selectTenderNumberPc" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			COUNT(DISTINCT c.user_id) AS tender_number_pc
+		FROM
+			(
+				SELECT
+					reg.source_id,
+					reg.user_id
+				FROM
+					(
+						SELECT
+							reg.source_id,
+							reg.user_id
+						FROM
+							hyjf_app_channel_statistics_detail reg
+						<where>
+							<if test="sourceIdSrch != null and sourceIdSrch != ''">
+								AND reg.source_id = #{sourceIdSrch}
+							</if>
+						</where>
+					) AS reg
+				INNER JOIN (
+					SELECT
+						tender.user_id
+					FROM
+						huiyingdai_borrow_tender tender
+					<where>
+						tender.client = 0
+						<if test="timeStartSrch != null and timeStartSrch != ''">
+							AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+						</if>
+						<if test="timeEndSrch != null and timeEndSrch != ''">
+							AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+						</if>	
+					</where>
+				) AS tender ON tender.user_id = reg.user_id
+				UNION ALL
+					SELECT
+						reg.source_id,
+						reg.user_id
+					FROM
+						(
+							SELECT
+								reg.source_id,
+								reg.user_id
+							FROM
+								hyjf_app_channel_statistics_detail reg
+							<where>
+								<if test="sourceIdSrch != null and sourceIdSrch != ''">
+									AND reg.source_id = #{sourceIdSrch}
+								</if>
+							</where>
+						) AS reg
+					INNER JOIN (
+						SELECT
+							list.user_id 
+						FROM
+							huiyingdai_product_list list
+						<where>
+							list.invest_status = 0
+							AND list.client = 0
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>	
+						</where>
+						) AS list ON list.user_id = reg.user_id
+				UNION ALL
+					SELECT
+						reg.source_id,
+						reg.user_id
+					FROM
+						(
+							SELECT
+								reg.source_id,
+								reg.user_id
+							FROM
+								hyjf_app_channel_statistics_detail reg
+							<where>
+								<if test="sourceIdSrch != null and sourceIdSrch != ''">
+									AND reg.source_id = #{sourceIdSrch}
+								</if>
+							</where>
+						) AS reg
+					INNER JOIN (
+						SELECT
+							hdpa.user_id
+						FROM
+							hyjf_debt_plan_accede hdpa
+						<where>
+						  	hdpa.client = 0
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>	
+						</where>
+					) hdpa ON hdpa.user_id = reg.user_id
+				UNION ALL
+					SELECT
+						reg.source_id,
+						reg.user_id
+					FROM
+						(
+							SELECT
+								reg.source_id,
+								reg.user_id
+							FROM
+								hyjf_app_channel_statistics_detail reg
+							<where>
+								<if test="sourceIdSrch != null and sourceIdSrch != ''">
+									AND reg.source_id = #{sourceIdSrch}
+								</if>
+							</where>
+						) AS reg
+					INNER JOIN (
+						SELECT
+							*
+						FROM
+							huiyingdai_credit_tender hct
+						<where>
+							hct.client = 0
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>	
+						</where>
+					) hct ON hct.user_id = reg.user_id
+				) c
+				INNER JOIN (
+					SELECT DISTINCT
+						utm.source_id,
+						utm.source_name
+					FROM
+						huiyingdai_utm_plat utm
+					<where>
+						utm.source_type = 1
+						AND utm.source_id IS NOT NULL
+						AND utm.source_id <![CDATA[<>]]> ''
+						<if test="sourceIdSrch != null and sourceIdSrch != ''">
+							AND utm.source_id = #{sourceIdSrch}
+						</if>
+					</where>
+				) a ON a.source_id = c.source_id
+	</select>
+	<!-- 查询相应的app渠道用户微信投资数 -->
+	<select id="selectTenderNumberWechat" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			COUNT(DISTINCT c.user_id) AS tender_number_wechat
+		FROM
+			(
+				SELECT
+					reg.source_id,
+					reg.user_id
+				FROM
+					(
+						SELECT
+							reg.source_id,
+							reg.user_id
+						FROM
+							hyjf_app_channel_statistics_detail reg
+						<where>
+							<if test="sourceIdSrch != null and sourceIdSrch != ''">
+								AND reg.source_id = #{sourceIdSrch}
+							</if>
+						</where>
+					) AS reg
+				INNER JOIN (
+					SELECT
+						tender.user_id
+					FROM
+						huiyingdai_borrow_tender tender
+					<where>
+						tender.client = 1
+						<if test="timeStartSrch != null and timeStartSrch != ''">
+							AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+						</if>
+						<if test="timeEndSrch != null and timeEndSrch != ''">
+							AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+						</if>	
+					</where>
+				) AS tender ON tender.user_id = reg.user_id
+				UNION ALL
+					SELECT
+						reg.source_id,
+						reg.user_id
+					FROM
+						(
+							SELECT
+								reg.source_id,
+								reg.user_id
+							FROM
+								hyjf_app_channel_statistics_detail reg
+							<where>
+								<if test="sourceIdSrch != null and sourceIdSrch != ''">
+									AND reg.source_id = #{sourceIdSrch}
+								</if>
+							</where>
+						) AS reg
+					INNER JOIN (
+						SELECT
+							list.user_id 
+						FROM
+							huiyingdai_product_list list
+						<where>
+							list.invest_status = 0
+							AND list.client = 1
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>	
+						</where>
+						) AS list ON list.user_id = reg.user_id
+				UNION ALL
+					SELECT
+						reg.source_id,
+						reg.user_id
+					FROM
+						(
+							SELECT
+								reg.source_id,
+								reg.user_id
+							FROM
+								hyjf_app_channel_statistics_detail reg
+							<where>
+								<if test="sourceIdSrch != null and sourceIdSrch != ''">
+									AND reg.source_id = #{sourceIdSrch}
+								</if>
+							</where>
+						) AS reg
+					INNER JOIN (
+						SELECT
+							hdpa.user_id
+						FROM
+							hyjf_debt_plan_accede hdpa
+						<where>
+						  	hdpa.client = 1
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>	
+						</where>
+					) hdpa ON hdpa.user_id = reg.user_id
+				UNION ALL
+					SELECT
+						reg.source_id,
+						reg.user_id
+					FROM
+						(
+							SELECT
+								reg.source_id,
+								reg.user_id
+							FROM
+								hyjf_app_channel_statistics_detail reg
+							<where>
+								<if test="sourceIdSrch != null and sourceIdSrch != ''">
+									AND reg.source_id = #{sourceIdSrch}
+								</if>
+							</where>
+						) AS reg
+					INNER JOIN (
+						SELECT
+							*
+						FROM
+							huiyingdai_credit_tender hct
+						<where>
+							hct.client = 1
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>	
+						</where>
+					) hct ON hct.user_id = reg.user_id
+				) c
+				INNER JOIN (
+					SELECT DISTINCT
+						utm.source_id,
+						utm.source_name
+					FROM
+						huiyingdai_utm_plat utm
+					<where>
+						utm.source_type = 1
+						AND utm.source_id IS NOT NULL
+						AND utm.source_id <![CDATA[<>]]> ''
+						<if test="sourceIdSrch != null and sourceIdSrch != ''">
+							AND utm.source_id = #{sourceIdSrch}
+						</if>
+					</where>
+				) a ON a.source_id = c.source_id
+	</select>
+	<!-- 查询相应的app渠道用户安卓投资数 -->
+	<select id="selectTenderNumberAndroid" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			COUNT(DISTINCT c.user_id) AS tender_number_android
+		FROM
+			(
+				SELECT
+					reg.source_id,
+					reg.user_id
+				FROM
+					(
+						SELECT
+							reg.source_id,
+							reg.user_id
+						FROM
+							hyjf_app_channel_statistics_detail reg
+						<where>
+							<if test="sourceIdSrch != null and sourceIdSrch != ''">
+								AND reg.source_id = #{sourceIdSrch}
+							</if>
+						</where>
+					) AS reg
+				INNER JOIN (
+					SELECT
+						tender.user_id
+					FROM
+						huiyingdai_borrow_tender tender
+					<where>
+						tender.client = 2
+						<if test="timeStartSrch != null and timeStartSrch != ''">
+							AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+						</if>
+						<if test="timeEndSrch != null and timeEndSrch != ''">
+							AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+						</if>	
+					</where>
+				) AS tender ON tender.user_id = reg.user_id
+				UNION ALL
+					SELECT
+						reg.source_id,
+						reg.user_id
+					FROM
+						(
+							SELECT
+								reg.source_id,
+								reg.user_id
+							FROM
+								hyjf_app_channel_statistics_detail reg
+							<where>
+								<if test="sourceIdSrch != null and sourceIdSrch != ''">
+									AND reg.source_id = #{sourceIdSrch}
+								</if>
+							</where>
+						) AS reg
+					INNER JOIN (
+						SELECT
+							list.user_id 
+						FROM
+							huiyingdai_product_list list
+						<where>
+							list.invest_status = 0
+							AND list.client = 2
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>	
+						</where>
+						) AS list ON list.user_id = reg.user_id
+				UNION ALL
+					SELECT
+						reg.source_id,
+						reg.user_id
+					FROM
+						(
+							SELECT
+								reg.source_id,
+								reg.user_id
+							FROM
+								hyjf_app_channel_statistics_detail reg
+							<where>
+								<if test="sourceIdSrch != null and sourceIdSrch != ''">
+									AND reg.source_id = #{sourceIdSrch}
+								</if>
+							</where>
+						) AS reg
+					INNER JOIN (
+						SELECT
+							hdpa.user_id
+						FROM
+							hyjf_debt_plan_accede hdpa
+						<where>
+						  	hdpa.client = 2
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>	
+						</where>
+					) hdpa ON hdpa.user_id = reg.user_id
+				UNION ALL
+					SELECT
+						reg.source_id,
+						reg.user_id
+					FROM
+						(
+							SELECT
+								reg.source_id,
+								reg.user_id
+							FROM
+								hyjf_app_channel_statistics_detail reg
+							<where>
+								<if test="sourceIdSrch != null and sourceIdSrch != ''">
+									AND reg.source_id = #{sourceIdSrch}
+								</if>
+							</where>
+						) AS reg
+					INNER JOIN (
+						SELECT
+							*
+						FROM
+							huiyingdai_credit_tender hct
+						<where>
+							hct.client = 2
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>	
+						</where>
+					) hct ON hct.user_id = reg.user_id
+				) c
+				INNER JOIN (
+					SELECT DISTINCT
+						utm.source_id,
+						utm.source_name
+					FROM
+						huiyingdai_utm_plat utm
+					<where>
+						utm.source_type = 1
+						AND utm.source_id IS NOT NULL
+						AND utm.source_id <![CDATA[<>]]> ''
+						<if test="sourceIdSrch != null and sourceIdSrch != ''">
+							AND utm.source_id = #{sourceIdSrch}
+						</if>
+					</where>
+				) a ON a.source_id = c.source_id
+	</select>
+	<!-- 查询相应的app渠道用户IOS投资数 -->
+	<select id="selectTenderNumberIos" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			COUNT(DISTINCT c.user_id) AS tender_number_ios
+		FROM
+			(
+				SELECT
+					reg.source_id,
+					reg.user_id
+				FROM
+					(
+						SELECT
+							reg.source_id,
+							reg.user_id
+						FROM
+							hyjf_app_channel_statistics_detail reg
+						<where>
+							<if test="sourceIdSrch != null and sourceIdSrch != ''">
+								AND reg.source_id = #{sourceIdSrch}
+							</if>
+						</where>
+					) AS reg
+				INNER JOIN (
+					SELECT
+						tender.user_id
+					FROM
+						huiyingdai_borrow_tender tender
+					<where>
+						tender.client = 3
+						<if test="timeStartSrch != null and timeStartSrch != ''">
+							AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+						</if>
+						<if test="timeEndSrch != null and timeEndSrch != ''">
+							AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+						</if>	
+					</where>
+				) AS tender ON tender.user_id = reg.user_id
+				UNION ALL
+					SELECT
+						reg.source_id,
+						reg.user_id
+					FROM
+						(
+							SELECT
+								reg.source_id,
+								reg.user_id
+							FROM
+								hyjf_app_channel_statistics_detail reg
+							<where>
+								<if test="sourceIdSrch != null and sourceIdSrch != ''">
+									AND reg.source_id = #{sourceIdSrch}
+								</if>
+							</where>
+						) AS reg
+					INNER JOIN (
+						SELECT
+							list.user_id 
+						FROM
+							huiyingdai_product_list list
+						<where>
+							list.invest_status = 0
+							AND list.client = 3
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>	
+						</where>
+						) AS list ON list.user_id = reg.user_id
+				UNION ALL
+					SELECT
+						reg.source_id,
+						reg.user_id
+					FROM
+						(
+							SELECT
+								reg.source_id,
+								reg.user_id
+							FROM
+								hyjf_app_channel_statistics_detail reg
+							<where>
+								<if test="sourceIdSrch != null and sourceIdSrch != ''">
+									AND reg.source_id = #{sourceIdSrch}
+								</if>
+							</where>
+						) AS reg
+					INNER JOIN (
+						SELECT
+							hdpa.user_id
+						FROM
+							hyjf_debt_plan_accede hdpa
+						<where>
+						  	hdpa.client = 3
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>	
+						</where>
+					) hdpa ON hdpa.user_id = reg.user_id
+				UNION ALL
+					SELECT
+						reg.source_id,
+						reg.user_id
+					FROM
+						(
+							SELECT
+								reg.source_id,
+								reg.user_id
+							FROM
+								hyjf_app_channel_statistics_detail reg
+							<where>
+								<if test="sourceIdSrch != null and sourceIdSrch != ''">
+									AND reg.source_id = #{sourceIdSrch}
+								</if>
+							</where>
+						) AS reg
+					INNER JOIN (
+						SELECT
+							*
+						FROM
+							huiyingdai_credit_tender hct
+						<where>
+							hct.client = 3
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>	
+						</where>
+					) hct ON hct.user_id = reg.user_id
+				) c
+				INNER JOIN (
+					SELECT DISTINCT
+						utm.source_id,
+						utm.source_name
+					FROM
+						huiyingdai_utm_plat utm
+					<where>
+						utm.source_type = 1
+						AND utm.source_id IS NOT NULL
+						AND utm.source_id <![CDATA[<>]]> ''
+						<if test="sourceIdSrch != null and sourceIdSrch != ''">
+							AND utm.source_id = #{sourceIdSrch}
+						</if>
+					</where>
+				) a ON a.source_id = c.source_id
+	</select>
+	<!-- 查询相应的app渠道投资数 -->
+	<select id="selectCumulativeAttrInvest" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			a.source_id,
+			a.source_name AS channel_name,
+			CASE
+			WHEN SUM(d.account) IS NULL 
+			THEN
+				0
+			ELSE
+				SUM(d.account) END  AS cumulative_attr_invest
+		FROM
+			(
+				SELECT
+					reg.source_id,
+					reg.user_id,
+					tender.account
+				FROM
+					(
+						SELECT
+							reg.source_id,
+							reg.user_id
+						FROM
+							hyjf_app_channel_statistics_detail reg
+						<where>
+							<if test="sourceIdSrch != null and sourceIdSrch != ''">
+								AND reg.source_id = #{sourceIdSrch}
+							</if>
+						</where>
+					) AS reg
+				INNER JOIN (
+					SELECT
+						tender.user_id,
+						tender.account AS account
+					FROM
+						huiyingdai_borrow_tender tender
+					<where>
+						<if test="timeStartSrch != null and timeStartSrch != ''">
+							AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+						</if>
+						<if test="timeEndSrch != null and timeEndSrch != ''">
+							AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+						</if>	
+					</where>
+				) AS tender ON tender.user_id = reg.user_id
+				LEFT JOIN (
+					SELECT
+						ui.user_id
+					FROM
+						huiyingdai_users_info ui
+					<where>
+						ui.attribute = 0
+					</where>
+				) AS ui ON reg.user_id = ui.user_id
+				UNION ALL
+					SELECT
+						reg.source_id,
+						reg.user_id,
+						list.account
+					FROM
+						(
+							SELECT
+								reg.source_id,
+								reg.user_id
+							FROM
+								hyjf_app_channel_statistics_detail reg
+							<where>
+								<if test="sourceIdSrch != null and sourceIdSrch != ''">
+									AND reg.source_id = #{sourceIdSrch}
+								</if>
+							</where>
+						) AS reg
+					INNER JOIN (
+						SELECT
+							list.user_id,
+							list.amount AS account
+						FROM
+							huiyingdai_product_list list
+						<where>
+							list.invest_status = 0
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>	
+						</where>
+					) AS list ON list.user_id = reg.user_id
+					LEFT JOIN (
+						SELECT
+							ui.user_id
+						FROM
+							huiyingdai_users_info ui
+						<where>
+							ui.attribute = 0
+						</where>
+					) AS ui ON reg.user_id = ui.user_id
+				UNION ALL
+					SELECT
+						reg.source_id,
+						reg.user_id,
+						hdpa.account
+					FROM
+						(
+							SELECT
+								reg.source_id,
+								reg.user_id
+							FROM
+								hyjf_app_channel_statistics_detail reg
+							<where>
+								<if test="sourceIdSrch != null and sourceIdSrch != ''">
+									AND reg.source_id = #{sourceIdSrch}
+								</if>
+							</where>
+						) AS reg
+					INNER JOIN (
+						SELECT
+							hdpa.user_id,
+							hdpa.accede_account AS account
+						FROM
+							hyjf_debt_plan_accede hdpa
+						<where>
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>	
+						</where>
+					) hdpa ON hdpa.user_id = reg.user_id
+					LEFT JOIN (
+						SELECT
+							ui.user_id
+						FROM
+							huiyingdai_users_info ui
+						<where>
+							ui.attribute = 0
+						</where>
+					) AS ui ON reg.user_id = ui.user_id
+				UNION ALL
+					SELECT
+						reg.source_id,
+						reg.user_id,
+						hct.account
+					FROM
+						(
+							SELECT
+								reg.source_id,
+								reg.user_id
+							FROM
+								hyjf_app_channel_statistics_detail reg
+							<where>
+								<if test="sourceIdSrch != null and sourceIdSrch != ''">
+									AND reg.source_id = #{sourceIdSrch}
+								</if>
+							</where>
+						) AS reg
+					INNER JOIN (
+						SELECT
+							hct.user_id,
+							hct.assign_capital AS account
+						FROM
+							huiyingdai_credit_tender hct
+						<where>
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>	
+						</where>
+					) hct ON hct.user_id = reg.user_id
+					LEFT JOIN (
+						SELECT
+							ui.user_id
+						FROM
+							huiyingdai_users_info ui
+						<where>
+							ui.attribute = 0
+						</where>
+					) AS ui ON reg.user_id = ui.user_id
+				) d
+				INNER JOIN (
+					SELECT DISTINCT
+						utm.source_id,
+						utm.source_name
+					FROM
+						huiyingdai_utm_plat utm
+					<where>
+						utm.source_type = 1
+						AND utm.source_id IS NOT NULL
+						AND utm.source_id <![CDATA[<>]]> ''
+						<if test="sourceIdSrch != null and sourceIdSrch != ''">
+							AND utm.source_id = #{sourceIdSrch}
+						</if>
+					</where>
+				) a ON a.source_id = d.source_id
+	</select>
+	<!-- 导出列表 -->
+	<select id="exportList" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+				t.channel_name,
+				t.source_id,
+				SUM(t.visit_count) AS visit_count,
+				SUM(t.register_count) AS register_count,
+				SUM(t.register_attr_count) AS register_attr_count,
+				SUM(t.open_account_count) AS open_account_count,
+				SUM(t.invest_number) AS invest_number,
+				SUM(t.cumulative_charge) AS cumulative_charge,
+				SUM(t.cumulative_invest) AS cumulative_invest,
+				SUM(t.hzt_invest_sum) AS hzt_invest_sum,
+				SUM(t.hxf_invest_sum) AS hxf_invest_sum,
+				SUM(t.htl_invest_sum) AS htl_invest_sum,
+				SUM(t.htj_invest_sum) AS htj_invest_sum,
+				SUM(t.rtb_invest_sum) AS rtb_invest_sum,
+				SUM(t.hzr_invest_sum) AS hzr_invest_sum,
+				SUM(t.account_number_ios) AS account_number_ios,
+				SUM(t.account_number_android) AS account_number_android,
+				SUM(t.account_number_pc) AS account_number_pc,
+				SUM(t.account_number_wechat) AS account_number_wechat,
+				SUM(t.tender_number_android) AS tender_number_android,
+				SUM(t.tender_number_ios) AS tender_number_ios,
+				SUM(t.tender_number_pc) AS tender_number_pc,
+				SUM(t.tender_number_wechat) AS tender_number_wechat,
+				SUM(t.open_account_attr_count) AS open_account_attr_count,
+				SUM(t.cumulative_attr_charge) AS cumulative_attr_charge,
+				SUM(t.cumulative_attr_invest) AS cumulative_attr_invest,
+				SUM(t.invest_attr_number) AS invest_attr_number,
+				t.update_time
+			FROM
+				hyjf_app_channel_statistics t
+		<where>
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND t.update_time <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch != ''">
+				AND t.update_time <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+			<if test="utmIdsSrch != null and utmIdsSrch != ''">
+				AND t.source_id in
+				<foreach collection="utmIdsSrch" open="(" close=")" separator="," item="utmId">
+					#{utmId}
+				</foreach>
+			</if>
+		</where>
+		GROUP BY
+			t.source_id
+	</select>
+	
+	<!-- 后台展示列表 -->
+	<select id="selectSumList" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		SELECT
+			t.channel_name,
+			t.source_id,
+			SUM(t.visit_count) AS visit_count,
+			SUM(t.register_count) AS register_count,
+			SUM(t.register_attr_count) AS register_attr_count,
+			SUM(t.open_account_count) AS open_account_count,
+			SUM(t.invest_number) AS invest_number,
+			SUM(t.cumulative_charge) AS cumulative_charge,
+			SUM(t.cumulative_invest) AS cumulative_invest,
+			SUM(t.hzt_invest_sum) AS hzt_invest_sum,
+			SUM(t.hxf_invest_sum) AS hxf_invest_sum,
+			SUM(t.htl_invest_sum) AS htl_invest_sum,
+			SUM(t.htj_invest_sum) AS htj_invest_sum,
+			SUM(t.rtb_invest_sum) AS rtb_invest_sum,
+			SUM(t.hzr_invest_sum) AS hzr_invest_sum,
+			t.update_time
+		FROM
+			hyjf_app_channel_statistics t
+		<where>
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND t.update_time <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch != ''">
+				AND t.update_time <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+			<if test="utmIdsSrch != null and utmIdsSrch != ''">
+				AND t.source_id in
+				<foreach collection="utmIdsSrch" open="(" close=")" separator="," item="utmId">
+					#{utmId}
+				</foreach>
+			</if>
+		</where>
+		GROUP BY
+			t.source_id
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<select id="countSumList" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsCustomize">
+		select count(1) from (SELECT id FROM hyjf_app_channel_statistics p
+		<where>
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND p.update_time <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch != ''">
+				AND p.update_time <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+			<if test="utmIdsSrch != null and utmIdsSrch != ''">
+				AND p.source_id in
+				<foreach collection="utmIdsSrch" open="(" close=")" separator="," item="utmId">
+					#{utmId}
+				</foreach>
+			</if>
+		</where>
+	 		GROUP BY source_id) as t
+	</select>
+	
+</mapper>

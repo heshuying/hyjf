@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.act.ActdecCorpsCustomizeMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.ActdecCorps" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="captain_opid" property="captainOpid" jdbcType="VARCHAR" />
+    <result column="captain_name" property="captainName" jdbcType="VARCHAR" />
+    <result column="captain_head" property="captainHead" jdbcType="VARCHAR" />
+    <result column="member1_opid" property="member1Opid" jdbcType="VARCHAR" />
+    <result column="member1_name" property="member1Name" jdbcType="VARCHAR" />
+    <result column="member1_head" property="member1Head" jdbcType="VARCHAR" />
+    <result column="member2_opid" property="member2Opid" jdbcType="VARCHAR" />
+    <result column="member2_name" property="member2Name" jdbcType="VARCHAR" />
+    <result column="member2_head" property="member2Head" jdbcType="VARCHAR" />
+    <result column="corps_name" property="corpsName" jdbcType="TINYINT" />
+    <result column="prize_type" property="prizeType" jdbcType="TINYINT" />
+    <result column="team_type" property="teamType" jdbcType="TINYINT" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="INTEGER" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+    <result column="del_flg" property="delFlg" jdbcType="TINYINT" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_actdec_corps
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.captainOpid != null" >
+        captain_opid = #{record.captainOpid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.captainName != null" >
+        captain_name = #{record.captainName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.captainHead != null" >
+        captain_head = #{record.captainHead,jdbcType=VARCHAR},
+      </if>
+      <if test="record.member1Opid != null" >
+        member1_opid = #{record.member1Opid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.member1Name != null" >
+        member1_name = #{record.member1Name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.member1Head != null" >
+        member1_head = #{record.member1Head,jdbcType=VARCHAR},
+      </if>
+      <if test="record.member2Opid != null" >
+        member2_opid = #{record.member2Opid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.member2Name != null" >
+        member2_name = #{record.member2Name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.member2Head != null" >
+        member2_head = #{record.member2Head,jdbcType=VARCHAR},
+      </if>
+      <if test="record.corpsName != null" >
+        corps_name = #{record.corpsName,jdbcType=TINYINT},
+      </if>
+      <if test="record.prizeType != null" >
+        prize_type = #{record.prizeType,jdbcType=BIT},
+      </if>
+      <if test="record.teamType != null" >
+        team_type = #{record.teamType,jdbcType=BIT},
+      </if>
+      <if test="record.createUser != null" >
+        create_user = #{record.createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateUser != null" >
+        update_user = #{record.updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.delFlg != null" >
+        del_flg = #{record.delFlg,jdbcType=BIT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+    <if test="example.orderByClause != null" >
+      order by ${example.orderByClause}
+    </if>
+  </update>
+</mapper>

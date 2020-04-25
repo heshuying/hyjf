@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.ProjectTypeCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+		</where>
+	</sql>
+	
+	<resultMap id="getProjectTypeListMap" type="com.hyjf.mybatis.model.customize.ProjectTypeCustomize">
+		<result column="borrow_project_type" property="borrowProjectType" jdbcType="VARCHAR" />
+		<result column="borrow_cd" property="borrowCd" jdbcType="VARCHAR" />
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<result column="borrow_class" property="borrowClass" jdbcType="VARCHAR" />
+		<result column="invest_start" property="investStart" jdbcType="VARCHAR" />
+		<result column="invest_end" property="investEnd" jdbcType="VARCHAR" />
+		<result column="increase_money" property="increaseMoney" jdbcType="VARCHAR" />
+		<result column="interest_coupon" property="interestCoupon" jdbcType="VARCHAR" />
+		<result column="taste_money" property="tasteMoney" jdbcType="VARCHAR" />
+		<result column="invest_user_type" property="investUserType" jdbcType="VARCHAR" />
+		<result column="repay_name" property="repayName" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="increaseInterestFlag" property="increaseInterestFlag" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="getProjectTypeList" resultMap="getProjectTypeListMap" parameterType="com.hyjf.mybatis.model.customize.ProjectTypeCustomize">
+		SELECT
+		  pn1.`name` AS borrow_project_type,
+		  typ.borrow_cd,
+		  typ.borrow_name,
+		  typ.borrow_class,
+		  typ.invest_start,
+		  typ.invest_end,
+		  typ.increase_money,
+		  typ.interest_coupon,
+		  typ.taste_money,
+		  pn2.`name` AS invest_user_type,
+		  GROUP_CONCAT("【", pr.method_name, "】") AS repay_name,
+		  pn3.`name` AS `status`,
+		  typ.increase_interest_flag AS increaseInterestFlag
+		FROM
+		  huiyingdai_borrow_project_type typ
+		  LEFT JOIN hyjf_param_name pn1 ON typ.borrow_project_type = pn1.name_cd AND pn1.name_class = 'BORROW_PROJTCT'
+		  LEFT JOIN hyjf_param_name pn2 ON typ.invest_user_type = pn2.name_cd AND pn2.name_class = 'INVEST_USER'
+		  LEFT JOIN hyjf_param_name pn3 ON typ.`status` = pn3.name_cd AND pn3.name_class = 'USER_STATUS'
+		  LEFT JOIN huiyingdai_borrow_project_repay pr ON typ.borrow_class = pr.borrow_class
+		GROUP BY
+		  pr.borrow_class
+		<include refid="Where_Clause" />
+		ORDER BY
+		  typ.id
+		<if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+</mapper>

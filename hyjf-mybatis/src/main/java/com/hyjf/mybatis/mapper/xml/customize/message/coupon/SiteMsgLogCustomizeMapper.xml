@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.message.coupon.SiteMsgLogCustomizeMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.customize.message.coupon.SiteMsgLogCustomize" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="from_user" property="fromUser" jdbcType="INTEGER" />
+    <result column="to_user" property="toUser" jdbcType="INTEGER" />
+    <result column="to_username" property="toUsername" jdbcType="VARCHAR" />
+    <result column="msg_content" property="msgContent" jdbcType="VARCHAR" />
+    <result column="msg_config_id" property="msgConfigId" jdbcType="INTEGER" />
+    <result column="tpl_name" property="tplName" jdbcType="VARCHAR" />
+    <result column="add_time" property="addTimeString" jdbcType="INTEGER" />
+    <result column="add_user" property="addUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTimeString" jdbcType="INTEGER" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Where_Clause">
+		<where>
+		    l.del_flag = 0
+			<if test="toUsername != null and toUsername != ''">
+				AND u.username = #{toUsername}
+			</if>
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND FROM_UNIXTIME( l.add_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch != ''">
+				AND FROM_UNIXTIME( l.add_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+		</where>
+	</sql>
+  <select id="selectMsgLogList" resultMap="BaseResultMap" parameterType="java.util.Map">
+		SELECT 
+			l.id, l.from_user, l.to_user, u.username AS to_username, c.tpl_name, l.msg_content, l.msg_config_id, FROM_UNIXTIME(l.add_time, '%Y-%m-%d %H:%i:%S') AS add_time, 
+			l.add_user, FROM_UNIXTIME(l.update_time, '%Y-%m-%d %H:%i:%S') AS update_time, 
+    		l.update_user, l.del_flag
+		FROM
+		    hyjf_site_msg_log l 
+		    LEFT JOIN hyjf_site_msg_config c ON l.msg_config_id = c.id
+		    LEFT JOIN huiyingdai_users u ON l.to_user = u.user_id
+		<include refid="Where_Clause" />
+		<if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+    <select id="countMsgLog" resultType="java.lang.Integer" parameterType="java.util.Map">
+	    SELECT
+			count(1)
+		FROM
+		    hyjf_site_msg_log l 
+		    LEFT JOIN hyjf_site_msg_config c ON l.msg_config_id = c.id
+		    LEFT JOIN huiyingdai_users u ON l.to_user = u.user_id
+		<include refid="Where_Clause" />
+	</select>
+</mapper>

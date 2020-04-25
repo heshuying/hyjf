@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.ActdecListedOneCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+			<!-- 用户名 -->
+			<if test="userNameSrch != null and userNameSrch != ''">
+				AND halo.user_name = #{userNameSrch }
+			</if>
+			<!-- 姓名 -->
+			<if test="userTureNameSrch != null and userTureNameSrch != ''">
+				AND halo.user_ture_name = #{userTureNameSrch }
+			</if>
+			<!-- 手机 -->
+			<if test="userMobileSrch != null and userMobileSrch != ''">
+				AND halo.user_mobile = #{userMobileSrch }
+			</if>
+			<!-- 标的编号 -->
+			<if test="numberSrch != null and numberSrch != ''">
+				AND halo.number = #{numberSrch }
+			</if>
+			<!-- 订单号 -->
+			<if test="orderNumberSrch != null and orderNumberSrch != ''">
+				AND halo.order_number = #{orderNumberSrch }
+			</if>
+			<!-- 获得奖励 -->
+			<if test="rewardSrch != null and rewardSrch != ''">
+				AND halo.reward = #{rewardSrch }
+			</if>
+			<!-- 是否领取 -->
+			<if test="whetherSrch != null and whetherSrch != ''">
+				AND halo.whether = #{whetherSrch }
+			</if>
+			<!-- 领取时间 -->
+			<if test="createTimeStartSrch != null and createTimeStartSrch != ''">
+				AND FROM_UNIXTIME(halo.create_time, '%Y-%m-%d') <![CDATA[>=]]> DATE_FORMAT(#{createTimeStartSrch },'%Y-%m-%d')
+			</if>
+			<if test="createTimeEndSrch != null and createTimeEndSrch != ''">
+				AND FROM_UNIXTIME(halo.create_time, '%Y-%m-%d') <![CDATA[<=]]> DATE_FORMAT(#{createTimeEndSrch },'%Y-%m-%d')
+			</if>
+		</where>
+	</sql>
+
+	<select id="countActdecListedOne" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.ActdecListedOneCustomize">
+		SELECT
+		  COUNT(1)
+		FROM
+		    hyjf_actdec_listed_one halo
+		<include refid="Where_Clause" />
+	</select>
+
+	<resultMap id="selectActdecListedOneListMap" type="com.hyjf.mybatis.model.customize.ActdecListedOneCustomize">
+		<result column="user_name" property="userName" />
+		<result column="user_ture_name" property="userTureName" />
+		<result column="user_id" property="userId" />
+		<result column="user_mobile" property="userMobile" />
+		<result column="investment" property="investment" />
+		<result column="annual" property="annual" />
+		<result column="number" property="number" />
+		<result column="order_number" property="orderNumber" />
+		<result column="type" property="type" />
+		<result column="reward" property="reward" />
+		<result column="whether" property="whether" />
+		<result column="create_user" property="createUser" />
+		<result column="create_time" property="createTime" />
+		<result column="update_user" property="updateUser" />
+		<result column="update_time" property="updateTime" />
+		<result column="del_flg" property="delFlg" />
+	</resultMap>
+	<select id="selectActdecListedOneList" resultMap="selectActdecListedOneListMap" parameterType="com.hyjf.mybatis.model.customize.ActdecListedOneCustomize">
+		SELECT
+		   user_name,
+		   user_ture_name,
+		   user_id,
+		   user_mobile,
+		   investment,
+		   annual,
+		   number,
+		   order_number,
+		   type,
+		   reward,
+		   whether,
+		   create_user,
+		   create_time,
+		   update_user,
+		   update_time,
+		   del_flg
+		from hyjf_actdec_listed_one halo
+	   <include refid="Where_Clause" />
+		ORDER BY
+		  halo.create_time DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<resultMap id="exportActdecListedOneListMap" type="com.hyjf.mybatis.model.customize.ActdecListedOneCustomize">
+		<result column="user_name" property="userName" />
+		<result column="user_ture_name" property="userTureName" />
+		<result column="user_id" property="userId" />
+		<result column="user_mobile" property="userMobile" />
+		<result column="investment" property="investment" />
+		<result column="annual" property="annual" />
+		<result column="number" property="number" />
+		<result column="order_number" property="orderNumber" />
+		<result column="type" property="type" />
+		<result column="reward" property="reward" />
+		<result column="whether" property="whether" />
+		<result column="create_user" property="createUser" />
+		<result column="create_time" property="createTime" />
+		<result column="update_user" property="updateUser" />
+		<result column="update_time" property="updateTime" />
+		<result column="del_flg" property="delFlg" />
+	</resultMap>
+	<select id="exportActdecListedOneList" resultMap="exportActdecListedOneListMap" parameterType="com.hyjf.mybatis.model.customize.ActdecListedOneCustomize">
+		SELECT
+		   user_name,
+		   user_ture_name,
+		   user_id,
+		   user_mobile,
+		   investment,
+		   annual,
+		   number,
+		   order_number,
+		   type,
+		   reward,
+		   whether,
+		   create_user,
+		   create_time,
+		   update_user,
+		   update_time,
+		   del_flg
+		from hyjf_actdec_listed_one halo
+	   <include refid="Where_Clause" />
+		ORDER BY
+		  halo.create_time DESC
+	</select>
+</mapper>

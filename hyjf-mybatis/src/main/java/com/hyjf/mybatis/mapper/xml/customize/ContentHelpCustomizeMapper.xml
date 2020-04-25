@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.ContentHelpCustomizeMapper">
+
+	<select id="queryContent" resultType="com.hyjf.mybatis.model.customize.ContentHelpCustomize" parameterType="com.hyjf.mybatis.model.customize.ContentHelpCustomize">
+		select h.id,h.cate_id cateId,h.title,h.content,h.`order`,h.`status`,c.title catetile,FROM_UNIXTIME(h.create_time,'%Y-%m-%d %H:%i:%s') add_time from huiyingdai_content_help h
+		left join huiyingdai_category c on c.id=h.cate_id
+		<where>
+			<if test="cateId != null" >
+		      AND h.cate_id = #{cateId,jdbcType=INTEGER}
+		    </if>
+		    <if test="status ==1" >
+		      AND (h.`status` = 1 or h.`status` = 2)
+		    </if>
+		    <if test="status ==0" >
+		      AND h.`status` =0 
+		    </if>
+		   	<if test="status ==2" >
+		      AND h.`status` =2 
+		    </if>
+		    <if test="title != null" >
+		      AND h.`title` = #{title,jdbcType=VARCHAR}
+		    </if>
+		    <if test="post_time_begin!= null" >
+		      AND h.create_time  <![CDATA[>=]]> #{post_time_begin,jdbcType=INTEGER}
+		    </if>
+		    <if test="post_time_end!= null" >
+		      AND h.create_time  <![CDATA[<=]]> #{post_time_end,jdbcType=INTEGER}
+		    </if>
+		</where>
+		ORDER BY h.id asc
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	<select id="queryContentCustomize" resultType="com.hyjf.mybatis.model.customize.ContentHelpCustomize" parameterType="com.hyjf.mybatis.model.customize.ContentHelpCustomize">
+		select h.id,h.cate_id cateId,h.title from huiyingdai_content_help h
+		where h.status =1 and  h.zhichi_status=1
+		ORDER BY h.id asc
+		<if test="limitStart >= 0" >
+			LIMIT #{limitStart} , #{limitEnd}
+		</if>
+	</select>
+	<select id="queryContentCount" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.ContentHelpCustomize">
+		select count(1) from huiyingdai_content_help
+		<where>
+			<if test="cateId != null" >
+		      AND cate_id = #{cateId,jdbcType=INTEGER}
+		    </if>
+		    <if test="status ==1" >
+		      AND (`status` = 1 or `status` = 2)
+		    </if>
+		    <if test="status ==0" >
+		      AND `status` =0 
+		    </if>
+		   	<if test="status ==2" >
+		      AND `status` =2 
+		    </if>
+		    <if test="title != null" >
+		      AND `title` = #{title,jdbcType=VARCHAR}
+		    </if>
+		    <if test="post_time_begin!= null" >
+		      AND create_time  <![CDATA[>=]]> #{post_time_begin,jdbcType=INTEGER}
+		    </if>
+		    <if test="post_time_end!= null" >
+		      AND create_time  <![CDATA[<=]]> #{post_time_end,jdbcType=INTEGER}
+		    </if>
+		</where>
+	</select>
+	
+		
+	<select id="queryContentById" resultType="com.hyjf.mybatis.model.customize.ContentHelpCustomize" parameterType="java.lang.Integer">
+		SELECT
+			h.id,
+			h.cate_id cateId,
+			h.title,
+			h.content,
+			h.`order`,
+			h.`status`,
+			c.title catetile,
+			FROM_UNIXTIME(
+				h.create_time,
+				'%Y-%m-%d %H:%i:%s'
+			) add_time
+		FROM
+			huiyingdai_content_help h
+		LEFT JOIN huiyingdai_category c ON c.id = h.cate_id
+		WHERE
+			h.id =#{id,jdbcType=INTEGER}
+	</select>
+	
+	<delete id="delByCateId" parameterType="com.hyjf.mybatis.model.customize.ContentHelpCustomize">
+		delete from huiyingdai_content_help where cate_id=#{cateId,jdbcType=INTEGER}
+	</delete>
+	
+	<update id="updateByCateId" parameterType="com.hyjf.mybatis.model.customize.ContentHelpCustomize">
+		update huiyingdai_content_help set cate_id=#{cateId,jdbcType=INTEGER}  where cate_id=#{cateID,jdbcType=INTEGER}
+	</update>
+</mapper>

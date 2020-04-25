@@ -1,0 +1,2250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.app.AppUserInvestCustomizeMapper">
+	<sql id="Where_Clause_Repay_List">
+		<where>
+			(hydbpt.borrow_project_type ='HZT' OR hydbpt.borrow_project_type ='HXF')
+			AND hydbr.user_id = #{userId,jdbcType=INTEGER}
+			AND hydbr.recover_status = 0
+			AND hydb.status = 4
+			AND hydb.plan_nid IS NULL
+		</where>
+	</sql>
+	
+	<sql id="Where_Clause_Repay_Detail">
+		<where>
+			(hydbpt.borrow_project_type ='HZT' OR hydbpt.borrow_project_type ='HXF')
+			AND hydbt.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+			AND hydbt.nid = #{tenderNid,jdbcType=VARCHAR}
+			AND hydbr.recover_status = 0
+			AND hydb.plan_nid IS NULL
+		</where>
+	</sql>
+
+	<resultMap id="RepayListMap" type="com.hyjf.mybatis.model.customize.app.AppRepayListCustomize">
+		<id column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<result column="interest" property="interest" jdbcType="VARCHAR" />
+		<result column="order_id" property="orderId" jdbcType="VARCHAR" />
+		<result column="repay_time" property="repayTime" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="trans_status" property="transStatus" jdbcType="VARCHAR" />
+		<result column="trans_account" property="transAccount" jdbcType="VARCHAR" />
+		<result column="contact_url" property="contactUrl" jdbcType="VARCHAR" />
+		<result column="borrow_url" property="borrowUrl" jdbcType="VARCHAR" />
+		<result column="label" property="label" jdbcType="VARCHAR" />
+		<result column="invest_type" property="investType" jdbcType="VARCHAR" />
+		<result column="project_type" property="projectType" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectRepayList" resultMap="RepayListMap" parameterType="Map">
+		SELECT
+			hydb.borrow_nid,
+			case when hydb.project_type=13 then
+			hydb.borrow_nid
+			else
+			hydb.borrow_nid 
+			end AS borrow_name,
+			SUBSTRING(
+				FORMAT(hydbt.account, 4),
+				1,
+				LENGTH(FORMAT(hydbt.account, 4)) - 2
+			) AS account,
+			SUBSTRING(
+				FORMAT(
+					hydbt.recover_account_wait,
+					4
+				),
+				1,
+				LENGTH(
+					FORMAT(
+						hydbt.recover_account_wait,
+						4
+					)
+				) - 2
+			) AS interest,
+			hydbr.nid AS order_id,
+			FROM_UNIXTIME(
+				hydbr.recover_time,
+				'%Y-%m-%d'
+			) AS repay_time,
+			hydbr.recover_time AS recover_time_sort,
+			hydbr.recover_status AS `status`,
+			CASE
+		WHEN hydbr.credit_amount IS NULL
+		OR hydbr.credit_amount = 0 THEN
+			'0'
+		WHEN hydbr.recover_capital > hydbr.credit_amount THEN
+			'1'
+		ELSE
+			'2'
+		END AS trans_status,
+		 SUBSTRING(
+			FORMAT(hydbr.credit_amount, 4),
+			1,
+			LENGTH(
+				FORMAT(hydbr.credit_amount, 4)
+			) - 2
+		) AS trans_account,
+		CONCAT(#{hostContact},'?borrowNid=',hydb.borrow_nid,'&amp;orderId=',hydbr.nid) AS contact_url,
+		CONCAT(#{host},'?borrowNid=',hydb.borrow_nid,'&amp;tenderNid=',hydbt.nid) AS borrow_url,
+		'' label,
+		'1' AS invest_type,
+		hydbpt.borrow_class project_type
+		FROM
+			huiyingdai_borrow_recover hydbr
+		INNER JOIN huiyingdai_borrow_tender hydbt ON hydbt.nid = hydbr.nid AND hydbt.borrow_nid = hydbr.borrow_nid AND hydbt.user_id = hydbr.user_id
+		INNER JOIN huiyingdai_borrow hydb ON hydbr.borrow_nid = hydb.borrow_nid
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		<include refid="Where_Clause_Repay_List" />
+    UNION ALL
+		SELECT
+			hydb.borrow_nid,
+			hydb.borrow_nid AS borrow_name,
+			SUBSTRING(
+				FORMAT(hbt.account, 4),
+				1,
+				LENGTH(FORMAT(hbt.account, 4)) - 2
+			) AS account,
+			SUBSTRING(
+				FORMAT(
+					SUM(hcr.recover_account),
+					4
+				),
+				1,
+				LENGTH(
+					FORMAT(
+						SUM(hcr.recover_account),
+						4
+					)
+				) - 2
+			) AS interest,
+			hbt.nid AS order_id,
+			(
+				SELECT
+					FROM_UNIXTIME(
+						hcr3.recover_time,
+						'%Y-%m-%d'
+					)
+				FROM
+					hyjf_coupon_recover hcr3
+				WHERE
+					hcr3.current_recover_flg = 1
+				AND hcr3.tender_id = hcr.tender_id
+			) AS repay_time,
+			(
+				SELECT
+					hcr3.recover_time
+				FROM
+					hyjf_coupon_recover hcr3
+				WHERE
+					hcr3.current_recover_flg = 1
+				AND hcr3.tender_id = hcr.tender_id
+			) AS recover_time_sort,
+			hcr.recover_status AS `status`,
+			'0' trans_status,
+			0 AS trans_account,
+			CONCAT(#{hostContact},'?borrowNid=',hydb.borrow_nid,'&amp;orderId=',hbt.nid) AS contact_url,
+			CONCAT(#{host},'?couponCode=',hcu.coupon_user_code) AS borrow_url,
+		CASE
+		WHEN hcc.coupon_type = 1 THEN
+			'体验金'
+		WHEN hcc.coupon_type = 2 THEN
+		    '加息券'
+		WHEN hcc.coupon_type = 3 THEN
+		    '代金券'
+		ELSE
+			''
+		END label,
+		'2' AS invest_type,
+		hydbpt.borrow_class project_type
+		FROM
+			hyjf_coupon_recover hcr
+		INNER JOIN hyjf_borrow_tender_cpn hbt ON hcr.tender_id = hbt.nid
+		INNER JOIN huiyingdai_borrow hydb ON hbt.borrow_nid = hydb.borrow_nid
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		LEFT JOIN hyjf_coupon_tender hct ON hct.order_id = hbt.nid
+		LEFT JOIN hyjf_coupon_user hcu ON hcu.id = hct.coupon_grant_id
+		LEFT JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+		WHERE
+			(
+				hydbpt.borrow_project_type = 'HZT'
+				OR hydbpt.borrow_project_type = 'HXF'
+			)
+		AND hbt.user_id = #{userId,jdbcType=INTEGER}
+		AND EXISTS (
+			SELECT
+				hcr2.id
+			FROM
+				hyjf_coupon_recover hcr2
+			INNER JOIN hyjf_borrow_tender_cpn hbt2 ON hcr2.tender_id = hbt2.nid
+			WHERE
+				hbt2.borrow_nid = hydb.borrow_nid
+			AND hcr2.tender_id = hcr.tender_id
+			AND hcr2.recover_status = 0
+		)
+		GROUP BY
+			hcr.tender_id
+			
+UNION ALL	
+				SELECT
+			hydb.borrow_nid,
+			hydb.borrow_nid AS borrow_name,
+			SUBSTRING(
+				FORMAT(hiil.invest_account, 4),
+				1,
+				LENGTH(FORMAT(hiil.invest_account, 4)) - 2
+			) AS account,
+				SUBSTRING(
+				FORMAT(
+					hiil.loan_interest,
+					4
+				),
+				1,
+				LENGTH(
+					FORMAT(
+						hiil.loan_interest,
+						4
+					)
+				) - 2
+			) AS interest,
+			hiil.invest_order_id AS order_id,
+		 FROM_UNIXTIME(
+				hiil.repay_time,
+				'%Y-%m-%d'
+			) AS repay_time,
+			hiil.repay_time AS recover_time_sort,
+			hiil.repay_status AS `status`,
+			'0' trans_status,
+			0 AS trans_account,
+		 	CONCAT(#{hostContact},'?borrowNid=',hydb.borrow_nid,'&amp;orderId=',hiil.invest_order_id) AS contact_url,
+		CONCAT(#{host},'?borrowNid=',hydb.borrow_nid,'&amp;tenderNid=',hiii.tender_nid,'&amp;investType=3') AS borrow_url,
+		'产品加息' label,
+		'3' AS invest_type,
+		hydbpt.borrow_class project_type
+		FROM
+			huiyingdai_borrow hydb
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		LEFT JOIN hyjf_increase_interest_invest hiii  ON hiii.borrow_nid = hydb.borrow_nid
+		LEFT JOIN hyjf_increase_interest_loan hiil ON hiil.invest_order_id = hiii.order_id
+		WHERE hiil.user_id = #{userId,jdbcType=INTEGER}
+		AND hiil.repay_status = 0
+		GROUP BY
+			hiil.invest_order_id
+		ORDER BY
+			recover_time_sort ASC
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	
+	<resultMap id="RepayDetailMap" type="com.hyjf.mybatis.model.customize.app.AppRepayDetailCustomize">
+		<!-- 借款标号 -->
+		<id column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<!-- 借款标题 -->
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<!-- 预期收益率 -->
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<!-- 借款方式 -->
+		<result column="borrow_style" property="borrowStyle" jdbcType="VARCHAR" />
+		<!-- 期限 -->
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<!-- 投资金额 -->
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<!-- 到期预估本息（元） -->
+		<result column="account_all" property="accountAll" jdbcType="VARCHAR" />
+		<!-- 到期预估收益（元）-->
+		<result column="interest" property="interest" jdbcType="VARCHAR" />
+		<!-- 还款方式 -->
+		<result column="repay_style" property="repayStyle" jdbcType="VARCHAR" />
+		<!-- 支付时间 -->
+		<result column="payTime" property="payTime" jdbcType="VARCHAR" />
+		<!-- 最近应还时间 -->
+		<result column="repay_time" property="repayTime" jdbcType="VARCHAR" />
+		<!-- 还款状态 -->
+		<result column="recover_status" property="recoverStatus" jdbcType="VARCHAR" />
+		<!-- 还款金额 -->
+		<result column="recover_capital_yes" property="recoverCapitalYes" jdbcType="VARCHAR" />
+		<!-- 债转状态 -->
+		<result column="trans_status" property="transStatus" jdbcType="VARCHAR" />
+		<!-- 转让金额 -->
+		<result column="trans_account" property="transAccount" jdbcType="VARCHAR" />
+		<!-- 融通宝加息  -->
+		<result column="borrow_extra_yield" property="borrowExtraYield" jdbcType="DECIMAL" />
+		<!-- 融通宝名称 -->
+		<result column="borrow_asset_number" property="borrowAssetNumber" jdbcType="VARCHAR" />
+		<!-- 产品类型 -->
+		<result column="project_type" property="projectType" jdbcType="INTEGER" />
+	</resultMap>
+	<!-- 获取回款中详情 -->
+	<select id="selectRepayDetail" resultMap="RepayDetailMap" parameterType="Map">
+		SELECT
+			hydb.borrow_nid,
+			case when hydb.project_type=13 then
+			hydb.borrow_asset_number
+			else
+				hydb.`name`
+			end  AS borrow_name,
+			hydb.borrow_apr as borrow_apr,
+			hydb.borrow_period,
+			hydb.borrow_style,
+			SUBSTRING(
+				FORMAT(hydbt.account, 4),
+				1,
+				LENGTH(FORMAT(hydbt.account, 4)) - 2
+			) AS account,
+			SUBSTRING(
+				FORMAT(
+					hydbt.recover_account_capital_wait + hydbt.recover_account_interest_wait,
+					4
+				),
+				1,
+				LENGTH(
+					FORMAT(
+						hydbt.recover_account_capital_wait + hydbt.recover_account_interest_wait,
+						4
+					)
+				) - 2
+			) AS account_all,
+			case when hydb.borrow_extra_yield is not null and hydb.borrow_extra_yield <![CDATA[<>]]> 0 and 
+							hiii.repay_interest is not null and 3=#{investType}
+			then 
+			SUBSTRING(
+				FORMAT(
+					hiii.repay_interest,
+					4
+				),
+				1,
+				LENGTH(
+					FORMAT(
+						hiii.repay_interest,
+						4
+					)
+				) - 2
+			)
+			else
+			 SUBSTRING(
+				FORMAT(
+					hydbt.recover_account_interest_wait,
+					4
+				),
+				1,
+				LENGTH(
+					FORMAT(
+						hydbt.recover_account_interest_wait,
+						4
+					)
+				) - 2
+			)
+			end
+			 AS interest,
+			hydbr.recover_status AS `status`,
+			hydbs.`name` AS repay_style,
+			FROM_UNIXTIME(
+				hydbt.addtime,
+				'%Y-%m-%d %H:%i:%s'
+			) AS payTime,
+			FROM_UNIXTIME(
+				hydbr.recover_time,
+				'%Y-%m-%d'
+			) AS repay_time,
+			hydbr.recover_time AS recover_time_sort,
+			<!-- 回款金额 -->
+			hydbr.recover_account_yes AS recover_capital_yes,
+			CASE
+				WHEN hydbr.credit_amount IS NULL
+				OR hydbr.credit_amount = 0 THEN
+				'0'
+				WHEN hydbr.recover_capital > hydbr.credit_amount THEN
+				'1'
+				ELSE
+				'2'
+			END AS trans_status,
+		 SUBSTRING(
+			FORMAT(hydbr.credit_amount, 4),
+			1,
+			LENGTH(
+				FORMAT(hydbr.credit_amount, 4)
+			) - 2
+		) AS trans_account,
+			hydb.borrow_extra_yield,
+			hydb.borrow_asset_number,
+			hydb.project_type
+			
+		FROM
+			huiyingdai_borrow_recover hydbr
+		INNER JOIN huiyingdai_borrow_tender hydbt ON hydbt.nid = hydbr.nid AND hydbt.borrow_nid = hydbr.borrow_nid AND hydbt.user_id = hydbr.user_id
+		INNER JOIN huiyingdai_borrow hydb ON hydbr.borrow_nid = hydb.borrow_nid
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		LEFT JOIN huiyingdai_borrow_style hydbs ON hydbs.nid = hydb.borrow_style
+		LEFT JOIN hyjf_increase_interest_invest hiii ON hiii.tender_nid = hydbt.nid
+		<include refid="Where_Clause_Repay_Detail" />
+	</select>
+	
+	
+		
+	<resultMap id="RepayCouponDetailMap" type="com.hyjf.mybatis.model.customize.app.AppRepayDetailCustomize">
+		<!-- 借款标号 -->
+		<id column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<!-- 借款标题 -->
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<!-- 预期收益率 -->
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<!-- 借款方式 -->
+		<result column="borrow_style" property="borrowStyle" jdbcType="VARCHAR" />
+		<!-- 优惠券编号 -->
+		<result column="coupon_user_code" property="couponUserCode" jdbcType="VARCHAR" />
+		<!-- 优惠券类型 -->
+		<result column="coupon_type" property="couponType" jdbcType="VARCHAR" />
+		<!-- 优惠券面额 -->
+		<result column="coupon_quota" property="couponQuota" jdbcType="VARCHAR" />
+		<!-- 期限 -->
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<!-- 投资金额 -->
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<!-- 投资金额(计算用) -->
+		<result column="accountNum" property="accountNum" jdbcType="DECIMAL" />
+		<!-- 到期预估本息（元） -->
+		<result column="account_all" property="accountAll" jdbcType="VARCHAR" />
+		<!-- 到期预估收益（元）-->
+		<result column="interest" property="interest" jdbcType="VARCHAR" />
+		<!-- 还款方式 -->
+		<result column="repay_style" property="repayStyle" jdbcType="VARCHAR" />
+		<!-- 支付时间 -->
+		<result column="payTime" property="payTime" jdbcType="VARCHAR" />
+		<!-- 最近应还时间 -->
+		<result column="repay_time" property="repayTime" jdbcType="VARCHAR" />
+		<!-- 还款状态 -->
+		<result column="recover_status" property="recoverStatus" jdbcType="VARCHAR" />
+		<!-- 还款金额 -->
+		<result column="recover_capital_yes" property="recoverCapitalYes" jdbcType="VARCHAR" />
+		<!-- 债转状态 -->
+		<result column="trans_status" property="transStatus" jdbcType="VARCHAR" />
+		<!-- 转让金额 -->
+		<result column="trans_account" property="transAccount" jdbcType="VARCHAR" />
+		<result column="coupon_profit_time" property="couponProfitTime" jdbcType="VARCHAR" />
+	</resultMap>
+	<!--获取回款中优惠券投资项目详情 -->
+	<select id="selectCouponRepayDetail" resultMap="RepayCouponDetailMap" parameterType="Map">
+		SELECT
+			hydb.borrow_nid,
+			hydb.`name` AS borrow_name,
+			hydb.borrow_apr,
+			hydb.borrow_period,
+			hydb.borrow_style,
+			<!-- 优惠券编号 -->
+			hcu.coupon_user_code,
+			hcc.coupon_type,
+			hcc.coupon_profit_time,
+			hydb.borrow_style AS borrow_style,
+			hydbs.name AS repay_style,
+			FROM_UNIXTIME(
+				hbt.addtime,
+				'%Y-%m-%d %H:%i:%s'
+			) AS payTime,
+			CASE WHEN hcc.coupon_type = '2' THEN
+			SUBSTRING(
+				FORMAT(hbt.account, 4),
+				1,
+				LENGTH(FORMAT(hbt.account, 4)) - 2
+			)
+			WHEN hcc.coupon_type = '1' THEN
+			SUBSTRING(
+				FORMAT(hcc.coupon_quota, 4),
+				1,
+				LENGTH(FORMAT(hcc.coupon_quota, 4)) - 2
+			)
+			WHEN hcc.coupon_type = '3' THEN
+			SUBSTRING(
+				FORMAT(hcc.coupon_quota, 4),
+				1,
+				LENGTH(FORMAT(hcc.coupon_quota, 4)) - 2
+			)
+			END AS account,
+			CASE WHEN hcc.coupon_type = '1' THEN
+				sum(hcr.recover_interest)
+			WHEN hcc.coupon_type = '2' THEN
+				sum(hcr.recover_interest)
+			WHEN hcc.coupon_type = '3' THEN
+			SUBSTRING(
+				FORMAT(hcr.recover_account,4),
+				1,
+				LENGTH(FORMAT(hcr.recover_account, 4)) - 2
+			)
+			END AS accountAll,
+			SUM(hcr.recover_interest) AS interest,
+			hbt.nid AS order_id,
+			(
+				SELECT
+					FROM_UNIXTIME(
+						hcr3.recover_time,
+						'%Y-%m-%d'
+					)
+				FROM
+					hyjf_coupon_recover hcr3
+				WHERE
+					hcr3.current_recover_flg = 1
+				AND hcr3.tender_id = hcr.tender_id
+			) AS repay_time,
+			(
+				SELECT
+					sum(recover_account_yes)
+				FROM
+					hyjf_coupon_recover hcr4
+				WHERE
+					hcr4.recover_status = 1
+				AND hcr4.tender_id = hcr.tender_id
+			) AS recover_capital_yes,
+			hcr.recover_status AS `status`,
+			'0' trans_status,
+			0 AS trans_account,
+			hcc.coupon_quota AS coupon_quota,
+			hcc.coupon_type AS couponType
+		FROM
+			hyjf_coupon_recover hcr
+		INNER JOIN hyjf_borrow_tender_cpn hbt ON hcr.tender_id = hbt.nid
+		INNER JOIN huiyingdai_borrow hydb ON hbt.borrow_nid = hydb.borrow_nid
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		LEFT JOIN huiyingdai_borrow_style hydbs ON hydbs.nid = hydb.borrow_style
+		LEFT JOIN hyjf_coupon_tender hct ON hct.order_id = hbt.nid
+		LEFT JOIN hyjf_coupon_user hcu ON hcu.id = hct.coupon_grant_id
+		LEFT JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+		WHERE
+			(
+				hydbpt.borrow_project_type = 'HZT'
+				OR hydbpt.borrow_project_type = 'HXF'
+			)
+		AND hbt.user_id = #{userId,jdbcType=INTEGER}
+		AND hcu.coupon_user_code = #{couponCode, jdbcType = VARCHAR }
+		AND EXISTS (
+			SELECT
+				hcr2.id
+			FROM
+				hyjf_coupon_recover hcr2
+			INNER JOIN hyjf_borrow_tender_cpn hbt2 ON hcr2.tender_id = hbt2.nid
+			WHERE
+				hbt2.borrow_nid = hydb.borrow_nid
+			AND hcr2.tender_id = hcr.tender_id
+			AND hcr2.recover_status = 0
+		)
+	</select>
+	
+	<select id="countRepayListRecordTotal" resultType="java.lang.Integer" parameterType="Map">
+		SELECT
+			count(id) AS total
+		FROM
+			(
+				SELECT
+					hydbr.id
+				FROM
+					huiyingdai_borrow_recover hydbr
+				INNER JOIN huiyingdai_borrow_tender hydbt ON hydbt.nid = hydbr.nid AND hydbt.borrow_nid = hydbr.borrow_nid AND hydbt.user_id = hydbr.user_id
+				INNER JOIN huiyingdai_borrow hydb ON hydbr.borrow_nid = hydb.borrow_nid
+				LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		<include refid="Where_Clause_Repay_List" />
+		UNION ALL
+		SELECT
+		    hcr.tender_id
+		FROM
+			hyjf_coupon_recover hcr
+		INNER JOIN hyjf_borrow_tender_cpn hbt ON hcr.tender_id = hbt.nid
+		INNER JOIN huiyingdai_borrow hydb ON hbt.borrow_nid = hydb.borrow_nid
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		LEFT JOIN hyjf_coupon_tender hct ON hct.order_id = hbt.nid
+		LEFT JOIN hyjf_coupon_user hcu ON hcu.id = hct.coupon_grant_id
+		LEFT JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+		WHERE
+			(
+				hydbpt.borrow_project_type = 'HZT'
+				OR hydbpt.borrow_project_type = 'HXF'
+			)
+		AND hbt.user_id = #{userId,jdbcType=INTEGER}
+		AND EXISTS (
+			SELECT
+				hcr2.id
+			FROM
+				hyjf_coupon_recover hcr2
+			INNER JOIN hyjf_borrow_tender_cpn hbt2 ON hcr2.tender_id = hbt2.nid
+			WHERE
+				hbt2.borrow_nid = hydb.borrow_nid
+			AND hcr2.tender_id = hcr.tender_id
+			AND hcr2.recover_status = 0
+		)
+		GROUP BY
+			hcr.tender_id
+UNION ALL		
+			SELECT
+			hiil.invest_order_id
+		FROM
+			huiyingdai_borrow hydb
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		LEFT JOIN hyjf_increase_interest_invest hiii ON hiii.borrow_nid = hydb.borrow_nid
+		LEFT JOIN hyjf_increase_interest_loan hiil ON hiil.invest_order_id = hiii.order_id
+		WHERE hiil.user_id = #{userId,jdbcType=INTEGER}
+		AND hiil.repay_status = 0
+		GROUP BY
+			hiil.invest_order_id
+		) AS tablecount
+	</select>
+	<sql id="Where_Clause_Invest_List">
+		<where>
+			(hydbpt.borrow_project_type ='HZT' OR hydbpt.borrow_project_type ='HXF')
+			AND hydbt.user_id = #{userId,jdbcType=INTEGER}
+			AND hydbt.`status` = 0
+			AND hydb.plan_nid IS NULL
+		</where>
+	</sql>
+
+	<resultMap id="InvestListMap" type="com.hyjf.mybatis.model.customize.app.AppInvestListCustomize">
+		<id column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<result column="period" property="period" jdbcType="VARCHAR" />
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<result column="borrow_schedule" property="borrowSchedule" jdbcType="VARCHAR" />
+		<result column="borrow_url" property="borrowUrl" jdbcType="VARCHAR" />
+		<result column="label" property="label" jdbcType="VARCHAR" />
+		<result column="project_type" property="projectType" jdbcType="VARCHAR" />
+		<result column="time_sort" property="addTime" jdbcType="INTEGER" />
+		<result column="order_id" property="orderId" jdbcType="VARCHAR" />
+		<result column="coupon_type" property="couponType" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectInvestList" resultMap="InvestListMap" parameterType="Map">
+		SELECT
+			hydb.borrow_nid,
+			case when hydb.project_type=13 then
+			hydb.borrow_nid
+			else
+			hydb.borrow_nid 
+			end AS borrow_name,
+			hydb.borrow_apr,
+			CASE
+				WHEN hydb.borrow_style = 'endday' 
+					THEN CONCAT(hydb.borrow_period, '天')
+				ELSE
+					CONCAT(hydb.borrow_period,'个月')
+			END AS period,
+		 	hydb.borrow_account_scale AS borrow_schedule,
+		 	SUBSTRING(FORMAT(hydbt.account,4),1,LENGTH(FORMAT(hydbt.account,4))-2) AS account,
+			CONCAT(#{host},'?borrowNid=',hydb.borrow_nid,'&amp;tenderNid=',hydbt.nid) AS borrow_url,
+			'' label,
+			 hydbt.addtime AS time_sort,
+			hydbpt.borrow_class project_type,
+			hydbt.nid as order_id,
+		    '0' as coupon_type
+		FROM
+			huiyingdai_borrow_tender hydbt 
+		INNER JOIN huiyingdai_borrow hydb ON hydbt.borrow_nid = hydb.borrow_nid
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+	    <include refid="Where_Clause_Invest_List" />
+
+		UNION ALL
+			SELECT
+			DISTINCT
+			hct.bid_nid AS borrow_nid,
+			hct.bid_nid as borrow_name,
+			hydb.borrow_apr,
+			CASE
+			WHEN hydb.borrow_style = 'endday'
+			THEN CONCAT(hydb.borrow_period, '天')
+			ELSE
+			CONCAT(hydb.borrow_period,'个月')
+			END AS period,
+			'' as borrow_schedule,
+			FORMAT(hct.assign_capital,2) AS account,
+			'' as borrow_url,
+			'' label,
+			hct.add_time AS time_sort,
+			'' project_type,
+			hct.assign_nid as order_id,
+			'0' as coupon_type
+			FROM
+			huiyingdai_credit_tender hct
+			INNER JOIN huiyingdai_borrow hydb ON hydb.borrow_nid = hct.bid_nid
+			where hct.user_id = #{userId}
+				AND hct.status = 0
+		UNION ALL
+	    
+		SELECT
+			hydb.borrow_nid,
+			hydb.borrow_nid AS borrow_name,
+			CASE
+		WHEN hcc.coupon_type IS NOT NULL
+		AND hcc.coupon_type = 2 THEN
+			hcc.coupon_quota
+		ELSE
+			hydb.borrow_apr
+		END borrow_apr,
+		 CASE
+		WHEN hydb.borrow_style = 'endday' THEN
+			CONCAT(hydb.borrow_period, '天')
+		ELSE
+			CONCAT(
+				hydb.borrow_period,
+				'个月'
+			)
+		END AS period,
+		 hydb.borrow_account_scale AS borrow_schedule,
+		 SUBSTRING(
+			FORMAT(hydbt.account, 4),
+			1,
+			LENGTH(FORMAT(hydbt.account, 4)) - 2
+		) AS account,
+		 CONCAT(#{host},'?couponCode=',hcu.coupon_user_code) AS borrow_url,
+		CASE
+		WHEN hcc.coupon_type = 1 THEN
+			'体验金'
+		WHEN hcc.coupon_type = 2 THEN
+		    '加息券'
+		WHEN hcc.coupon_type = 3 THEN
+		    '代金券'
+		ELSE
+			''
+		END label,
+		hydbt.addtime AS time_sort,
+		hydbpt.borrow_class project_type,
+		hydbt.nid as order_id,
+		hcc.coupon_type  as coupon_type
+		FROM
+			hyjf_borrow_tender_cpn hydbt
+		INNER JOIN huiyingdai_borrow hydb ON hydbt.borrow_nid = hydb.borrow_nid
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		LEFT JOIN hyjf_coupon_tender hct ON hct.order_id = hydbt.nid
+		LEFT JOIN hyjf_coupon_user hcu ON hcu.id = hct.coupon_grant_id
+		LEFT JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code	    
+		<include refid="Where_Clause_Invest_List" /> 
+		UNION ALL
+
+		SELECT
+			hydb.borrow_nid,
+			case when hydb.project_type=13 then
+			hydb.borrow_nid
+			else
+			hydb.borrow_nid
+			end AS borrow_name,
+			hydb.borrow_extra_yield borrow_apr,
+		CASE
+			WHEN hydb.borrow_style = 'endday' THEN
+			CONCAT(hydb.borrow_period, '天')
+		ELSE
+			CONCAT(
+				hydb.borrow_period,
+				'个月'
+			)
+		END period,
+		 hydb.borrow_account_scale AS borrow_schedule,
+		 SUBSTRING(
+			FORMAT(hiii.account, 4),
+			1,
+			LENGTH(FORMAT(hiii.account, 4)) - 2
+		) AS account,
+		CONCAT(#{host},'?borrowNid=',hydb.borrow_nid,'&amp;tenderNid=',hiii.tender_nid,'&amp;investType=3') AS borrow_url,
+		'产品加息' label,
+		hiii.create_time AS time_sort,
+		hydbpt.borrow_class project_type,
+		hiii.tender_nid as orderId ,
+		'' as coupon_type
+		FROM
+			huiyingdai_borrow hydb
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		INNER JOIN hyjf_increase_interest_invest hiii ON hiii.borrow_nid = hydb.borrow_nid
+		WHERE hiii.user_id = #{userId,jdbcType=INTEGER}
+		AND hiii.`status` = 0
+		ORDER BY time_sort DESC
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	
+	<resultMap id="InvestDetailMap" type="com.hyjf.mybatis.model.customize.app.AppRepayDetailCustomize">
+		<!-- 借款标号 -->
+		<id column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<!-- 借款标题 -->
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<!-- 预期收益率 -->
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<!-- 期限(计算用) -->
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<!-- 期限 -->
+		<result column="period" property="period" jdbcType="VARCHAR" />
+		<!-- 投资金额(计算用) -->
+		<result column="accountNum" property="accountNum" jdbcType="DECIMAL" />
+ 		<!-- 到期预估收益（元）-->
+		<result column="interest" property="interest" jdbcType="VARCHAR" />
+		<!-- 投资金额 -->
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<!-- 借款方式 -->
+		<result column="borrow_style" property="borrowStyle" jdbcType="VARCHAR" />
+		<!-- 还款方式 -->
+		<result column="repay_style" property="repayStyle" jdbcType="VARCHAR" />
+		<!-- 支付时间 -->
+		<result column="payTime" property="payTime" jdbcType="VARCHAR" />
+		<!-- 项目类型 -->
+		<result column="project_type" property="projectType" jdbcType="INTEGER" /> 
+		<!-- 融通宝加息率 -->
+		<result column="borrow_extra_yield" property="borrowExtraYield" jdbcType="DECIMAL" />
+		<!-- 融通宝名称-->
+		<result column="borrow_asset_number" property="borrowAssetNumber" jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- 投资中的项目详情 -->
+	<select id="selectInvestProjectDetail" resultMap="InvestDetailMap" parameterType="Map">
+		SELECT
+		case when hydb.borrow_extra_yield is not null and hydb.borrow_extra_yield <![CDATA[<>]]> 0 and 
+							hiii.repay_interest_yes is not null and 3=#{investType}
+			then 
+			SUBSTRING(
+				FORMAT(
+					hiii.repay_interest_yes,
+					4
+				),
+				1,
+				LENGTH(
+					FORMAT(
+						hiii.repay_interest_yes,
+						4
+					)
+				) - 2
+			)
+			else
+			SUBSTRING(
+				FORMAT(
+					hydbt.recover_account_interest_yes,
+					4
+				),
+				1,
+				LENGTH(
+					FORMAT(
+						hydbt.recover_account_interest_yes,
+						4
+					)
+				) - 2
+			)
+			end  AS interest,
+			<!-- 借款标号 -->
+			hydb.borrow_nid,
+			<!-- 借款名称 -->
+				case when hydb.project_type=13 then
+			hydb.borrow_asset_number
+			else
+			hydb.`name`
+			end
+			 AS borrow_name,
+			<!-- 年化收益率 -->
+			hydb.borrow_apr,
+			<!-- 借款方式(计算用) -->
+			hydb.borrow_style AS borrow_style,
+			<!-- 还款方式 -->
+			hydbs.name AS repay_style,
+			<!-- 借款期限 -->
+			hydb.borrow_period AS borrow_period,
+			CASE
+				WHEN hydb.borrow_style = 'endday' 
+					THEN CONCAT(hydb.borrow_period, '天')
+				ELSE
+					CONCAT(hydb.borrow_period,'个月')
+			END AS period,
+			<!-- 投资金额(计算用) -->
+			hydbt.account AS accountNum,
+			<!-- 支付时间 -->
+			FROM_UNIXTIME(
+				hydbt.addtime,
+				'%Y-%m-%d %H:%i:%s'
+			) AS payTime,
+			<!-- 投资金额 -->
+		 	SUBSTRING(FORMAT(hydbt.account,4),1,LENGTH(FORMAT(hydbt.account,4))-2) AS account,
+		 	hydb.project_type,
+		 	hydb.borrow_extra_yield,
+		 	hydb.borrow_asset_number
+		FROM
+			huiyingdai_borrow_tender hydbt 
+		INNER JOIN huiyingdai_borrow hydb ON hydbt.borrow_nid = hydb.borrow_nid
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		LEFT JOIN huiyingdai_borrow_style hydbs ON hydbs.nid = hydb.borrow_style
+		LEFT JOIN hyjf_increase_interest_invest hiii ON hiii.tender_nid = hydbt.nid
+		<include refid="Where_Clause_Invest_Detail" />
+	</select>
+	
+	<sql id="Where_Clause_Invest_Detail">
+		<where>
+			(hydbpt.borrow_project_type ='HZT' OR hydbpt.borrow_project_type ='HXF')
+			AND hydbt.user_id = #{userId,jdbcType=VARCHAR}
+			AND hydbt.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+			AND hydbt.nid = #{tenderNid,jdbcType=VARCHAR}
+			AND hydbt.`status` = 0
+			AND hydb.plan_nid IS NULL
+		</where>
+	</sql>
+	
+	<resultMap id="InvestCouponDetailMap" type="com.hyjf.mybatis.model.customize.app.AppRepayDetailCustomize">
+		<!-- 借款标号 -->
+		<id column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<!-- 借款标题 -->
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<!-- 预期收益率 -->
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<!-- 借款方式 -->
+		<result column="borrow_style" property="borrowStyle" jdbcType="VARCHAR" />
+		<!-- 优惠券编号 -->
+		<result column="coupon_user_code" property="couponUserCode" jdbcType="VARCHAR" />
+		<!-- 优惠券类型 -->
+		<result column="coupon_type" property="couponType" jdbcType="VARCHAR" />
+		<!-- 优惠券面额 -->
+		<result column="coupon_quota" property="couponQuota" jdbcType="VARCHAR" />
+		<!-- 期限(计算用) -->
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<!-- 期限 -->
+		<result column="period" property="period" jdbcType="VARCHAR" />
+		<!-- 投资金额(计算用) -->
+		<result column="accountNum" property="accountNum" jdbcType="DECIMAL" />
+		<!-- 投资金额 -->
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<!-- 预估用券收益（元）-->
+		<result column="accountAll" property="accountAll" jdbcType="VARCHAR" />
+		<!-- 借款方式 -->
+		<result column="borrow_style" property="borrowStyle" jdbcType="VARCHAR" />
+		<!-- 还款方式 -->
+		<result column="repay_style" property="repayStyle" jdbcType="VARCHAR" />
+		<!-- 支付时间 -->
+		<result column="payTime" property="payTime" jdbcType="VARCHAR" />
+		<result column="coupon_profit_time" property="couponProfitTime" jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- 投资中的优惠券项目详情 -->
+	<select id="selectCouponInvestProjectDetail" resultMap="InvestCouponDetailMap" parameterType="Map">
+		SELECT
+			hydb.borrow_nid,
+			hydb.`name` AS borrow_name,
+			hydb.borrow_apr,
+			hcc.coupon_quota,
+			hcu.coupon_user_code,
+			hcc.coupon_type,
+			hcc.coupon_profit_time,
+			hydb.borrow_style AS borrow_style,
+			hydbs.name AS repay_style,
+			hydb.borrow_period AS borrow_period,
+			CASE
+				WHEN hydb.borrow_style = 'endday' 
+					THEN CONCAT(hydb.borrow_period, '天')
+				ELSE
+					CONCAT(hydb.borrow_period,'个月')
+			END AS period,
+			hydbt.account AS accountNum,
+			hydbt.recover_account_wait AS accountAll,
+			FROM_UNIXTIME(
+				hydbt.addtime,
+				'%Y-%m-%d %H:%i:%s'
+			) AS payTime,
+			SUBSTRING(FORMAT(hydbt.account,4),1,LENGTH(FORMAT(hydbt.account,4))-2) AS account
+		FROM
+			hyjf_borrow_tender_cpn hydbt
+		INNER JOIN huiyingdai_borrow hydb ON hydbt.borrow_nid = hydb.borrow_nid
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		LEFT JOIN hyjf_coupon_tender hct ON hct.order_id = hydbt.nid
+		LEFT JOIN hyjf_coupon_user hcu ON hcu.id = hct.coupon_grant_id
+		LEFT JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+		LEFT JOIN huiyingdai_borrow_style hydbs ON hydbs.nid = hydb.borrow_style
+		WHERE
+		(hydbpt.borrow_project_type ='HZT' OR hydbpt.borrow_project_type ='HXF')
+			AND hydbt.user_id = #{userId,jdbcType=INTEGER}
+			AND hcu.coupon_user_code = #{couponCode, jdbcType = VARCHAR }
+			AND hydbt.`status` = 0
+	</select>
+	
+	<resultMap id="RepayedProjectDetailMap" type="com.hyjf.mybatis.model.customize.app.AppRepayDetailCustomize">
+		<!-- 借款标号 -->
+		<id column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<!-- 借款标题 -->
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<!-- 预期收益率 -->
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<!-- 借款方式 -->
+		<result column="borrow_style" property="borrowStyle" jdbcType="VARCHAR" />
+		<!-- 优惠券编号 -->
+		<result column="coupon_user_code" property="couponUserCode" jdbcType="VARCHAR" />
+		<!-- 优惠券类型 -->
+		<result column="coupon_type" property="couponType" jdbcType="VARCHAR" />
+		<!-- 期限 -->
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<!-- 投资金额(计算用) -->
+		<result column="accountNum" property="accountNum" jdbcType="DECIMAL" />
+		<!-- 投资金额 -->
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<!-- 预估用券收益（元）-->
+		<result column="accountAll" property="accountAll" jdbcType="VARCHAR" />
+		<!-- 借款方式 -->
+		<result column="borrow_style" property="borrowStyle" jdbcType="VARCHAR" />
+		<!-- 还款方式 -->
+		<result column="repay_style" property="repayStyle" jdbcType="VARCHAR" />
+		<!-- 支付时间 -->
+		<result column="payTime" property="payTime" jdbcType="VARCHAR" />
+		<!-- 还款时间 -->
+		<result column="repayTime" property="repayTime" jdbcType="VARCHAR" />
+		<result column="trans_status" property="transStatus" jdbcType="VARCHAR" />
+		<result column="trans_account" property="transAccount" jdbcType="VARCHAR" />
+ 		<!-- 融通宝加息  -->
+		<result column="borrow_extra_yield" property="borrowExtraYield" jdbcType="DECIMAL" />
+		<!-- 融通宝名称 -->
+		<result column="borrow_asset_number" property="borrowAssetNumber" jdbcType="VARCHAR" />
+		<!-- 产品类型 -->
+		<result column="project_type" property="projectType" jdbcType="INTEGER" />
+	</resultMap>
+	<!-- 获取已回款项目详情 -->
+	<select id="selectRepayedProjectDetail" resultMap="RepayedProjectDetailMap" parameterType="Map">
+		SELECT
+			hydb.borrow_nid, 
+			case when hydb.project_type=13 then
+			hydb.borrow_asset_number
+			 else
+			 hydb.`name`
+			 end
+			 AS borrow_name,
+			hydb.borrow_apr,
+			hydb.borrow_period,
+			hydb.borrow_style AS borrow_style,
+			FROM_UNIXTIME(
+				hydbt.addtime,
+				'%Y-%m-%d %H:%i:%s'
+			) AS payTime,
+			hydbs.name AS repay_style,
+			SUBSTRING(
+				FORMAT(hydbr.recover_capital, 4),
+				1,
+				LENGTH(
+					FORMAT(hydbr.recover_capital, 4)
+				) - 2
+			) AS account,
+			SUBSTRING(
+				FORMAT(hydbr.recover_account_yes, 4),
+				1,
+				LENGTH(
+					FORMAT(hydbr.recover_account_yes, 4)
+				) - 2
+			) AS accountAll,
+		case when hydb.borrow_extra_yield is not null and hydb.borrow_extra_yield <![CDATA[<>]]> 0 and 
+							hiii.repay_interest_yes is not null and 3=#{investType}
+			then 
+			SUBSTRING(
+				FORMAT(
+					hiii.repay_interest_yes,
+					4
+				),
+				1,
+				LENGTH(
+					FORMAT(
+						hiii.repay_interest_yes,
+						4
+					)
+				) - 2
+			)
+			else
+			SUBSTRING(
+				FORMAT(
+					hydbr.recover_interest_yes,
+					4
+				),
+				1,
+				LENGTH(
+					FORMAT(
+						hydbr.recover_interest_yes,
+						4
+					)
+				) - 2
+			)
+			end  AS interest,
+			FROM_UNIXTIME(
+				hydbr.recover_yestime,
+				'%Y-%m-%d'
+			) AS repayTime,
+			CASE
+				WHEN hydbr.credit_amount IS NULL OR hydbr.credit_amount = 0 THEN
+				'0'
+				WHEN hydbr.recover_capital > hydbr.credit_amount THEN
+				'1'
+				ELSE
+				'2'
+			END AS trans_status,
+			 SUBSTRING(FORMAT(hydbr.credit_amount, 4),1,LENGTH(FORMAT(hydbr.credit_amount, 4)) - 2) AS trans_account,
+			 hydb.borrow_extra_yield,
+			 hydb.borrow_asset_number,
+			  hydb.project_type
+		FROM
+			huiyingdai_borrow_recover hydbr
+		INNER JOIN huiyingdai_borrow hydb ON hydbr.borrow_nid = hydb.borrow_nid
+		INNER JOIN huiyingdai_borrow_tender hydbt ON hydbt.nid = hydbr.nid AND hydbt.borrow_nid = hydbr.borrow_nid AND hydbt.user_id = hydbr.user_id
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		LEFT JOIN huiyingdai_borrow_style hydbs ON hydbs.nid = hydb.borrow_style
+		LEFT JOIN hyjf_increase_interest_invest hiii ON hiii.tender_nid = hydbt.nid
+		<include refid="Where_Clause_Repayed_Detail" />
+	</select>
+	<sql id="Where_Clause_Repayed_Detail">
+		<where>
+			(hydbpt.borrow_project_type ='HZT' OR hydbpt.borrow_project_type ='HXF')
+			AND hydbr.user_id = #{userId,jdbcType=INTEGER}
+			AND hydbr.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+			AND hydbr.nid = #{tenderNid,jdbcType=VARCHAR}
+			AND hydbr.recover_status = 1 
+			AND hydb.plan_nid IS NULL
+		</where>
+	</sql>
+	
+	<resultMap id="RepayedCouponProjectDetailMap" type="com.hyjf.mybatis.model.customize.app.AppRepayDetailCustomize">
+		<!-- 借款标号 -->
+		<id column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<!-- 借款标题 -->
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<!-- 预期收益率 -->
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<!-- 借款方式 -->
+		<result column="borrow_style" property="borrowStyle" jdbcType="VARCHAR" />
+		<!-- 借款期限 -->
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<!-- 优惠券编号 -->
+		<result column="coupon_user_code" property="couponUserCode" jdbcType="VARCHAR" />
+		<!-- 优惠券面额 -->
+		<result column="coupon_quota" property="couponQuota" jdbcType="VARCHAR" />
+		<!-- 优惠券类型 -->
+		<result column="coupon_type" property="couponType" jdbcType="VARCHAR" />
+		<!-- 期限 -->
+		<result column="period" property="period" jdbcType="VARCHAR" />
+		<!-- 投资金额(计算用) -->
+		<result column="accountNum" property="accountNum" jdbcType="DECIMAL" />
+		<!-- 投资金额 -->
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<!-- 预估用券收益（元）-->
+		<result column="accountAll" property="accountAll" jdbcType="VARCHAR" />
+		<!-- 借款方式 -->
+		<result column="borrow_style" property="borrowStyle" jdbcType="VARCHAR" />
+		<!-- 还款方式 -->
+		<result column="repay_style" property="repayStyle" jdbcType="VARCHAR" />
+		<!-- 支付时间 -->
+		<result column="payTime" property="payTime" jdbcType="VARCHAR" />
+		<!-- 还款时间 -->
+		<result column="repay_time" property="repayTime" jdbcType="VARCHAR" />
+		<result column="coupon_profit_time" property="couponProfitTime" jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- 获取已回款优惠券投资项目详情 -->
+	<select id="selectCouponRepayedProjectDetail" resultMap="RepayedCouponProjectDetailMap" parameterType="Map">
+		SELECT
+				hydb.borrow_nid,
+				hydb.`name` AS borrow_name,
+				CASE
+					WHEN hcc.coupon_type IS NOT NULL
+					AND hcc.coupon_type = 2 THEN
+					hcc.coupon_quota
+				ELSE
+					hydb.borrow_apr
+				END borrow_apr,
+					hydb.borrow_apr,
+				hydb.borrow_period,
+				hydb.borrow_style AS borrow_style,
+				hydbs.name AS repay_style,
+				hcu.coupon_user_code,
+				hcc.coupon_type,
+				hcc.coupon_profit_time,
+				hcc.coupon_quota,
+				SUBSTRING(
+					FORMAT(hbt.account, 4),
+					1,
+					LENGTH(FORMAT(hbt.account, 4)) - 2
+				) AS account,
+				hbt.account AS accountNum,
+				hcr.recover_account AS interest,
+				FROM_UNIXTIME(
+					 MAX(hcr.recover_yestime),
+					'%Y-%m-%d'
+				) AS repay_time,
+				FROM_UNIXTIME(
+					 hbt.addtime,
+					'%Y-%m-%d %H:%i:%s'
+				) AS payTime
+		FROM
+			hyjf_coupon_recover hcr
+		INNER JOIN hyjf_borrow_tender_cpn hbt ON hcr.tender_id = hbt.nid
+		INNER JOIN huiyingdai_borrow hydb ON hbt.borrow_nid = hydb.borrow_nid
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		LEFT JOIN hyjf_coupon_tender hct ON hct.order_id = hbt.nid
+		LEFT JOIN hyjf_coupon_user hcu ON hcu.id = hct.coupon_grant_id
+		LEFT JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+		LEFT JOIN huiyingdai_borrow_style hydbs ON hydbs.nid = hydb.borrow_style
+		WHERE
+			(
+				hydbpt.borrow_project_type = 'HZT'
+				OR hydbpt.borrow_project_type = 'HXF'
+			)
+		AND hbt.user_id = #{userId,jdbcType=INTEGER}
+		AND hcu.coupon_user_code = #{couponCode, jdbcType = VARCHAR }
+		AND hcr.recover_status = 1
+		AND hcr.received_flg = 5
+		AND NOT EXISTS (
+			SELECT
+				hcr2.id
+			FROM
+				hyjf_coupon_recover hcr2
+			INNER JOIN hyjf_borrow_tender_cpn hbt2 ON hcr2.tender_id = hbt2.nid
+			WHERE
+				hbt2.borrow_nid = hydb.borrow_nid
+			AND hcr2.tender_id = hcr.tender_id
+			AND hcr2.received_flg <![CDATA[<>]]> 5
+		)
+	</select>
+	
+	<select id="countInvestListRecordTotal" resultType="java.lang.Integer" parameterType="Map">
+		SELECT
+			count(id) AS total
+		FROM
+			(
+			SELECT
+				 hydbt.id
+			FROM
+				huiyingdai_borrow_tender hydbt 
+			INNER JOIN huiyingdai_borrow hydb ON hydbt.borrow_nid = hydb.borrow_nid
+			LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+			<include refid="Where_Clause_Invest_List" />
+
+		  UNION ALL
+				SELECT hct.assign_id
+				FROM
+				huiyingdai_credit_tender hct
+				INNER JOIN huiyingdai_borrow hydb ON hydb.borrow_nid = hct.bid_nid
+				WHERE hct.user_id = #{userId}
+					AND hct.status = 0
+
+		  UNION ALL
+		    
+			SELECT
+				hydbt.id
+			FROM
+				hyjf_borrow_tender_cpn hydbt
+			INNER JOIN huiyingdai_borrow hydb ON hydbt.borrow_nid = hydb.borrow_nid
+			LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+			LEFT JOIN hyjf_coupon_tender hct ON hct.order_id = hydbt.nid
+			LEFT JOIN hyjf_coupon_user hcu ON hcu.id = hct.coupon_grant_id
+			LEFT JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code	    
+			<include refid="Where_Clause_Invest_List" />
+			UNION ALL
+	
+			SELECT
+				hiii.id
+			FROM
+				huiyingdai_borrow hydb
+			LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+			INNER JOIN hyjf_increase_interest_invest hiii ON hiii.borrow_nid = hydb.borrow_nid
+			WHERE  hiii.user_id = #{userId,jdbcType=INTEGER}
+			AND hiii.`status` = 0
+			) AS tablecount
+	</select>
+	<sql id="Where_Clause_Already_Repay_List">
+		<where>
+			(hydbpt.borrow_project_type ='HZT' OR hydbpt.borrow_project_type ='HXF')
+			AND hydbr.user_id = #{userId,jdbcType=INTEGER}
+			AND hydbr.recover_status = 1 
+			AND hydb.plan_nid IS NULL
+		</where>
+	</sql>
+
+	<resultMap id="AlreadyRepayListMap" type="com.hyjf.mybatis.model.customize.app.AppAlreadyRepayListCustomize">
+		<id column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<result column="interest" property="interest" jdbcType="VARCHAR" />
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<result column="borrow_schedule" property="borrowSchedule" jdbcType="VARCHAR" />
+		<result column="borrow_url" property="borrowUrl" jdbcType="VARCHAR" />
+		<result column="label" property="label" jdbcType="VARCHAR" />
+		<result column="invest_type" property="investType" jdbcType="VARCHAR" />
+		<result column="project_type" property="projectType" jdbcType="VARCHAR" />
+		<result column="recover_time_sort" property="recoverTime" jdbcType="VARCHAR" />
+		<result column="order_id" property="orderId" jdbcType="VARCHAR" />
+		<result column="period" property="period" jdbcType="VARCHAR" />
+		<result column="coupon_type" property="couponType" jdbcType="VARCHAR" />
+		<!-- 产品加息收益率 -->
+		<result column="borrow_extra_yield" property="borrowExtraYield" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectAlreadyRepayList" resultMap="AlreadyRepayListMap" parameterType="Map">
+		SELECT
+			hydb.borrow_nid,
+			case when hydb.project_type=13 then
+			hydb.borrow_nid
+			else
+			hydb.borrow_nid 
+			end AS borrow_name,
+			hydb.borrow_apr,
+			CASE
+			WHEN hydb.borrow_style = 'endday'
+			THEN CONCAT(hydb.borrow_period, '天')
+			ELSE
+			CONCAT(hydb.borrow_period,'个月')
+			END AS period,
+			SUBSTRING(
+				FORMAT(hydbr.recover_capital, 4),
+				1,
+				LENGTH(
+					FORMAT(hydbr.recover_capital, 4)
+				) - 2
+			) AS account,
+			SUBSTRING(
+				FORMAT(
+					hydbr.recover_interest_yes,
+					4
+				),
+				1,
+				LENGTH(
+					FORMAT(
+						hydbr.recover_interest_yes,
+						4
+					)
+				) - 2
+			) AS interest,
+			hydb.borrow_account_scale AS borrow_schedule,
+			CONCAT(#{host},'?borrowNid=',hydb.borrow_nid,'&amp;tenderNid=',hydbr.nid) AS borrow_url,
+			'' label,
+			'' as coupon_type,
+			hydbr.recover_yestime AS recover_time_sort,
+		 	'1' AS invest_type,
+			hydbpt.borrow_class project_type,
+			hydbr.nid as order_id,
+			case when hydb.borrow_extra_yield=0 then
+			''
+			else
+			CONCAT('加息',hydb.borrow_extra_yield, '%')
+			end
+			borrow_extra_yield
+		FROM
+			huiyingdai_borrow_recover hydbr
+		INNER JOIN huiyingdai_borrow hydb ON hydbr.borrow_nid = hydb.borrow_nid
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		<include refid="Where_Clause_Already_Repay_List" />
+
+		UNION ALL
+			SELECT
+			DISTINCT
+			hct.bid_nid AS borrow_nid,
+			hct.bid_nid AS borrow_name,
+			hydb.borrow_apr,
+			CASE
+			WHEN hydb.borrow_style = 'endday'
+			THEN CONCAT(hydb.borrow_period, '天')
+			ELSE
+			CONCAT(hydb.borrow_period,'个月')
+			END AS period,
+			FORMAT(hct.assign_capital,2) AS account,
+			'' AS interest,
+			'' AS borrow_schedule,
+			'' AS borrow_url,
+			'' AS label,
+			'' as coupon_type,
+			hct.assign_repay_yes_time AS recover_time_sort,
+			'' AS invest_type,
+			'HZR' AS project_type,
+			hct.assign_nid AS order_id,
+			case when hydb.borrow_extra_yield=0 then
+			''
+			else
+			CONCAT('加息',hydb.borrow_extra_yield, '%')
+			end
+			borrow_extra_yield
+			FROM
+			huiyingdai_credit_tender hct
+			INNER JOIN huiyingdai_borrow hydb ON hydb.borrow_nid = hct.bid_nid
+			WHERE hct.user_id = #{userId}
+			AND hct.status = 1
+
+		UNION ALL
+			SELECT
+				hydb.borrow_nid,
+				hydb.borrow_nid AS borrow_name,
+				CASE
+			WHEN hcc.coupon_type IS NOT NULL
+			AND hcc.coupon_type = 2 THEN
+				hcc.coupon_quota
+			ELSE
+				hydb.borrow_apr
+			END borrow_apr,
+			CASE
+			WHEN hydb.borrow_style = 'endday'
+			THEN CONCAT(hydb.borrow_period, '天')
+			ELSE
+			CONCAT(hydb.borrow_period,'个月')
+			END AS period,
+			SUBSTRING(
+				FORMAT(hbt.account, 4),
+				1,
+				LENGTH(FORMAT(hbt.account, 4)) - 2
+			) AS account,
+			SUBSTRING(
+				FORMAT(
+					SUM(hcr.recover_account_yes),
+					4
+				),
+				1,
+				LENGTH(
+					FORMAT(
+						SUM(hcr.recover_account_yes),
+						4
+					)
+				) - 2
+			) AS interest,
+			hydb.borrow_account_scale AS borrow_schedule,
+			<!-- 优惠券详情URL -->
+			CONCAT(#{host},'?couponCode=',hcu.coupon_user_code) AS borrow_url,
+			CASE
+		WHEN hcc.coupon_type = 1 THEN
+			'体验金'
+		WHEN hcc.coupon_type = 2 THEN
+		    '加息券'
+		WHEN hcc.coupon_type = 3 THEN
+		    '代金券'
+		ELSE
+			''
+		END label,
+		hcc.coupon_type	as coupon_type,
+		MAX(hcr.recover_yestime) AS recover_time_sort,
+		 	'2' AS invest_type,
+			hydbpt.borrow_class project_type,
+			hcr.tender_id as order_id,
+		case when hydb.borrow_extra_yield=0 then
+		''
+		else
+		CONCAT('加息',hydb.borrow_extra_yield, '%')
+		end
+		borrow_extra_yield
+		FROM
+			hyjf_coupon_recover hcr
+		INNER JOIN hyjf_borrow_tender_cpn hbt ON hcr.tender_id = hbt.nid
+		INNER JOIN huiyingdai_borrow hydb ON hbt.borrow_nid = hydb.borrow_nid
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		LEFT JOIN hyjf_coupon_tender hct ON hct.order_id = hbt.nid
+		LEFT JOIN hyjf_coupon_user hcu ON hcu.id = hct.coupon_grant_id
+		LEFT JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+		WHERE
+			(
+				hydbpt.borrow_project_type = 'HZT'
+				OR hydbpt.borrow_project_type = 'HXF'
+			)
+		AND hbt.user_id = #{userId,jdbcType=INTEGER}
+		AND hcr.recover_status = 1
+		AND hcr.received_flg = 5
+		AND NOT EXISTS (
+			SELECT
+				hcr2.id
+			FROM
+				hyjf_coupon_recover hcr2
+			INNER JOIN hyjf_borrow_tender_cpn hbt2 ON hcr2.tender_id = hbt2.nid
+			WHERE
+				hbt2.borrow_nid = hydb.borrow_nid
+			AND hcr2.tender_id = hcr.tender_id
+			AND hcr2.received_flg <![CDATA[<>]]> 5
+		)
+		GROUP BY
+			hcr.tender_id
+		
+		UNION ALL
+			SELECT
+			hydb.borrow_nid,
+			case when hydb.project_type=13 then
+			hydb.borrow_nid
+			else
+			hydb.borrow_nid 
+			end AS borrow_name,
+			hydb.borrow_extra_yield AS borrow_apr,
+			CASE
+			WHEN hydb.borrow_style = 'endday'
+			THEN CONCAT(hydb.borrow_period, '天')
+			ELSE
+			CONCAT(hydb.borrow_period,'个月')
+			END AS period,
+			SUBSTRING(
+				FORMAT(hiil.invest_account, 4),
+				1,
+				LENGTH(FORMAT(hiil.invest_account, 4)) - 2
+			) AS account,
+				SUBSTRING(
+				FORMAT(
+					hiil.loan_interest,
+					4
+				),
+				1,
+				LENGTH(
+					FORMAT(
+						hiil.loan_interest,
+						4
+					)
+				) - 2
+			) AS interest,
+			hydb.borrow_account_scale AS borrow_schedule,
+			CONCAT(#{host},'?borrowNid=',hydb.borrow_nid,'&amp;tenderNid=',hiii.tender_nid,'&amp;investType=3') AS borrow_url,
+			CONCAT('加息',FORMAT(hiii.borrow_extra_yield, 2),'%') label,
+			'4' as coupon_type,
+			 hiil.repay_action_time AS recover_time_sort,
+			'3' AS invest_type,
+			hydbpt.borrow_class project_type,
+		hiii.tender_nid as order_id,
+		case when hydb.borrow_extra_yield=0 then
+		''
+		else
+		CONCAT('加息',hydb.borrow_extra_yield, '%')
+		end
+		borrow_extra_yield
+		FROM
+			huiyingdai_borrow hydb
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		LEFT JOIN hyjf_increase_interest_invest hiii ON hiii.borrow_nid = hydb.borrow_nid
+		LEFT JOIN hyjf_increase_interest_loan hiil ON hiil.invest_order_id = hiii.order_id
+		WHERE
+			hiil.user_id = #{userId,jdbcType=INTEGER}
+		AND hiil.repay_status = 1
+		GROUP BY
+			hiil.invest_order_id
+		ORDER BY
+			recover_time_sort DESC
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	<select id="countAlreadyRepayListRecordTotal" resultType="java.lang.Integer" parameterType="Map">
+	   SELECT count(id) AS total FROM
+	   (
+		SELECT
+			 hydbr.id
+		FROM
+			huiyingdai_borrow_recover hydbr
+		INNER JOIN huiyingdai_borrow hydb ON hydbr.borrow_nid = hydb.borrow_nid
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		<include refid="Where_Clause_Already_Repay_List" />
+
+		UNION ALL
+			SELECT hct.assign_id
+			FROM
+			huiyingdai_credit_tender hct
+			INNER JOIN huiyingdai_borrow hydb ON hydb.borrow_nid = hct.bid_nid
+			WHERE hct.user_id = #{userId}
+			AND hct.status = 1
+
+		UNION ALL
+		SELECT
+			hcr.id
+		FROM
+			hyjf_coupon_recover hcr
+		INNER JOIN hyjf_borrow_tender_cpn hbt ON hcr.tender_id = hbt.nid
+		INNER JOIN huiyingdai_borrow hydb ON hbt.borrow_nid = hydb.borrow_nid
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		LEFT JOIN hyjf_coupon_tender hct ON hct.order_id = hbt.nid
+		LEFT JOIN hyjf_coupon_user hcu ON hcu.id = hct.coupon_grant_id
+		LEFT JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+		WHERE
+			(
+				hydbpt.borrow_project_type = 'HZT'
+				OR hydbpt.borrow_project_type = 'HXF'
+			)
+		AND hbt.user_id = #{userId,jdbcType=INTEGER}
+		AND hcr.recover_status = 1
+		AND hcr.received_flg = 5
+		AND NOT EXISTS (
+			SELECT
+				hcr2.id
+			FROM
+				hyjf_coupon_recover hcr2
+			INNER JOIN hyjf_borrow_tender_cpn hbt2 ON hcr2.tender_id = hbt2.nid
+			WHERE
+				hbt2.borrow_nid = hydb.borrow_nid
+			AND hcr2.tender_id = hcr.tender_id
+			AND hcr2.received_flg <![CDATA[<>]]> 5
+		)
+		GROUP BY
+			hcr.tender_id
+UNION ALL		
+	  	SELECT
+			hiil.id
+		FROM
+			huiyingdai_borrow hydb
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		LEFT JOIN hyjf_increase_interest_invest hiii ON hiii.borrow_nid = hydb.borrow_nid
+		LEFT JOIN hyjf_increase_interest_loan hiil ON hiil.invest_order_id = hiii.order_id
+		WHERE  hiil.user_id = #{userId,jdbcType=INTEGER}
+		AND hiil.repay_status = 1
+		GROUP BY
+			hiil.invest_order_id
+	  ) AS tabeltemp
+	  
+	</select>
+
+	<sql id="Where_Clause_Repay_Recover_Plan_List">
+		<where>
+			hydbr.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+			AND hydbr.user_id = #{userId,jdbcType=VARCHAR}
+			AND hydbr.nid = #{orderId,jdbcType=VARCHAR}
+		</where>
+	</sql>
+	<resultMap id="ProjectRepayListMap" type="com.hyjf.mybatis.model.customize.app.AppRepayPlanListCustomize">
+		<id column="repay_name" property="repayName" jdbcType="VARCHAR" />
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<result column="repay_time" property="repayTime" jdbcType="VARCHAR" />
+		<result column="recover_status" property="repayStatus" jdbcType="VARCHAR" />
+		<result column="coupon_status" property="couponStatus" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectRepayRecoverPlanList" resultMap="ProjectRepayListMap" parameterType="Map">
+		SELECT
+			CASE
+		WHEN #{borrowStyle,jdbcType=VARCHAR}='month' 
+		THEN
+			'本息'
+		WHEN #{borrowStyle,jdbcType=VARCHAR}='principal'
+		THEN
+			'本息'
+		WHEN #{borrowStyle,jdbcType=VARCHAR}='endmonth'
+		THEN
+			CASE
+		WHEN hydbrp.recover_capital > 0 
+		THEN '本息'
+		ELSE
+			'利息'
+		END
+		ELSE
+			''
+		END AS repay_name,
+		 CASE
+		WHEN #{borrowStyle,jdbcType=VARCHAR}='month' 
+		THEN
+			CASE
+		WHEN (
+			hydbr.credit_amount IS NULL
+			OR hydbr.credit_amount = 0
+		) THEN
+			CONCAT(SUBSTRING(
+				FORMAT(hydbrp.recover_account, 4),
+				1,
+				LENGTH(
+					FORMAT(hydbrp.recover_account, 4)
+				) - 2
+			), '元')
+		WHEN hydbr.credit_amount > 0 THEN
+			CONCAT(SUBSTRING(
+				FORMAT(
+					(
+						hydbrp.recover_account - (
+							SELECT
+								COALESCE(SUM(hydcr.assign_account),0)
+							FROM
+								huiyingdai_credit_repay hydcr
+							WHERE
+								hydcr.credit_tender_nid = hydbrp.nid
+							AND hydcr.credit_user_id = hydbrp.user_id
+							AND hydcr.recover_period = hydbrp.recover_period
+						)
+					),
+					4
+				),
+				1,
+				LENGTH(
+					FORMAT(
+						(
+							hydbrp.recover_account - (
+								SELECT
+									COALESCE(SUM(hydcr.assign_account),0)
+								FROM
+									huiyingdai_credit_repay hydcr
+								WHERE
+									hydcr.credit_tender_nid = hydbrp.nid
+								AND hydcr.credit_user_id = hydbrp.user_id
+								AND hydcr.recover_period = hydbrp.recover_period
+							)
+						),
+						4
+					)
+				) - 2
+			), '元')
+		ELSE
+			'0'
+		END
+		WHEN #{borrowStyle,jdbcType=VARCHAR}='principal' 
+		THEN
+			CASE
+		WHEN (
+			hydbr.credit_amount IS NULL
+			OR hydbr.credit_amount = 0
+		) THEN
+			CONCAT(SUBSTRING(
+				FORMAT(hydbrp.recover_account, 4),
+				1,
+				LENGTH(
+					FORMAT(hydbrp.recover_account, 4)
+				) - 2
+			), '元')
+		WHEN hydbr.credit_amount > 0 THEN
+			CONCAT(SUBSTRING(
+				FORMAT(
+					(
+						hydbrp.recover_account - (
+							SELECT
+								COALESCE(SUM(hydcr.assign_account),0)
+							FROM
+								huiyingdai_credit_repay hydcr
+							WHERE
+								hydcr.credit_tender_nid = hydbrp.nid
+							AND hydcr.credit_user_id = hydbrp.user_id
+							AND hydcr.recover_period = hydbrp.recover_period
+						)
+					),
+					4
+				),
+				1,
+				LENGTH(
+					FORMAT(
+						(
+							hydbrp.recover_account - (
+								SELECT
+									COALESCE(SUM(hydcr.assign_account),0)
+								FROM
+									huiyingdai_credit_repay hydcr
+								WHERE
+									hydcr.credit_tender_nid = hydbrp.nid
+								AND hydcr.credit_user_id = hydbrp.user_id
+								AND hydcr.recover_period = hydbrp.recover_period
+							)
+						),
+						4
+					)
+				) - 2
+			), '元')
+		ELSE
+			'0'
+		END
+		WHEN #{borrowStyle,jdbcType=VARCHAR}='endmonth'
+		THEN
+			CASE
+		WHEN hydbrp.recover_capital > 0 THEN
+			CONCAT(SUBSTRING(
+				FORMAT(
+					(
+						hydbrp.recover_account - (
+							SELECT
+								COALESCE(SUM(hydcr.assign_account),0)
+							FROM
+								huiyingdai_credit_repay hydcr
+							WHERE
+								hydcr.credit_tender_nid = hydbrp.nid
+							AND hydcr.credit_user_id = hydbrp.user_id
+							AND hydcr.recover_period = hydbrp.recover_period
+						)
+					),
+					4
+				),
+				1,
+				LENGTH(
+					FORMAT(
+						(
+							hydbrp.recover_account - (
+								SELECT
+									COALESCE(SUM(hydcr.assign_account),0)
+								FROM
+									huiyingdai_credit_repay hydcr
+								WHERE
+									hydcr.credit_tender_nid = hydbrp.nid
+								AND hydcr.credit_user_id = hydbrp.user_id
+								AND hydcr.recover_period = hydbrp.recover_period
+							)
+						),
+						4
+					)
+				) - 2
+			), '元')
+		ELSE
+			CONCAT(SUBSTRING(
+				FORMAT(
+					(
+						hydbrp.recover_interest - (
+							SELECT
+								COALESCE(SUM(hydcr.assign_interest),0)
+							FROM
+								huiyingdai_credit_repay hydcr
+							WHERE
+								hydcr.credit_tender_nid = hydbrp.nid
+							AND hydcr.credit_user_id = hydbrp.user_id
+							AND hydcr.recover_period = hydbrp.recover_period
+						)
+					),
+					4
+				),
+				1,
+				LENGTH(
+					FORMAT(
+						(
+							hydbrp.recover_interest - (
+								SELECT
+									COALESCE(SUM(hydcr.assign_interest),0)
+								FROM
+									huiyingdai_credit_repay hydcr
+								WHERE
+									hydcr.credit_tender_nid = hydbrp.nid
+								AND hydcr.credit_user_id = hydbrp.user_id
+								AND hydcr.recover_period = hydbrp.recover_period
+							)
+						),
+						4
+					)
+				) - 2
+			), '元')
+		END
+		END AS account,
+		 FROM_UNIXTIME(
+			hydbrp.recover_time,
+			'%Y-%m-%d'
+		) AS repay_time,
+		 hydbrp.recover_status
+		FROM
+			huiyingdai_borrow_recover hydbr
+		LEFT JOIN huiyingdai_borrow_recover_plan hydbrp ON hydbrp.user_id = hydbr.user_id
+		AND hydbrp.nid = hydbr.nid
+		AND hydbrp.borrow_nid = hydbr.borrow_nid
+		<include refid="Where_Clause_Repay_Recover_Plan_List" />
+		ORDER BY hydbrp.recover_time ASC
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	
+	<select id="countRepayRecoverPlanListRecordTotal" resultType="java.lang.Integer" parameterType="Map">
+		SELECT
+			COUNT(hydbrp.id)
+		FROM
+			huiyingdai_borrow_recover_plan hydbrp
+		LEFT JOIN huiyingdai_borrow_recover hydbr ON hydbrp.user_id =hydbr.user_id
+		AND hydbrp.nid =hydbr.nid
+		AND hydbrp.borrow_nid =hydbr.borrow_nid
+		<include refid="Where_Clause_Repay_Recover_Plan_List" />
+	</select>
+	
+	<select id="selectRepayRecoverList" resultMap="ProjectRepayListMap" parameterType="Map">
+		SELECT
+			hydbr.repay_name,
+			hydbr.account,
+			hydbr.repay_time,
+			hydbr.recover_status
+		FROM
+			(
+				SELECT
+					hydbr.borrow_nid,
+					hydbr.user_id,
+					hydbr.nid,
+					'本金' AS repay_name,
+					CONCAT(SUBSTRING(
+						FORMAT(
+							(
+								hydbr.recover_capital - (
+									SELECT
+										COALESCE(SUM(hydcr.assign_capital),0)
+									FROM
+										huiyingdai_credit_repay hydcr
+									WHERE
+										hydcr.credit_tender_nid = #{orderId,jdbcType=VARCHAR}
+									AND hydcr.credit_user_id = #{userId,jdbcType=INTEGER}
+								)
+							),
+							4
+						),
+						1,
+						LENGTH(
+							FORMAT(
+								(
+									hydbr.recover_capital - (
+										SELECT
+											COALESCE(SUM(hydcr.assign_capital),0)
+										FROM
+											huiyingdai_credit_repay hydcr
+										WHERE
+											hydcr.credit_tender_nid =#{orderId,jdbcType=VARCHAR}
+										AND hydcr.credit_user_id = #{userId,jdbcType=INTEGER}
+									)
+								),
+								4
+							)
+						) - 2
+					), '元') AS account,
+					FROM_UNIXTIME(
+						hydbr.recover_time,
+						'%Y-%m-%d'
+					) AS repay_time,
+					hydbr.recover_status
+				FROM
+					huiyingdai_borrow_recover hydbr
+					WHERE
+						hydbr.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+						AND hydbr.user_id = #{userId,jdbcType=INTEGER}
+						AND hydbr.nid = #{orderId,jdbcType=VARCHAR}
+				UNION
+					SELECT
+						hydbr.borrow_nid,
+						hydbr.user_id,
+						hydbr.nid,
+						'利息' AS repay_name,
+						CONCAT(SUBSTRING(
+							FORMAT(
+								(
+									hydbr.recover_interest - (
+										SELECT
+											COALESCE(SUM(hydcr.assign_interest),0)
+										FROM
+											huiyingdai_credit_repay hydcr
+										WHERE
+											hydcr.credit_tender_nid = #{orderId,jdbcType=VARCHAR}
+										AND hydcr.credit_user_id = #{userId,jdbcType=INTEGER}
+									)
+								),
+								4
+							),
+							1,
+							LENGTH(
+								FORMAT(
+									(
+										hydbr.recover_interest - (
+											SELECT
+												COALESCE(SUM(hydcr.assign_interest),0)
+											FROM
+												huiyingdai_credit_repay hydcr
+											WHERE
+												hydcr.credit_tender_nid = #{orderId,jdbcType=VARCHAR}
+											AND hydcr.credit_user_id = #{userId,jdbcType=INTEGER}
+										)
+									),
+									4
+								)
+							) - 2
+						), '元') AS account,
+						FROM_UNIXTIME(
+							hydbr.recover_time,
+							'%Y-%m-%d'
+						) AS repay_time,
+						hydbr.recover_status
+					FROM
+						huiyingdai_borrow_recover hydbr
+						WHERE
+							hydbr.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+							AND hydbr.user_id = #{userId,jdbcType=INTEGER}
+							AND hydbr.nid = #{orderId,jdbcType=VARCHAR}
+			) AS hydbr
+			ORDER BY hydbr.repay_time DESC
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	<select id="countRepayRecoverListRecordTotal" resultType="java.lang.Integer" parameterType="Map">
+		SELECT
+			COUNT(hydbr.id)
+		FROM
+			(
+				SELECT
+					hydbr.id,
+					hydbr.borrow_nid,
+					hydbr.user_id,
+					hydbr.nid,
+					'本金' AS repay_name,
+					CONCAT(SUBSTRING(
+						FORMAT(
+							(
+								hydbr.recover_capital - (
+									SELECT
+										COALESCE(SUM(hydcr.assign_capital),0)
+									FROM
+										huiyingdai_credit_repay hydcr
+									WHERE
+										hydcr.credit_tender_nid = #{orderId,jdbcType=VARCHAR}
+									AND hydcr.credit_user_id = #{userId,jdbcType=INTEGER}
+								)
+							),
+							4
+						),
+						1,
+						LENGTH(
+							FORMAT(
+								(
+									hydbr.recover_capital - (
+										SELECT
+											COALESCE(SUM(hydcr.assign_capital),0)
+										FROM
+											huiyingdai_credit_repay hydcr
+										WHERE
+											hydcr.credit_tender_nid = #{orderId,jdbcType=VARCHAR}
+										AND hydcr.credit_user_id = #{userId,jdbcType=INTEGER}
+									)
+								),
+								4
+							)
+						) - 2
+					), '元') AS account,
+					FROM_UNIXTIME(
+						hydbr.recover_time,
+						'%Y-%m-%d %H:%i:%s'
+					) AS repay_time,
+					hydbr.recover_status
+				FROM
+					huiyingdai_borrow_recover hydbr
+					WHERE
+						hydbr.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+						AND hydbr.user_id = #{userId,jdbcType=INTEGER}
+						AND hydbr.nid = #{orderId,jdbcType=VARCHAR}
+				UNION
+					SELECT
+						hydbr.id,
+						hydbr.borrow_nid,
+						hydbr.user_id,
+						hydbr.nid,
+						'利息' AS repay_name,
+						CONCAT(SUBSTRING(
+							FORMAT(
+								(
+									hydbr.recover_interest - (
+										SELECT
+											COALESCE(SUM(hydcr.assign_interest),0)
+										FROM
+											huiyingdai_credit_repay hydcr
+										WHERE
+											hydcr.credit_tender_nid = hydbr.nid
+										AND hydcr.credit_user_id = hydbr.user_id
+									)
+								),
+								4
+							),
+							1,
+							LENGTH(
+								FORMAT(
+									(
+										hydbr.recover_interest - (
+											SELECT
+												COALESCE(SUM(hydcr.assign_interest),0)
+											FROM
+												huiyingdai_credit_repay hydcr
+											WHERE
+												hydcr.credit_tender_nid = hydbr.nid
+											AND hydcr.credit_user_id = hydbr.user_id
+										)
+									),
+									4
+								)
+							) - 2
+						), '元') AS account,
+						FROM_UNIXTIME(
+							hydbr.recover_time,
+							'%Y-%m-%d %H:%i:%s'
+						) AS repay_time,
+						hydbr.recover_status
+					FROM
+						huiyingdai_borrow_recover hydbr
+						WHERE
+							hydbr.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+							AND hydbr.user_id = #{userId,jdbcType=INTEGER}
+							AND hydbr.nid = #{orderId,jdbcType=VARCHAR}
+			) AS hydbr
+			WHERE
+				hydbr.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+				AND hydbr.user_id = #{userId,jdbcType=VARCHAR}
+				AND hydbr.nid = #{orderId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectReceivedInterest" resultType="String" parameterType="Map">
+			SELECT
+				IFNULL(SUBSTRING(FORMAT(SUM(hcr.recover_account),4),1,LENGTH(FORMAT(SUM(hcr.recover_account),4))-2),0.00) AS received_interest
+			FROM
+				hyjf_coupon_recover hcr
+		    INNER JOIN hyjf_borrow_tender_cpn hbt ON hcr.tender_id = hbt.nid
+			WHERE
+				hbt.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+				AND hbt.user_id = #{userId,jdbcType=VARCHAR}
+				AND hbt.nid = #{orderId,jdbcType=VARCHAR}
+				AND hcr.received_flg = 5
+	</select>
+	
+	<select id="selectCouponRepayRecoverList" resultMap="ProjectRepayListMap" parameterType="Map">
+			SELECT
+				'利息' AS repay_name,
+				SUBSTRING(FORMAT(hcr.recover_account,4),1,LENGTH(FORMAT(hcr.recover_account,4))-2) AS account,
+				FROM_UNIXTIME(
+					hcr.recover_time,
+					'%Y-%m-%d'
+				) AS repay_time,
+				hcr.recover_status,
+				hcr.received_flg AS coupon_status
+			FROM
+				hyjf_coupon_recover hcr
+		    INNER JOIN hyjf_borrow_tender_cpn hbt ON hcr.tender_id = hbt.nid
+			WHERE
+				hbt.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+				AND hbt.user_id = #{userId,jdbcType=VARCHAR}
+				AND hbt.nid = #{orderId,jdbcType=VARCHAR}
+		    ORDER BY hcr.recover_time ASC
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	<select id="countCouponRepayRecoverListRecordTotal" resultType="java.lang.Integer" parameterType="Map">
+			SELECT
+				count(1)
+			FROM
+				hyjf_coupon_recover hcr
+		    INNER JOIN hyjf_borrow_tender_cpn hbt ON hcr.tender_id = hbt.nid
+			WHERE
+				hbt.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+				AND hbt.user_id = #{userId,jdbcType=VARCHAR}
+				AND hbt.nid = #{orderId,jdbcType=VARCHAR}
+	</select>
+	
+	
+	<sql id="Where_Clause_Project_Contract_Detail">
+		<where>
+			(hydbpt.borrow_project_type ='HZT' OR hydbpt.borrow_project_type ='HXF')
+			AND hydbt.user_id = #{userId,jdbcType=INTEGER}
+			AND hydbr.recover_status = 0
+		</where>
+	</sql>
+	<resultMap id="ProjectContractDetailMap" type="com.hyjf.mybatis.model.customize.app.AppProjectContractDetailCustomize">
+		<!-- 项目编号 borrowNid -->
+		<id column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<!-- 项目大分类 projectType HZT 汇直投 HXF 汇消费  -->
+		<result column="project_type" property="projectType" jdbcType="VARCHAR" />
+		<!-- 项目期限 borrowPeriod -->
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<!-- 项目年化收益 borrowApr -->
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<!-- 还款方式 repayStyle -->
+		<result column="repay_style" property="repayStyle" jdbcType="VARCHAR" />
+		<!-- 还款方式类型 repayType -->
+		<result column="repay_type" property="repayType" jdbcType="VARCHAR" />
+		<!-- 真实姓名 tenderRealName -->
+		<result column="tender_real_name" property="tenderRealName" jdbcType="VARCHAR" />
+		<!-- 身份证号 tenderIdCard -->
+		<result column="tender_idcard" property="tenderIdCard" jdbcType="VARCHAR" />
+		<!-- 投资金额 invest-->
+		<result column="invest" property="invest" jdbcType="VARCHAR" />
+		<!-- 投资开始日 investStartDate-->
+		<result column="invest_start_date" property="investStartDate" jdbcType="VARCHAR" />
+		<!-- 投资到期日 investEndDate -->
+		<result column="invest_end_date" property="investEndDate" jdbcType="VARCHAR" />
+		<!-- 签订日期 signDate -->
+		<result column="sign_date" property="signDate" jdbcType="VARCHAR" />
+		<!-- 应收本息 account-->
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<!-- 乙方信息 borrowUserName-->
+		<result column="borrow_user_name" property="borrowUserName" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectProjectContractDetail" resultMap="ProjectContractDetailMap" parameterType="Map">
+		SELECT
+			hydb.borrow_nid,
+			CASE WHEN hydb.borrow_style = 'endday' THEN CONCAT(hydb.borrow_period, '天') ELSE CONCAT(hydb.borrow_period, '个月') END borrow_period,
+			hydb.borrow_apr,
+			hydbpt.borrow_class AS project_type,
+			hydbr.nid,
+			hydb.borrow_style AS repay_type,
+			hydbs.`name` AS repay_style,
+			(
+				SELECT
+					info.truename
+				FROM
+					huiyingdai_users_info info
+				WHERE
+					info.user_id = hydbr.user_id
+			) AS tender_real_name,
+			(
+				SELECT
+					ui.idcard
+				FROM
+					huiyingdai_users_info ui
+				WHERE
+					ui.user_id = hydbr.user_id
+			) AS tender_idcard,
+			SUBSTRING(FORMAT(hydbt.account,4),1,LENGTH(FORMAT(hydbt.account,4))-2) AS invest,
+			SUBSTRING(FORMAT(hydbr.recover_account,4),1,LENGTH(FORMAT(hydbr.recover_account,4))-2) AS account,
+			FROM_UNIXTIME(
+				hydb.reverify_time,
+				'%Y-%m-%d'
+			) AS invest_start_date,
+			FROM_UNIXTIME(
+				hydb.repay_last_time,
+				'%Y-%m-%d'
+			) AS invest_end_date,
+			FROM_UNIXTIME(
+				hydb.reverify_time,
+				'%Y-%m-%d'
+			) AS sign_date,
+			(
+				SELECT
+					CONCAT(
+						substring(u.username, 1, 1),
+						'**'
+					)
+				FROM
+					huiyingdai_users u
+				WHERE
+					u.user_id = hydb.user_id
+			) AS borrow_user_name
+		FROM
+			huiyingdai_borrow hydb
+		INNER JOIN huiyingdai_borrow_tender hydbt ON hydbt.borrow_nid = hydb.borrow_nid
+		INNER JOIN huiyingdai_borrow_recover hydbr ON hydbr.borrow_nid = hydb.borrow_nid AND hydbr.nid = hydbt.nid AND hydbr.user_id = hydbt.user_id
+		LEFT JOIN huiyingdai_borrow_style hydbs ON hydbs.nid = hydb.borrow_style
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		WHERE
+			(
+				hydbpt.borrow_project_type = 'HZT'
+				OR hydbpt.borrow_project_type = 'HXF'
+			) 
+		AND hydbr.user_id = #{userId,jdbcType=INTEGER}
+		AND hydbr.recover_status = 0
+		AND hydb.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+		AND hydbr.nid = #{orderId,jdbcType=VARCHAR} 
+	</select>
+	<resultMap id="ProjectContractRecoverPlanMap" type="com.hyjf.mybatis.model.customize.app.AppProjectContractRecoverPlanCustomize">
+		<!-- 期数 repayPeriod  -->
+		<id column="repay_period" property="repayPeriod" jdbcType="VARCHAR" />
+		<!-- 应还本金 repayCapital -->
+		<result column="repay_capital" property="repayCapital" jdbcType="VARCHAR" />
+		<!-- 应还利息 repayInterest -->
+		<result column="repay_interest" property="repayInterest" jdbcType="VARCHAR" />
+		<!-- 应还日起 repayTime-->
+		<result column="repay_time" property="repayTime" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectProjectContractRecoverPlan" resultMap="ProjectContractRecoverPlanMap" parameterType="Map">
+		SELECT
+			brp.recover_period AS repay_period,
+			brp.recover_capital AS repay_capital,
+			brp.recover_interest AS repay_interest,
+			FROM_UNIXTIME(
+				brp.recover_time,
+				'%Y-%m-%d'
+			) AS repay_time
+		FROM
+			huiyingdai_borrow_recover_plan brp
+		WHERE
+			brp.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+		AND brp.user_id = #{userId,jdbcType=INTEGER}
+		AND brp.nid = #{orderId,jdbcType=VARCHAR} 
+		ORDER BY
+			brp.recover_period ASC
+	</select>
+	
+	<select id="selectUserTenderCount" resultType="int" parameterType="Map">
+		SELECT
+			(
+				SELECT
+					COUNT(1)
+				FROM
+					huiyingdai_borrow_tender
+				WHERE
+					user_id = #{userId}
+			) + (
+				SELECT
+					COUNT(1)
+				FROM
+					huiyingdai_credit_tender
+				WHERE
+					user_id = #{userId}
+			) + (
+				SELECT
+					COUNT(1)
+				FROM
+					hyjf_debt_plan_accede
+				WHERE
+					user_id = #{userId}
+			) tender_count
+		FROM
+			DUAL
+	</select>	
+	
+</mapper>

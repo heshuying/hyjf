@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.SmsCountCustomizeMapper">
+
+    <select id="querySmsCountTotal" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.SmsCountCustomize">
+        select count(1) from hyjf_sms_count l
+        <where>
+            <if test="post_time_begin!=null">
+                AND  l.posttime <![CDATA[>=]]> STR_TO_DATE(#{post_time_begin},'%Y-%m-%d')
+            </if>
+            <if test="post_time_end!= null" >
+                AND l.posttime  <![CDATA[<=]]> STR_TO_DATE(#{post_time_end},'%Y-%m-%d')
+            </if>
+            <if test="departmentId!= null" >
+                AND l.department_id  = #{departmentId}
+            </if>
+            <if test="posttime!= null" >
+                AND l.posttime  =  STR_TO_DATE(#{posttime},'%Y-%m-%d')
+            </if>
+            <if test="combotreeListSrch != null and combotreeListSrch != ''">
+                AND l.department_id in
+                <foreach collection="combotreeListSrch" open="(" close=")" separator="," item="dep">
+                    #{dep}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="querySmsCountList" resultType="com.hyjf.mybatis.model.customize.SmsCountCustomize"
+            parameterType="com.hyjf.mybatis.model.customize.SmsCountCustomize">
+        select
+        IFNULL(`od3`.`name`,'其他') AS `departmentName`,
+        IFNULL(od3.id,0) as departmentId,
+        sum(s.sms_number) as smsNumber,
+        s.posttime as posttime
+        from hyjf_sms_count s
+        LEFT JOIN `hyjf_crm`.`oa_department` `od` on s.department_id = od.id
+        LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+        LEFT JOIN `hyjf_crm`.`oa_department` `od3` ON `od3`.`id` = `od2`.`parentid`
+        group by posttime,departmentName
+
+        <trim prefix="having" prefixOverrides="AND |OR ">
+        <if test="post_time_begin!=null">
+            AND posttime <![CDATA[>=]]>  STR_TO_DATE(#{post_time_begin},'%Y-%m-%d')
+        </if>
+        <if test="post_time_end!= null">
+            AND posttime  <![CDATA[<=]]> STR_TO_DATE(#{post_time_end},'%Y-%m-%d')
+        </if>
+        <if test="combotreeListSrch != null and combotreeListSrch != ''">
+            AND departmentId in
+            <foreach collection="combotreeListSrch" open="(" close=")" separator="," item="dep">
+                #{dep}
+            </foreach>
+        </if>
+        </trim>
+        ORDER BY s.posttime desc
+        <if test="limitStart >= 0">
+            LIMIT #{limitStart} , #{limitEnd}
+        </if>
+
+
+    </select>
+
+
+    <select id="querySmsCountNumberTotal" resultType="java.lang.Integer"
+            parameterType="com.hyjf.mybatis.model.customize.SmsCountCustomize">
+        select ifnull(sum(sms_number),0) from hyjf_sms_count l
+        <where>
+            <if test="post_time_begin!=null">
+                AND l.posttime <![CDATA[>=]]> STR_TO_DATE(#{post_time_begin},'%Y-%m-%d')
+            </if>
+            <if test="post_time_end!= null">
+                AND l.posttime  <![CDATA[<=]]> STR_TO_DATE(#{post_time_end},'%Y-%m-%d')
+            </if>
+            <if test="departmentId!= null">
+                AND l.department_id = #{departmentId}
+            </if>
+            <if test="posttime!= null">
+                AND l.posttime =  STR_TO_DATE(#{posttime},'%Y-%m-%d')
+            </if>
+            <if test="combotreeListSrch != null and combotreeListSrch != ''">
+                AND l.department_id in
+                <foreach collection="combotreeListSrch" open="(" close=")" separator="," item="dep">
+                    #{dep}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="querySms" resultType="com.hyjf.mybatis.model.customize.SmsCountCustomize"
+            parameterType="com.hyjf.mybatis.model.customize.SmsCountCustomize">
+        select l.id , l.department_id AS departmentId ,l.department_name AS departmentName ,l.sms_number AS smsNumber
+        ,l.posttime ,l.create_time AS createTime from hyjf_sms_count l
+        <where>
+            <if test="post_time_begin!=null">
+                AND l.posttime <![CDATA[>=]]> STR_TO_DATE(#{post_time_begin},'%Y-%m-%d')
+            </if>
+            <if test="post_time_end!= null">
+                AND l.posttime  <![CDATA[<=]]> STR_TO_DATE(#{post_time_end},'%Y-%m-%d')
+            </if>
+            <if test="departmentId!= null">
+                AND l.department_id = #{departmentId}
+            </if>
+            <if test="posttime!= null">
+                AND l.posttime = STR_TO_DATE(#{posttime},'%Y-%m-%d')
+            </if>
+            <if test="combotreeListSrch != null and combotreeListSrch != ''">
+                AND l.department_id in
+                <foreach collection="combotreeListSrch" open="(" close=")" separator="," item="dep">
+                    #{dep}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY l.posttime desc
+        <if test="limitStart >= 0">
+            LIMIT #{limitStart} , #{limitEnd}
+        </if>
+    </select>
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO hyjf_sms_count (department_id,department_name,sms_number,posttime,create_time)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.deptId},#{item.deptName},#{item.contentSize},#{item.postString},(select now()))
+        </foreach>
+    </insert>
+
+    <select id="getDeptByMobile" resultType="java.util.Map" parameterType="java.lang.String">
+        select deptId,deptName FROM (
+                select
+                    od.id deptId,od.name deptName
+                    from huiyingdai_users hu
+                    LEFT JOIN  hyjf_crm.oa_users ou
+                    ON hu.user_id = ou.hyd_id
+                    LEFT JOIN hyjf_crm.oa_department od
+                    ON ou.departmentid = od.id
+                    where hu.mobile=#{mobile}
+                    AND ou.user_status IN ('E', 'Q1', 'Q2', 'Q11', 'Q21')
+                UNION ALL
+                select
+                    od.id deptId,od.name deptName
+                    from huiyingdai_users hu
+                    LEFT JOIN  hyjf_crm.oa_users ou
+                    ON hu.user_id = ou.hyd_id
+                    LEFT JOIN hyjf_crm.oa_department od
+                    ON ou.departmentid = od.id
+                    where hu.user_id=(select t.referrer from huiyingdai_users t where t.mobile=#{mobile} limit 1)
+                    AND ou.user_status IN ('E', 'Q1', 'Q2', 'Q11', 'Q21')
+            )tt limit 1
+    </select>
+
+    <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.customize.SmsCountCustomize">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into hyjf_sms_count
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="departmentId != null">
+                department_id,
+            </if>
+            <if test="departmentName != null">
+                department_name,
+            </if>
+            <if test="smsNumber != null">
+                sms_number,
+            </if>
+            <if test="posttime != null">
+                posttime,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="departmentId != null">
+                #{departmentId,jdbcType=INTEGER},
+            </if>
+            <if test="departmentName != null">
+                #{departmentName,jdbcType=VARCHAR},
+            </if>
+            <if test="smsNumber != null">
+                #{smsNumber,jdbcType=INTEGER},
+            </if>
+            <if test="posttime != null">
+                #{posttime,jdbcType=DATE},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.customize.SmsCountCustomize">
+        update hyjf_sms_count
+        <set>
+            <if test="departmentId != null">
+                department_id = #{departmentId,jdbcType=INTEGER},
+            </if>
+            <if test="departmentName != null">
+                department_name = #{departmentName,jdbcType=VARCHAR},
+            </if>
+            <if test="smsNumber != null">
+                sms_number = #{smsNumber,jdbcType=INTEGER},
+            </if>
+            <if test="posttime != null">
+                posttime = #{posttime,jdbcType=DATE},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="getuserIdAnddepartmentName" resultType="com.hyjf.mybatis.model.customize.SmsCountCustomize">
+        SELECT
+            hu.user_id AS id,
+            od.id AS departmentId,
+            od.`name` AS departmentName
+        FROM
+            hyjf_crm.oa_users ou
+        INNER JOIN huiyingdai_users hu ON hu.user_id = ou.hyd_id
+        INNER JOIN hyjf_crm.oa_department od ON ou.departmentid = od.id
+        AND ou.user_status IN ('E', 'Q1', 'Q2', 'Q11', 'Q21');
+    </select>
+</mapper>

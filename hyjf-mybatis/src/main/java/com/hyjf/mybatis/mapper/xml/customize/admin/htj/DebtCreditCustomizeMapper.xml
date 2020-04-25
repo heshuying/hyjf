@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.htj.DebtCreditCustomizeMapper">
+
+	<resultMap id="DebtCreditMap" type="com.hyjf.mybatis.model.customize.admin.htj.DebtCreditCustomize">
+		<result column="id"							property="id" 						jdbcType="VARCHAR" />
+		<result column="plan_nid" 					property="planNid" 					jdbcType="VARCHAR" />
+		<result column="plan_order_id" 				property="planOrderId" 				jdbcType="VARCHAR" />
+		<result column="user_name" 					property="userName" 				jdbcType="VARCHAR" />
+		<result column="credit_nid" 				property="creditNid" 				jdbcType="VARCHAR" />
+		<result column="borrow_nid" 				property="borrowNid" 				jdbcType="VARCHAR" />
+		<result column="borrow_apr" 				property="borrowApr" 				jdbcType="VARCHAR" />
+		<result column="repay_style_name" 			property="repayStyleName" 			jdbcType="VARCHAR" />
+		<result column="credit_capital" 			property="creditCapital" 			jdbcType="VARCHAR" />
+		<result column="actual_apr" 				property="actualApr" 				jdbcType="VARCHAR" />
+		<result column="service_fee_rate" 			property="serviceFeeRate" 			jdbcType="VARCHAR" />
+		<result column="service_fee" 				property="serviceFee" 				jdbcType="VARCHAR" />
+		<result column="assign_account" 			property="assignAccount" 			jdbcType="VARCHAR" />
+		<result column="assign_capital" 			property="assignCapital" 			jdbcType="VARCHAR" />
+		<result column="assign_advance_interest" 	property="assignAdvanceInterest" 	jdbcType="VARCHAR" />
+		<result column="account_receive" 			property="accountReceive" 			jdbcType="VARCHAR" />
+		<result column="liquidates_time" 			property="liquidatesTime" 			jdbcType="VARCHAR" />
+		<result column="credit_status_name" 		property="creditStatusName" 		jdbcType="VARCHAR" />
+		<result column="repay_status_name" 		    property="repayStatusName" 		    jdbcType="VARCHAR" />
+		<result column="borrow_period" 				property="borrowPeriod" 			jdbcType="VARCHAR" />
+		<result column="assign_period" 				property="assignPeriod" 			jdbcType="VARCHAR" />
+		<result column="liquidates_period" 			property="liquidatesPeriod" 		jdbcType="VARCHAR" />
+		<result column="repay_next_time" 			property="repayNextTime" 			jdbcType="VARCHAR" />
+		<result column="repay_interest" 			property="repayInterest" 			jdbcType="VARCHAR" />
+		<result column="liquidation_fair_value"     property="liquidationFairValue" 	jdbcType="VARCHAR" />
+		<result column="accede_balance"             property="accedeBalance" 	        jdbcType="VARCHAR" />
+		<result column="accede_frost"             	property="accedeFrost" 	            jdbcType="VARCHAR" />
+		<result column="accede_account"             property="accedeAccount" 	        jdbcType="VARCHAR" />
+		<result column="liquidates_repay_frost"     property="liquidatesRepayFrost" 	jdbcType="VARCHAR" />
+		<result column="liquidation_fair_value_sum" property="liquidationFairValueSum" 	jdbcType="VARCHAR" />
+		<result column="accede_balance_sum"         property="accedeBalanceSum" 	    jdbcType="VARCHAR" />
+		<result column="accede_frost_sum"           property="accedeFrostSum" 	        jdbcType="VARCHAR" />
+		<result column="liquidates_repay_frost_sum" property="liquidatesRepayFrostSum" 	jdbcType="VARCHAR" />
+		<result column="account_receive_sum"        property="accountReceiveSum" 	    jdbcType="VARCHAR" />
+		<result column="liquidates_apr"        property="liquidatesApr" 	    jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="Where_Clause">
+		<where>
+			<!-- 出让人计划编号 -->
+			<if test="planNid != null and planNid != ''">
+				AND dc.plan_nid LIKE CONCAT('%', #{planNid}, '%')
+			</if>
+			<!-- 出让人计划订单号 -->
+			<if test="planOrderId != null and planOrderId != ''">
+				AND dc.plan_order_id LIKE CONCAT('%', #{planOrderId}, '%')
+			</if>
+			<!-- 债转编号 -->
+			<if test="creditNid != null and creditNid != ''">
+				AND dc.credit_nid LIKE CONCAT('%', #{creditNid}, '%')
+			</if>
+			<!-- 债转编号 -->
+			<if test="borrowNid != null and borrowNid != ''">
+				AND dc.borrow_nid LIKE CONCAT('%', #{borrowNid}, '%')
+			</if>
+			<!-- 用户名 -->
+			<if test="userName != null and userName != ''">
+				AND dc.user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<!-- 还款方式 -->
+			<if test="repayStyle != null and repayStyle != ''">
+				AND b.borrow_style = #{repayStyle}
+			</if>
+			<!-- 转让状态 -->
+			<if test="creditStatus != null and creditStatus != ''">
+				AND dc.credit_status = #{creditStatus}
+			</if>
+			<!-- 还款状态-->
+			<if test="repayStatus != null and repayStatus != ''">
+				AND dc.repay_status = #{creditStatus}
+			</if>
+			<!-- 清算时间 -->
+			<if test="liquidatesTimeStart != null and liquidatesTimeStart != ''">
+				AND dp.liquidate_fact_time <![CDATA[>=]]> unix_timestamp(CONCAT(#{liquidatesTimeStart},' 00:00:00'))
+			</if>
+			<if test="liquidatesTimeEnd != null and liquidatesTimeEnd != ''">
+				AND dp.liquidate_fact_time <![CDATA[<=]]> unix_timestamp(CONCAT(#{liquidatesTimeEnd},' 23:59:59'))
+			</if>
+			<!-- 下期还款时间 -->
+			<if test="repayNextTimeStart != null and repayNextTimeStart != ''">
+				AND dc.credit_repay_next_time <![CDATA[>=]]>unix_timestamp(CONCAT(#{repayNextTimeStart},' 00:00:00'))
+			</if>
+			<if test="repayNextTimeEnd != null and repayNextTimeEnd != ''">
+				AND dc.credit_repay_next_time <![CDATA[<=]]>unix_timestamp(CONCAT(#{repayNextTimeEnd},' 23:59:59'))
+			</if>
+		</where>
+	</sql>
+
+	<select id="countDebtCredit" resultType="java.lang.Integer" parameterType="map">
+		SELECT
+		  COUNT(1)
+		FROM
+		    hyjf_debt_credit dc
+		INNER JOIN hyjf_debt_borrow b ON dc.borrow_nid = b.borrow_nid
+		INNER JOIN hyjf_debt_plan_accede dpa ON dpa.plan_nid = dc.plan_nid
+		AND dpa.accede_order_id = dc.plan_order_id
+		INNER JOIN hyjf_debt_plan dp ON dp.debt_plan_nid = dc.plan_nid
+		LEFT JOIN huiyingdai_borrow_style bs ON bs.nid = b.borrow_style
+		LEFT JOIN hyjf_param_name pa ON pa.name_cd = dc.credit_status
+		AND pa.name_class = 'DEBT_CREDIT_STATUS'
+		LEFT JOIN hyjf_param_name par ON par.name_cd = dc.repay_status
+		AND par.name_class = 'DEBT_REPAY_STATUS'
+		<include refid="Where_Clause" />
+	</select>
+	
+	<select id="selectDebtCreditList" resultMap="DebtCreditMap" parameterType="map">
+		SELECT
+			dc.id,
+			dc.plan_nid,
+			dc.plan_order_id,
+			dc.user_name,
+			dc.credit_nid,
+			dc.borrow_nid,
+			dc.borrow_apr,
+			bs.`name` AS repay_style_name,
+			dc.credit_capital,
+			dc.actual_apr,
+			dpa.service_fee_rate,
+			dc.credit_service_fee AS service_fee,
+			dc.credit_account_assigned AS assign_account,
+			dc.credit_capital_assigned AS assign_capital,
+			dc.credit_interest_advance_assigned AS assign_advance_interest,
+			dc.credit_income AS account_receive,
+			FROM_UNIXTIME(
+				dp.liquidate_fact_time,
+				'%Y-%m-%d %H:%i:%s'
+			) AS liquidates_time,
+			CASE WHEN b.borrow_style = 'endday' OR b.borrow_style = 'end' THEN 1 ELSE b.borrow_period END AS borrow_period,
+			dc.assign_period,
+			dc.liquidates_period,
+			pa.`name` AS credit_status_name,
+			par.`name` AS repay_status_name,
+			FROM_UNIXTIME(
+				dc.credit_repay_next_time,
+				'%Y-%m-%d %H:%i:%s'
+			) AS repay_next_time
+		FROM
+			hyjf_debt_credit dc
+		INNER JOIN hyjf_debt_borrow b ON dc.borrow_nid = b.borrow_nid
+		INNER JOIN hyjf_debt_plan_accede dpa ON dpa.plan_nid = dc.plan_nid
+		AND dpa.accede_order_id = dc.plan_order_id
+		INNER JOIN hyjf_debt_plan dp ON dp.debt_plan_nid = dc.plan_nid
+		LEFT JOIN huiyingdai_borrow_style bs ON bs.nid = b.borrow_style
+		LEFT JOIN hyjf_param_name pa ON pa.name_cd = dc.credit_status 
+		AND pa.name_class ='DEBT_CREDIT_STATUS'
+		LEFT JOIN hyjf_param_name par ON par.name_cd = dc.repay_status
+		AND par.name_class = 'DEBT_REPAY_STATUS'
+	   <include refid="Where_Clause" />
+		ORDER BY dc.create_time DESC
+	    <if  test="limitStart != null and limitEnd != null and limitStart >= 0">
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>  
+	
+	<select id="selectDebtCreditForPages" resultMap="DebtCreditMap" parameterType="com.hyjf.mybatis.model.customize.admin.htj.DebtCreditCustomize">
+		SELECT
+			hdc.plan_order_id,
+			hdc.user_name,
+			hdpa.accede_account,
+			hdpa.repay_interest,
+			SUM(hdc.liquidation_fair_value) liquidation_fair_value,
+			hdpa.service_fee_rate,
+			hdpa.accede_balance,
+			hdpa.accede_frost,
+			hdpa.liquidates_apr,
+			hdpa.liquidates_repay_frost,
+			SUM(hdc.credit_income) account_receive,
+			hdpa.service_fee service_fee,
+			SUM(hdc.credit_capital) credit_capital,
+			SUM(
+				hdc.credit_capital_assigned
+			) assign_capital
+			FROM
+				hyjf_debt_credit hdc,
+				hyjf_debt_plan_accede hdpa
+			WHERE
+				hdc.plan_nid = #{planNid}
+			AND hdpa.accede_order_id = hdc.plan_order_id
+			GROUP BY
+	   hdc.plan_order_id 
+	   <if  test="limitStart != null and limitEnd != null and limitStart >= 0">
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<select id="selectDebtCreditForPagesSum" resultMap="DebtCreditMap" parameterType="com.hyjf.mybatis.model.customize.admin.htj.DebtCreditCustomize">
+		SELECT
+			SUM(liquidation_fair_value) liquidation_fair_value_sum,
+			SUM(accede_balance) accede_balance_sum,
+			SUM(accede_frost) accede_frost_sum,
+			SUM(liquidates_repay_frost) liquidates_repay_frost_sum,
+			SUM(account_receive) account_receive_sum
+		FROM
+			(
+				SELECT
+					SUM(hdc.liquidation_fair_value) liquidation_fair_value,
+					hdpa.accede_balance,
+					hdpa.accede_frost,
+					hdpa.liquidates_repay_frost,
+					SUM(hdc.credit_income) account_receive
+				FROM
+					hyjf_debt_credit hdc,
+					hyjf_debt_plan_accede hdpa
+				WHERE
+					hdc.plan_nid = #{planNid}
+				AND hdpa.accede_order_id = hdc.plan_order_id
+				GROUP BY
+					hdc.plan_order_id
+			) t
+	</select> 
+	
+	<select id="queryDebtCreditCount" resultType="java.lang.Integer" parameterType="String">
+		SELECT
+			COUNT(1)
+		FROM
+			(
+				SELECT
+					COUNT(*)
+				FROM
+					hyjf_debt_credit
+				WHERE
+					plan_nid = #{planNid}
+				GROUP BY
+					plan_order_id
+			) t
+	</select>
+	
+</mapper>

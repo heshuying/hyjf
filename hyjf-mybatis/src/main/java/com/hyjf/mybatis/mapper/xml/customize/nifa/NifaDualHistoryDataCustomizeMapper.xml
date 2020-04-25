@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.nifa.NifaDualHistoryDataCustomizeMapper">
+
+    <select id="selectBorrowByHistoryData" resultType="java.lang.String" parameterType="java.lang.String">
+        SELECT
+		DISTINCT
+        	hb.borrow_nid
+        FROM
+        	huiyingdai_borrow hb
+        WHERE
+        	hb.recover_last_time <![CDATA[>=]]> UNIX_TIMESTAMP(CONCAT(#{historyData}, ' 00:00:00'))
+        AND hb.recover_last_time <![CDATA[<=]]> UNIX_TIMESTAMP(CONCAT(#{historyData}, ' 23:59:59'))
+        AND hb.borrow_nid NOT IN (
+			'20140300019',
+			'20140400005',
+			'20140400040',
+			'20140500022',
+			'HZC160209201',
+			'HZC160209202',
+			'HZC160209203',
+			'HZC160309401',
+			'HZC160309402',
+			'HZC160309403',
+			'HZC160309404',
+			'HZC160309405',
+			'HZC160309406',
+			'HZC160309407',
+			'HZC160403001',
+			'HZC160403301',
+			'HZC160404501',
+			'HZC160404601',
+			'HZC160406901',
+			'HZC160410701',
+			'HZC160410702',
+			'HZC160501001',
+			'HZC160712401',
+			'RTB17060884',
+			'RTB17060885',
+			'YGD17078002',
+			'YGD17078003',
+			'YGD17078004',
+			'YGD17078005'
+		)
+	</select>
+
+    <select id="selectBorrowRepayByHistoryData" resultType="java.lang.String" parameterType="java.lang.String">
+		SELECT
+		DISTINCT
+			hbr.borrow_nid
+		FROM
+			huiyingdai_borrow_repay hbr
+		INNER JOIN huiyingdai_borrow hb ON hb.borrow_nid = hbr.borrow_nid AND hb.addtime <![CDATA[>=]]> '1471968000'
+		AND hb.borrow_style IN ('end', 'endday')
+		WHERE
+			hbr.repay_action_time <![CDATA[>=]]> UNIX_TIMESTAMP(CONCAT(#{historyData}, ' 00:00:00'))
+		AND hbr.repay_action_time <![CDATA[<=]]> UNIX_TIMESTAMP(CONCAT(#{historyData}, ' 23:59:59'))
+	</select>
+
+    <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.BorrowRepayPlan">
+        <result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR"/>
+        <result column="repay_period" property="repayPeriod" jdbcType="INTEGER"/>
+    </resultMap>
+    <select id="selectBorrowRepayPlanByHistoryData" resultMap="BaseResultMap" parameterType="java.lang.String">
+		SELECT
+		DISTINCT
+			hbrp.borrow_nid,
+			hbrp.repay_period
+		FROM
+			huiyingdai_borrow_repay_plan hbrp
+		INNER JOIN huiyingdai_borrow hb ON hb.borrow_nid = hbrp.borrow_nid AND hb.addtime <![CDATA[>=]]> '1471968000'
+		AND hb.borrow_nid NOT IN (
+			'20140300019',
+			'20140400005',
+			'20140400040',
+			'20140500022',
+			'HZC160209201',
+			'HZC160209202',
+			'HZC160209203',
+			'HZC160309401',
+			'HZC160309402',
+			'HZC160309403',
+			'HZC160309404',
+			'HZC160309405',
+			'HZC160309406',
+			'HZC160309407',
+			'HZC160403001',
+			'HZC160403301',
+			'HZC160404501',
+			'HZC160404601',
+			'HZC160406901',
+			'HZC160410701',
+			'HZC160410702',
+			'HZC160501001',
+			'HZC160712401',
+			'RTB17060884',
+			'RTB17060885',
+			'YGD17078002',
+			'YGD17078003',
+			'YGD17078004',
+			'YGD17078005'
+		)
+		WHERE
+ 			hbrp.repay_action_time <![CDATA[>=]]> UNIX_TIMESTAMP(CONCAT(#{historyData}, ' 00:00:00'))
+		AND hbrp.repay_action_time <![CDATA[<=]]> UNIX_TIMESTAMP(CONCAT(#{historyData}, ' 23:59:59'))
+	</select>
+
+    <select id="selectBorrowCreditByHistoryData" resultType="java.lang.String" parameterType="java.lang.String">
+		SELECT
+		DISTINCT
+			hbc.credit_nid
+		FROM
+			huiyingdai_borrow_credit hbc
+		INNER JOIN huiyingdai_credit_tender hct ON hbc.credit_nid = hct.credit_nid AND hbc.credit_status in ('1','2')
+		AND hct.bid_nid NOT IN (
+			'20140300019',
+			'20140400005',
+			'20140400040',
+			'20140500022',
+			'HZC160209201',
+			'HZC160209202',
+			'HZC160209203',
+			'HZC160309401',
+			'HZC160309402',
+			'HZC160309403',
+			'HZC160309404',
+			'HZC160309405',
+			'HZC160309406',
+			'HZC160309407',
+			'HZC160403001',
+			'HZC160403301',
+			'HZC160404501',
+			'HZC160404601',
+			'HZC160406901',
+			'HZC160410701',
+			'HZC160410702',
+			'HZC160501001',
+			'HZC160712401',
+			'RTB17060884',
+			'RTB17060885',
+			'YGD17078002',
+			'YGD17078003',
+			'YGD17078004',
+			'YGD17078005'
+		)
+		WHERE
+ 			hbc.add_time <![CDATA[>=]]> UNIX_TIMESTAMP(CONCAT(#{historyData}, ' 00:00:00'))
+		AND hbc.add_time <![CDATA[<=]]> UNIX_TIMESTAMP(CONCAT(#{historyData}, ' 23:59:59'))
+	</select>
+
+    <select id="selectHjhDebtCreditByHistoryData" resultType="java.lang.String" parameterType="java.lang.String">
+		SELECT
+		DISTINCT
+			hhdc.credit_nid
+		FROM
+			hyjf_hjh_debt_credit hhdc
+		INNER JOIN hyjf_hjh_debt_credit_tender hhdct ON hhdc.credit_nid = hhdct.credit_nid
+		AND hhdc.borrow_nid NOT IN (
+			'20140300019',
+			'20140400005',
+			'20140400040',
+			'20140500022',
+			'HZC160209201',
+			'HZC160209202',
+			'HZC160209203',
+			'HZC160309401',
+			'HZC160309402',
+			'HZC160309403',
+			'HZC160309404',
+			'HZC160309405',
+			'HZC160309406',
+			'HZC160309407',
+			'HZC160403001',
+			'HZC160403301',
+			'HZC160404501',
+			'HZC160404601',
+			'HZC160406901',
+			'HZC160410701',
+			'HZC160410702',
+			'HZC160501001',
+			'HZC160712401',
+			'RTB17060884',
+			'RTB17060885',
+			'YGD17078002',
+			'YGD17078003',
+			'YGD17078004',
+			'YGD17078005'
+		)
+		WHERE
+ 			hhdc.create_time <![CDATA[>=]]> UNIX_TIMESTAMP(CONCAT(#{historyData}, ' 00:00:00'))
+		AND hhdc.create_time <![CDATA[<=]]> UNIX_TIMESTAMP(CONCAT(#{historyData}, ' 23:59:59'))
+	</select>
+</mapper>

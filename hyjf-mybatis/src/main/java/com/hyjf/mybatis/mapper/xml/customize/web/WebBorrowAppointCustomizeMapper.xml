@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.web.WebBorrowAppointCustomizeMapper">
+
+	<sql id="Where_Clause_Appoint_List">
+		<where>
+			hba.user_id = #{userId,jdbcType=INTEGER}
+			<if test="appointStatus != null and appointStatus != ''">
+				<if test="appointStatus == '1'.toString()">
+					AND hba.appoint_status = 1 AND hba.tender_status is  null
+				</if>
+				<if test="appointStatus != '1'.toString()">
+					AND (  hba.appoint_status <![CDATA[<>]]>  1 or hba.tender_status IS NOT NULL)
+				</if>
+			</if>
+			<if test="appointStatus == null or appointStatus == ''">
+				AND hba.appoint_status = 1 AND hba.tender_status is  null
+			</if>
+		</where>
+	</sql>
+	<resultMap id="UserTradeListMap" type="com.hyjf.mybatis.model.customize.web.WebBorrowAppointCustomize">
+		<id column="id" 						property="id" 					jdbcType="VARCHAR" />
+		<result column="user_id" 				property="userId" 				jdbcType="VARCHAR" />
+		<result column="order_id"				property="orderId" 				jdbcType="VARCHAR" />
+		<result column="tender_nid" 			property="tenderNid" 			jdbcType="VARCHAR" />
+		<result column="borrow_nid" 			property="borrowNid" 			jdbcType="VARCHAR" />
+		<result column="borrow_period" 			property="borrowPeriod" 		jdbcType="VARCHAR" />
+		<result column="borrow_apr" 			property="borrowApr" 			jdbcType="VARCHAR" />
+		<result column="borrow_account" 		property="borrowAccount" 		jdbcType="VARCHAR" />
+		<result column="account" 				property="account" 				jdbcType="VARCHAR" />
+		<result column="appoint_status" 		property="appointStatus" 		jdbcType="VARCHAR" />
+		<result column="appoint_status_info" 	property="appointStatusInfo" 	jdbcType="VARCHAR" />
+		<result column="appoint_time" 			property="appointTime" 			jdbcType="VARCHAR" />
+		<result column="appoint_remark" 		property="appointRemark" 		jdbcType="VARCHAR" />
+		<result column="cancel_time" 			property="cancelTime" 			jdbcType="VARCHAR" />
+		<result column="tender_status" 			property="tenderStatus"			jdbcType="VARCHAR" />
+		<result column="tender_status_info" 	property="tenderStatusInfo"		jdbcType="VARCHAR" />
+		<result column="tender_time" 			property="tenderTime" 			jdbcType="VARCHAR" />
+		<result column="tender_remark" 			property="tenderRemark" 		jdbcType="VARCHAR" />
+		<result column="verify_time" 			property="verifyTime" 			jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectAppointRecordList" resultMap="UserTradeListMap" parameterType="Map" >
+		SELECT
+			hba.id,
+			hba.user_id,
+			hba.order_id,
+			hba.tender_nid,
+			hba.borrow_nid,
+			CASE WHEN hb.borrow_style = 'endday' THEN CONCAT(hb.borrow_period, '天') ELSE CONCAT(hb.borrow_period, '个月') END borrow_period,
+			hba.borrow_apr,
+			hba.borrow_account,
+			hba.account,
+			hba.appoint_status,
+			pna.`name` AS appoint_status_info,
+			date_format(hba.appoint_time,'%Y-%m-%d %H:%i') AS appoint_time,
+			hba.appoint_remark,
+			date_format(hba.cancel_time,'%Y-%m-%d %H:%i') AS cancel_time,
+			hba.tender_status,
+			pnt.`name` AS tender_status_info,
+			date_format(hba.tender_time,'%Y-%m-%d %H:%i') AS tender_time,
+			hba.tender_remark,
+			CASE
+			WHEN hb.verify_time > 0 THEN
+				FROM_UNIXTIME(
+					hb.verify_time,
+					'%Y-%m-%d %H:%i:%s'
+				)
+			ELSE
+				FROM_UNIXTIME(
+					hb.ontime,
+					'%Y-%m-%d %H:%i:%s'
+				)
+			END AS verify_time
+		FROM
+			hyjf_borrow_appoint hba
+		INNER JOIN huiyingdai_borrow hb ON hb.borrow_nid = hba.borrow_nid
+		LEFT JOIN hyjf_param_name pna ON CAST(hba.appoint_status AS CHAR) = pna.name_cd
+		AND pna.name_class = 'APPOINT_STATUS'
+		LEFT JOIN hyjf_param_name pnt ON CAST(hba.tender_status AS CHAR) = pnt.name_cd
+		AND pnt.name_class = 'TENDER_STATUS'
+		<include refid="Where_Clause_Appoint_List" />
+		ORDER BY
+			hba.appoint_time DESC,hba.id DESC
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	<select id="countAppointRecordTotal" resultType="java.lang.Integer" parameterType="Map">
+		SELECT 
+		COUNT(hba.id)
+		FROM
+			hyjf_borrow_appoint hba
+		LEFT JOIN hyjf_param_name pna ON CAST(hba.appoint_status AS CHAR) = pna.name_cd
+		AND pna.name_class = 'APPOINT_STATUS'
+		LEFT JOIN hyjf_param_name pnt ON CAST(hba.tender_status AS CHAR) = pnt.name_cd
+		AND pnt.name_class = 'TENDER_STATUS'
+		<include refid="Where_Clause_Appoint_List" />
+	</select>
+	
+</mapper>

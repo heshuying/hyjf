@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.batch.BatchDebtPlanAccedeCustomizeMapper">
+	<update id="updatePlanAccedeInvest" parameterType="com.hyjf.mybatis.model.auto.DebtPlanAccede" >
+	    update hyjf_debt_plan_accede
+	    set
+	      accede_balance = IFNULL(accede_balance,0) - #{accedeBalance,jdbcType=DECIMAL},
+	      accede_frost = IFNULL(accede_frost,0) + #{accedeFrost,jdbcType=DECIMAL},
+	      calculation_status = 0
+	    where
+	      id = #{id,jdbcType=INTEGER}
+  	</update>
+  	<update id="updateDebtPlanAccedeAssign" parameterType="com.hyjf.mybatis.model.auto.DebtPlanAccede" >
+	    update hyjf_debt_plan_accede
+	    set
+	      accede_balance = IFNULL(accede_balance,0) - #{accedeBalance,jdbcType=DECIMAL},
+	      under_take_times = IFNULL(under_take_times,0) + 1,
+	      calculation_status = 0
+	    where
+	      id = #{id,jdbcType=INTEGER}
+  	</update>
+  	<update id="updateDebtPlanAccedeSeller" parameterType="com.hyjf.mybatis.model.auto.DebtPlanAccede" >
+	    update hyjf_debt_plan_accede pa
+	    set
+	      pa.liquidates_credit_frost = IFNULL(pa.liquidates_credit_frost,0) + #{liquidatesCreditFrost,jdbcType=DECIMAL},
+	      pa.status = #{status,jdbcType=TINYINT},
+	      pa.service_fee = IFNULL(pa.service_fee,0) + #{serviceFee,jdbcType=DECIMAL},
+	      pa.liquidates_apr = TRUNCATE(
+	      	IFNULL(
+	      		(SELECT
+					SUM(IFNULL(dc.credit_capital_assigned, 0))
+				FROM
+					hyjf_debt_credit dc
+				WHERE dc.plan_order_id =  pa.accede_order_id
+				AND dc.plan_nid = pa.plan_nid
+				),
+				0
+		  	)
+	      	/ 
+	      	(IFNULL(
+	      		(SELECT
+					SUM(IFNULL(dc.credit_capital, 0))
+				FROM
+					hyjf_debt_credit dc
+				WHERE dc.plan_order_id =  pa.accede_order_id
+				AND dc.plan_nid = pa.plan_nid
+				),
+				1
+		  	)
+		  )*100,2)
+	    where
+	      pa.id = #{id,jdbcType=INTEGER}
+  	</update>
+  	<update id="updateDebtPlanAccedeSellerFreeze" parameterType="com.hyjf.mybatis.model.auto.DebtPlanAccede" >
+	    update hyjf_debt_plan_accede
+	    set
+	      liquidates_credit_frost = IFNULL(liquidates_credit_frost,0) + #{liquidatesCreditFrost,jdbcType=DECIMAL}
+	    where
+	      id = #{id,jdbcType=INTEGER}
+  	</update>
+  	<update id="updateDebtPlanAccedeSellerUnFreeze" parameterType="com.hyjf.mybatis.model.auto.DebtPlanAccede" >
+	    update hyjf_debt_plan_accede
+	    set
+	      liquidates_credit_frost = IFNULL(liquidates_credit_frost,0) - #{liquidatesCreditFrost,jdbcType=DECIMAL}
+	    where
+	      id = #{id,jdbcType=INTEGER}
+  	</update>
+  	<!-- 查询协议内容 -->
+  	<select id="selectPlanAccedeInfo"  resultType="com.hyjf.mybatis.model.customize.batch.BatchDebtPlanAccedeCustomize" parameterType="Map">
+		SELECT
+			<!-- 用户ID -->
+			hdpa.user_id AS userId,
+			<!-- 计划编号 -->
+			hdpa.plan_nid AS planNid,
+			<!-- 加入订单号 -->
+			hdpa.accede_order_id AS orderId,
+			<!-- 签订日期 -->
+			FROM_UNIXTIME(hdpa.create_time,'%Y-%m-%d') AS signedDate,
+			<!-- 真实姓名 -->
+			hydui.truename AS realName,
+			<!-- 性别 -->
+			hydui.sex AS sex,
+			<!-- 身份证号 -->
+			hydui.idcard AS idCard,
+			<!-- 邮箱 -->
+			hydu.email AS email,
+			<!-- 加入金额 -->
+			hdpa.accede_account AS accedeAccount ,
+			<!-- 预期年化收益 -->
+			hdp.expect_apr AS expectApr,
+			<!-- 计划期限 -->
+			hdp.debt_lock_period AS debtLockPeriod,
+			<!-- 计划生效日期 -->
+			CASE WHEN hdp.full_expire_time IS NULL
+			THEN
+				FROM_UNIXTIME(hdp.buy_end_time,'%Y-%m-%d')
+			ELSE
+				FROM_UNIXTIME(hdp.full_expire_time,'%Y-%m-%d')
+			END AS effectiveDate,
+			<!-- 计划到期日期 -->
+			FROM_UNIXTIME(hdp.liquidate_should_time,'%Y-%m-%d') AS expireDate,
+			<!-- 收益处理方式 -->
+			'收益复投' AS profitHandleStyle,
+			<!-- 投资本金 -->
+			hdpa.accede_account AS capital,
+			<!-- 最低加入金额 -->
+			hdp.debt_min_investment AS debtMinInvestment,
+			<!-- 投资增量 -->
+			hdp.debt_investment_increment AS investmentIncrement,
+			<!-- 最高加入金额 -->
+			hdp.debt_max_investment AS maxInvestment,
+			<!-- 退出天数 -->
+			hdp.debt_quit_period AS quitPeriod
+		FROM hyjf_debt_plan_accede hdpa
+		LEFT JOIN hyjf_debt_plan hdp ON hdpa.plan_nid = hdp.debt_plan_nid
+		LEFT JOIN huiyingdai_users hydu ON hydu.user_id = hdpa.user_id
+		LEFT JOIN huiyingdai_users_info hydui ON hydui.user_id = hdpa.user_id
+		where
+			1=1
+			<if test="accedeOrderIdSrch != null and accedeOrderIdSrch != ''">
+				AND hdpa.accede_order_id LIKE CONCAT('%', #{accedeOrderIdSrch}, '%')
+			</if>
+			<if test="planNidSrch != null and planNidSrch != ''">
+				AND hdpa.plan_nid LIKE CONCAT('%', #{planNidSrch}, '%')
+			</if>
+	</select>
+	<select id="selectDebtPlanAccedeInvestSum" resultType="java.math.BigDecimal" parameterType="Map">
+		SELECT
+			SUM(repay_account)
+		FROM
+			hyjf_debt_invest b
+		WHERE
+		    user_id = #{userId,jdbcType=INTEGER}
+		    AND plan_order_id = #{accedeOrderId,jdbcType=VARCHAR}
+	</select>
+  	<select id="selectDebtPlanAccedeAssignSum" resultType="java.math.BigDecimal" parameterType="Map">
+		SELECT
+			SUM(assign_account)
+		FROM
+			hyjf_debt_credit_tender b
+		WHERE
+			user_id = #{userId,jdbcType=INTEGER}
+		    AND assign_plan_nid = #{accedeOrderId,jdbcType=VARCHAR}
+		    AND del_flag = 1
+	</select>
+	<update id="updateDebtPlanAccedeLoans" parameterType="com.hyjf.mybatis.model.auto.DebtPlanAccede" >
+	    update hyjf_debt_plan_accede
+	    set
+	      accede_frost = IFNULL(accede_frost,0) - #{accedeFrost,jdbcType=DECIMAL},
+	      calculation_status = 0
+	    where
+	      id = #{id,jdbcType=INTEGER}
+  	</update>
+  	
+  	<update id="updateDebtPlanAccedeBalance" parameterType="com.hyjf.mybatis.model.auto.DebtPlanAccede" >
+	    update hyjf_debt_plan_accede
+	    set
+	      accede_balance = IFNULL(accede_balance,0) + #{accedeBalance,jdbcType=DECIMAL}
+	    where
+	      id = #{id,jdbcType=INTEGER}
+  	</update>
+  	
+  	<update id="updateDebtPlanRepayBalance" parameterType="com.hyjf.mybatis.model.auto.DebtPlanAccede" >
+	    update hyjf_debt_plan_accede
+	    set
+	      accede_balance = IFNULL(accede_balance,0) + #{accedeBalance,jdbcType=DECIMAL},
+	      <if test="expireFairValue != null and expireFairValue !='' ">
+	         expire_fair_value = IFNULL(expire_fair_value,0) - #{expireFairValue,jdbcType=DECIMAL},
+	      </if>
+	      service_fee =  IFNULL(service_fee,0) +  #{serviceFee,jdbcType=DECIMAL},
+	      calculation_status = 0
+	    where
+	      id = #{id,jdbcType=INTEGER}
+  	</update>
+  	
+  	<update id="updatePlanAccedeLiquidatesFreeze" parameterType="com.hyjf.mybatis.model.auto.DebtPlanAccede" >
+	    update hyjf_debt_plan_accede
+	    set
+	      liquidates_repay_frost = #{liquidatesRepayFrost,jdbcType=DECIMAL},
+	      repay_running_status = 0
+	    where
+	      id = #{id,jdbcType=INTEGER}
+  	</update>
+  	
+  	<update id="updateDebtPlanAccedeRepayFreeze" parameterType="com.hyjf.mybatis.model.auto.DebtPlanAccede" >
+	    update hyjf_debt_plan_accede
+	    set
+	      status = #{status,jdbcType=INTEGER},
+	      reinvest_status = #{reinvestStatus,jdbcType=INTEGER}
+	    where
+	      id = #{id,jdbcType=INTEGER}
+  	</update>
+  	
+  	<update id="updateDebtPlanLiquidatesBalance" parameterType="com.hyjf.mybatis.model.auto.DebtPlanAccede" >
+	    update hyjf_debt_plan_accede
+	    set
+	      liquidates_repay_frost = IFNULL(liquidates_repay_frost,0) + #{liquidatesRepayFrost,jdbcType=DECIMAL},
+	      <if test="expireFairValue != null and expireFairValue !='' ">
+	      	 expire_fair_value =  IFNULL(expire_fair_value,0) - #{expireFairValue,jdbcType=DECIMAL},
+	      </if>
+	      service_fee =  IFNULL(service_fee,0) +  #{serviceFee,jdbcType=DECIMAL}
+	    where
+	      id = #{id,jdbcType=INTEGER}
+  	</update>
+</mapper>

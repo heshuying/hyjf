@@ -1,0 +1,404 @@
+/*	 Importing external plugins CSS file
+---------------------------------------------------------------------------------------------- */
+@import "plugins.css";
+
+/* ---------------------------------------------------------------------- 
+>>> TABLE OF CONTENT(admin)
+-------------------------------------------------------------------------
+1 - TREE
+2 - NESTABLE
+3 - CALENDAR
+4 - CHARTJS
+/* ---------------------------------------------------------------------- */
+
+
+/* ---------------------------------------------------------------------- */
+/*  slider
+/* ---------------------------------------------------------------------- */
+/*.slider {
+    margin-bottom: 40px;
+    margin-top: 20px;
+}
+.slider label {
+    cursor: text;
+}*/
+.jslider .jslider-value {
+    border: 1px solid #CDCDCD;
+    border-radius: 10px !important;
+    -moz-border-radius: 10px !important;
+    -webkit-border-radius: 10px !important;
+}
+.jslider .jslider-value, .jslider .jslider-label, .jslider .jslider-scale ins {
+    font-size: 12px !important;
+}
+.jslider .jslider-bg i {
+    height: 6px !important;
+}
+.jslider .jslider-value {
+    padding: 3px 5px 0 !important;
+    top: -28px !important;
+}
+.jslider_round_plastic .jslider-pointer {
+    height: 23px !important;
+    margin-left: -12px !important;
+    width: 23px !important;
+}
+.jslider .jslider-pointer {
+    background-position: 0 -58px !important;
+    top: -6px !important;
+}
+.jslider .jslider-pointer {
+    background-position: 0 -58px !important;
+    top: -6px !important;
+}
+.jslider .jslider-pointer-hover {
+    top: -8px !important;
+    background-position: -22px -56px !important;
+}
+.jslider .jslider-value {padding: 3px 5px !important; }
+
+/* ---------------------------------------------------------------------- */
+/*  Tree
+/* ---------------------------------------------------------------------- */
+.box-tree .nav > li > a {
+  color: #8e8e93;
+  font-size: 14px;
+}
+.box-tree .nav > li > a:hover, .box-tree .nav > li > a:focus {
+  color: #5b5b60;
+}
+.box-tree .nav > li > a i {
+  color: #007AFF;
+}
+.box-tree .nav > li.active > a, .box-tree .nav > li.active > a:hover, .box-tree .nav > li.active a:focus {
+  color: #ffffff;
+}
+.box-tree .nav > li.active > a i, .box-tree .nav > li.active > a:hover i, .box-tree .nav > li.active a:focus i {
+  color: #ffffff;
+}
+
+/* ---------------------------------------------------------------------- */
+/*  Nestable
+/* ---------------------------------------------------------------------- */
+.angular-ui-tree-handle {
+  background: #f7f7f8;
+  border: 1px solid #c8c7cc;
+  color: #8e8e93;
+  padding: 10px 10px;
+  font-size: 14px;
+  font-weight: normal !important;
+}
+
+.angular-ui-tree-handle:hover {
+  color: #5b5b60;
+  background: #eaeaec;
+  border-color: #a6a4ac;
+}
+
+.angular-ui-tree-placeholder {
+  background: #f0f9ff;
+  border: 2px dashed #bed2db;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.group-title {
+  background-color: #687074 !important;
+  color: #FFF !important;
+}
+
+.dd {
+  max-width: none !important;
+}
+
+.dd-item > button:before {
+  content: "\e649" !important;
+  font-family: "themify";
+  color: #007AFF;
+}
+
+.dd-item > button[data-action="collapse"]:before {
+  content: "\e64b" !important;
+}
+
+.dd-handle {
+  background: #f7f7f8 !important;
+  border: 1px solid #c8c7cc !important;
+  color: #8e8e93 !important;
+}
+
+.dd-handle:hover {
+  background: #eaeaec !important;
+  border-color: #a6a4ac !important;
+}
+
+/* ---------------------------------------------------------------------- */
+/*  Calendar
+/* ---------------------------------------------------------------------- */
+#calendar {
+  position: relative;
+}
+
+.fc-event, #event-categories .event-category {
+  padding: 2px 5px;
+  background: #f7f7f8 !important;
+  border: 1px solid #dddcdf !important;
+  color: #8e8e93 !important;
+}
+
+#event-categories .event-category {
+  cursor: move;
+}
+
+.fc-day-number {
+  margin: 2px 2px 0 0;
+}
+
+.fc-header-title h2 {
+  color: #c8c7cc;
+  font-weight: 200;
+  letter-spacing: -1px;
+}
+
+.fc-today .fc-day-number {
+  font-weight: bold;
+}
+
+.fc-state-highlight {
+  background: #F5F5F5 !important;
+}
+
+.fc-button {
+  color: #858585 !important;
+  height: 40px !important;
+  line-height: 40px;
+  opacity: 0.6;
+}
+
+.fc-button:hover {
+  opacity: 1;
+}
+
+.fc-button-prev, .fc-button-next {
+  padding: 0;
+  width: 40px;
+  line-height: 40px;
+  text-align: center;
+  position: relative;
+  text-indent: -9999px;
+}
+
+.fc-button-prev .fc-text-arrow, .fc-button-next .fc-text-arrow {
+  font-weight: bold;
+}
+
+.fc-button-prev:after, .fc-button-next:after {
+  font-family: FontAwesome;
+  text-indent: 0;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.fc-button-prev:after {
+  content: "\f104";
+}
+
+.fc-button-next:after {
+  content: "\f105";
+}
+
+.fc-state-default {
+  background-color: #ffffff !important;
+  background-image: none !important;
+  border-color: #DDDDDD !important;
+  box-shadow: none !important;
+  color: #666666;
+  text-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+.fc-state-down, .fc-state-active {
+  opacity: 1;
+}
+
+.fc-header-left {
+  position: absolute !important;
+  top: 0;
+  left: 15px;
+  width: 50% !important;
+}
+
+.fc-header-right {
+  position: absolute !important;
+  top: 0;
+  right: 15px;
+  width: 50% !important;
+}
+
+.fc-header-center {
+  display: block !important;
+  padding-top: 60px !important;
+}
+
+.event-category {
+  color: #ffffff;
+  padding: 5px;
+  border-radius: 3px;
+  margin: 5px 0;
+}
+
+.fc-border-separate tr.fc-last th {
+  border-top: none !important;
+  border-left: none !important;
+}
+
+.fc-border-separate th.fc-last {
+  border-right: none !important;
+}
+
+.fc-grid th {
+  text-align: right;
+}
+
+.fc-event {
+  background-color: #F0F0F0;
+  border: none;
+  color: #333333;
+  font-size: 12px;
+}
+
+.fc-event .fc-content > span:first-child:before, .event-category:before {
+  content: "\f111";
+  font-family: FontAwesome;
+  font-size: 6px;
+  line-height: 16px;
+  padding-right: 5px;
+  color: #00AEFF;
+  float: left;
+}
+
+.event-category {
+  color: #858585;
+}
+
+.event-category:before {
+  line-height: 20px;
+}
+
+.event-cancelled .fc-content > span:first-child:before, .event-category.event-cancelled:before {
+  color: #FFB848 !important;
+}
+
+.event-home .fc-content > span:first-child:before, .event-category.event-home:before {
+  color: #804C75 !important;
+}
+
+.event-overtime .fc-content > span:first-child:before, .event-category.event-overtime:before {
+  color: #711A76;
+}
+
+.event-generic .fc-content > span:first-child:before, .event-category.event-generic:before {
+  color: #46b8da !important;
+}
+
+.event-job .fc-content > span:first-child:before, .event-category.event-job:before {
+  color: #007AFF !important;
+}
+
+.event-off-site-work .fc-content > span:first-child:before, .event-category.event-off-site-work:before {
+  color: #1FBBA6 !important;
+}
+
+.event-to-do .fc-content > span:first-child:before, .event-category.event-to-do:before {
+  color: #FF6600 !important;
+}
+
+.fc-view-month .fc-event-time {
+  display: none;
+}
+
+.fc-icon-fa {
+  display: inline-block;
+  font-family: FontAwesome !important;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 1.33333333em;
+}
+
+/* ---------------------------------------------------------------------- */
+/*  Chartjs
+/* ---------------------------------------------------------------------- */
+.chart-legend > ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.chart-legend > ul li {
+  clear: both;
+  display: block;
+  float: left;
+  padding: 10px;
+  line-height: 25px;
+  font-size: 11px;
+}
+
+.chart-legend > ul li span {
+  display: block;
+  float: left;
+  height: 25px;
+  margin-right: 10px;
+  width: 25px;
+}
+
+.legend-xs .chart-legend > ul li {
+  line-height: 15px;
+}
+.legend-xs .chart-legend > ul li span {
+  height: 15px;
+  width: 15px;
+  margin-right: 5px;
+}
+
+.inline .chart-legend > ul li {
+  clear: none;
+  display: inline-block;
+  float: none;
+  padding: 10px;
+}
+
+.full-width {
+  max-width: 100% !important;
+}
+
+.mini-pie {
+  height: 150px;
+  position: relative;
+  width: 100px;
+  display: inline-block;
+}
+.mini-pie canvas {
+  height: 150px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100px;
+}
+.mini-pie span {
+  line-height: 150px;
+}
+
+/* ---------------------------------------------------------------------- */
+/*  Maps
+/* ---------------------------------------------------------------------- */
+.map {
+  display: block;
+  height: 350px;
+  margin: 0 auto;
+}

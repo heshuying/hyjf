@@ -1,0 +1,231 @@
+*{margin:0;padding:0}
+li{list-style:none}
+body{font-family:"微软雅黑";}
+a{text-decoration: none;}
+img{max-width: 100%;}
+.ten-billion-bg01{width:100%;height:234px;background: url(../../img/active/billion/ten-billion-bg01.jpg) no-repeat center;background-size:cover}
+.ten-billion-bg02{width:100%;height:220px;background: url(../../img/active/billion/ten-billion-bg02.jpg) no-repeat center;background-size:cover}
+.ten-billion-bg03{width:100%;height:250px;background: url(../../img/active/billion/ten-billion-bg03.jpg) no-repeat center;background-size:cover}
+.first-active-top{width:100%;height:615px;background: url(../../img/active/billion/first-active-top.png) no-repeat center;background-size:cover}
+.second-active-top{width:100%;height:681px;background: url(../../img/active/billion/second-active-top.png) no-repeat center;background-size:cover}
+.third-active-top{width:100%;height:648px;background: url(../../img/active/billion/third-active-top.png) no-repeat center;background-size:cover}
+.fourth-active-top{width:100%;height:496px;background: url(../../img/active/billion/fourth-active-top.png) no-repeat center;background-size:cover}
+.fifth-active-top{width:100%;height:484px;background: url(../../img/active/billion/fifth-active-top.png) no-repeat center;background-size:cover}
+.ten-billion-banner{position:relative}
+.ten-billion-banner .ten-billion-cont{width:auto;height:73px;position: absolute;z-index: 111;bottom:130px;left:50%;margin-left: -490px;}
+.ten-billion-banner>img{display: block;width:100%}
+.account-content>div{float: left;}
+.ten-billion-cont>div{display: inline-block;}
+.account-invest{width:58px;height:71px;position: relative;overflow: hidden;margin-left: 6px;border-radius:10px;-webkit-border-radius: 10px;-moz-border-radius:10px}
+.ten-billion-img{display: block;height:100%}
+.account-invest-digital{width:58px;height:auto;position: absolute;top:-730px}
+.account-invest-digital img{display:block;width:58px}
+.billion-douhao img{display: block;height:73px;}
+.ten-billion-main{width:100%;letter-spacing: 1px;}
+.billion-active-tab{width:100%;height:175px;background: #110128;}
+.billion-active-tab ul{display: block;width:1200px;margin:0 auto}
+.billion-active-tab ul>li{float:left;width:240px;height:100%}
+.billion-active-tab li a{
+	display: block;
+    width:183px;
+    margin:0 auto;
+    margin-top:31px;
+    color:#5b33e7;
+    border:solid 1px #5b33e7;
+	border-radius: 25px;
+	-webkit-border-radius: 25px;
+	-moz-border-radius: 25px;
+	text-decoration: none;
+	text-align: center;
+	font-size: 25px;
+	padding:12px 30px;
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	font-weight:800;
+	letter-spacing: 2px;
+}
+.billion-active-tab li.activeTab a{
+	color: #FFFFFF;
+	background:-webkit-linear-gradient(top, #504399,#5296e4); 
+	background:-ms-linear-gradient(top, #504399,#5296e4);       
+    background:-moz-linear-gradient(top, #504399,#5296e4);
+    background:-o-linear-gradient(top, #504399,#5296e4);  
+    background:-webkit-gradient(linear, 0% 0%, 0% 100%,from(#504399), to(#5296e4));
+}
+.billion-active-tab li>p{width:100%;height: 5px;margin-top:20px;position: relative;}
+.billion-active-tab li:nth-child(odd)>p{background: url(../../img/active/billion/billion-tab-tiao1.png) no-repeat center;}
+.billion-active-tab li:nth-child(even)>p{background: url(../../img/active/billion/billion-tab-tiao2.png) no-repeat center;}
+.billion-active-tab li p span{
+	display: block;
+	width:13px;
+	height: 13px;
+	background: #FFFFFF;
+	border-radius: 50%;
+	-webkit-border-radius:50%;
+	-moz-border-radius: 50%;
+	border: solid 3px #5b33e7;
+	position: absolute;
+	left: 112px;
+	top:-8px;
+	z-index: 111;
+}
+.billion-active-tab li.activeTab p span{
+	width:15px;
+	height:15px;
+	background: #5293e1;
+	left: 110px;
+}
+.billion-active-list>div{display: none;}
+.billion-active-list{width: 100%;background:url(../../img/active/billion/ten-billion-ban.jpg) repeat;}
+.clearboth{clear: both;}
+.first-active-bot,.first-active-ban,.second-active-bot,.second-active-ban,.third-active-bot,.fourth-active-bot,.fourth-active-ban,.fifth-active-bot,.fifth-active-ban{width:1200px;margin:0 auto}
+.first-active-ban ul li{width:100%;height:620px;border-bottom: dashed 2px #cdc88a;}
+.first-active-ban li>div{float: left;}
+.first-active-full{padding: 0 50px;margin-top:145px}
+
+.first-active-full p{width:334px;height:334px;line-height:334px;text-align: center;color: #FFFFFF;font-size:36px ;}
+.first-active-full p span{font-size: 60px;}
+.first-active-ban li .first-active-reward{width:686px;border-style: solid;border-width: 1px;margin-top:50px;padding:10px;box-sizing: border-box;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;}
+.active-reward-cont{border-style: solid;border-width: 1px;}
+.active-reward-cont>a{display:block;width:100%;height:125px;text-decoration: none;text-align: center;box-sizing: border-box;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;}
+.active-reward-cont>a span{display: block;color: #FFF;font-size: 36px;}
+.reward-color-purple .first-active-full p{background:url(../../img/active/billion/manyi01.png) no-repeat center;}
+.reward-color-blue .first-active-full p{background:url(../../img/active/billion/manyi02.png) no-repeat center;}
+.reward-color-orange .first-active-full p{background:url(../../img/active/billion/manyi03.png) no-repeat center;}
+.reward-color-purple .first-active-full p span{color: #8e40fe;}
+.reward-color-blue .first-active-full p span{color: #798ef7;}
+.reward-color-orange .first-active-full p span{color: #fdd78c;}
+.first-active-ban li.reward-color-purple .first-active-reward{border-color:#6132a4 ;}
+.first-active-ban li.reward-color-blue .first-active-reward{border-color:#5c6fcf;}
+.first-active-ban li.reward-color-orange .first-active-reward{border-color:#949495;}
+.reward-color-purple .active-reward-cont{border-color:#6132a4;}
+.reward-color-blue .active-reward-cont{border-color:#5c6fcf;}
+.reward-color-orange .active-reward-cont{border-color:#949495;}
+.reward-color-purple .active-reward-cont>a{background: #6132a4;color: #f1ab22;font-size: 24px;padding-top:25px}
+.reward-color-blue .active-reward-cont>a{background: #5c6fcf;color: #ffffff;font-size: 36px;line-height: 125px;font-weight: 800;}
+.reward-color-orange .active-reward-cont>a{background: #949495;color: #020202;font-size: 36px;line-height: 125px;font-weight: 800;}
+.first-active-ban li .bianxian{width:2px;height:412px;background:url(../../img/active/billion/xuxian.png) repeat center;margin-top:105px}
+.active-reward-cont a.reward-user{background: #6132a4;color: #f1ab22;font-size: 24px;}
+.active-reward-cont a.reward-user span{display: block;color: #FFF;font-size: 36px;}
+.first-active-ban li:nth-child(odd) .first-active-reward{margin-left: 55px;}
+.first-active-ban li:nth-child(even) .first-active-reward{margin-right: 55px;}
+.first-active-bot img{width: 100%;display: block;}
+.active-reward-cont>div{padding-left: 20px;width:100%;height:360px;font-size:28px;box-sizing: border-box;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;text-align: center;}
+.active-reward-cont .active-reward-1{background: url(../../img/active/billion/active-reward01.png) no-repeat center;padding-top:70px;}
+.active-reward-cont .active-reward-2{background: url(../../img/active/billion/active-reward02.png) no-repeat center;padding-top:125px;}
+.active-reward-cont .active-reward-3{background: url(../../img/active/billion/active-reward03.png) no-repeat center;padding-top:90px;}
+.active-reward-cont .active-reward-4{background: url(../../img/active/billion/active-reward04.png?version=1) no-repeat center;padding-top:125px;}
+.active-reward-cont .active-reward-5{background: url(../../img/active/billion/active-reward05.png) no-repeat center;padding-top:120px;}
+.active-reward-cont>div p{color: #FFFFFF;}
+.active-reward-cont>div  p{width:270px; line-height: 47px;}
+.active-reward-cont>div p span{display: block;margin-top:30px;color:#fdd78c;}
+.reward-color-purple .active-reward-cont>a.win-gift{font-size: 34px;}
+.reward-color-purple .active-reward-cont>a.win-gift img{display: inline-block;width:40px;vertical-align: middle;position: relative;right:8px;top:-3px}
+.reward-color-purple .active-reward-cont>a.win-gift span{font-size: 24px;}
+
+
+.second-active-ban{margin-top:130px}
+.clearboth{clear: both;}
+.reward-countining{width:322px;height:191px;color: #FFFFFF;font-size:30px;position:relative;text-align: center;}
+.end-section img,.unstart-section img{position: absolute;top:-23px;left:-14px}
+.now-section img,.win-section  img{position: absolute;top:-26px;left:-16px}
+.reward-countining p{margin-left: 20px;}
+.reward-countining p span{display: block;}
+.second-active-going .end-section{background:url(../../img/active/billion/end_bg.png) no-repeat center;background-size: 100%;}
+.second-active-going .now-section,.second-active-going .win-section{background:url(../../img/active/billion/now_bg.png) no-repeat center;background-size: 100%;}
+.second-active-going .unstart-section{background:url(../../img/active/billion/unstart_bg.png) no-repeat center;background-size: 100%;}
+.reward-countining p span{display: block;}
+.end-section p span{font-size: 48px;color: #2ed5eb;}
+.now-section p span{color: #ffc600;font-size: 60px;}
+.win-section p span{color:#f0c774 !important;font-size: 60px;}
+.unstart-section p span{color: #9b09ff;font-size: 48px;}
+.reward-countining p{margin-top:45px}
+.now-section p,.win-section p{margin-top:35px}
+.reward-countining{position: relative;}
+.second-active-list{text-align: center;margin-bottom:160px}
+.second-active-list>div{display:inline-block;}
+.second-active-list .reward-boundary{text-align:center;width:105px;height:110px;color:#FFFFFF;border-top:dashed 2px #e0dee2;position: relative;top:75px;font-size:24px;}
+.reward-line-left p span,.reward-line-right p span,.reward-boundary p span{font-size: 30px;}
+.second-active-going{position: relative;}
+.second-active-going .reward-line-left{width:165px;height:240px;border-left:dashed 2px #E0DEE2;border-bottom:dashed 2px #E0DEE2;position: absolute;left: 255px;bottom:87px;font-size:24px;color:#FFFFFF;}
+.second-active-going .reward-line-right{text-align:right;width:165px;height:240px;border-right:dashed 2px #E0DEE2;border-bottom:dashed 2px #E0DEE2;position: absolute;right: 44px;top:220px;font-size:24px;color:#FFFFFF;}
+.second-active-going .reward-line-left p{margin-left: 20px;}
+.second-active-going .reward-line-right p{margin-right:20px}
+.second-active-going .reward-line-left p:first-child,.second-active-going .reward-line-right p:first-child{margin-top:80px}
+.get-reward-sign{color: #f0c774 !important;border-color: #f0c774 !important;font-weight:800;}
+.second-active-setting{width:100%;height:785px;background:url(../../img/active/billion/reward-set-bg.png) no-repeat center;background-size: cover;box-sizing: border-box;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;padding-top:170px;position: relative;}
+
+.reward-set-list{width:930px;margin:0 auto;overflow: hidden;}
+.reward-set-list li{width:930px;float: left;text-align: center;}
+.reward-set-list li h3{color: #fbd371;font-size: 48px;line-height:70px;text-shadow: 3px 5px 1px #28566f;-webkit-text-shadow: 3px 5px 1px #28566f;-moz-text-shadow: 3px 5px 1px #28566f;}
+.reward-set-list>ul{display:block;width:1860px;position: relative;}
+.reward-set-list table th{font-size: 30px;color: #e5cb39;font-weight:normal;padding: 30px 0 20px 0;border-width:0px 0px 1px 0px;border-style:dashed;border-color:#e5cb39}
+.reward-set-list table th.table-one{width:271px}
+.reward-set-list table th.table-two{width:194px;}
+.reward-set-list table th.table-three{width:465px}
+.reward-set-list table td{font-size: 24px;padding:23px 0;border-width:0px 1px 1px 0px;border-style:dashed;border-color:#e5cb39}
+.reward-set-list table tr>td:last-child{border-right:none}
+.reward-set-list table td.golden-font{color: #e8a426;font-weight: 600;}
+.reward-set-tab ol li{display: block;float: left;width:15px;height: 15px;background: #fff;border-radius: 50%;}
+.reward-set-tab ol li.setActive{background: #fbd371;}
+.reward-set-tab ol li:first-child{margin-right: 15px;}
+.reward-set-tab{position: absolute;bottom:30px;left: 50%;margin-left:-22.5px}
+.reward-set-list li{display: none;}
+/* .reward-set-list li:first-child{display: block;} */
+
+.win-announce{color: #ffd200 !important;font-weight: 800;border-color: #f0c774 !important;position: relative;}
+.reward-boundary img{display: block;width:117px;position:absolute ;top:-65px;}
+.reward-digital-cont{padding-top:40px}
+.reward-line-right img{top:15px !important;right:0 !important;}
+.reward-line-left img{top:15px !important;left:0 !important;}
+
+.third-active-ban{width:100%;height:1042px;background: url(../../img/active/billion/third-active-bg.png) no-repeat top;box-sizing: border-box;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;padding-top:55px}
+.third-active-cont{width:988px;height:988px;background: url(../../img/active/billion/billion-ticket.png) no-repeat center;background-size:100%;
+margin:0 auto;box-sizing: border-box;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;}
+.third-active-cont li{display:inline-block;box-sizing: border-box;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;padding:0 14px;padding-top:25px;}
+.active-ticket-top{width:463px;height:286px;background: url(../../img/active/billion/ticket-cont-bg.png) no-repeat top;}
+.third-active-cont li>a{cursor: pointer;font-size:36px;display: block;width: 461px;height:85px;line-height: 85px;color: #FFF;text-align: center;border-bottom-left-radius: 10px;border-bottom-right-radius: 10px;position: relative;}
+.colorgray{background: #aaaaaa;}
+.colorpurple{background: #7726d4;box-sizing: border-box;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;padding-left: 90px;text-align: left !important;}
+.colorpink{background: #c370e4;}
+.colordarkblue{background:#5d70ce}
+.colorpurple>img{display: inline-block;width: 49.5px;vertical-align: baseline;position: relative;top:10px}
+.colorpurple>p{color: #000000;font-size: 24px;position: absolute;right: 17px;bottom:-17px}
+.active-ticket-top{color:#ffffff;text-align: center;}
+.fontWeight{font-size:93px !important;font-weight:800}
+.active-ticket-top p{padding-top:48px}
+.active-ticket-top p>span{display:inline-block;font-size:36px}
+
+.active-ticket-top p>span>i{display: block;font-size:25px;text-align: left;font-style: normal;}
+.active-ticket-top b{display:block;width:310px;height:46px;line-height:46px;background:#FFFFFF;color:#435cc3;font-size:18px;font-weight: normal;margin:0 auto}
+.line-tick{    text-align: center;
+    left: 0;
+    position: absolute;
+    top: 452px;
+    right: 0;
+    margin: auto;}
+    
+.third-active-cont li:nth-child(0),.third-active-cont li:nth-child(1){margin-bottom:170px}
+.active-section-2 .third-popup-bg{width:100%;height:100%;top:0;position: fixed;background: rgba(0,0,0,0.7);z-index: 222;}
+.active-section-2 .third-popup-cont {width:100%;position: fixed;top:270px;z-index: 3333;}   
+.active-section-2 .third-popup-cont .ticket-popup{width:400px;height:284px;margin:0 auto;background: url(../../img/active/billion/ticket-popup-bg.png) no-repeat center;background-size:cover;padding:30px 20px;box-sizing: border-box;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;
+border-radius: 10px;-webkit-border-radius: 10px;-moz-border-radius: 10px;color: #FFFFFF;text-align: center;}
+.ticket-popup  h3{font-size: 32px;color: #ffee6a;}
+.ticket-popup p{font-size: 24px;margin:25px 0}
+.ticket-popup a{display: block;font-size: 24px;float: left;width:140px;height:55px;line-height:55px;text-align: center;color:#FFF;border-radius:10px;-webkit-border-radius:10px;-moz-border-radius:10px;margin-left: 25px;border:solid 2px #eabc84;color: #eabc84;}
+.ticket-popup-btn{margin:0 auto}
+.reward-set-list table.reward-get-announce td{border: none;padding:9px 0}
+.reward-set-list table.reward-get-announce th{padding:30px 0px 8px 0px;border: none;}
+.my-reward-name{color:#01b1fc !important;font-weight:800;}
+.reward-set-list .reward-set-static,.reward-set-list .reward-name-list{display: block;width:100%;height:430px;background:rgba(72,110,215,0.35);color:#Fefefc;margin-top:50px}
+.reward-name-title>p{font-size: 30px;text-align: center;padding:35px 0px 16px 0px ;color: #e5cb39;display: inline-block;width:300px}
+.reward-get-announce td{width:310px !important}
+.reward-get-announce{overflow: auto;display: block;height:339px}
+
+.active-section-3 p{font-size:30px;color: #FFF;text-align: center;line-height:65px}
+.active-section-3 p.phone-color{color: #ffd328;font-size: 48px;}
+.active-section-3 p span{color: #f1ba74;}
+.fourth-active-ban{padding-bottom:100px}
+.fifth-active-ban img{display: block;width:100%}
+.i-know,.clickEvent{cursor: pointer;}

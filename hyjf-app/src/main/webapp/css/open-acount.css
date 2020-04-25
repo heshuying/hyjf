@@ -1,0 +1,141 @@
+/**
+ * ge
+ * 2016-12-16
+ */
+@charset "utf-8";
+/* import common.css*/
+/*css reset*/
+*{margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{margin:0;font:12px/2 "Microsoft YaHei","微软雅黑",Arial, sans-serif,Tahoma,Helvetica;color:#525252;width: 100%; }
+/*links*/
+a{color:#666;text-decoration:none;outline:0;-webkit-tap-highlight-color:transparent;}
+a:hover{ text-decoration:none}
+body,dl,dt,dd,ol,ul,li,p,h1,h2,h3,h4{margin:0;padding:0}
+ul{list-style:none}
+em,i{font-style:normal}
+table{border-spacing:0;border-collapse:collapse; width:100%}
+img{border:0;vertical-align:middle}
+button,input,select,textarea{font-size:100%;font-family:"Microsoft YaHei";margin:0;outline:0 none;vertical-align:baseline;*vertical-align:middle}
+textarea{overflow:auto;vertical-align:top;resize:none}
+button,input{line-height:normal;}
+button[disabled],input[disabled],.disable{cursor: no-drop; opacity:.7}
+input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0;*height:13px;*width:13px}
+button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
+article,aside,details,figcaption,figure,footer,header,hgroup,nav,section,summary{display:block}
+.fr{float:right!important}
+.fl{float:left!important}
+select,input { padding:4px 6px; height:20px; line-height:20px; display:inline-block;box-sizing: border-box; font-family:"Microsoft YaHei"; color:#555;background-color: #fff;border: 0px solid #ccc;}
+input:focus{border-color:#20a8e2}
+.inner:before,.inner:after,.clf:before,.clf:after,.inner:after{content:"";display:table}
+.clf:after,.inner:after{clear:both}
+.clf{zoom:1}
+hr{margin:20px 0;border:0;border-top:1px solid #e3e3e3;border-bottom:1px solid #fff}
+hr.dashed{margin:20px 0;border:0;border-top:1px dashed #e0e0e0;border-bottom:1px dashed #fff}
+.tac{text-align: center;}
+.specialFont{ 
+	font-family:Microsoft YaHei, Arial, sans-serif; 
+}
+.hidden{visibility:hidden}
+/*common css property*/
+.colorOrange{color:#ff8700}
+.colorBlue{color:#01a7ee}
+.text_blue{color: #49a7f6;}
+.white_bg{background: #fff;}
+.gray_bg{background: #f3f3f3;}
+.pl5{padding-left: 5px;}
+.clearPadding{padding:0 !important;}
+.borderNone{border:none !important;}
+.clearBoth{font-size:0;line-height: 0;height:0;clear:both;}
+.hide{display: none;}
+.show{display: block !important;}
+a.letter{letter-spacing: 3px;}
+.m20{ margin-top: 20px;}
+.tal{text-align: left;}
+.container{padding: 0 10px 0;margin: 0 auto;}
+.font16{font-size: 16px !important;}
+.small-size{font-size: 12px !important;}
+.normal-size{font-size: 16px !important;}
+.bg-gray{background: #f2f3f8;}
+.color-blue{color:#27b1ea;}
+.color898989{color:#898989}
+.color404040{color:#404040 !important;}
+.color967901{color:#967901}
+.colorRed{color:#fc001e !important;}
+.color-red{color:#f24646 !important;}
+.color00a0e9{color:#00A0E9 !important;}
+.color51aae8{color:#51aae8}
+.hideImportant{display:none !important;}
+.fw6{font-weight: 600;}
+.font16{font-size: 16px}
+.font12{font-size: 12px}
+.font11{font-size: 11px}
+.font13{font-size: 13px}
+.font14{font-size: 14px}
+.font10{font-size: 10px}
+.ft-rem-36{font-size: 0.36rem !important;}
+@media only screen and (max-width: 360px) {
+	.response{font-size:12px;}
+	.response-big{font-size: 12px;}
+	.commission-div>div{height: 35px;line-height: 35px;}
+	.zz-declartion-main-div{padding: 10px 0;}
+	.zz-project-head-name p{font-size:12px}
+	.zz-project-head-line{font-size:11px}
+}
+@media only screen and (min-width:360px) and (max-width:480px) {
+	.response{font-size:12px;}
+	.response-big{font-size: 13px;}
+	.commission-div>div{height: 40px;line-height: 40px;}
+	.zz-declartion-main-div{padding: 15px 0;}
+	.zz-project-head-name p{font-size:14px}
+}
+@media only screen and (min-width: 480px) {
+	.response{font-size:12px;}
+	.response-big{font-size: 13px;}
+	.commission-div>div{height: 40px;line-height: 40px;}
+	.zz-declartion-main-div{padding: 15px 0;}
+	.zz-project-head-name p{font-size:14px}
+}
+/*着陆页分享 开始*/
+.wap-reg-div{background:white;    margin: 0.3rem 0 0 0;}
+.wap-reg-outcome-div{background:url(../images/wap-reg-outcome-bg.png) ;background-size:100%}
+.wap-reg-body{text-align:left;background:#f3f3f3}
+.wap-reg-input{    color: #333333;
+    width: 5.5rem;
+    height: 1.6rem;
+    font-size: 0.46rem;
+    padding: 0.48rem 0 0.48rem 0.33rem;
+    background: white;
+    -webkit-appearance: none;}
+.wap-reg-item{width: 11.38rem;margin: 0 auto;border-bottom: 1px solid #e5e5e5;font-size: 0.42rem;}
+.wap-reg-item>label{width:2.5rem;display: inline-block;}
+.wap-reg-item:nth-child(5){border-bottom: 0px;}
+.wap-reg-input-code{background:url(../images/wap-reg-icon-code.png) no-repeat 0.7rem 0.52rem ;background-color:white;background-size:0.58rem auto;width:5.36rem;}
+.wap-reg-input-getcode{    text-align: center;padding: 0;border: 0;width:2.95rem;margin:0 0 0 0.1rem;color:#5aadf7}
+.wap-reg-input-phone{background-color:white;background-size:0.58rem auto;}
+.wap-reg-input-pwd1{background-color:white;background-size:0.58rem auto;}
+.wap-reg-input-pwd2{background-color:white;background-size:0.58rem auto;}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color: #999999;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color: #999999;
+}
+input:-ms-input-placeholder ,
+textarea:-ms-input-placeholder {
+    color: #999999;
+}
+input::-webkit-input-placeholder ,
+textarea::-webkit-input-placeholder {
+    color: #999999;
+}
+.wap-reg-btn{font-size: 0.52rem;color:white;display:inline-block;text-align:center;height:1.6rem;border-radius:7px;-webkit-border-radius:7px;-moz-border-radius:7px;margin:1rem 0 1.72rem 1.42rem;width:9.6rem;background:#fe7e00;background-size:100%;}
+.wap-reg-outcome-btn{height:1.6rem;border-radius:7px;-webkit-border-radius:7px;-moz-border-radius:7px;margin:1.4rem 0 8rem 1.42rem;width:9.6rem;background:url(../images/wap-reg-outcome-btn.png) no-repeat;background-size:100%;}
+.wap-reg-outcome-p{color:white;text-align:center;font-size:0.48rem;position: relative;top: 0.5rem;}
+.wap-reg-btn input{background: transparent;border-radius:7px;-webkit-border-radius:7px;-moz-border-radius:7px;
+    width: 100%;
+    height: 100%;}
+.wap-reg-bottom{position: absolute;text-align: center;
+    width: 100%;}
+.wap-reg-bottom p{margin-top: 0.45rem;}
+/*着陆页分享  结束*/
+

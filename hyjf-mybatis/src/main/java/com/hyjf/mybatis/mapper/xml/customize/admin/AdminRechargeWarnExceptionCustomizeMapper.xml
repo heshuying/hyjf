@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.hyjf.mybatis.mapper.customize.admin.AdminRechargeWarnExceptionCustomizeMapper">
+	<resultMap id="rechargeWarnMapResult"
+		type="com.hyjf.mybatis.model.customize.admin.AdminRechargeWarnExceptionCustomize">
+		<result column="userId" property="userId" /> <!-- 用户ID -->
+		<result column="userName" property="userName" /> <!-- 用户名 -->
+		<result column="addtime" property="addtime" /> <!-- 姓名 -->
+		<result column="totalwithdraw" property="totalwithdraw" /> <!-- 总提现金额 -->
+		<result column="totalrecharge" property="totalrecharge" /> <!-- 总充值金额 -->
+	</resultMap>
+
+	<sql id="whereCondition">
+		<where>
+			AND totalwithdraw>=totalrecharge
+			<if test="userNameSearch != null and userNameSearch != ''">
+				AND username LIKE CONCAT('%', #{userNameSearch}, '%')
+			</if>
+
+			<if test="startDateSearch != null and startDateSearch != ''">
+				AND addtime <![CDATA[>=]]>#{startDateSearch}
+			</if>
+			<if test="endDateSearch != null and endDateSearch != ''">
+				AND addtime <![CDATA[<=]]>#{endDateSearch}
+			</if>
+		</where>
+	</sql>
+
+	<select id="queryRechargeWarnCount" resultType="java.lang.Integer"
+		parameterType="com.hyjf.mybatis.mapper.customize.admin.AdminRechargeWarnExceptionCustomizeMapper">
+		select count(*) from (SELECT u.user_id,u.username,w.addtime,CASE WHEN
+		w.totalwithdraw IS
+		NULL THEN 0.00 ELSE w.totalwithdraw END AS
+		totalwithdraw,CASE WHEN
+		r.totalrecharge IS NULL THEN 0.00 ELSE
+		r.totalrecharge END AS
+		totalrecharge FROM
+		(SELECT user_id,FROM_UNIXTIME(
+		addtime, '%Y-%m-%d' ) AS addtime,sum(total) AS
+		totalwithdraw FROM
+		huiyingdai_account_withdraw WHERE FROM_UNIXTIME(
+		addtime, '%Y-%m-%d'
+		)>='2016-04-01' AND status=4 GROUP BY
+		user_id,FROM_UNIXTIME( addtime,
+		'%Y-%m-%d' )) AS w
+		INNER JOIN
+		(SELECT user_id,FROM_UNIXTIME( create_time,
+		'%Y-%m-%d' ) AS
+		addtime,sum(balance) AS totalrecharge FROM
+		huiyingdai_account_recharge
+		WHERE FROM_UNIXTIME( create_time,
+		'%Y-%m-%d' )>='2016-04-01' AND
+		status=1 GROUP BY user_id,FROM_UNIXTIME(
+		create_time, '%Y-%m-%d' )) AS
+		r
+		ON w.user_id=r.user_id and
+		w.addtime=r.addtime
+		left JOIN
+		(SELECT user_id,username FROM
+		huiyingdai_users) u
+		ON w.user_id=u.user_id)temp
+
+		<include refid="whereCondition" />
+	</select>
+	<!-- 这是充值大于提现的sql SELECT u.user_id,u.username,r.addtime,CASE WHEN w.totalwithdraw 
+		IS NULL THEN 0.00 ELSE w.totalwithdraw END AS totalwithdraw,CASE WHEN r.totalrecharge 
+		IS NULL THEN 0.00 ELSE r.totalrecharge END AS totalrecharge FROM (SELECT 
+		user_id,FROM_UNIXTIME( addtime, '%Y-%m-%d' ) AS addtime,sum(total) AS totalwithdraw 
+		FROM huiyingdai_account_withdraw WHERE FROM_UNIXTIME( addtime, '%Y-%m-%d' 
+		)>='2016-01-01' AND status=4 GROUP BY user_id,FROM_UNIXTIME( addtime, '%Y-%m-%d' 
+		)) AS w right JOIN (SELECT user_id,FROM_UNIXTIME( create_time, '%Y-%m-%d' 
+		) AS addtime,sum(balance) AS totalrecharge FROM huiyingdai_account_recharge 
+		WHERE FROM_UNIXTIME( create_time, '%Y-%m-%d' )>='2016-01-01' AND status=1 
+		GROUP BY user_id,FROM_UNIXTIME( create_time, '%Y-%m-%d' )) AS r ON w.user_id=r.user_id 
+		and w.addtime=r.addtime left JOIN (SELECT user_id,username FROM huiyingdai_users) 
+		u ON r.user_id=u.user_id -->
+	<!-- 这是提现大于充值的sql -->
+	<select id="queryRechargeWarnList" resultMap="rechargeWarnMapResult"
+		parameterType="com.hyjf.mybatis.mapper.customize.admin.AdminRechargeWarnExceptionCustomizeMapper">
+		select temp.user_id AS userId,temp.username AS userName,temp.addtime
+		AS addtime,temp.totalwithdraw AS totalwithdraw,temp.totalrecharge AS
+		totalrecharge from (SELECT u.user_id,u.username,w.addtime,CASE WHEN
+		w.totalwithdraw IS
+		NULL THEN 0.00 ELSE w.totalwithdraw END AS
+		totalwithdraw,CASE WHEN
+		r.totalrecharge IS NULL THEN 0.00 ELSE
+		r.totalrecharge END AS
+		totalrecharge FROM
+		(SELECT user_id,FROM_UNIXTIME(
+		addtime, '%Y-%m-%d' ) AS addtime,sum(total) AS
+		totalwithdraw FROM
+		huiyingdai_account_withdraw WHERE FROM_UNIXTIME(
+		addtime, '%Y-%m-%d'
+		)>='2016-04-01' AND status=4 GROUP BY
+		user_id,FROM_UNIXTIME( addtime,
+		'%Y-%m-%d' )) AS w
+		INNER JOIN
+		(SELECT user_id,FROM_UNIXTIME( create_time,
+		'%Y-%m-%d' ) AS
+		addtime,sum(balance) AS totalrecharge FROM
+		huiyingdai_account_recharge
+		WHERE FROM_UNIXTIME( create_time,
+		'%Y-%m-%d' )>='2016-04-01' AND
+		status=1 GROUP BY user_id,FROM_UNIXTIME(
+		create_time, '%Y-%m-%d' )) AS
+		r
+		ON w.user_id=r.user_id and
+		w.addtime=r.addtime
+		left JOIN
+		(SELECT user_id,username FROM
+		huiyingdai_users) u
+		ON w.user_id=u.user_id)temp
+
+		<include refid="whereCondition" />
+		ORDER BY addtime ASC,username ASC
+		<if test="limitStart >= 0">
+			LIMIT #{limitStart} , #{limitEnd}
+		</if>
+	</select>
+</mapper>
+

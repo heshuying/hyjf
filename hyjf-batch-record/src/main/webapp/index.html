@@ -1,0 +1,132 @@
+<html>  
+<head>  
+    <script type ="text/javascript" src="jquery.js"></script>  
+    <script type ="text/javascript" src="jquery.form.js"></script>  
+</head>  
+<body>  
+<script>     
+    $(function() {
+    	
+        $("input[type='button1]").bind("click", function() {    
+  
+            $.ajax({  
+                type : 'post',  
+                url : 'servlet/ServletDemo',  
+                dataType : 'text',  
+                data : $('#f1').serialize(),  
+                success : function (xmlq) {  
+                    alert(xmlq);  
+                },  
+                error : function (xmlq, errq) {  
+                    alert(errq);  
+                }  
+            });  
+              
+         });  
+        
+        $("input[type='button2]").bind("click", function() {    
+        	  
+            $.ajax({  
+                type : 'post',  
+                url : 'servlet/ServletDemo',  
+                dataType : 'text',  
+                data : $('#f1').serialize(),  
+                success : function (xmlq) {  
+                    alert(xmlq);  
+                },  
+                error : function (xmlq, errq) {  
+                    alert(errq);  
+                }  
+            });  
+              
+         }); 
+        
+        $("input[type='button3]").bind("click", function() {    
+      	  
+            $.ajax({  
+                type : 'post',  
+                url : 'servlet/ServletDemo',  
+                dataType : 'text',  
+                data : $('#f1').serialize(),  
+                success : function (xmlq) {  
+                    alert(xmlq);  
+                },  
+                error : function (xmlq, errq) {  
+                    alert(errq);  
+                }  
+            });  
+              
+         });
+        
+        $("input[type='button4]").bind("click", function() {    
+        	  
+            $.ajax({  
+                type : 'post',  
+                url : 'servlet/ServletDemo',  
+                dataType : 'text',  
+                data : $('#f1').serialize(),  
+                success : function (xmlq) {  
+                    alert(xmlq);  
+                },  
+                error : function (xmlq, errq) {  
+                    alert(errq);  
+                }  
+            });  
+              
+         });
+        
+        $("input[type='button5]").bind("click", function() {    
+      	  
+            $.ajax({  
+                type : 'post',  
+                url : 'servlet/ServletDemo',  
+                dataType : 'text',  
+                data : $('#f1').serialize(),  
+                success : function (xmlq) {  
+                    alert(xmlq);  
+                },  
+                error : function (xmlq, errq) {  
+                    alert(errq);  
+                }  
+            });  
+              
+         });
+        
+        $("input[type='button6]").bind("click", function() {    
+        	  
+            $.ajax({  
+                type : 'post',  
+                url : 'servlet/ServletDemo',  
+                dataType : 'text',  
+                data : $('#f1').serialize(),  
+                success : function (xmlq) {  
+                    alert(xmlq);  
+                },  
+                error : function (xmlq, errq) {  
+                    alert(errq);  
+                }  
+            });  
+              
+         });
+        
+    });    
+  
+        
+</script>     
+  
+<form name="f1" id="f1" action="/dataTransfer/batchOpenAccountRequset">  
+    <input type="button1" value=" batchOpenAccountRequset " />  
+    <button type="submit" value="">批量开户生成文件</button>
+</form>    
+    
+    <input type="button2" value=" batchOpenAccountResult " /> 
+    <input type="button3" value=" debtTransferRequest " />
+	<input type="button4" value=" debtTransferResult " />
+	<input type="button5" value=" targetTransferRequest " />
+	<input type="button6" value=" targetTransferResult " />	
+	
+</form>  
+
+  
+</body>  
+</html> 

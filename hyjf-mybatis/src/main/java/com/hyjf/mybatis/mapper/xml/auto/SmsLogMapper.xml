@@ -1,0 +1,809 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hyjf.mybatis.mapper.auto.SmsLogMapper">
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.SmsLog">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="ip" jdbcType="VARCHAR" property="ip" />
+    <result column="posttime" jdbcType="INTEGER" property="posttime" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="backend" jdbcType="TINYINT" property="backend" />
+    <result column="browser" jdbcType="VARCHAR" property="browser" />
+    <result column="machine" jdbcType="VARCHAR" property="machine" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="load_status" jdbcType="INTEGER" property="loadStatus" />
+    <result column="sender" jdbcType="VARCHAR" property="sender" />
+    <result column="is_display" jdbcType="TINYINT" property="isDisplay" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.hyjf.mybatis.model.auto.SmsLogWithBLOBs">
+    <result column="mobile" jdbcType="LONGVARCHAR" property="mobile" />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, `type`, ip, posttime, `status`, backend, browser, machine, user_id, load_status, 
+    sender, is_display
+  </sql>
+  <sql id="Blob_Column_List">
+    mobile, content
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.hyjf.mybatis.model.auto.SmsLogExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from huiyingdai_sms_log
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart &gt;= 0">
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.hyjf.mybatis.model.auto.SmsLogExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from huiyingdai_sms_log
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart &gt;= 0">
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from huiyingdai_sms_log
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from huiyingdai_sms_log
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.SmsLogExample">
+    delete from huiyingdai_sms_log
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.SmsLogWithBLOBs">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into huiyingdai_sms_log (`type`, ip, posttime, 
+      `status`, backend, browser, 
+      machine, user_id, load_status, 
+      sender, is_display, mobile, 
+      content)
+    values (#{type,jdbcType=VARCHAR}, #{ip,jdbcType=VARCHAR}, #{posttime,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER}, #{backend,jdbcType=TINYINT}, #{browser,jdbcType=VARCHAR}, 
+      #{machine,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER}, #{loadStatus,jdbcType=INTEGER}, 
+      #{sender,jdbcType=VARCHAR}, #{isDisplay,jdbcType=TINYINT}, #{mobile,jdbcType=LONGVARCHAR}, 
+      #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.SmsLogWithBLOBs">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into huiyingdai_sms_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="type != null">
+        `type`,
+      </if>
+      <if test="ip != null">
+        ip,
+      </if>
+      <if test="posttime != null">
+        posttime,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+      <if test="backend != null">
+        backend,
+      </if>
+      <if test="browser != null">
+        browser,
+      </if>
+      <if test="machine != null">
+        machine,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="loadStatus != null">
+        load_status,
+      </if>
+      <if test="sender != null">
+        sender,
+      </if>
+      <if test="isDisplay != null">
+        is_display,
+      </if>
+      <if test="mobile != null">
+        mobile,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null">
+        #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="posttime != null">
+        #{posttime,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="backend != null">
+        #{backend,jdbcType=TINYINT},
+      </if>
+      <if test="browser != null">
+        #{browser,jdbcType=VARCHAR},
+      </if>
+      <if test="machine != null">
+        #{machine,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="loadStatus != null">
+        #{loadStatus,jdbcType=INTEGER},
+      </if>
+      <if test="sender != null">
+        #{sender,jdbcType=VARCHAR},
+      </if>
+      <if test="isDisplay != null">
+        #{isDisplay,jdbcType=TINYINT},
+      </if>
+      <if test="mobile != null">
+        #{mobile,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.SmsLogExample" resultType="java.lang.Integer">
+    select count(*) from huiyingdai_sms_log
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update huiyingdai_sms_log
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.type != null">
+        `type` = #{record.type,jdbcType=VARCHAR},
+      </if>
+      <if test="record.ip != null">
+        ip = #{record.ip,jdbcType=VARCHAR},
+      </if>
+      <if test="record.posttime != null">
+        posttime = #{record.posttime,jdbcType=INTEGER},
+      </if>
+      <if test="record.status != null">
+        `status` = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.backend != null">
+        backend = #{record.backend,jdbcType=TINYINT},
+      </if>
+      <if test="record.browser != null">
+        browser = #{record.browser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.machine != null">
+        machine = #{record.machine,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.loadStatus != null">
+        load_status = #{record.loadStatus,jdbcType=INTEGER},
+      </if>
+      <if test="record.sender != null">
+        sender = #{record.sender,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isDisplay != null">
+        is_display = #{record.isDisplay,jdbcType=TINYINT},
+      </if>
+      <if test="record.mobile != null">
+        mobile = #{record.mobile,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.content != null">
+        content = #{record.content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update huiyingdai_sms_log
+    set id = #{record.id,jdbcType=INTEGER},
+      `type` = #{record.type,jdbcType=VARCHAR},
+      ip = #{record.ip,jdbcType=VARCHAR},
+      posttime = #{record.posttime,jdbcType=INTEGER},
+      `status` = #{record.status,jdbcType=INTEGER},
+      backend = #{record.backend,jdbcType=TINYINT},
+      browser = #{record.browser,jdbcType=VARCHAR},
+      machine = #{record.machine,jdbcType=VARCHAR},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      load_status = #{record.loadStatus,jdbcType=INTEGER},
+      sender = #{record.sender,jdbcType=VARCHAR},
+      is_display = #{record.isDisplay,jdbcType=TINYINT},
+      mobile = #{record.mobile,jdbcType=LONGVARCHAR},
+      content = #{record.content,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update huiyingdai_sms_log
+    set id = #{record.id,jdbcType=INTEGER},
+      `type` = #{record.type,jdbcType=VARCHAR},
+      ip = #{record.ip,jdbcType=VARCHAR},
+      posttime = #{record.posttime,jdbcType=INTEGER},
+      `status` = #{record.status,jdbcType=INTEGER},
+      backend = #{record.backend,jdbcType=TINYINT},
+      browser = #{record.browser,jdbcType=VARCHAR},
+      machine = #{record.machine,jdbcType=VARCHAR},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      load_status = #{record.loadStatus,jdbcType=INTEGER},
+      sender = #{record.sender,jdbcType=VARCHAR},
+      is_display = #{record.isDisplay,jdbcType=TINYINT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.SmsLogWithBLOBs">
+    update huiyingdai_sms_log
+    <set>
+      <if test="type != null">
+        `type` = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null">
+        ip = #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="posttime != null">
+        posttime = #{posttime,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="backend != null">
+        backend = #{backend,jdbcType=TINYINT},
+      </if>
+      <if test="browser != null">
+        browser = #{browser,jdbcType=VARCHAR},
+      </if>
+      <if test="machine != null">
+        machine = #{machine,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="loadStatus != null">
+        load_status = #{loadStatus,jdbcType=INTEGER},
+      </if>
+      <if test="sender != null">
+        sender = #{sender,jdbcType=VARCHAR},
+      </if>
+      <if test="isDisplay != null">
+        is_display = #{isDisplay,jdbcType=TINYINT},
+      </if>
+      <if test="mobile != null">
+        mobile = #{mobile,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.hyjf.mybatis.model.auto.SmsLogWithBLOBs">
+    update huiyingdai_sms_log
+    set `type` = #{type,jdbcType=VARCHAR},
+      ip = #{ip,jdbcType=VARCHAR},
+      posttime = #{posttime,jdbcType=INTEGER},
+      `status` = #{status,jdbcType=INTEGER},
+      backend = #{backend,jdbcType=TINYINT},
+      browser = #{browser,jdbcType=VARCHAR},
+      machine = #{machine,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=INTEGER},
+      load_status = #{loadStatus,jdbcType=INTEGER},
+      sender = #{sender,jdbcType=VARCHAR},
+      is_display = #{isDisplay,jdbcType=TINYINT},
+      mobile = #{mobile,jdbcType=LONGVARCHAR},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.SmsLog">
+    update huiyingdai_sms_log
+    set `type` = #{type,jdbcType=VARCHAR},
+      ip = #{ip,jdbcType=VARCHAR},
+      posttime = #{posttime,jdbcType=INTEGER},
+      `status` = #{status,jdbcType=INTEGER},
+      backend = #{backend,jdbcType=TINYINT},
+      browser = #{browser,jdbcType=VARCHAR},
+      machine = #{machine,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=INTEGER},
+      load_status = #{loadStatus,jdbcType=INTEGER},
+      sender = #{sender,jdbcType=VARCHAR},
+      is_display = #{isDisplay,jdbcType=TINYINT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <!--<resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.SmsLog">-->
+    <!--<id column="id" jdbcType="INTEGER" property="id" />-->
+    <!--<result column="type" jdbcType="VARCHAR" property="type" />-->
+    <!--<result column="ip" jdbcType="VARCHAR" property="ip" />-->
+    <!--<result column="posttime" jdbcType="INTEGER" property="posttime" />-->
+    <!--<result column="status" jdbcType="INTEGER" property="status" />-->
+    <!--<result column="backend" jdbcType="TINYINT" property="backend" />-->
+    <!--<result column="browser" jdbcType="VARCHAR" property="browser" />-->
+    <!--<result column="machine" jdbcType="VARCHAR" property="machine" />-->
+    <!--<result column="user_id" jdbcType="INTEGER" property="userId" />-->
+    <!--<result column="load_status" jdbcType="INTEGER" property="loadStatus" />-->
+    <!--<result column="sender" jdbcType="VARCHAR" property="sender" />-->
+  <!--</resultMap>-->
+  <!--<resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.hyjf.mybatis.model.auto.SmsLogWithBLOBs">-->
+    <!--<result column="mobile" jdbcType="LONGVARCHAR" property="mobile" />-->
+    <!--<result column="content" jdbcType="LONGVARCHAR" property="content" />-->
+  <!--</resultMap>-->
+  <!--<sql id="Example_Where_Clause">-->
+    <!--<where>-->
+      <!--<foreach collection="oredCriteria" item="criteria" separator="or">-->
+        <!--<if test="criteria.valid">-->
+          <!--<trim prefix="(" prefixOverrides="and" suffix=")">-->
+            <!--<foreach collection="criteria.criteria" item="criterion">-->
+              <!--<choose>-->
+                <!--<when test="criterion.noValue">-->
+                  <!--and ${criterion.condition}-->
+                <!--</when>-->
+                <!--<when test="criterion.singleValue">-->
+                  <!--and ${criterion.condition} #{criterion.value}-->
+                <!--</when>-->
+                <!--<when test="criterion.betweenValue">-->
+                  <!--and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}-->
+                <!--</when>-->
+                <!--<when test="criterion.listValue">-->
+                  <!--and ${criterion.condition}-->
+                  <!--<foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">-->
+                    <!--#{listItem}-->
+                  <!--</foreach>-->
+                <!--</when>-->
+              <!--</choose>-->
+            <!--</foreach>-->
+          <!--</trim>-->
+        <!--</if>-->
+      <!--</foreach>-->
+    <!--</where>-->
+  <!--</sql>-->
+  <!--<sql id="Update_By_Example_Where_Clause">-->
+    <!--<where>-->
+      <!--<foreach collection="example.oredCriteria" item="criteria" separator="or">-->
+        <!--<if test="criteria.valid">-->
+          <!--<trim prefix="(" prefixOverrides="and" suffix=")">-->
+            <!--<foreach collection="criteria.criteria" item="criterion">-->
+              <!--<choose>-->
+                <!--<when test="criterion.noValue">-->
+                  <!--and ${criterion.condition}-->
+                <!--</when>-->
+                <!--<when test="criterion.singleValue">-->
+                  <!--and ${criterion.condition} #{criterion.value}-->
+                <!--</when>-->
+                <!--<when test="criterion.betweenValue">-->
+                  <!--and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}-->
+                <!--</when>-->
+                <!--<when test="criterion.listValue">-->
+                  <!--and ${criterion.condition}-->
+                  <!--<foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">-->
+                    <!--#{listItem}-->
+                  <!--</foreach>-->
+                <!--</when>-->
+              <!--</choose>-->
+            <!--</foreach>-->
+          <!--</trim>-->
+        <!--</if>-->
+      <!--</foreach>-->
+    <!--</where>-->
+  <!--</sql>-->
+  <!--<sql id="Base_Column_List">-->
+    <!--id, `type`, ip, posttime, `status`, backend, browser, machine, user_id, load_status, -->
+    <!--sender-->
+  <!--</sql>-->
+  <!--<sql id="Blob_Column_List">-->
+    <!--mobile, content-->
+  <!--</sql>-->
+  <!--<select id="selectByExampleWithBLOBs" parameterType="com.hyjf.mybatis.model.auto.SmsLogExample" resultMap="ResultMapWithBLOBs">-->
+    <!--select-->
+    <!--<if test="distinct">-->
+      <!--distinct-->
+    <!--</if>-->
+    <!--<include refid="Base_Column_List" />-->
+    <!--,-->
+    <!--<include refid="Blob_Column_List" />-->
+    <!--from huiyingdai_sms_log-->
+    <!--<if test="_parameter != null">-->
+      <!--<include refid="Example_Where_Clause" />-->
+    <!--</if>-->
+    <!--<if test="orderByClause != null">-->
+      <!--order by ${orderByClause}-->
+    <!--</if>-->
+    <!--<if test="limitStart &gt;= 0">-->
+      <!--limit #{limitStart} , #{limitEnd}-->
+    <!--</if>-->
+  <!--</select>-->
+  <!--<select id="selectByExample" parameterType="com.hyjf.mybatis.model.auto.SmsLogExample" resultMap="BaseResultMap">-->
+    <!--select-->
+    <!--<if test="distinct">-->
+      <!--distinct-->
+    <!--</if>-->
+    <!--<include refid="Base_Column_List" />-->
+    <!--from huiyingdai_sms_log-->
+    <!--<if test="_parameter != null">-->
+      <!--<include refid="Example_Where_Clause" />-->
+    <!--</if>-->
+    <!--<if test="orderByClause != null">-->
+      <!--order by ${orderByClause}-->
+    <!--</if>-->
+    <!--<if test="limitStart &gt;= 0">-->
+      <!--limit #{limitStart} , #{limitEnd}-->
+    <!--</if>-->
+  <!--</select>-->
+  <!--<select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">-->
+    <!--select -->
+    <!--<include refid="Base_Column_List" />-->
+    <!--,-->
+    <!--<include refid="Blob_Column_List" />-->
+    <!--from huiyingdai_sms_log-->
+    <!--where id = #{id,jdbcType=INTEGER}-->
+  <!--</select>-->
+  <!--<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">-->
+    <!--delete from huiyingdai_sms_log-->
+    <!--where id = #{id,jdbcType=INTEGER}-->
+  <!--</delete>-->
+  <!--<delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.SmsLogExample">-->
+    <!--delete from huiyingdai_sms_log-->
+    <!--<if test="_parameter != null">-->
+      <!--<include refid="Example_Where_Clause" />-->
+    <!--</if>-->
+  <!--</delete>-->
+  <!--<insert id="insert" parameterType="com.hyjf.mybatis.model.auto.SmsLogWithBLOBs">-->
+    <!--<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">-->
+      <!--SELECT LAST_INSERT_ID()-->
+    <!--</selectKey>-->
+    <!--insert into huiyingdai_sms_log (`type`, ip, posttime, -->
+      <!--`status`, backend, browser, -->
+      <!--machine, user_id, load_status, -->
+      <!--sender, mobile, content-->
+      <!--)-->
+    <!--values (#{type,jdbcType=VARCHAR}, #{ip,jdbcType=VARCHAR}, #{posttime,jdbcType=INTEGER}, -->
+      <!--#{status,jdbcType=INTEGER}, #{backend,jdbcType=TINYINT}, #{browser,jdbcType=VARCHAR}, -->
+      <!--#{machine,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER}, #{loadStatus,jdbcType=INTEGER}, -->
+      <!--#{sender,jdbcType=VARCHAR}, #{mobile,jdbcType=LONGVARCHAR}, #{content,jdbcType=LONGVARCHAR}-->
+      <!--)-->
+  <!--</insert>-->
+  <!--<insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.SmsLogWithBLOBs">-->
+    <!--<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">-->
+      <!--SELECT LAST_INSERT_ID()-->
+    <!--</selectKey>-->
+    <!--insert into huiyingdai_sms_log-->
+    <!--<trim prefix="(" suffix=")" suffixOverrides=",">-->
+      <!--<if test="type != null">-->
+        <!--`type`,-->
+      <!--</if>-->
+      <!--<if test="ip != null">-->
+        <!--ip,-->
+      <!--</if>-->
+      <!--<if test="posttime != null">-->
+        <!--posttime,-->
+      <!--</if>-->
+      <!--<if test="status != null">-->
+        <!--`status`,-->
+      <!--</if>-->
+      <!--<if test="backend != null">-->
+        <!--backend,-->
+      <!--</if>-->
+      <!--<if test="browser != null">-->
+        <!--browser,-->
+      <!--</if>-->
+      <!--<if test="machine != null">-->
+        <!--machine,-->
+      <!--</if>-->
+      <!--<if test="userId != null">-->
+        <!--user_id,-->
+      <!--</if>-->
+      <!--<if test="loadStatus != null">-->
+        <!--load_status,-->
+      <!--</if>-->
+      <!--<if test="sender != null">-->
+        <!--sender,-->
+      <!--</if>-->
+      <!--<if test="mobile != null">-->
+        <!--mobile,-->
+      <!--</if>-->
+      <!--<if test="content != null">-->
+        <!--content,-->
+      <!--</if>-->
+    <!--</trim>-->
+    <!--<trim prefix="values (" suffix=")" suffixOverrides=",">-->
+      <!--<if test="type != null">-->
+        <!--#{type,jdbcType=VARCHAR},-->
+      <!--</if>-->
+      <!--<if test="ip != null">-->
+        <!--#{ip,jdbcType=VARCHAR},-->
+      <!--</if>-->
+      <!--<if test="posttime != null">-->
+        <!--#{posttime,jdbcType=INTEGER},-->
+      <!--</if>-->
+      <!--<if test="status != null">-->
+        <!--#{status,jdbcType=INTEGER},-->
+      <!--</if>-->
+      <!--<if test="backend != null">-->
+        <!--#{backend,jdbcType=TINYINT},-->
+      <!--</if>-->
+      <!--<if test="browser != null">-->
+        <!--#{browser,jdbcType=VARCHAR},-->
+      <!--</if>-->
+      <!--<if test="machine != null">-->
+        <!--#{machine,jdbcType=VARCHAR},-->
+      <!--</if>-->
+      <!--<if test="userId != null">-->
+        <!--#{userId,jdbcType=INTEGER},-->
+      <!--</if>-->
+      <!--<if test="loadStatus != null">-->
+        <!--#{loadStatus,jdbcType=INTEGER},-->
+      <!--</if>-->
+      <!--<if test="sender != null">-->
+        <!--#{sender,jdbcType=VARCHAR},-->
+      <!--</if>-->
+      <!--<if test="mobile != null">-->
+        <!--#{mobile,jdbcType=LONGVARCHAR},-->
+      <!--</if>-->
+      <!--<if test="content != null">-->
+        <!--#{content,jdbcType=LONGVARCHAR},-->
+      <!--</if>-->
+    <!--</trim>-->
+  <!--</insert>-->
+  <!--<select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.SmsLogExample" resultType="java.lang.Integer">-->
+    <!--select count(*) from huiyingdai_sms_log-->
+    <!--<if test="_parameter != null">-->
+      <!--<include refid="Example_Where_Clause" />-->
+    <!--</if>-->
+  <!--</select>-->
+  <!--<update id="updateByExampleSelective" parameterType="map">-->
+    <!--update huiyingdai_sms_log-->
+    <!--<set>-->
+      <!--<if test="record.id != null">-->
+        <!--id = #{record.id,jdbcType=INTEGER},-->
+      <!--</if>-->
+      <!--<if test="record.type != null">-->
+        <!--`type` = #{record.type,jdbcType=VARCHAR},-->
+      <!--</if>-->
+      <!--<if test="record.ip != null">-->
+        <!--ip = #{record.ip,jdbcType=VARCHAR},-->
+      <!--</if>-->
+      <!--<if test="record.posttime != null">-->
+        <!--posttime = #{record.posttime,jdbcType=INTEGER},-->
+      <!--</if>-->
+      <!--<if test="record.status != null">-->
+        <!--`status` = #{record.status,jdbcType=INTEGER},-->
+      <!--</if>-->
+      <!--<if test="record.backend != null">-->
+        <!--backend = #{record.backend,jdbcType=TINYINT},-->
+      <!--</if>-->
+      <!--<if test="record.browser != null">-->
+        <!--browser = #{record.browser,jdbcType=VARCHAR},-->
+      <!--</if>-->
+      <!--<if test="record.machine != null">-->
+        <!--machine = #{record.machine,jdbcType=VARCHAR},-->
+      <!--</if>-->
+      <!--<if test="record.userId != null">-->
+        <!--user_id = #{record.userId,jdbcType=INTEGER},-->
+      <!--</if>-->
+      <!--<if test="record.loadStatus != null">-->
+        <!--load_status = #{record.loadStatus,jdbcType=INTEGER},-->
+      <!--</if>-->
+      <!--<if test="record.sender != null">-->
+        <!--sender = #{record.sender,jdbcType=VARCHAR},-->
+      <!--</if>-->
+      <!--<if test="record.mobile != null">-->
+        <!--mobile = #{record.mobile,jdbcType=LONGVARCHAR},-->
+      <!--</if>-->
+      <!--<if test="record.content != null">-->
+        <!--content = #{record.content,jdbcType=LONGVARCHAR},-->
+      <!--</if>-->
+    <!--</set>-->
+    <!--<if test="_parameter != null">-->
+      <!--<include refid="Update_By_Example_Where_Clause" />-->
+    <!--</if>-->
+  <!--</update>-->
+  <!--<update id="updateByExampleWithBLOBs" parameterType="map">-->
+    <!--update huiyingdai_sms_log-->
+    <!--set id = #{record.id,jdbcType=INTEGER},-->
+      <!--`type` = #{record.type,jdbcType=VARCHAR},-->
+      <!--ip = #{record.ip,jdbcType=VARCHAR},-->
+      <!--posttime = #{record.posttime,jdbcType=INTEGER},-->
+      <!--`status` = #{record.status,jdbcType=INTEGER},-->
+      <!--backend = #{record.backend,jdbcType=TINYINT},-->
+      <!--browser = #{record.browser,jdbcType=VARCHAR},-->
+      <!--machine = #{record.machine,jdbcType=VARCHAR},-->
+      <!--user_id = #{record.userId,jdbcType=INTEGER},-->
+      <!--load_status = #{record.loadStatus,jdbcType=INTEGER},-->
+      <!--sender = #{record.sender,jdbcType=VARCHAR},-->
+      <!--mobile = #{record.mobile,jdbcType=LONGVARCHAR},-->
+      <!--content = #{record.content,jdbcType=LONGVARCHAR}-->
+    <!--<if test="_parameter != null">-->
+      <!--<include refid="Update_By_Example_Where_Clause" />-->
+    <!--</if>-->
+  <!--</update>-->
+  <!--<update id="updateByExample" parameterType="map">-->
+    <!--update huiyingdai_sms_log-->
+    <!--set id = #{record.id,jdbcType=INTEGER},-->
+      <!--`type` = #{record.type,jdbcType=VARCHAR},-->
+      <!--ip = #{record.ip,jdbcType=VARCHAR},-->
+      <!--posttime = #{record.posttime,jdbcType=INTEGER},-->
+      <!--`status` = #{record.status,jdbcType=INTEGER},-->
+      <!--backend = #{record.backend,jdbcType=TINYINT},-->
+      <!--browser = #{record.browser,jdbcType=VARCHAR},-->
+      <!--machine = #{record.machine,jdbcType=VARCHAR},-->
+      <!--user_id = #{record.userId,jdbcType=INTEGER},-->
+      <!--load_status = #{record.loadStatus,jdbcType=INTEGER},-->
+      <!--sender = #{record.sender,jdbcType=VARCHAR}-->
+    <!--<if test="_parameter != null">-->
+      <!--<include refid="Update_By_Example_Where_Clause" />-->
+    <!--</if>-->
+  <!--</update>-->
+  <!--<update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.SmsLogWithBLOBs">-->
+    <!--update huiyingdai_sms_log-->
+    <!--<set>-->
+      <!--<if test="type != null">-->
+        <!--`type` = #{type,jdbcType=VARCHAR},-->
+      <!--</if>-->
+      <!--<if test="ip != null">-->
+        <!--ip = #{ip,jdbcType=VARCHAR},-->
+      <!--</if>-->
+      <!--<if test="posttime != null">-->
+        <!--posttime = #{posttime,jdbcType=INTEGER},-->
+      <!--</if>-->
+      <!--<if test="status != null">-->
+        <!--`status` = #{status,jdbcType=INTEGER},-->
+      <!--</if>-->
+      <!--<if test="backend != null">-->
+        <!--backend = #{backend,jdbcType=TINYINT},-->
+      <!--</if>-->
+      <!--<if test="browser != null">-->
+        <!--browser = #{browser,jdbcType=VARCHAR},-->
+      <!--</if>-->
+      <!--<if test="machine != null">-->
+        <!--machine = #{machine,jdbcType=VARCHAR},-->
+      <!--</if>-->
+      <!--<if test="userId != null">-->
+        <!--user_id = #{userId,jdbcType=INTEGER},-->
+      <!--</if>-->
+      <!--<if test="loadStatus != null">-->
+        <!--load_status = #{loadStatus,jdbcType=INTEGER},-->
+      <!--</if>-->
+      <!--<if test="sender != null">-->
+        <!--sender = #{sender,jdbcType=VARCHAR},-->
+      <!--</if>-->
+      <!--<if test="mobile != null">-->
+        <!--mobile = #{mobile,jdbcType=LONGVARCHAR},-->
+      <!--</if>-->
+      <!--<if test="content != null">-->
+        <!--content = #{content,jdbcType=LONGVARCHAR},-->
+      <!--</if>-->
+    <!--</set>-->
+    <!--where id = #{id,jdbcType=INTEGER}-->
+  <!--</update>-->
+  <!--<update id="updateByPrimaryKeyWithBLOBs" parameterType="com.hyjf.mybatis.model.auto.SmsLogWithBLOBs">-->
+    <!--update huiyingdai_sms_log-->
+    <!--set `type` = #{type,jdbcType=VARCHAR},-->
+      <!--ip = #{ip,jdbcType=VARCHAR},-->
+      <!--posttime = #{posttime,jdbcType=INTEGER},-->
+      <!--`status` = #{status,jdbcType=INTEGER},-->
+      <!--backend = #{backend,jdbcType=TINYINT},-->
+      <!--browser = #{browser,jdbcType=VARCHAR},-->
+      <!--machine = #{machine,jdbcType=VARCHAR},-->
+      <!--user_id = #{userId,jdbcType=INTEGER},-->
+      <!--load_status = #{loadStatus,jdbcType=INTEGER},-->
+      <!--sender = #{sender,jdbcType=VARCHAR},-->
+      <!--mobile = #{mobile,jdbcType=LONGVARCHAR},-->
+      <!--content = #{content,jdbcType=LONGVARCHAR}-->
+    <!--where id = #{id,jdbcType=INTEGER}-->
+  <!--</update>-->
+  <!--<update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.SmsLog">-->
+    <!--update huiyingdai_sms_log-->
+    <!--set `type` = #{type,jdbcType=VARCHAR},-->
+      <!--ip = #{ip,jdbcType=VARCHAR},-->
+      <!--posttime = #{posttime,jdbcType=INTEGER},-->
+      <!--`status` = #{status,jdbcType=INTEGER},-->
+      <!--backend = #{backend,jdbcType=TINYINT},-->
+      <!--browser = #{browser,jdbcType=VARCHAR},-->
+      <!--machine = #{machine,jdbcType=VARCHAR},-->
+      <!--user_id = #{userId,jdbcType=INTEGER},-->
+      <!--load_status = #{loadStatus,jdbcType=INTEGER},-->
+      <!--sender = #{sender,jdbcType=VARCHAR}-->
+    <!--where id = #{id,jdbcType=INTEGER}-->
+  <!--</update>-->
+</mapper>

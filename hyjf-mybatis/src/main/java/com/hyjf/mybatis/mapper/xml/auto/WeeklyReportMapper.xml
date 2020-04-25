@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.WeeklyReportMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.WeeklyReport" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="begin_date" property="beginDate" jdbcType="VARCHAR" />
+    <result column="end_date" property="endDate" jdbcType="VARCHAR" />
+    <result column="zongshouyi" property="zongshouyi" jdbcType="DECIMAL" />
+    <result column="baifenbi" property="baifenbi" jdbcType="INTEGER" />
+    <result column="zongtianshu" property="zongtianshu" jdbcType="INTEGER" />
+    <result column="zongjine" property="zongjine" jdbcType="DECIMAL" />
+    <result column="touzie" property="touzie" jdbcType="DECIMAL" />
+    <result column="bishu" property="bishu" jdbcType="INTEGER" />
+    <result column="huankuanzonge" property="huankuanzonge" jdbcType="DECIMAL" />
+    <result column="shouyi" property="shouyi" jdbcType="DECIMAL" />
+    <result column="youhuiquan" property="youhuiquan" jdbcType="INTEGER" />
+    <result column="huankuangaikuang" property="huankuangaikuang" jdbcType="VARCHAR" />
+    <result column="touzigaikuang" property="touzigaikuang" jdbcType="VARCHAR" />
+    <result column="dateString" property="datestring" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, user_id, begin_date, end_date, zongshouyi, baifenbi, zongtianshu, zongjine, touzie, 
+    bishu, huankuanzonge, shouyi, youhuiquan, huankuangaikuang, touzigaikuang, dateString
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.WeeklyReportExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_weeklyreport
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_weeklyreport
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_weeklyreport
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.WeeklyReportExample" >
+    delete from hyjf_weeklyreport
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.WeeklyReport" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_weeklyreport (user_id, begin_date, end_date, 
+      zongshouyi, baifenbi, zongtianshu, 
+      zongjine, touzie, bishu, 
+      huankuanzonge, shouyi, youhuiquan, 
+      huankuangaikuang, touzigaikuang, dateString
+      )
+    values (#{userId,jdbcType=INTEGER}, #{beginDate,jdbcType=VARCHAR}, #{endDate,jdbcType=VARCHAR}, 
+      #{zongshouyi,jdbcType=DECIMAL}, #{baifenbi,jdbcType=INTEGER}, #{zongtianshu,jdbcType=INTEGER}, 
+      #{zongjine,jdbcType=DECIMAL}, #{touzie,jdbcType=DECIMAL}, #{bishu,jdbcType=INTEGER}, 
+      #{huankuanzonge,jdbcType=DECIMAL}, #{shouyi,jdbcType=DECIMAL}, #{youhuiquan,jdbcType=INTEGER}, 
+      #{huankuangaikuang,jdbcType=VARCHAR}, #{touzigaikuang,jdbcType=VARCHAR}, #{datestring,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.WeeklyReport" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_weeklyreport
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="beginDate != null" >
+        begin_date,
+      </if>
+      <if test="endDate != null" >
+        end_date,
+      </if>
+      <if test="zongshouyi != null" >
+        zongshouyi,
+      </if>
+      <if test="baifenbi != null" >
+        baifenbi,
+      </if>
+      <if test="zongtianshu != null" >
+        zongtianshu,
+      </if>
+      <if test="zongjine != null" >
+        zongjine,
+      </if>
+      <if test="touzie != null" >
+        touzie,
+      </if>
+      <if test="bishu != null" >
+        bishu,
+      </if>
+      <if test="huankuanzonge != null" >
+        huankuanzonge,
+      </if>
+      <if test="shouyi != null" >
+        shouyi,
+      </if>
+      <if test="youhuiquan != null" >
+        youhuiquan,
+      </if>
+      <if test="huankuangaikuang != null" >
+        huankuangaikuang,
+      </if>
+      <if test="touzigaikuang != null" >
+        touzigaikuang,
+      </if>
+      <if test="datestring != null" >
+        dateString,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="beginDate != null" >
+        #{beginDate,jdbcType=VARCHAR},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=VARCHAR},
+      </if>
+      <if test="zongshouyi != null" >
+        #{zongshouyi,jdbcType=DECIMAL},
+      </if>
+      <if test="baifenbi != null" >
+        #{baifenbi,jdbcType=INTEGER},
+      </if>
+      <if test="zongtianshu != null" >
+        #{zongtianshu,jdbcType=INTEGER},
+      </if>
+      <if test="zongjine != null" >
+        #{zongjine,jdbcType=DECIMAL},
+      </if>
+      <if test="touzie != null" >
+        #{touzie,jdbcType=DECIMAL},
+      </if>
+      <if test="bishu != null" >
+        #{bishu,jdbcType=INTEGER},
+      </if>
+      <if test="huankuanzonge != null" >
+        #{huankuanzonge,jdbcType=DECIMAL},
+      </if>
+      <if test="shouyi != null" >
+        #{shouyi,jdbcType=DECIMAL},
+      </if>
+      <if test="youhuiquan != null" >
+        #{youhuiquan,jdbcType=INTEGER},
+      </if>
+      <if test="huankuangaikuang != null" >
+        #{huankuangaikuang,jdbcType=VARCHAR},
+      </if>
+      <if test="touzigaikuang != null" >
+        #{touzigaikuang,jdbcType=VARCHAR},
+      </if>
+      <if test="datestring != null" >
+        #{datestring,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.WeeklyReportExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_weeklyreport
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_weeklyreport
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.beginDate != null" >
+        begin_date = #{record.beginDate,jdbcType=VARCHAR},
+      </if>
+      <if test="record.endDate != null" >
+        end_date = #{record.endDate,jdbcType=VARCHAR},
+      </if>
+      <if test="record.zongshouyi != null" >
+        zongshouyi = #{record.zongshouyi,jdbcType=DECIMAL},
+      </if>
+      <if test="record.baifenbi != null" >
+        baifenbi = #{record.baifenbi,jdbcType=INTEGER},
+      </if>
+      <if test="record.zongtianshu != null" >
+        zongtianshu = #{record.zongtianshu,jdbcType=INTEGER},
+      </if>
+      <if test="record.zongjine != null" >
+        zongjine = #{record.zongjine,jdbcType=DECIMAL},
+      </if>
+      <if test="record.touzie != null" >
+        touzie = #{record.touzie,jdbcType=DECIMAL},
+      </if>
+      <if test="record.bishu != null" >
+        bishu = #{record.bishu,jdbcType=INTEGER},
+      </if>
+      <if test="record.huankuanzonge != null" >
+        huankuanzonge = #{record.huankuanzonge,jdbcType=DECIMAL},
+      </if>
+      <if test="record.shouyi != null" >
+        shouyi = #{record.shouyi,jdbcType=DECIMAL},
+      </if>
+      <if test="record.youhuiquan != null" >
+        youhuiquan = #{record.youhuiquan,jdbcType=INTEGER},
+      </if>
+      <if test="record.huankuangaikuang != null" >
+        huankuangaikuang = #{record.huankuangaikuang,jdbcType=VARCHAR},
+      </if>
+      <if test="record.touzigaikuang != null" >
+        touzigaikuang = #{record.touzigaikuang,jdbcType=VARCHAR},
+      </if>
+      <if test="record.datestring != null" >
+        dateString = #{record.datestring,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_weeklyreport
+    set id = #{record.id,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      begin_date = #{record.beginDate,jdbcType=VARCHAR},
+      end_date = #{record.endDate,jdbcType=VARCHAR},
+      zongshouyi = #{record.zongshouyi,jdbcType=DECIMAL},
+      baifenbi = #{record.baifenbi,jdbcType=INTEGER},
+      zongtianshu = #{record.zongtianshu,jdbcType=INTEGER},
+      zongjine = #{record.zongjine,jdbcType=DECIMAL},
+      touzie = #{record.touzie,jdbcType=DECIMAL},
+      bishu = #{record.bishu,jdbcType=INTEGER},
+      huankuanzonge = #{record.huankuanzonge,jdbcType=DECIMAL},
+      shouyi = #{record.shouyi,jdbcType=DECIMAL},
+      youhuiquan = #{record.youhuiquan,jdbcType=INTEGER},
+      huankuangaikuang = #{record.huankuangaikuang,jdbcType=VARCHAR},
+      touzigaikuang = #{record.touzigaikuang,jdbcType=VARCHAR},
+      dateString = #{record.datestring,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.WeeklyReport" >
+    update hyjf_weeklyreport
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="beginDate != null" >
+        begin_date = #{beginDate,jdbcType=VARCHAR},
+      </if>
+      <if test="endDate != null" >
+        end_date = #{endDate,jdbcType=VARCHAR},
+      </if>
+      <if test="zongshouyi != null" >
+        zongshouyi = #{zongshouyi,jdbcType=DECIMAL},
+      </if>
+      <if test="baifenbi != null" >
+        baifenbi = #{baifenbi,jdbcType=INTEGER},
+      </if>
+      <if test="zongtianshu != null" >
+        zongtianshu = #{zongtianshu,jdbcType=INTEGER},
+      </if>
+      <if test="zongjine != null" >
+        zongjine = #{zongjine,jdbcType=DECIMAL},
+      </if>
+      <if test="touzie != null" >
+        touzie = #{touzie,jdbcType=DECIMAL},
+      </if>
+      <if test="bishu != null" >
+        bishu = #{bishu,jdbcType=INTEGER},
+      </if>
+      <if test="huankuanzonge != null" >
+        huankuanzonge = #{huankuanzonge,jdbcType=DECIMAL},
+      </if>
+      <if test="shouyi != null" >
+        shouyi = #{shouyi,jdbcType=DECIMAL},
+      </if>
+      <if test="youhuiquan != null" >
+        youhuiquan = #{youhuiquan,jdbcType=INTEGER},
+      </if>
+      <if test="huankuangaikuang != null" >
+        huankuangaikuang = #{huankuangaikuang,jdbcType=VARCHAR},
+      </if>
+      <if test="touzigaikuang != null" >
+        touzigaikuang = #{touzigaikuang,jdbcType=VARCHAR},
+      </if>
+      <if test="datestring != null" >
+        dateString = #{datestring,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.WeeklyReport" >
+    update hyjf_weeklyreport
+    set user_id = #{userId,jdbcType=INTEGER},
+      begin_date = #{beginDate,jdbcType=VARCHAR},
+      end_date = #{endDate,jdbcType=VARCHAR},
+      zongshouyi = #{zongshouyi,jdbcType=DECIMAL},
+      baifenbi = #{baifenbi,jdbcType=INTEGER},
+      zongtianshu = #{zongtianshu,jdbcType=INTEGER},
+      zongjine = #{zongjine,jdbcType=DECIMAL},
+      touzie = #{touzie,jdbcType=DECIMAL},
+      bishu = #{bishu,jdbcType=INTEGER},
+      huankuanzonge = #{huankuanzonge,jdbcType=DECIMAL},
+      shouyi = #{shouyi,jdbcType=DECIMAL},
+      youhuiquan = #{youhuiquan,jdbcType=INTEGER},
+      huankuangaikuang = #{huankuangaikuang,jdbcType=VARCHAR},
+      touzigaikuang = #{touzigaikuang,jdbcType=VARCHAR},
+      dateString = #{datestring,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

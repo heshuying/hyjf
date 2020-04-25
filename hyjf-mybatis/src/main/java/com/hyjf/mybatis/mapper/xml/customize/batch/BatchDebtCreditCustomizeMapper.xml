@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.batch.BatchDebtCreditCustomizeMapper">
+
+	<resultMap id="BatchDebtCreditCustomizeMap" type="com.hyjf.mybatis.model.auto.DebtCredit">
+		 <id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="user_id" property="userId" jdbcType="INTEGER" />
+	    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+	    <result column="plan_nid" property="planNid" jdbcType="VARCHAR" />
+	    <result column="plan_order_id" property="planOrderId" jdbcType="VARCHAR" />
+	    <result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+	    <result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+	    <result column="borrow_apr" property="borrowApr" jdbcType="DECIMAL" />
+	    <result column="actual_apr" property="actualApr" jdbcType="DECIMAL" />
+	    <result column="sell_order_id" property="sellOrderId" jdbcType="VARCHAR" />
+	    <result column="credit_nid" property="creditNid" jdbcType="VARCHAR" />
+	    <result column="credit_status" property="creditStatus" jdbcType="INTEGER" />
+	    <result column="credit_order" property="creditOrder" jdbcType="INTEGER" />
+	    <result column="hold_days" property="holdDays" jdbcType="INTEGER" />
+	    <result column="remain_days" property="remainDays" jdbcType="INTEGER" />
+	    <result column="assign_period" property="assignPeriod" jdbcType="INTEGER" />
+	    <result column="liquidates_period" property="liquidatesPeriod" jdbcType="INTEGER" />
+	    <result column="credit_period" property="creditPeriod" jdbcType="INTEGER" />
+	    <result column="repay_period" property="repayPeriod" jdbcType="INTEGER" />
+	    <result column="credit_term" property="creditTerm" jdbcType="INTEGER" />
+	    <result column="credit_account" property="creditAccount" jdbcType="DECIMAL" />
+	    <result column="credit_capital" property="creditCapital" jdbcType="DECIMAL" />
+	    <result column="credit_interest" property="creditInterest" jdbcType="DECIMAL" />
+	    <result column="credit_interest_advance" property="creditInterestAdvance" jdbcType="DECIMAL" />
+	    <result column="credit_account_assigned" property="creditAccountAssigned" jdbcType="DECIMAL" />
+	    <result column="credit_capital_assigned" property="creditCapitalAssigned" jdbcType="DECIMAL" />
+	    <result column="credit_interest_assigned" property="creditInterestAssigned" jdbcType="DECIMAL" />
+	    <result column="credit_interest_advance_assigned" property="creditInterestAdvanceAssigned" jdbcType="DECIMAL" />
+	    <result column="credit_account_wait" property="creditAccountWait" jdbcType="DECIMAL" />
+	    <result column="credit_capital_wait" property="creditCapitalWait" jdbcType="DECIMAL" />
+	    <result column="credit_interest_wait" property="creditInterestWait" jdbcType="DECIMAL" />
+	    <result column="credit_interest_advance_wait" property="creditInterestAdvanceWait" jdbcType="DECIMAL" />
+	    <result column="credit_discount" property="creditDiscount" jdbcType="DECIMAL" />
+	    <result column="credit_income" property="creditIncome" jdbcType="DECIMAL" />
+	    <result column="credit_service_fee" property="creditServiceFee" jdbcType="DECIMAL" />
+	    <result column="credit_price" property="creditPrice" jdbcType="DECIMAL" />
+	    <result column="repay_account" property="repayAccount" jdbcType="DECIMAL" />
+	    <result column="repay_capital" property="repayCapital" jdbcType="DECIMAL" />
+	    <result column="repay_interest" property="repayInterest" jdbcType="DECIMAL" />
+	    <result column="repay_account_wait" property="repayAccountWait" jdbcType="DECIMAL" />
+	    <result column="repay_capital_wait" property="repayCapitalWait" jdbcType="DECIMAL" />
+	    <result column="repay_interest_wait" property="repayInterestWait" jdbcType="DECIMAL" />
+	    <result column="credit_repay_end_time" property="creditRepayEndTime" jdbcType="INTEGER" />
+	    <result column="credit_repay_last_time" property="creditRepayLastTime" jdbcType="INTEGER" />
+	    <result column="credit_repay_next_time" property="creditRepayNextTime" jdbcType="INTEGER" />
+	    <result column="credit_repay_yes_time" property="creditRepayYesTime" jdbcType="INTEGER" />
+	    <result column="end_time" property="endTime" jdbcType="INTEGER" />
+	    <result column="assign_num" property="assignNum" jdbcType="INTEGER" />
+	    <result column="del_flag" property="delFlag" jdbcType="TINYINT" />
+	    <result column="client" property="client" jdbcType="INTEGER" />
+	    <result column="create_time" property="createTime" jdbcType="INTEGER" />
+	    <result column="create_user_id" property="createUserId" jdbcType="INTEGER" />
+	    <result column="create_user_name" property="createUserName" jdbcType="VARCHAR" />
+	    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+	    <result column="update_user_id" property="updateUserId" jdbcType="INTEGER" />
+	    <result column="update_user_name" property="updateUserName" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Rule_Where_Clause">
+		<where>
+			(
+				NOT EXISTS (
+					SELECT
+						1
+					FROM
+						hyjf_debt_credit_tender ct
+					WHERE
+						ct.user_id = #{userId,jdbcType=INTEGER}
+					AND ct.`status` = 0
+					AND ct.credit_nid = bc.credit_nid
+					AND ct.assign_plan_nid = #{planNid,jdbcType=VARCHAR}
+					AND ct.assign_plan_order_id = #{accedeOrderId,jdbcType=VARCHAR}
+				)
+			)
+			<if test="accedeInvestMin != null and accedeInvestMin !='' ">
+				AND bc.credit_capital_wait + bc.credit_interest_advance_wait <![CDATA[>=]]> #{accedeInvestMin,jdbcType=DECIMAL}
+			</if>
+			<if test="accedeInvestMax != null and accedeInvestMax !='' ">
+				AND bc.credit_capital_wait + bc.credit_interest_advance_wait <![CDATA[<=]]> #{accedeInvestMax,jdbcType=DECIMAL}
+			</if>
+			AND bc.user_id <![CDATA[<>]]> #{userId,jdbcType=INTEGER}
+			AND bc.credit_status = 0
+			AND bc.repay_status = 0
+			AND bc.del_flag = 0
+			AND bc.actual_apr >= #{expectApr,jdbcType=DECIMAL}
+			AND bc.plan_nid = #{liquidatesPlanNid,jdbcType=VARCHAR}
+		</where>
+	</sql>
+	<select id="selectRuleDebtCredits" resultMap="BatchDebtCreditCustomizeMap" parameterType="Map">
+		SELECT
+			*
+		FROM
+			hyjf_debt_credit bc
+		<include refid="Rule_Where_Clause" />
+		ORDER BY bc.credit_capital_wait DESC
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	<sql id="Unrule_Where_Clause">
+		<where>
+			<if test="accedeInvestMin != null and accedeInvestMin !='' ">
+				AND bc.credit_capital_wait + bc.credit_interest_advance_wait <![CDATA[>=]]> #{accedeInvestMin,jdbcType=DECIMAL}
+			</if>
+			<if test="accedeInvestMax != null and accedeInvestMax !='' ">
+				AND bc.credit_capital_wait + bc.credit_interest_advance_wait <![CDATA[<=]]> #{accedeInvestMax,jdbcType=DECIMAL}
+			</if>
+			AND bc.user_id <![CDATA[<>]]> #{userId,jdbcType=INTEGER}
+			AND bc.credit_status = 0
+			AND bc.repay_status = 0
+			AND bc.del_flag = 0
+			AND bc.actual_apr >= #{expectApr,jdbcType=DECIMAL}
+			AND bc.plan_nid = #{liquidatesPlanNid,jdbcType=VARCHAR}
+		</where>
+	</sql>
+	<select id="selectUnruleDebtCredits" resultMap="BatchDebtCreditCustomizeMap" parameterType="Map">
+		SELECT
+			*
+		FROM
+			hyjf_debt_credit bc
+		<include refid="Unrule_Where_Clause" />
+		ORDER BY bc.credit_capital_wait DESC
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	<select id="countDebtCreditsAll" resultType="java.lang.Integer" parameterType="Map">
+		SELECT
+			COUNT(*)
+		FROM
+			hyjf_debt_credit bc
+		<where>
+			bc.plan_nid = #{liquidatesPlanNid,jdbcType=VARCHAR}
+		AND bc.is_liquidates = 0
+		AND bc.del_flag = 0
+		</where>
+	</select>
+	<select id="countDebtCreditSum" resultType="java.math.BigDecimal" parameterType="Map">
+		SELECT
+			SUM(bc.credit_capital_wait + bc.credit_interest_advance_wait)
+		FROM
+			hyjf_debt_credit bc
+		<where>
+			bc.plan_nid = #{planNid,jdbcType=VARCHAR}
+			AND bc.credit_status = 0
+			AND bc.del_flag = 0
+		</where>
+	</select>
+</mapper>

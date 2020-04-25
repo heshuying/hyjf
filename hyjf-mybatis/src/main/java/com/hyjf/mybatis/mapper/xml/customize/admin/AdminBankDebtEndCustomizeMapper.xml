@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.AdminBankDebtEndCustomizeMapper">
+
+	<select id="countBankDebtEndList" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.admin.AdminBankDebtEndCustomize">
+		SELECT
+			COUNT(1)
+		FROM
+			huiyingdai_borrow_recover AS hbr
+		LEFT JOIN huiyingdai_users hu ON hbr.user_id = hu.user_id
+		WHERE
+			(
+				(
+					hbr.recover_status = 1
+					AND hbr.debt_status = 0
+				)
+				OR (
+					hbr.recover_status = 0
+					AND hbr.debt_status = 0
+					AND hbr.credit_status = 2
+				)
+			)
+			AND hbr.auth_code IS NOT NULL
+			<if test="borrowNidSrch != null and borrowNidSrch !='' ">
+				AND hbr.borrow_nid LIKE CONCAT('%', #{borrowNidSrch}, '%')
+			</if>
+			<if test="mobileSrch != null and mobileSrch !='' ">
+				AND hu.mobile LIKE CONCAT('%', #{mobileSrch}, '%')
+			</if>
+			<if test="userNameSrch != null and userNameSrch !='' ">
+				AND hu.username LIKE CONCAT('%', #{userNameSrch}, '%')
+			</if>
+			<if test="authCodeSrch != null and authCodeSrch !='' ">
+				AND hbr.auth_code LIKE CONCAT('%', #{authCodeSrch}, '%')
+			</if>
+			<if test="tenderNidSrch != null and tenderNidSrch !='' ">
+				AND hbr.nid LIKE CONCAT('%', #{tenderNidSrch}, '%')
+			</if>
+	</select>
+	
+	<resultMap id="selectRecordListMap" type="com.hyjf.mybatis.model.customize.admin.AdminBankDebtEndCustomize">
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="user_id" property="userId" jdbcType="VARCHAR" />
+		<result column="username" property="userName" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="tenderNid" property="tenderNid" jdbcType="VARCHAR" />
+		<result column="auth_code" property="authCode" jdbcType="VARCHAR" />
+		<result column="recover_capital" property="recoverCapital" jdbcType="VARCHAR" />
+		<result column="credit_amount" property="creditAmount" jdbcType="VARCHAR" />
+		<result column="addtime" property="addTime" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectRecordList" resultMap="selectRecordListMap" parameterType="com.hyjf.mybatis.model.customize.admin.AdminBankDebtEndCustomize">
+		SELECT
+			hbr.borrow_nid,
+			hbr.user_id,
+			hu.username,
+			hu.mobile,
+			hbr.nid AS tenderNid,
+			hbr.auth_code,
+			hbr.recover_capital,
+			hbr.credit_amount,
+			hbr.addtime
+		FROM
+			huiyingdai_borrow_recover AS hbr
+		LEFT JOIN huiyingdai_users hu ON hbr.user_id = hu.user_id
+		WHERE
+			(
+				(
+					hbr.recover_status = 1
+					AND hbr.debt_status = 0
+				)
+				OR (
+					hbr.recover_status = 0
+					AND hbr.debt_status = 0
+					AND hbr.credit_status = 2
+				)
+			)
+			AND hbr.auth_code IS NOT NULL
+			<if test="borrowNidSrch != null and borrowNidSrch !='' ">
+				AND hbr.borrow_nid LIKE CONCAT('%', #{borrowNidSrch}, '%')
+			</if>
+			<if test="mobileSrch != null and mobileSrch !='' ">
+				AND hu.mobile LIKE CONCAT('%', #{mobileSrch}, '%')
+			</if>
+			<if test="userNameSrch != null and userNameSrch !='' ">
+				AND hu.username LIKE CONCAT('%', #{userNameSrch}, '%')
+			</if>
+			<if test="authCodeSrch != null and authCodeSrch !='' ">
+				AND hbr.auth_code LIKE CONCAT('%', #{authCodeSrch}, '%')
+			</if>
+			<if test="tenderNidSrch != null and tenderNidSrch !='' ">
+				AND hbr.nid LIKE CONCAT('%', #{tenderNidSrch}, '%')
+			</if>
+		ORDER BY
+			hbr.addtime DESC
+		<if test="limitStart >= 0" >
+			LIMIT #{limitStart} , #{limitEnd}
+		</if>
+	</select>
+
+	<select id="selectDebtEndList" resultMap="selectRecordListMap" parameterType="Map">
+		SELECT
+		hbr.borrow_nid,
+		hbr.user_id,
+		hu.username,
+		hu.mobile,
+		hbr.nid AS tenderNid,
+		hbr.auth_code,
+		hbr.recover_capital,
+		hbr.credit_amount,
+		hbr.addtime
+		FROM
+		huiyingdai_borrow_recover AS hbr
+		LEFT JOIN huiyingdai_users hu ON hbr.user_id = hu.user_id
+		WHERE
+		(
+			(
+			hbr.recover_status = 1
+			AND hbr.debt_status = 0
+			)
+			OR (
+			hbr.recover_status = 0
+			AND hbr.debt_status = 0
+			AND hbr.credit_status = 2
+			)
+		)
+		AND hbr.auth_code IS NOT NULL
+		ORDER BY
+		hbr.addtime DESC
+		<if test="limitStart >= 0" >
+			LIMIT #{limitStart} , #{limitEnd}
+		</if>
+	</select>
+
+	<select id="countNewBankDebtEndList" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.admin.AdminBankDebtEndCustomize">
+		SELECT
+			COUNT(1)
+		FROM
+			hyjf_bank_credit_end AS hbce
+		WHERE
+			1 = 1
+			<if test="userIdSrch != null and userIdSrch !='' ">
+				AND hbce.user_id = #{userIdSrch}
+			</if>
+			<if test="tenderUserIdSrch != null and tenderUserIdSrch !='' ">
+				AND hbce.tender_user_id = #{tenderUserIdSrch}
+			</if>
+			<if test="batchNoSrch != null and batchNoSrch !='' ">
+				AND hbce.batch_no = #{batchNoSrch,jdbcType=VARCHAR}
+			</if>
+			<if test="orderIdSrch != null and orderIdSrch !='' ">
+				AND hbce.order_id = #{orderIdSrch,jdbcType=VARCHAR}
+			</if>
+			<if test="statusSrch != null">
+				AND hbce.status = #{statusSrch}
+			</if>
+	</select>
+	
+	<resultMap id="selectNewRecordListMap" type="com.hyjf.mybatis.model.customize.admin.AdminBankDebtEndCustomize">
+		<result column="batch_no" property="batchNo" />
+		<result column="seq_no" property="seqNo" />
+		<result column="user_id" property="userId" />
+		<result column="tender_user_id" property="tenderUserId" />
+		<result column="order_id" property="orderId" />
+		<result column="borrow_nid" property="borrowNid" />
+		<result column="credit_end_type" property="creditEndType" />
+		<result column="received" property="received" />
+		<result column="auth_code" property="authCode" />
+		<result column="state" property="state" />
+		<result column="failmsg" property="failmsg" />
+		<result column="tx_date" property="txDate" jdbcType="VARCHAR" />
+		<result column="tx_time" property="txTime" jdbcType="VARCHAR" />
+		<result column="status" property="status"  />
+		<result column="tx_counts" property="txCounts"  />
+		<result column="update_time" property="updateTime"  />
+	</resultMap>
+	<select id="selectNewRecordList" resultMap="selectNewRecordListMap" parameterType="com.hyjf.mybatis.model.customize.admin.AdminBankDebtEndCustomize">
+		SELECT
+			hbce.batch_no,
+			hbce.seq_no,
+			hbce.user_id,
+			hbce.tender_user_id,
+			hbce.order_id,
+			hbce.borrow_nid,
+			hbce.credit_end_type,
+			hbce.received,
+			hbce.auth_code,
+			hbce.state,
+			hbce.failmsg,
+			hbce.tx_date,
+			hbce.tx_time,
+			hbce.status,
+			hbce.tx_counts,
+			hbce.update_time
+		FROM
+			hyjf_bank_credit_end AS hbce
+		WHERE
+			1 = 1
+			<if test="userIdSrch != null and userIdSrch !='' ">
+				AND hbce.user_id = #{userIdSrch}
+			</if>
+			<if test="tenderUserIdSrch != null and tenderUserIdSrch !='' ">
+				AND hbce.tender_user_id = #{tenderUserIdSrch}
+			</if>
+			<if test="batchNoSrch != null and batchNoSrch !='' ">
+				AND hbce.batch_no = #{batchNoSrch,jdbcType=VARCHAR}
+			</if>
+			<if test="orderIdSrch != null and orderIdSrch !='' ">
+				AND hbce.order_id = #{orderIdSrch,jdbcType=VARCHAR}
+			</if>
+			<if test="statusSrch != null">
+				AND hbce.status = #{statusSrch}
+			</if>
+		ORDER BY
+			hbce.tx_date DESC
+		<if test="limitStart >= 0" >
+			LIMIT #{limitStart} , #{limitEnd}
+		</if>
+	</select>
+
+</mapper>

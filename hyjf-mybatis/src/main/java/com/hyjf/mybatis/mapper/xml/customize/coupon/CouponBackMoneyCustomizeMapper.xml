@@ -1,0 +1,1472 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.coupon.CouponBackMoneyCustomizeMapper">
+	<resultMap id="selectCouponBackMoneyMap" type="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+		<result column="id" property="id" jdbcType="INTEGER" />
+		<result column="coupon_user_code" property="couponUserCode" jdbcType="VARCHAR" />
+		<result column="nid" property="nid" jdbcType="VARCHAR" />
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<result column="coupon_code" property="couponCode" jdbcType="VARCHAR" />
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="recover_period" property="recoverPeriod" jdbcType="VARCHAR" />
+		<result column="recover_interest" property="recoverInterest" jdbcType="VARCHAR" />
+		<result column="transfer_id" property="transferId" jdbcType="VARCHAR" />
+		<result column="received_flg" property="receivedFlg" jdbcType="VARCHAR" />
+		<result column="recover_time" property="recoverTime" jdbcType="VARCHAR" />
+		<result column="recover_capital" property="recoverCapital" jdbcType="VARCHAR" />
+		<result column="add_time" property="addTime" jdbcType="VARCHAR" />
+		<result column="coupon_source" property="couponSource" jdbcType="VARCHAR" />
+		<result column="coupon_content" property="couponContent" jdbcType="VARCHAR" />
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<result column="coupon_quota" property="couponQuota" jdbcType="VARCHAR" />
+		<result column="coupon_profit_time" property="couponProfitTime" jdbcType="VARCHAR" />
+		<result column="truename" property="truename" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="chinapnr_usrcustid" property="chinapnrUsrcustid" jdbcType="VARCHAR" />
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<result column="hcr_add_time" property="hcrAddTime" jdbcType="VARCHAR" />
+		<result column="recover_yestime" property="recoverYestime" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="selectCouponBackMoneyList_Where_Clause">
+		<where>
+			<if test="couponType != null and couponType != ''">
+				AND hcc.coupon_type=#{couponType}
+			</if>
+			
+			<!-- 订单号 -->
+			<if test="nid != null and nid != ''">
+				AND hbt.nid = #{nid}
+			</if>
+			<!-- 用户名 -->
+			<if test="username != null and username != ''">
+				AND hu.username = #{username}
+			</if>
+			<!-- 优惠券id -->
+			<if test="couponUserCode != null and couponUserCode != ''">
+				AND hcu.coupon_user_code = #{couponUserCode}
+			</if>
+			<!-- 优惠券编号 -->
+			<if test="couponCode != null and couponCode != ''">
+				AND hcu.coupon_code = #{couponCode}
+			</if>
+			<!-- 项目编号 -->
+			<if test="borrowNid != null and borrowNid != ''">
+				AND hbt.borrow_nid = #{borrowNid}
+			</if>
+			<!-- 状态 -->
+			<if test="receivedFlg != null and receivedFlg != ''">
+				AND hcr.received_flg = #{receivedFlg}
+			</if>
+			<!-- 时间 -->
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND hcr.recover_time <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch != ''">
+				AND hcr.recover_time <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+		</where>
+	</sql> 
+	<select id="selectCouponBackMoneyDJList" resultMap="selectCouponBackMoneyMap" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				hcu.id id,
+				hcu.coupon_user_code coupon_user_code,
+				hbt.nid nid,
+				hu.username username,
+				hcc.coupon_code coupon_code,
+				hbt.borrow_nid borrow_nid,
+				CONCAT('第',hcr.recover_period, '期') recover_period,
+				hcr.recover_account recover_interest,
+				hcr.transfer_id transfer_id,
+				pa.name received_flg,
+				FROM_UNIXTIME(
+					hcr.recover_time,
+					'%Y-%m-%d'
+				) recover_time,
+			IFNULL(hbten.account,'0.00') recover_capital,
+			FROM_UNIXTIME(
+					hbt.addtime,
+					'%Y-%m-%d'
+				) add_time,
+		CASE
+				WHEN hcu.coupon_source = 1 THEN
+					'手动发放'
+				WHEN hcu.coupon_source = 2 THEN
+					'活动发放'
+				WHEN hcu.coupon_source = 3 THEN
+					'会员礼包'
+				ELSE
+					''
+				END AS coupon_source,
+
+				CASE
+				WHEN hcu.coupon_source = 1 THEN
+					hcu.content
+				WHEN hcu.coupon_source = 2 THEN
+					al.title
+				WHEN hcu.coupon_source = 3 THEN
+					IF(vi.vip_level=1,"欢迎礼包","升级礼包")
+				ELSE
+					''
+				END AS coupon_content
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=1
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN huiyingdai_activity_list al ON hcu.activity_id = al.id
+			LEFT JOIN hyjf_vip_auth va ON hcu.coupon_code=va.coupon_code
+			LEFT JOIN hyjf_vip_info vi ON  va.vip_id=vi.id
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN huiyingdai_borrow_tender hbten ON hcrt.real_tender_id=hbten.nid
+			<include refid="selectCouponBackMoneyList_Where_Clause" /> 
+			ORDER BY hcr.recover_time DESC
+			<if test="limitStart >= 0" >
+		      LIMIT #{limitStart} , #{limitEnd}
+		    </if>
+	</select>
+	
+    <select id="countCouponBackMoneyDJ" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+	     	SELECT
+				count(hct.id)
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=1
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			<include refid="selectCouponBackMoneyList_Where_Clause" />
+	</select>
+	
+	<select id="exportCouponBackMoneyDJList" resultMap="selectCouponBackMoneyMap" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				hcu.id id,
+				hcu.coupon_user_code coupon_user_code,
+				hbt.nid nid,
+				hu.username username,
+				hcc.coupon_code coupon_code,
+				hbt.borrow_nid borrow_nid,
+				CONCAT('第',hcr.recover_period, '期') recover_period,
+				hcr.recover_account recover_interest,
+				hcr.transfer_id transfer_id,
+				pa.name received_flg,
+				FROM_UNIXTIME(
+					hcr.recover_time,
+					'%Y-%m-%d'
+				) recover_time,
+			IFNULL(hbten.account,'0.00') recover_capital,
+			FROM_UNIXTIME(
+					hbt.addtime,
+					'%Y-%m-%d'
+				) add_time,
+		CASE
+				WHEN hcu.coupon_source = 1 THEN
+					'手动发放'
+				WHEN hcu.coupon_source = 2 THEN
+					'活动发放'
+				WHEN hcu.coupon_source = 3 THEN
+					'会员礼包'
+				ELSE
+					''
+				END AS coupon_source,
+
+				CASE
+				WHEN hcu.coupon_source = 1 THEN
+					hcu.content
+				WHEN hcu.coupon_source = 2 THEN
+					al.title
+				WHEN hcu.coupon_source = 3 THEN
+					IF(vi.vip_level=1,"欢迎礼包","升级礼包")
+				ELSE
+					''
+				END AS coupon_content
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=1
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN huiyingdai_activity_list al ON hcu.activity_id = al.id
+			LEFT JOIN hyjf_vip_auth va ON hcu.coupon_code=va.coupon_code
+			LEFT JOIN hyjf_vip_info vi ON  va.vip_id=vi.id
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN huiyingdai_borrow_tender hbten ON hcrt.real_tender_id=hbten.nid
+			<include refid="selectCouponBackMoneyList_Where_Clause" /> 
+			ORDER BY hcr.recover_time DESC
+	</select>
+	
+	
+	
+	<select id="selectCouponBackMoneyJXList" resultMap="selectCouponBackMoneyMap" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				hcu.id id,
+				hcu.coupon_user_code coupon_user_code,
+				hbt.nid nid,
+				hu.username username,
+				hcc.coupon_code coupon_code,
+				hbt.borrow_nid borrow_nid,
+				CONCAT('第',hcr.recover_period, '期') recover_period,
+				hcr.recover_account recover_interest,
+				hcr.transfer_id transfer_id,
+				pa.name received_flg,
+				FROM_UNIXTIME(
+					hcr.recover_time,
+					'%Y-%m-%d'
+				) recover_time,
+			IFNULL(hbten.account,'0.00') recover_capital,
+			FROM_UNIXTIME(
+					hbt.addtime,
+					'%Y-%m-%d'
+				) add_time,
+		CASE
+				WHEN hcu.coupon_source = 1 THEN
+					'手动发放'
+				WHEN hcu.coupon_source = 2 THEN
+					'活动发放'
+				WHEN hcu.coupon_source = 3 THEN
+					'会员礼包'
+				ELSE
+					''
+				END AS coupon_source,
+
+				CASE
+				WHEN hcu.coupon_source = 1 THEN
+					hcu.content
+				WHEN hcu.coupon_source = 2 THEN
+					al.title
+				WHEN hcu.coupon_source = 3 THEN
+					IF(vi.vip_level=1,"欢迎礼包","升级礼包")
+				ELSE
+					''
+				END AS coupon_content
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=1
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN huiyingdai_activity_list al ON hcu.activity_id = al.id
+			LEFT JOIN hyjf_vip_auth va ON hcu.coupon_code=va.coupon_code
+			LEFT JOIN hyjf_vip_info vi ON  va.vip_id=vi.id
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN huiyingdai_borrow_tender hbten ON hcrt.real_tender_id=hbten.nid
+			<include refid="selectCouponBackMoneyList_Where_Clause" /> 
+			ORDER BY hcr.recover_time DESC
+			<if test="limitStart >= 0" >
+		      LIMIT #{limitStart} , #{limitEnd}
+		    </if>
+	</select>
+	
+    <select id="countCouponBackMoneyJX" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+	     	SELECT
+				count(hct.id)
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=1
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			<include refid="selectCouponBackMoneyList_Where_Clause" />
+	</select>
+	
+	<select id="queryRecoverInterestTotle" resultType="java.lang.String" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				IFNULL(sum(hcr.recover_account),'0.00')
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=1
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN huiyingdai_activity_list al ON hcu.activity_id = al.id
+			LEFT JOIN hyjf_vip_auth va ON hcu.coupon_code=va.coupon_code
+			LEFT JOIN hyjf_vip_info vi ON  va.vip_id=vi.id
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN huiyingdai_borrow_tender hbten ON hcrt.real_tender_id=hbten.nid
+			<include refid="selectCouponBackMoneyList_Where_Clause" /> 
+	</select>
+	
+	<select id="queryInvestTotal" resultType="java.lang.String" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				IFNULL(sum(hbten.account),'0.00')
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=1
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN huiyingdai_activity_list al ON hcu.activity_id = al.id
+			LEFT JOIN hyjf_vip_auth va ON hcu.coupon_code=va.coupon_code
+			LEFT JOIN hyjf_vip_info vi ON  va.vip_id=vi.id
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN huiyingdai_borrow_tender hbten ON hcrt.real_tender_id=hbten.nid
+			<include refid="selectCouponBackMoneyList_Where_Clause" /> 
+	</select>
+	
+	<select id="exportCouponBackMoneyJXList" resultMap="selectCouponBackMoneyMap" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				hcu.id id,
+				hcu.coupon_user_code coupon_user_code,
+				hbt.nid nid,
+				hu.username username,
+				hcc.coupon_code coupon_code,
+				hbt.borrow_nid borrow_nid,
+				CONCAT('第',hcr.recover_period, '期') recover_period,
+				hcr.recover_account recover_interest,
+				hcr.transfer_id transfer_id,
+				pa.name received_flg,
+				FROM_UNIXTIME(
+					hcr.recover_time,
+					'%Y-%m-%d'
+				) recover_time,
+			IFNULL(hbten.account,'0.00') recover_capital,
+			FROM_UNIXTIME(
+					hbt.addtime,
+					'%Y-%m-%d'
+				) add_time,
+		CASE
+				WHEN hcu.coupon_source = 1 THEN
+					'手动发放'
+				WHEN hcu.coupon_source = 2 THEN
+					'活动发放'
+				WHEN hcu.coupon_source = 3 THEN
+					'会员礼包'
+				ELSE
+					''
+				END AS coupon_source,
+
+				CASE
+				WHEN hcu.coupon_source = 1 THEN
+					hcu.content
+				WHEN hcu.coupon_source = 2 THEN
+					al.title
+				WHEN hcu.coupon_source = 3 THEN
+					IF(vi.vip_level=1,"欢迎礼包","升级礼包")
+				ELSE
+					''
+				END AS coupon_content
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=1
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN huiyingdai_activity_list al ON hcu.activity_id = al.id
+			LEFT JOIN hyjf_vip_auth va ON hcu.coupon_code=va.coupon_code
+			LEFT JOIN hyjf_vip_info vi ON  va.vip_id=vi.id
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN huiyingdai_borrow_tender hbten ON hcrt.real_tender_id=hbten.nid
+			<include refid="selectCouponBackMoneyList_Where_Clause" />
+			ORDER BY hcr.recover_time DESC 
+	</select>
+	
+	
+	
+	
+	<select id="countCouponBackMoneyTY" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+	     	SELECT
+				count(1)
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=1
+			INNER JOIN huiyingdai_borrow hb ON hbt.borrow_nid = hb.borrow_nid
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			<include refid="selectCouponBackMoneyList_Where_Clause" />
+	</select>
+	
+	<select id="selectCouponBackMoneyTYList" resultMap="selectCouponBackMoneyMap" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				hcu.id id,
+				hbt.nid nid,
+				hu.username username,
+				IFNULL(hbten.account,'0.00') recover_capital,
+				hcu.coupon_user_code coupon_user_code,
+				hbt.borrow_nid borrow_nid,
+				CONCAT(hb.borrow_apr,'%') borrow_apr,
+				hcr.recover_account recover_interest,
+				hcc.coupon_quota coupon_quota,
+				hcc.coupon_profit_time coupon_profit_time,
+				FROM_UNIXTIME(
+					hcr.recover_time,
+					'%Y-%m-%d'
+				) recover_time,
+				hcr.recover_account recover_interest,
+				pa.name received_flg,
+				FROM_UNIXTIME(
+					hbt.addtime,
+					'%Y-%m-%d'
+				) add_time,
+			IFNULL(hcr.transfer_id,'') transfer_id
+
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=1
+			INNER JOIN huiyingdai_borrow hb ON hbt.borrow_nid = hb.borrow_nid
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN huiyingdai_borrow_tender hbten ON hcrt.real_tender_id=hbten.nid
+			<include refid="selectCouponBackMoneyList_Where_Clause" /> 
+			ORDER BY hcr.recover_time DESC
+			<if test="limitStart >= 0" >
+		      LIMIT #{limitStart} , #{limitEnd}
+		    </if>
+	</select>
+	
+	<select id="exportCouponBackMoneyTYList" resultMap="selectCouponBackMoneyMap" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				hu.username username,
+				hui.truename truename,
+				hu.mobile mobile,
+				hac.chinapnr_usrcustid chinapnr_usrcustid,
+				hbt.nid nid,
+				hb.name borrow_name,
+				hb.borrow_period borrow_period,
+				CONCAT(hb.borrow_apr,'%') borrow_apr,
+				hbt.borrow_nid borrow_nid,
+				hcc.coupon_quota coupon_quota,
+				hcc.coupon_profit_time coupon_profit_time,
+				hcu.coupon_user_code coupon_user_code,
+				FROM_UNIXTIME(
+					hbt.addtime,
+					'%Y-%m-%d'
+				) add_time,
+				FROM_UNIXTIME(
+					hcr.add_time,
+					'%Y-%m-%d'
+				) hcr_add_time,
+				FROM_UNIXTIME(
+					hcr.recover_time,
+					'%Y-%m-%d'
+				) recover_time,
+				hcr.recover_account recover_interest,
+				pa.name received_flg,
+				IFNULL(hcr.transfer_id,'') transfer_id,
+				FROM_UNIXTIME(
+					hcr.recover_yestime,
+					'%Y-%m-%d'
+				) recover_yestime,
+				IFNULL(hbten.account,'0.00') recover_capital
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=1
+			INNER JOIN huiyingdai_borrow hb ON hbt.borrow_nid = hb.borrow_nid
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN huiyingdai_users_info hui ON hui.user_id = hu.user_id
+			INNER JOIN huiyingdai_account_chinapnr hac ON hac.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN huiyingdai_borrow_tender hbten ON hcrt.real_tender_id=hbten.nid
+			<include refid="selectCouponBackMoneyList_Where_Clause" />
+			ORDER BY hcr.recover_time DESC 
+	</select>
+	
+	
+	
+	<!-- *******************************************汇添金优惠券回款************************************************************* -->
+	
+	
+	<sql id="selectCouponBackMoneyHtjList_Where_Clause">
+		<where>
+			<if test="couponType != null and couponType != ''">
+				AND hcc.coupon_type=#{couponType}
+			</if>
+			
+			<!-- 订单号 -->
+			<if test="nid != null and nid != ''">
+				AND hbt.nid LIKE CONCAT('%', #{nid}, '%')
+			</if>
+			<!-- 用户名 -->
+			<if test="username != null and username != ''">
+				AND hu.username LIKE CONCAT('%', #{username}, '%')
+			</if>
+			<!-- 优惠券id -->
+			<if test="couponUserCode != null and couponUserCode != ''">
+				AND hcu.coupon_user_code LIKE CONCAT('%', #{couponUserCode}, '%')
+			</if>
+			<!-- 优惠券编号 -->
+			<if test="couponCode != null and couponCode != ''">
+				AND hcc.coupon_code LIKE CONCAT('%', #{couponCode}, '%')
+			</if>
+			<!-- 项目编号 -->
+			<if test="borrowNid != null and borrowNid != ''">
+				AND hbt.borrow_nid LIKE CONCAT('%', #{borrowNid}, '%')
+			</if>
+			<!-- 状态 -->
+			<if test="receivedFlg != null and receivedFlg != ''">
+				AND hcr.received_flg = #{receivedFlg}
+			</if>
+			<!-- 时间 -->
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND FROM_UNIXTIME( hcr.recover_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch != ''">
+				AND FROM_UNIXTIME( hcr.recover_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+		</where>
+	</sql> 
+	<select id="selectCouponBackMoneyDJHtjList" resultMap="selectCouponBackMoneyMap" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				hcu.id id,
+				hcu.coupon_user_code coupon_user_code,
+				hbt.nid nid,
+				hu.username username,
+				hcc.coupon_code coupon_code,
+				hbt.borrow_nid borrow_nid,
+				CONCAT('第',hcr.recover_period, '期') recover_period,
+				hcr.recover_account recover_interest,
+				hcr.transfer_id transfer_id,
+				pa.name received_flg,
+				FROM_UNIXTIME(
+					hcr.recover_time,
+					'%Y-%m-%d'
+				) recover_time,
+				FROM_UNIXTIME(
+					hcr.recover_yestime,
+					'%Y-%m-%d'
+				) recover_yestime,
+			IFNULL(hdpa.accede_account,'0.00') recover_capital,
+			FROM_UNIXTIME(
+					hbt.addtime,
+					'%Y-%m-%d'
+				) add_time,
+			CASE
+				WHEN hcu.coupon_source = 1 THEN
+					'手动发放'
+				WHEN hcu.coupon_source = 2 THEN
+					'活动发放'
+				WHEN hcu.coupon_source = 3 THEN
+					'会员礼包'
+				ELSE
+					''
+				END AS coupon_source,
+
+				CASE
+				WHEN hcu.coupon_source = 1 THEN
+					hcu.content
+				WHEN hcu.coupon_source = 2 THEN
+					al.title
+				WHEN hcu.coupon_source = 3 THEN
+					IF(vi.vip_level=1,"欢迎礼包","升级礼包")
+				ELSE
+					''
+				END AS coupon_content
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=2
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN huiyingdai_activity_list al ON hcu.activity_id = al.id
+			LEFT JOIN hyjf_vip_auth va ON hcu.coupon_code=va.coupon_code
+			LEFT JOIN hyjf_vip_info vi ON  va.vip_id=vi.id
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN hyjf_debt_plan_accede hdpa ON hcrt.real_tender_id=hdpa.accede_order_id
+			<include refid="selectCouponBackMoneyHtjList_Where_Clause" /> 
+			ORDER BY recover_time DESC
+			<if test="limitStart >= 0" >
+		      LIMIT #{limitStart} , #{limitEnd}
+		    </if>
+	</select>
+	
+    <select id="countCouponBackMoneyDJHtj" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+	     	SELECT
+				count(1)
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=2
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN huiyingdai_activity_list al ON hcu.activity_id = al.id
+			LEFT JOIN hyjf_vip_auth va ON hcu.coupon_code=va.coupon_code
+			LEFT JOIN hyjf_vip_info vi ON  va.vip_id=vi.id
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN hyjf_debt_plan_accede hdpa ON hcrt.real_tender_id=hdpa.accede_order_id
+			<include refid="selectCouponBackMoneyHtjList_Where_Clause" />
+	</select>
+	
+	<select id="exportCouponBackMoneyDJHtjList" resultMap="selectCouponBackMoneyMap" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				hcu.id id,
+				hcu.coupon_user_code coupon_user_code,
+				hbt.nid nid,
+				hu.username username,
+				hcc.coupon_code coupon_code,
+				hbt.borrow_nid borrow_nid,
+				CONCAT('第',hcr.recover_period, '期') recover_period,
+				hcr.recover_account recover_interest,
+				hcr.transfer_id transfer_id,
+				pa.name received_flg,
+				FROM_UNIXTIME(
+					hcr.recover_time,
+					'%Y-%m-%d'
+				) recover_time,
+			FROM_UNIXTIME(
+					hcr.recover_yestime,
+					'%Y-%m-%d'
+				) recover_yestime,
+			IFNULL(hdpa.accede_account,'0.00') recover_capital,
+			FROM_UNIXTIME(
+					hbt.addtime,
+					'%Y-%m-%d'
+				) add_time,
+		CASE
+				WHEN hcu.coupon_source = 1 THEN
+					'手动发放'
+				WHEN hcu.coupon_source = 2 THEN
+					'活动发放'
+				WHEN hcu.coupon_source = 3 THEN
+					'会员礼包'
+				ELSE
+					''
+				END AS coupon_source,
+
+				CASE
+				WHEN hcu.coupon_source = 1 THEN
+					hcu.content
+				WHEN hcu.coupon_source = 2 THEN
+					al.title
+				WHEN hcu.coupon_source = 3 THEN
+					IF(vi.vip_level=1,"欢迎礼包","升级礼包")
+				ELSE
+					''
+				END AS coupon_content
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=2
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN huiyingdai_activity_list al ON hcu.activity_id = al.id
+			LEFT JOIN hyjf_vip_auth va ON hcu.coupon_code=va.coupon_code
+			LEFT JOIN hyjf_vip_info vi ON  va.vip_id=vi.id
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN hyjf_debt_plan_accede hdpa ON hcrt.real_tender_id=hdpa.accede_order_id
+			<include refid="selectCouponBackMoneyHtjList_Where_Clause" /> 
+			ORDER BY recover_time DESC
+	</select>
+	
+	
+	
+	<select id="selectCouponBackMoneyJXHtjList" resultMap="selectCouponBackMoneyMap" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				hcu.id id,
+				hcu.coupon_user_code coupon_user_code,
+				hbt.nid nid,
+				hu.username username,
+				hcc.coupon_code coupon_code,
+				hbt.borrow_nid borrow_nid,
+				CONCAT('第',hcr.recover_period, '期') recover_period,
+				hcr.recover_account recover_interest,
+				hcr.transfer_id transfer_id,
+				pa.name received_flg,
+				FROM_UNIXTIME(
+					hcr.recover_time,
+					'%Y-%m-%d'
+				) recover_time,
+			FROM_UNIXTIME(
+					hcr.recover_yestime,
+					'%Y-%m-%d'
+				) recover_yestime,
+			IFNULL(hdpa.accede_account,'0.00') recover_capital,
+			FROM_UNIXTIME(
+					hbt.addtime,
+					'%Y-%m-%d'
+				) add_time,
+		CASE
+				WHEN hcu.coupon_source = 1 THEN
+					'手动发放'
+				WHEN hcu.coupon_source = 2 THEN
+					'活动发放'
+				WHEN hcu.coupon_source = 3 THEN
+					'会员礼包'
+				ELSE
+					''
+				END AS coupon_source,
+
+				CASE
+				WHEN hcu.coupon_source = 1 THEN
+					hcu.content
+				WHEN hcu.coupon_source = 2 THEN
+					al.title
+				WHEN hcu.coupon_source = 3 THEN
+					IF(vi.vip_level=1,"欢迎礼包","升级礼包")
+				ELSE
+					''
+				END AS coupon_content
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=2
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN huiyingdai_activity_list al ON hcu.activity_id = al.id
+			LEFT JOIN hyjf_vip_auth va ON hcu.coupon_code=va.coupon_code
+			LEFT JOIN hyjf_vip_info vi ON  va.vip_id=vi.id
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN hyjf_debt_plan_accede hdpa ON hcrt.real_tender_id=hdpa.accede_order_id
+			<include refid="selectCouponBackMoneyHtjList_Where_Clause" /> 
+			ORDER BY recover_time DESC
+			<if test="limitStart >= 0" >
+		      LIMIT #{limitStart} , #{limitEnd}
+		    </if>
+	</select>
+	
+    <select id="countCouponBackMoneyJXHtj" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+	     	SELECT
+				count(1)
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=2
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN huiyingdai_activity_list al ON hcu.activity_id = al.id
+			LEFT JOIN hyjf_vip_auth va ON hcu.coupon_code=va.coupon_code
+			LEFT JOIN hyjf_vip_info vi ON  va.vip_id=vi.id
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN hyjf_debt_plan_accede hdpa ON hcrt.real_tender_id=hdpa.accede_order_id
+			<include refid="selectCouponBackMoneyHtjList_Where_Clause" />
+	</select>
+	
+	<select id="queryRecoverInterestTotleHtj" resultType="java.lang.String" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				sum(hcr.recover_account)
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=2
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN huiyingdai_activity_list al ON hcu.activity_id = al.id
+			LEFT JOIN hyjf_vip_auth va ON hcu.coupon_code=va.coupon_code
+			LEFT JOIN hyjf_vip_info vi ON  va.vip_id=vi.id
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN hyjf_debt_plan_accede hdpa ON hcrt.real_tender_id=hdpa.accede_order_id
+			<include refid="selectCouponBackMoneyHtjList_Where_Clause" /> 
+	</select>
+	
+	<select id="exportCouponBackMoneyJXHtjList" resultMap="selectCouponBackMoneyMap" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				hcu.id id,
+				hcu.coupon_user_code coupon_user_code,
+				hbt.nid nid,
+				hu.username username,
+				hcc.coupon_code coupon_code,
+				hbt.borrow_nid borrow_nid,
+				CONCAT('第',hcr.recover_period, '期') recover_period,
+				hcr.recover_account recover_interest,
+				hcr.transfer_id transfer_id,
+				pa.name received_flg,
+				FROM_UNIXTIME(
+					hcr.recover_time,
+					'%Y-%m-%d'
+				) recover_time,
+			FROM_UNIXTIME(
+					hcr.recover_yestime,
+					'%Y-%m-%d'
+				) recover_yestime,
+			IFNULL(hdpa.accede_account,'0.00') recover_capital,
+			FROM_UNIXTIME(
+					hbt.addtime,
+					'%Y-%m-%d'
+				) add_time,
+		CASE
+				WHEN hcu.coupon_source = 1 THEN
+					'手动发放'
+				WHEN hcu.coupon_source = 2 THEN
+					'活动发放'
+				WHEN hcu.coupon_source = 3 THEN
+					'会员礼包'
+				ELSE
+					''
+				END AS coupon_source,
+
+				CASE
+				WHEN hcu.coupon_source = 1 THEN
+					hcu.content
+				WHEN hcu.coupon_source = 2 THEN
+					al.title
+				WHEN hcu.coupon_source = 3 THEN
+					IF(vi.vip_level=1,"欢迎礼包","升级礼包")
+				ELSE
+					''
+				END AS coupon_content
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=2
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN huiyingdai_activity_list al ON hcu.activity_id = al.id
+			LEFT JOIN hyjf_vip_auth va ON hcu.coupon_code=va.coupon_code
+			LEFT JOIN hyjf_vip_info vi ON  va.vip_id=vi.id
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN hyjf_debt_plan_accede hdpa ON hcrt.real_tender_id=hdpa.accede_order_id
+			<include refid="selectCouponBackMoneyHtjList_Where_Clause" />
+			ORDER BY recover_time DESC 
+	</select>
+	
+	
+	
+	
+	<select id="countCouponBackMoneyTYHtj" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+	     	SELECT
+				count(1)
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=2
+			INNER JOIN hyjf_debt_plan hdp ON hbt.borrow_nid = hdp.debt_plan_nid
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN hyjf_debt_plan_accede hdpa ON hcrt.real_tender_id=hdpa.accede_order_id
+			<include refid="selectCouponBackMoneyHtjList_Where_Clause" />
+	</select>
+	
+	<select id="selectCouponBackMoneyTYHtjList" resultMap="selectCouponBackMoneyMap" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				hcu.id id,
+				hbt.nid nid,
+				hu.username username,
+				IFNULL(hdpa.accede_account,'0.00') recover_capital,
+				hcu.coupon_user_code coupon_user_code,
+				hbt.borrow_nid borrow_nid,
+				CONCAT(hdp.expect_apr, '%') borrow_apr,
+				hcr.recover_account recover_interest,
+				hcc.coupon_quota coupon_quota,
+				hcc.coupon_profit_time coupon_profit_time,
+				FROM_UNIXTIME(
+					hcr.recover_time,
+					'%Y-%m-%d'
+				) recover_time,
+				FROM_UNIXTIME(
+					hcr.recover_yestime,
+					'%Y-%m-%d'
+				) recover_yestime,
+				FROM_UNIXTIME(
+					hcr.recover_interest_yes,
+					'%Y-%m-%d'
+				) recover_interest_yes,
+				pa.name received_flg,
+				FROM_UNIXTIME(
+					hbt.addtime,
+					'%Y-%m-%d'
+				) add_time,
+			IFNULL(hcr.transfer_id,'') transfer_id
+
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=2
+			INNER JOIN hyjf_debt_plan hdp ON hbt.borrow_nid = hdp.debt_plan_nid
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN hyjf_debt_plan_accede hdpa ON hcrt.real_tender_id=hdpa.accede_order_id
+			<include refid="selectCouponBackMoneyHtjList_Where_Clause" /> 
+			ORDER BY recover_time DESC
+			<if test="limitStart >= 0" >
+		      LIMIT #{limitStart} , #{limitEnd}
+		    </if>
+	</select>
+	
+	<select id="exportCouponBackMoneyTYHtjList" resultMap="selectCouponBackMoneyMap" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				hu.username username,
+				hui.truename truename,
+				hu.mobile mobile,
+				hac.chinapnr_usrcustid chinapnr_usrcustid,
+				hbt.nid nid,
+				hdp.debt_plan_name borrow_name,
+				hdp.debt_lock_period borrow_period,
+				CONCAT(hdp.expect_apr, '%') borrow_apr,
+				hbt.borrow_nid borrow_nid,
+				hcc.coupon_quota coupon_quota,
+				hcc.coupon_profit_time coupon_profit_time,
+				hcu.coupon_user_code coupon_user_code,
+				FROM_UNIXTIME(
+					hbt.addtime,
+					'%Y-%m-%d'
+				) add_time,
+				FROM_UNIXTIME(
+					hcr.add_time,
+					'%Y-%m-%d'
+				) hcr_add_time,
+				FROM_UNIXTIME(
+					hcr.recover_time,
+					'%Y-%m-%d'
+				) recover_time,
+				hcr.recover_account recover_interest,
+				pa.name received_flg,
+				IFNULL(hcr.transfer_id,'') transfer_id,
+				FROM_UNIXTIME(
+					hcr.recover_yestime,
+					'%Y-%m-%d'
+				) recover_yestime,
+				IFNULL(hdpa.accede_account,'0.00') recover_capital
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=2
+			INNER JOIN hyjf_debt_plan hdp ON hbt.borrow_nid = hdp.debt_plan_nid
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN huiyingdai_users_info hui ON hui.user_id = hu.user_id
+			INNER JOIN huiyingdai_account_chinapnr hac ON hac.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN hyjf_debt_plan_accede hdpa ON hcrt.real_tender_id=hdpa.accede_order_id
+			<include refid="selectCouponBackMoneyHtjList_Where_Clause" />
+			ORDER BY recover_time DESC 
+	</select>
+	<select id="queryInvestTotalHtj" resultType="java.lang.String" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				IFNULL(sum(hdpa.accede_account),'0.00')
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=2
+			INNER JOIN hyjf_debt_plan hdp ON hbt.borrow_nid = hdp.debt_plan_nid
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN huiyingdai_users_info hui ON hui.user_id = hu.user_id
+			INNER JOIN huiyingdai_account_chinapnr hac ON hac.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN hyjf_debt_plan_accede hdpa ON hcrt.real_tender_id=hdpa.accede_order_id
+			<include refid="selectCouponBackMoneyHtjList_Where_Clause" />
+	</select>
+	
+	<!-- *****************************************汇计划优惠券还款***************************************** -->
+		<sql id="selectCouponBackMoneyHjhList_Where_Clause">
+		<where>
+			<if test="couponType != null and couponType != ''">
+				AND hcc.coupon_type=#{couponType}
+			</if>
+			
+			<!-- 订单号 -->
+			<if test="nid != null and nid != ''">
+				AND hbt.nid = #{nid}
+			</if>
+			<!-- 用户名 -->
+			<if test="username != null and username != ''">
+				AND hu.username = #{username}
+			</if>
+			<!-- 优惠券id -->
+			<if test="couponUserCode != null and couponUserCode != ''">
+				AND hcu.coupon_user_code = #{couponUserCode}
+			</if>
+			<!-- 优惠券编号 -->
+			<if test="couponCode != null and couponCode != ''">
+				AND hcu.coupon_code = #{couponCode}
+			</if>
+			<!-- 项目编号 -->
+			<if test="borrowNid != null and borrowNid != ''">
+				AND hbt.borrow_nid = #{borrowNid}
+			</if>
+			<!-- 状态 -->
+			<if test="receivedFlg != null and receivedFlg != ''">
+				AND hcr.received_flg = #{receivedFlg}
+			</if>
+			<!-- 时间 -->
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND hcr.recover_time <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch != ''">
+				AND hcr.recover_time <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+		</where>
+	</sql> 
+	<select id="selectCouponBackMoneyDJHjhList" resultMap="selectCouponBackMoneyMap" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				hcu.id id,
+				hcu.coupon_user_code coupon_user_code,
+				hbt.nid nid,
+				hu.username username,
+				hcc.coupon_code coupon_code,
+				hbt.borrow_nid borrow_nid,
+				CONCAT('第',hcr.recover_period, '期') recover_period,
+				hcr.recover_account recover_interest,
+				hcr.transfer_id transfer_id,
+				pa.name received_flg,
+				FROM_UNIXTIME(
+					hcr.recover_time,
+					'%Y-%m-%d'
+				) recover_time,
+			IFNULL(hha.accede_account,'0.00') recover_capital,
+			FROM_UNIXTIME(
+					hbt.addtime,
+					'%Y-%m-%d'
+				) add_time,
+		CASE
+				WHEN hcu.coupon_source = 1 THEN
+					'手动发放'
+				WHEN hcu.coupon_source = 2 THEN
+					'活动发放'
+				WHEN hcu.coupon_source = 3 THEN
+					'会员礼包'
+				ELSE
+					''
+				END AS coupon_source,
+
+				CASE
+				WHEN hcu.coupon_source = 1 THEN
+					hcu.content
+				WHEN hcu.coupon_source = 2 THEN
+					al.title
+				WHEN hcu.coupon_source = 3 THEN
+					IF(vi.vip_level=1,"欢迎礼包","升级礼包")
+				ELSE
+					''
+				END AS coupon_content
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=3
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN huiyingdai_activity_list al ON hcu.activity_id = al.id
+			LEFT JOIN hyjf_vip_auth va ON hcu.coupon_code=va.coupon_code
+			LEFT JOIN hyjf_vip_info vi ON  va.vip_id=vi.id
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN hyjf_hjh_accede hha ON hcrt.real_tender_id=hha.accede_order_id
+			<include refid="selectCouponBackMoneyHjhList_Where_Clause" /> 
+			ORDER BY hcr.recover_time DESC
+			<if test="limitStart >= 0" >
+		      LIMIT #{limitStart} , #{limitEnd}
+		    </if>
+	</select>
+	
+    <select id="countCouponBackMoneyDJHjh" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+	     	SELECT
+				count(hct.id)
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=3
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			<include refid="selectCouponBackMoneyHjhList_Where_Clause" />
+	</select>
+	
+	<select id="exportCouponBackMoneyDJHjhList" resultMap="selectCouponBackMoneyMap" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				hcu.id id,
+				hcu.coupon_user_code coupon_user_code,
+				hbt.nid nid,
+				hu.username username,
+				hcc.coupon_code coupon_code,
+				hbt.borrow_nid borrow_nid,
+				CONCAT('第',hcr.recover_period, '期') recover_period,
+				hcr.recover_account recover_interest,
+				hcr.transfer_id transfer_id,
+				pa.name received_flg,
+				FROM_UNIXTIME(
+					hcr.recover_time,
+					'%Y-%m-%d'
+				) recover_time,
+			IFNULL(hha.accede_account,'0.00') recover_capital,
+			FROM_UNIXTIME(
+					hbt.addtime,
+					'%Y-%m-%d'
+				) add_time,
+		CASE
+				WHEN hcu.coupon_source = 1 THEN
+					'手动发放'
+				WHEN hcu.coupon_source = 2 THEN
+					'活动发放'
+				WHEN hcu.coupon_source = 3 THEN
+					'会员礼包'
+				ELSE
+					''
+				END AS coupon_source,
+
+				CASE
+				WHEN hcu.coupon_source = 1 THEN
+					hcu.content
+				WHEN hcu.coupon_source = 2 THEN
+					al.title
+				WHEN hcu.coupon_source = 3 THEN
+					IF(vi.vip_level=1,"欢迎礼包","升级礼包")
+				ELSE
+					''
+				END AS coupon_content
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=3
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN huiyingdai_activity_list al ON hcu.activity_id = al.id
+			LEFT JOIN hyjf_vip_auth va ON hcu.coupon_code=va.coupon_code
+			LEFT JOIN hyjf_vip_info vi ON  va.vip_id=vi.id
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN hyjf_hjh_accede hha ON hcrt.real_tender_id=hha.accede_order_id
+			<include refid="selectCouponBackMoneyHjhList_Where_Clause" /> 
+			ORDER BY hcr.recover_time DESC
+	</select>
+	
+	
+	
+	<select id="selectCouponBackMoneyJXHjhList" resultMap="selectCouponBackMoneyMap" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				hcu.id id,
+				hcu.coupon_user_code coupon_user_code,
+				hbt.nid nid,
+				hu.username username,
+				hcc.coupon_code coupon_code,
+				hbt.borrow_nid borrow_nid,
+				CONCAT('第',hcr.recover_period, '期') recover_period,
+				hcr.recover_account recover_interest,
+				hcr.transfer_id transfer_id,
+				pa.name received_flg,
+				FROM_UNIXTIME(
+					hcr.recover_time,
+					'%Y-%m-%d'
+				) recover_time,
+			IFNULL(hha.accede_account,'0.00') recover_capital,
+			FROM_UNIXTIME(
+					hbt.addtime,
+					'%Y-%m-%d'
+				) add_time,
+		CASE
+				WHEN hcu.coupon_source = 1 THEN
+					'手动发放'
+				WHEN hcu.coupon_source = 2 THEN
+					'活动发放'
+				WHEN hcu.coupon_source = 3 THEN
+					'会员礼包'
+				ELSE
+					''
+				END AS coupon_source,
+
+				CASE
+				WHEN hcu.coupon_source = 1 THEN
+					hcu.content
+				WHEN hcu.coupon_source = 2 THEN
+					al.title
+				WHEN hcu.coupon_source = 3 THEN
+					IF(vi.vip_level=1,"欢迎礼包","升级礼包")
+				ELSE
+					''
+				END AS coupon_content
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=3
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN huiyingdai_activity_list al ON hcu.activity_id = al.id
+			LEFT JOIN hyjf_vip_auth va ON hcu.coupon_code=va.coupon_code
+			LEFT JOIN hyjf_vip_info vi ON  va.vip_id=vi.id
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN hyjf_hjh_accede hha ON hcrt.real_tender_id=hha.accede_order_id
+			<include refid="selectCouponBackMoneyHjhList_Where_Clause" /> 
+			ORDER BY hcr.recover_time DESC
+			<if test="limitStart >= 0" >
+		      LIMIT #{limitStart} , #{limitEnd}
+		    </if>
+	</select>
+	
+    <select id="countCouponBackMoneyJXHjh" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+	     	SELECT
+				count(hct.id)
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=3
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			<include refid="selectCouponBackMoneyHjhList_Where_Clause" />
+	</select>
+	
+	<select id="queryRecoverInterestTotleHjh" resultType="java.lang.String" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				IFNULL(sum(hcr.recover_account),'0.00')
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=3
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN huiyingdai_activity_list al ON hcu.activity_id = al.id
+			LEFT JOIN hyjf_vip_auth va ON hcu.coupon_code=va.coupon_code
+			LEFT JOIN hyjf_vip_info vi ON  va.vip_id=vi.id
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN huiyingdai_borrow_tender hbten ON hcrt.real_tender_id=hbten.nid
+			<include refid="selectCouponBackMoneyHjhList_Where_Clause" /> 
+	</select>
+	
+	<select id="queryInvestTotalHjh" resultType="java.lang.String" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				IFNULL(sum(hha.accede_account),'0.00')
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=3
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN huiyingdai_activity_list al ON hcu.activity_id = al.id
+			LEFT JOIN hyjf_vip_auth va ON hcu.coupon_code=va.coupon_code
+			LEFT JOIN hyjf_vip_info vi ON  va.vip_id=vi.id
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN hyjf_hjh_accede hha ON hcrt.real_tender_id=hha.accede_order_id
+			<include refid="selectCouponBackMoneyHjhList_Where_Clause" /> 
+	</select>
+	
+	<select id="exportCouponBackMoneyJXHjhList" resultMap="selectCouponBackMoneyMap" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				hcu.id id,
+				hcu.coupon_user_code coupon_user_code,
+				hbt.nid nid,
+				hu.username username,
+				hcc.coupon_code coupon_code,
+				hbt.borrow_nid borrow_nid,
+				CONCAT('第',hcr.recover_period, '期') recover_period,
+				hcr.recover_account recover_interest,
+				hcr.transfer_id transfer_id,
+				pa.name received_flg,
+				FROM_UNIXTIME(
+					hcr.recover_time,
+					'%Y-%m-%d'
+				) recover_time,
+			IFNULL(hha.accede_account,'0.00') recover_capital,
+			FROM_UNIXTIME(
+					hbt.addtime,
+					'%Y-%m-%d'
+				) add_time,
+		CASE
+				WHEN hcu.coupon_source = 1 THEN
+					'手动发放'
+				WHEN hcu.coupon_source = 2 THEN
+					'活动发放'
+				WHEN hcu.coupon_source = 3 THEN
+					'会员礼包'
+				ELSE
+					''
+				END AS coupon_source,
+
+				CASE
+				WHEN hcu.coupon_source = 1 THEN
+					hcu.content
+				WHEN hcu.coupon_source = 2 THEN
+					al.title
+				WHEN hcu.coupon_source = 3 THEN
+					IF(vi.vip_level=1,"欢迎礼包","升级礼包")
+				ELSE
+					''
+				END AS coupon_content
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=3
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN huiyingdai_activity_list al ON hcu.activity_id = al.id
+			LEFT JOIN hyjf_vip_auth va ON hcu.coupon_code=va.coupon_code
+			LEFT JOIN hyjf_vip_info vi ON  va.vip_id=vi.id
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN hyjf_hjh_accede hha ON hcrt.real_tender_id=hha.accede_order_id
+			<include refid="selectCouponBackMoneyHjhList_Where_Clause" />
+			ORDER BY hcr.recover_time DESC 
+	</select>
+	
+	
+	
+	
+	<select id="countCouponBackMoneyTYHjh" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+	     	SELECT
+				count(1)
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=3
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			<include refid="selectCouponBackMoneyHjhList_Where_Clause" />
+	</select>
+			    
+	<select id="selectCouponBackMoneyTYHjhList" resultMap="selectCouponBackMoneyMap" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				hcu.id id,
+				hbt.nid nid,
+				hu.username username,
+				IFNULL(hha.accede_account,'0.00') recover_capital,
+				hcu.coupon_user_code coupon_user_code,
+				hbt.borrow_nid borrow_nid,
+				CONCAT(hhp.expect_apr,'%') borrow_apr,
+				hcr.recover_account recover_interest,
+				hcc.coupon_quota coupon_quota,
+				hcc.coupon_profit_time coupon_profit_time,
+				FROM_UNIXTIME(
+					hcr.recover_time,
+					'%Y-%m-%d'
+				) recover_time,
+				hcr.recover_account recover_interest,
+				pa.name received_flg,
+				FROM_UNIXTIME(
+					hbt.addtime,
+					'%Y-%m-%d'
+				) add_time,
+			IFNULL(hcr.transfer_id,'') transfer_id
+
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=3
+			INNER JOIN hyjf_hjh_plan hhp ON hbt.borrow_nid = hhp.plan_nid
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN hyjf_hjh_accede hha ON hcrt.real_tender_id=hha.accede_order_id
+			<include refid="selectCouponBackMoneyHjhList_Where_Clause" /> 
+			ORDER BY hcr.recover_time DESC
+			<if test="limitStart >= 0" >
+		      LIMIT #{limitStart} , #{limitEnd}
+		    </if>
+	</select>
+	
+	<select id="exportCouponBackMoneyTYHjhList" resultMap="selectCouponBackMoneyMap" parameterType="com.hyjf.mybatis.model.customize.coupon.CouponBackMoneyCustomize">
+			SELECT
+				hu.username username,
+				hui.truename truename,
+				hu.mobile mobile,
+				hac.chinapnr_usrcustid chinapnr_usrcustid,
+				hbt.nid nid,
+				hhp.plan_name borrow_name,
+				hhp.lock_period borrow_period,
+				CONCAT(hhp.expect_apr,'%') borrow_apr,
+				hbt.borrow_nid borrow_nid,
+				hcc.coupon_quota coupon_quota,
+				hcc.coupon_profit_time coupon_profit_time,
+				hcu.coupon_user_code coupon_user_code,
+				FROM_UNIXTIME(
+					hbt.addtime,
+					'%Y-%m-%d'
+				) add_time,
+				FROM_UNIXTIME(
+					hcr.add_time,
+					'%Y-%m-%d'
+				) hcr_add_time,
+				FROM_UNIXTIME(
+					hcr.recover_time,
+					'%Y-%m-%d'
+				) recover_time,
+				hcr.recover_account recover_interest,
+				pa.name received_flg,
+				IFNULL(hcr.transfer_id,'') transfer_id,
+				FROM_UNIXTIME(
+					hcr.recover_yestime,
+					'%Y-%m-%d'
+				) recover_yestime,
+				IFNULL(hha.accede_account,'0.00') recover_capital
+			FROM
+				hyjf_coupon_tender hct
+			INNER JOIN hyjf_coupon_user hcu ON hct.coupon_grant_id = hcu.id
+			INNER JOIN hyjf_coupon_config hcc ON hcu.coupon_code = hcc.coupon_code
+			INNER JOIN hyjf_borrow_tender_cpn hbt ON hct.order_id = hbt.nid AND hbt.tender_type=3
+			INNER JOIN hyjf_hjh_plan hhp ON hbt.borrow_nid = hhp.plan_nid
+			INNER JOIN huiyingdai_users hu ON hcu.user_id = hu.user_id
+			INNER JOIN huiyingdai_users_info hui ON hui.user_id = hu.user_id
+			INNER JOIN huiyingdai_account_chinapnr hac ON hac.user_id = hu.user_id
+			INNER JOIN hyjf_coupon_recover hcr ON hcr.tender_id = hbt.nid
+			INNER JOIN hyjf_param_name pa ON pa.name_class = 'COUPON_RECIVE_STATUS'
+			AND pa.name_cd = hcr.received_flg
+			LEFT JOIN hyjf_coupon_real_tender hcrt ON hct.order_id=hcrt.coupon_tender_id
+			LEFT JOIN hyjf_hjh_accede hha ON hcrt.real_tender_id=hha.accede_order_id
+			<include refid="selectCouponBackMoneyHjhList_Where_Clause" />
+			ORDER BY hcr.recover_time DESC 
+	</select>
+	
+	
+</mapper>

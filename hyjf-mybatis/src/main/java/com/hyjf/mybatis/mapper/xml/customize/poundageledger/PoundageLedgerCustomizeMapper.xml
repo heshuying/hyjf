@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.hyjf.mybatis.mapper.customize.poundageledger.PoundageLedgerCustomizeMapper">
+
+    <resultMap id="RM_PoundageLedger" type="com.hyjf.mybatis.model.customize.poundageledger.PoundageLedgerCustomize">
+        <result property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="truename" column="truename"/>
+        <result property="account" column="account"/>
+        <result property="type" column="type"/>
+        <result property="source" column="source"/>
+        <result property="serviceRatio" column="service_ratio"/>
+        <result property="creditRatio" column="credit_ratio"/>
+        <result property="manageRatio" column="manage_ratio"/>
+        <result property="investorCompanyId" column="investor_company_id"/>
+        <result property="investorCompany" column="investor_company"/>
+        <result property="projectType" column="project_type"/>
+        <result property="status" column="status"/>
+        <result property="explan" column="explan"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createre" column="createre"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updater" column="updater"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="PoundageLedger_columns">
+	    <![CDATA[
+
+		id,username,truename,account,type,source,service_ratio,credit_ratio,manage_ratio,investor_company_id,investor_company,project_type,status,explan,create_time,createre,update_time,updater
+
+        ]]>
+	</sql>
+
+    <!-- mysql 分页尾 -->
+    <sql id="pagination_Tail">
+        <if test="limitStart >= 0">
+            LIMIT #{limitStart} , #{limitEnd}
+        </if>
+    </sql>
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="insertPoundageLedger" useGeneratedKeys="true" keyProperty="id">
+    <![CDATA[
+
+        INSERT INTO huiyingdai_poundage_ledger (
+         id,user_id, username, truename, account, type, source, service_ratio, credit_ratio, manage_ratio, investor_company_id, investor_company, project_type, status, explan, create_time, createre
+        ) VALUES (
+         #{id},(select user_id from huiyingdai_users where username = #{username}), #{username}, #{truename}, #{account}, #{type}, #{source}, #{serviceRatio}, #{creditRatio}, #{manageRatio}, #{investorCompanyId}, #{investorCompany}, #{projectType}, #{status}, #{explan}, #{createTime}, #{createre}
+        )
+
+        ]]>
+	</insert>
+
+    <update id="updatePoundageLedger">
+
+        UPDATE huiyingdai_poundage_ledger SET
+	        username = #{username} , truename = #{truename} , account = #{account} , type = #{type} , source = #{source} , service_ratio = #{serviceRatio} , credit_ratio = #{creditRatio} , manage_ratio = #{manageRatio} , investor_company_id = #{investorCompanyId} , investor_company = #{investorCompany} , project_type = #{projectType} , status = #{status} , explan = #{explan} ,update_time = #{updateTime} , updater = #{updater}  
+            <if test="username != null and username != ''">
+                , user_id = (select user_id from huiyingdai_users where username = #{username})
+            </if>
+        WHERE
+        	id = #{id}
+	</update>
+
+    <delete id="deletePoundageLedger">
+    <![CDATA[
+
+        DELETE FROM huiyingdai_poundage_ledger WHERE
+        id = #{id}
+
+        ]]>
+    </delete>
+
+    <select id="getPoundageLedgerById" resultMap="RM_PoundageLedger">
+        SELECT
+        <include refid="PoundageLedger_columns"/>
+        <![CDATA[
+		    FROM huiyingdai_poundage_ledger 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+    </select>
+
+    <sql id="PoundageLedger_findPage_where">
+        <where>
+            <if test="idSer != null and idSer != ''">
+                AND PoundageLedger.id = #{idSer}
+            </if>
+            <if test="usernameSer != null and usernameSer !=''">
+                AND PoundageLedger.username LIKE CONCAT('%', #{usernameSer}, '%')
+            </if>
+            <if test="truenameSer != null and truenameSer != ''">
+                AND PoundageLedger.truename LIKE CONCAT('%', #{truenameSer}, '%')
+            </if>
+            <if test="accountSer != null and accountSer != ''">
+                AND PoundageLedger.account LIKE CONCAT('%', #{accountSer}, '%')
+            </if>
+            <if test="typeSer != null">
+                AND PoundageLedger.type = #{typeSer}
+            </if>
+            <if test="sourceSer != null and sourceSer != ''">
+                AND PoundageLedger.source = #{sourceSer}
+            </if>
+            <if test="serviceRatioSer != null and serviceRatioSer != ''">
+                AND PoundageLedger.service_ratio = #{serviceRatioSer}
+            </if>
+            <if test="creditRatioSer != null and creditRatioSer != ''">
+                AND PoundageLedger.credit_ratio = #{creditRatioSer}
+            </if>
+            <if test="manageRatioSer != null and manageRatioSer != ''">
+                AND PoundageLedger.manage_ratio = #{manageRatioSer}
+            </if>
+            <if test="investorCompanyIdSer != null and investorCompanyIdSer != ''">
+                AND PoundageLedger.investor_company_id = #{investorCompanyIdSer}
+            </if>
+            <if test="investorCompanySer != null and investorCompanySer != ''">
+                AND PoundageLedger.investor_company = #{investorCompanySer}
+            </if>
+            <if test="projectTypeSer != null and projectTypeSer != ''">
+                AND PoundageLedger.project_type = #{projectTypeSer}
+            </if>
+            <if test="statusSer != null">
+                AND PoundageLedger.status = #{statusSer}
+            </if>
+            <if test="explanSer != null and explanSer != ''">
+                AND PoundageLedger.explan = #{explanSer}
+            </if>
+            <if test="createTimeSer != null and createTimeSer != ''">
+                AND PoundageLedger.create_time = #{createTimeSer}
+            </if>
+            <if test="createreSer != null and createreSer != ''">
+                AND PoundageLedger.createre = #{createreSer}
+            </if>
+            <if test="updateTimeSer != null and updateTimeSer != ''">
+                AND PoundageLedger.update_time = #{updateTimeSer}
+            </if>
+            <if test="updaterSer != null and updaterSer != ''">
+                AND PoundageLedger.updater = #{updaterSer}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getPoundageLedgerCount" resultType="java.lang.Integer">
+        SELECT count(*) FROM huiyingdai_poundage_ledger PoundageLedger
+        <include refid="PoundageLedger_findPage_where"/>
+    </select>
+    <select id="getPoundageLedgerExSelfCount" resultType="java.lang.Integer">
+        SELECT count(*) FROM huiyingdai_poundage_ledger PoundageLedger
+        <where>
+            <if test="investorCompanySer != null and investorCompanySer != ''">
+                AND PoundageLedger.investor_company = #{investorCompanySer}
+            </if>
+            <if test="idSer != null and idSer != ''">
+                AND PoundageLedger.id != #{idSer}
+            </if>
+        </where>
+    </select>
+    <select id="getPoundageLedgerList" resultMap="RM_PoundageLedger">
+        SELECT
+        <include refid="PoundageLedger_columns"/>
+        FROM huiyingdai_poundage_ledger PoundageLedger
+        <include refid="PoundageLedger_findPage_where"/>
+        ORDER BY create_time DESC
+        <include refid="pagination_Tail"/>
+    </select>
+
+
+    <select id="getPoundageLedgerPage" resultMap="RM_PoundageLedger">
+        SELECT
+        <include refid="PoundageLedger_columns"/>
+        FROM huiyingdai_poundage_ledger PoundageLedger
+        <include refid="PoundageLedger_findPage_where"/>
+        <include refid="pagination_Tail"/>
+
+    </select>
+
+
+</mapper>
+

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.AdminBorrowCreditRepayCustomizeMapper">
+	<!-- 管理后台   汇转让   还款计划  已承接债转 列表 -->
+	<select id="selectCreditTender" resultType="com.hyjf.mybatis.model.customize.admin.AdminBorrowCreditTenderCustomize" parameterType="com.hyjf.mybatis.model.customize.admin.AdminBorrowCreditTenderCustomize">
+		select 
+		    hu.username AS userName, 
+		    huc.username AS creditUserName,
+		    hct.status AS status, 
+		    hct.bid_nid AS bidNid, 
+		    hct.credit_nid AS creditNid, 
+		    hct.credit_tender_nid AS creditTenderNid, 
+		    hct.assign_nid AS assignNid,
+		    hct.assign_capital AS assignCapital, 
+		    hct.assign_account AS assignAccount, 
+		    hct.assign_interest AS assignInterest, 
+		    hct.assign_price AS assignPrice, 
+		    hct.assign_pay AS assignPay, 
+		    hct.assign_repay_account AS assignRepayAccount, 
+		     (select sum(manage_fee) from huiyingdai_credit_repay where assign_nid= hct.assign_nid) AS creditFee, 
+		    CASE
+			WHEN hct.assign_repay_end_time != 0 THEN
+				FROM_UNIXTIME(hct.assign_repay_end_time, '%Y-%m-%d')
+			ELSE
+				''
+			END AS assignRepayEndTime,
+			CASE
+			WHEN hct.assign_repay_next_time != 0 THEN
+				FROM_UNIXTIME(hct.assign_repay_next_time, '%Y-%m-%d')
+			ELSE
+				''
+			END AS assignRepayNextTime,
+		   
+		    CASE
+			WHEN hct.add_time != 0 THEN
+				FROM_UNIXTIME(hct.add_time, '%Y-%m-%d %H:%i:%s')
+			ELSE
+				''
+			END AS addTime
+	    FROM huiyingdai_credit_tender hct INNER JOIN huiyingdai_users hu ON hct.user_id = hu.user_id
+	    INNER JOIN huiyingdai_users huc ON hct.credit_user_id = huc.user_id
+	    <where>
+			<if test="userNameSrch != null and userNameSrch != ''">
+				AND hu.username = #{userNameSrch}
+			</if>
+			<if test="creditUserNameSrch != null and creditUserNameSrch != ''">
+				AND huc.username  = #{creditUserNameSrch}
+			</if>
+			<if test="creditNidSrch != null and creditNidSrch != ''">
+				AND hct.credit_nid = #{creditNidSrch}
+			</if>
+			<if test="bidNidSrch != null and bidNidSrch != ''">
+				AND hct.bid_nid = #{bidNidSrch}
+			</if>
+			<if test="assignNidSrch != null and assignNidSrch != ''">
+				AND hct.assign_nid = #{assignNidSrch}
+			</if>
+			<if test="statusSrch != null and statusSrch != ''">
+				AND hct.status = #{statusSrch}
+			</if>
+			<if test="assignRepayNextTimeStartSrch != null and assignRepayNextTimeStartSrch != ''">
+				AND FROM_UNIXTIME( hct.assign_repay_next_time, '%Y-%m-%d') <![CDATA[>=]]> #{assignRepayNextTimeStartSrch}
+			</if>
+			<if test="assignRepayNextTimeEndSrch != null and assignRepayNextTimeEndSrch != ''">
+				AND FROM_UNIXTIME( hct.assign_repay_next_time, '%Y-%m-%d') <![CDATA[<=]]> #{assignRepayNextTimeEndSrch}
+			</if>
+			<if test="addTimeStartSrch != null and addTimeStartSrch != ''">
+				AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d') <![CDATA[>=]]> #{addTimeStartSrch}
+			</if>
+			<if test="addTimeEndSrch != null and addTimeEndSrch != ''">
+				AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d') <![CDATA[<=]]> #{addTimeEndSrch}
+			</if>
+		</where>
+		ORDER BY
+			hct.add_time DESC
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	<!-- 管理后台   汇转让   还款计划  已承接债转  数目 -->
+	<select id="countCreditTender" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.admin.AdminBorrowCreditTenderCustomize">
+		SELECT
+			 COUNT(hct.assign_nid) AS total
+		FROM huiyingdai_credit_tender hct INNER JOIN huiyingdai_users hu ON hct.user_id = hu.user_id
+	    INNER JOIN huiyingdai_users huc ON hct.credit_user_id = huc.user_id
+	    <where>
+			<if test="userNameSrch != null and userNameSrch != ''">
+				AND hu.username = #{userNameSrch}
+			</if>
+			<if test="creditUserNameSrch != null and creditUserNameSrch != ''">
+				AND huc.username  = #{creditUserNameSrch}
+			</if>
+			<if test="creditNidSrch != null and creditNidSrch != ''">
+				AND hct.credit_nid = #{creditNidSrch}
+			</if>
+			<if test="bidNidSrch != null and bidNidSrch != ''">
+				AND hct.bid_nid = #{bidNidSrch}
+			</if>
+			<if test="assignNidSrch != null and assignNidSrch != ''">
+				AND hct.assign_nid = #{assignNidSrch}
+			</if>
+			<if test="statusSrch != null and statusSrch != ''">
+				AND hct.status = #{statusSrch}
+			</if>
+			<if test="assignRepayNextTimeStartSrch != null and assignRepayNextTimeStartSrch != ''">
+				AND FROM_UNIXTIME( hct.assign_repay_next_time, '%Y-%m-%d') <![CDATA[>=]]> #{assignRepayNextTimeStartSrch}
+			</if>
+			<if test="assignRepayNextTimeEndSrch != null and assignRepayNextTimeEndSrch != ''">
+				AND FROM_UNIXTIME( hct.assign_repay_next_time, '%Y-%m-%d') <![CDATA[<=]]> #{assignRepayNextTimeEndSrch}
+			</if>
+			<if test="addTimeStartSrch != null and addTimeStartSrch != ''">
+				AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d') <![CDATA[>=]]> #{addTimeStartSrch}
+			</if>
+			<if test="addTimeEndSrch != null and addTimeEndSrch != ''">
+				AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d') <![CDATA[<=]]> #{addTimeEndSrch}
+			</if>
+		</where>
+	</select>
+	
+	<!-- add by LSY START -->
+	<select id="sumCreditTender" resultType="com.hyjf.mybatis.model.customize.admin.AdminBorrowCreditTenderCustomize" parameterType="com.hyjf.mybatis.model.customize.admin.AdminBorrowCreditTenderCustomize">
+		select 
+		    SUM(hct.assign_capital) AS sumAssignCapital, 
+		    SUM(hct.assign_account) AS sumAssignAccount, 
+		    SUM(hct.assign_interest) AS sumAssignInterest, 
+		    SUM(hct.assign_price) AS sumAssignPrice, 
+		    SUM(hct.assign_pay) AS sumAssignPay, 
+		    SUM(hct.assign_repay_account) AS sumAssignRepayAccount, 
+		    SUM((select sum(manage_fee) from huiyingdai_credit_repay where assign_nid= hct.assign_nid)) AS sumCreditFee
+	    FROM huiyingdai_credit_tender hct INNER JOIN huiyingdai_users hu ON hct.user_id = hu.user_id
+	    INNER JOIN huiyingdai_users huc ON hct.credit_user_id = huc.user_id
+	    <where>
+			<if test="userNameSrch != null and userNameSrch != ''">
+				AND hu.username = #{userNameSrch}
+			</if>
+			<if test="creditUserNameSrch != null and creditUserNameSrch != ''">
+				AND huc.username  = #{creditUserNameSrch}
+			</if>
+			<if test="creditNidSrch != null and creditNidSrch != ''">
+				AND hct.credit_nid = #{creditNidSrch}
+			</if>
+			<if test="bidNidSrch != null and bidNidSrch != ''">
+				AND hct.bid_nid = #{bidNidSrch}
+			</if>
+			<if test="assignNidSrch != null and assignNidSrch != ''">
+				AND hct.assign_nid = #{assignNidSrch}
+			</if>
+			<if test="statusSrch != null and statusSrch != ''">
+				AND hct.status = #{statusSrch}
+			</if>
+			<if test="assignRepayNextTimeStartSrch != null and assignRepayNextTimeStartSrch != ''">
+				AND FROM_UNIXTIME( hct.assign_repay_next_time, '%Y-%m-%d') <![CDATA[>=]]> #{assignRepayNextTimeStartSrch}
+			</if>
+			<if test="assignRepayNextTimeEndSrch != null and assignRepayNextTimeEndSrch != ''">
+				AND FROM_UNIXTIME( hct.assign_repay_next_time, '%Y-%m-%d') <![CDATA[<=]]> #{assignRepayNextTimeEndSrch}
+			</if>
+			<if test="addTimeStartSrch != null and addTimeStartSrch != ''">
+				AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d') <![CDATA[>=]]> #{addTimeStartSrch}
+			</if>
+			<if test="addTimeEndSrch != null and addTimeEndSrch != ''">
+				AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d') <![CDATA[<=]]> #{addTimeEndSrch}
+			</if>
+		</where>
+	</select>
+	<!-- add by LSY END -->
+</mapper>

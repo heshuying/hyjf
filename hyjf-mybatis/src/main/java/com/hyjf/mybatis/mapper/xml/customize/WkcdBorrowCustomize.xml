@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.WkcdBorrowCustomizeMapper">
+	<select id="selectToSend" resultType="com.hyjf.mybatis.model.customize.WkcdBorrowCustomize" >
+		select 
+		   w.borrow_nid as bid,
+		   w.wkcd_id,
+		   p.repay_period as recoverPeriod,
+		   p.repay_capital as recoverCapital,
+		   p.repay_interest as recoverInterest,
+		   p.repay_fee as recoverFee,
+		   p.charge_days as aheadDays,
+		   p.charge_interest as chargeInterest,
+		   p.late_days as lateDays,
+		   p.late_interest as lateInterest,
+		   p.repay_time as recoverTime,
+		   b.recover_last_time as recoverLastTime
+ 		   from huiyingdai_borrow_repay_plan p 
+ 		   inner join huiyingdai_wkcd_borrow w on w.borrow_nid = p.borrow_nid
+ 		   inner join huiyingdai_borrow b on b.borrow_nid = p.borrow_nid 
+		where w.sync=0
+		union
+		select 
+		   w.borrow_nid as bid,
+		   w.wkcd_id,
+		   p.repay_period as recoverPeriod,
+		   p.repay_capital as recoverCapital,
+		   p.repay_interest as recoverInterest,
+		   p.repay_fee as recoverFee,
+		   p.charge_days as aheadDays,
+		   p.charge_interest as chargeInterest,
+		   p.late_days as lateDays,
+		   p.late_interest as lateInterest,
+		   p.repay_time as recoverTime,
+		   b.recover_last_time as recoverLastTime
+ 		   from huiyingdai_borrow_repay p 
+ 		   inner join huiyingdai_wkcd_borrow w on w.borrow_nid = p.borrow_nid
+ 		   inner join huiyingdai_borrow b on b.borrow_nid = p.borrow_nid 
+		where w.sync=0 and p.repay_period=1
+	</select>
+	
+	<select id="selectOverDate" resultType="com.hyjf.mybatis.model.customize.WkcdOverDateCustomize">
+	      SELECT  p.borrow_nid as borrowIdThirdparty,
+			      w.wkcd_id as borrowId,
+			      p.late_interest as overdueAmount,
+			      p.repay_period as period
+	          from huiyingdai_borrow_repay_plan p 
+				inner join huiyingdai_wkcd_borrow w on w.borrow_nid = p.borrow_nid
+				where p.repay_yestime is null or p.repay_yestime = ''
+				and w.sync = 1
+				and (p.repay_time+p.delay_days*86400)-UNIX_TIMESTAMP() <![CDATA[<]]> 0
+		   union
+		   SELECT  p.borrow_nid as borrowIdThirdparty,
+			       w.wkcd_id as borrowId,
+			       p.late_interest as overdueAmount,
+			       p.repay_period as period
+	          from huiyingdai_borrow_repay p 
+				inner join huiyingdai_wkcd_borrow w on w.borrow_nid = p.borrow_nid
+				where p.repay_yestime is null or p.repay_yestime = ''
+				and w.sync = 1 and p.repay_period=1
+				and (p.repay_time+p.delay_days*86400)-UNIX_TIMESTAMP() <![CDATA[<]]> 0
+	</select>
+</mapper>

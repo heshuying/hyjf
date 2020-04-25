@@ -1,0 +1,630 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:util="http://www.springframework.org/schema/util" xmlns:p="http://www.springframework.org/schema/p"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+	   xsi:schemaLocation="
+    http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-4.1.xsd
+    http://www.springframework.org/schema/mvc
+    http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd
+    http://www.springframework.org/schema/util
+    http://www.springframework.org/schema/util/spring-util-4.1.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
+
+	<!-- 扫描文件（自动注入） -->
+	<context:component-scan base-package="com.hyjf">
+		<context:exclude-filter type="annotation"
+								expression="org.springframework.stereotype.Service" />
+	</context:component-scan>
+
+	<mvc:annotation-driven />
+
+	<!-- 对静态资源文件的访问 -->
+	<mvc:default-servlet-handler />
+	<mvc:resources mapping="/img/**" location="/img/" />
+	<mvc:resources mapping="/js/**" location="/js/" />
+	<mvc:resources mapping="/css/**" location="/css/" />
+	<mvc:resources mapping="/font/**" location="/font/" />
+
+	<!-- 全局变量以便可以获得对应的注入bean -->
+	<bean id="springContextHolder" class="com.hyjf.common.util.SpringContextHolder" />
+
+	<!-- 拦截器 -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<!-- 用户基本信息及menu拦截 -->
+			<mvc:mapping path="/**" />
+			<bean class="com.hyjf.web.interceptor.CommonInfoInterceptor"></bean>
+		</mvc:interceptor>
+		<!-- referer拦截器 -->
+		<mvc:interceptor>
+			<mvc:mapping path="/user/invest/returnUrl.do" />
+			<!-- <mvc:mapping path="/user/repay/userRepayPage.do" /> --><!-- 借款管理 -->
+			<mvc:mapping path="/user/repay/repaylist.do" />
+			<mvc:mapping path="/user/repay/repaydetail.do" />
+			<mvc:mapping path="/user/repay/repay.do" />
+			<mvc:mapping path="/user/repay/getAgreement.do" />
+			<mvc:mapping path="/plan/userRepay/repayDetail.do" />
+			<mvc:mapping path="/plan/userRepay/repay.do" />
+			<!--<mvc:mapping path="/user/findpassword/init.do" />-->
+			<mvc:mapping path="/user/findpassword/checkUserAction.do" />
+			<mvc:mapping path="/user/findpassword/form1Submit.do" />
+			<mvc:mapping path="/user/findpassword/form2Submit.do" />
+			<mvc:mapping path="/user/findpassword/form3Submit.do" />
+			<mvc:mapping path="/user/findpassword/form4Submit.do" />
+			<mvc:mapping path="/user/regist/to_regist_success.do" />
+			<mvc:mapping path="/user/regist/checkRecommend.do" />
+			<mvc:mapping path="/user/regist/getcaptcha.do" />
+			<mvc:mapping path="/user/regist/checkcaptcha.do" />
+			<!--             <mvc:mapping path="/user/regist/sendcode.do" /> -->
+			<mvc:mapping path="/user/regist/checkcode.do" />
+			<mvc:mapping path="/user/regist/regist.do" />
+			<mvc:mapping path="/user/regist/checkaction.do" />
+			<mvc:mapping path="/user/login/login.do" />
+			<mvc:mapping path="/user/login/checkUserAction.do" />
+			<mvc:mapping path="/user/safe/init.do" />
+			<mvc:mapping path="/user/safe/checkParam.do" />
+			<mvc:mapping path="/user/safe/updatePassword.do" />
+			<mvc:mapping path="/user/safe/updatenickname.do" />
+			<mvc:mapping path="/user/safe/updateRelation.do" />
+			<mvc:mapping path="/user/safe/changeMobile.do" />
+			<mvc:mapping path="/user/safe/sendEmail.do" />
+			<mvc:mapping path="/user/safe/updateSmsConfig.do" />
+			<mvc:mapping path="/user/withdraw/check.do" />
+			<mvc:mapping path="/user/withdraw/toWithdraw.do" />
+			<mvc:mapping path="/user/withdraw/cash.do" />
+			<mvc:mapping path="/user/withdraw/return.do" />
+			<mvc:mapping path="/recharge/rechargePage.do" />
+			<mvc:mapping path="/recharge/recharge.do" />
+			<mvc:mapping path="/user/openaccount/open.do" />
+			<mvc:mapping path="/user/invest/invest.do" />
+			<mvc:mapping path="/user/invest/appointment.do" />
+			<mvc:mapping path="/user/invest/investCheck.do" />
+			<mvc:mapping path="/plan/planInvest.do" />
+			<mvc:mapping path="/plan/planCheck.do" />
+			<mvc:mapping path="/plan/initPlanList.do" />
+			<mvc:mapping path="/project/getProjectList.do" />
+			<mvc:mapping path="/project/getProjectInvest.do" />
+			<mvc:mapping path="/project/getProjectConsume.do" />
+			<mvc:mapping path="/project/getProjectStatus.do" />
+			<!-- 债权转让 Start -->
+			<mvc:mapping path="/bank/user/credit/usercreditlist.do" />
+			<mvc:mapping path="/bank/user/credit/tendertocreditlist.do" />
+			<mvc:mapping path="/bank/user/credit/tenderabletocredit.do" />
+			<mvc:mapping path="/bank/user/credit/tendertocreditdetail.do" />
+			<mvc:mapping path="/bank/user/credit/getcaptcha.do" />
+			<mvc:mapping path="/bank/user/credit/checkcaptcha.do" />
+			<mvc:mapping path="/bank/user/credit/sendcode.do" />
+			<mvc:mapping path="/bank/user/credit/checkcode.do" />
+			<mvc:mapping path="/bank/user/credit/savetendertocredit.do" />
+			<mvc:mapping path="/bank/user/credit/tendertocreditresult.do" />
+			<mvc:mapping path="/bank/user/credit/creditinprogresslist.do" />
+			<mvc:mapping path="/bank/user/credit/creditstoplist.do" />
+			<mvc:mapping path="/bank/user/credit/creditassignlist.do" />
+			<mvc:mapping path="/bank/user/credit/creditassigntenderlist.do" />
+			<mvc:mapping path="/bank/user/credit/websubmitcredittenderassign.do" />
+			<!--<mvc:mapping path="/bank/user/credit/webcredittender.do" />-->
+			<mvc:mapping path="/bank/user/credit/webcheckcredittenderassign.do" />
+			<!-- 债权转让 End -->
+
+
+			<!-- 银行存管相关拦截器 -->
+			<mvc:mapping path="/bank/web/withdraw/check.do" />
+			<mvc:mapping path="/bank/web/withdraw/toWithdraw.do" />
+			<mvc:mapping path="/bank/web/withdraw/cash.do" />
+			<bean class="com.hyjf.web.interceptor.RefererInterceptor"></bean>
+		</mvc:interceptor>
+		<!-- session拦截器 -->
+		<mvc:interceptor>
+			<mvc:mapping path="/user/findpassword/init.do" />
+			<mvc:mapping path="/user/findpassword/checkUserAction.do" />
+			<mvc:mapping path="/user/findpassword/form1Submit.do" />
+			<mvc:mapping path="/user/findpassword/form2Submit.do" />
+			<mvc:mapping path="/user/findpassword/form3Submit.do" />
+			<mvc:mapping path="/user/findpassword/form4Submit.do" />
+			<mvc:mapping path="/user/regist/init.do" />
+			<mvc:mapping path="/user/regist/to_regist_success.do" />
+			<mvc:mapping path="/user/regist/checkRecommend.do" />
+			<mvc:mapping path="/user/regist/getcaptcha.do" />
+			<mvc:mapping path="/user/regist/checkcaptcha.do" />
+			<mvc:mapping path="/user/regist/sendcode.do" />
+			<mvc:mapping path="/user/regist/checkcode.do" />
+			<mvc:mapping path="/user/regist/regist.do" />
+			<mvc:mapping path="/user/regist/checkaction.do" />
+			<mvc:mapping path="/user/login/init.do" />
+			<mvc:mapping path="/user/login/login.do" />
+			<mvc:mapping path="/user/login/logout.do" />
+			<mvc:mapping path="/user/login/checkUserAction.do" />
+			<mvc:mapping path="/user/safe/init.do" />
+			<mvc:mapping path="/user/safe/checkParam.do" />
+			<mvc:mapping path="/user/safe/updatePassword.do" />
+			<mvc:mapping path="/user/safe/updatenickname.do" />
+			<mvc:mapping path="/user/safe/updateRelation.do" />
+			<mvc:mapping path="/user/safe/changeMobile.do" />
+			<mvc:mapping path="/user/safe/sendEmail.do" />
+			<mvc:mapping path="/user/safe/bindEmail.do" />
+			<mvc:mapping path="/user/safe/updateSmsConfig.do" />
+			<!-- 汇付提现相关 start-->
+			<mvc:mapping path="/user/withdraw/check.do" />
+			<mvc:mapping path="/user/withdraw/toWithdraw.do" />
+			<mvc:mapping path="/user/withdraw/cash.do" />
+			<mvc:mapping path="/user/withdraw/return.do" />
+			<!-- 汇付提现相关 end -->
+			<mvc:mapping path="/plan/initPlanList.do" />
+			<mvc:mapping path="/homepage/home.do" />
+			<mvc:mapping path="/project/initProjectList.do" />
+			<mvc:mapping path="/project/getProjectList.do" />
+			<mvc:mapping path="/project/getProjectDetail.do" />
+			<mvc:mapping path="/project/getProjectInvest.do" />
+			<mvc:mapping path="/project/getProjectConsume.do" />
+			<mvc:mapping path="/project/getProjectStatus.do" />
+			<!-- 债权转让 Start -->
+			<mvc:mapping path="/bank/user/credit/usercreditlist.do" />
+			<mvc:mapping path="/bank/user/credit/tendertocreditlist.do" />
+			<mvc:mapping path="/bank/user/credit/tenderabletocredit.do" />
+			<mvc:mapping path="/bank/user/credit/tendertocreditdetail.do" />
+			<mvc:mapping path="/bank/user/credit/getcaptcha.do" />
+			<mvc:mapping path="/bank/user/credit/checkcaptcha.do" />
+			<mvc:mapping path="/bank/user/credit/sendcode.do" />
+			<mvc:mapping path="/bank/user/credit/checkcode.do" />
+			<mvc:mapping path="/bank/user/credit/savetendertocredit.do" />
+			<mvc:mapping path="/bank/user/credit/tendertocreditresult.do" />
+			<mvc:mapping path="/bank/user/credit/creditinprogresslist.do" />
+			<mvc:mapping path="/bank/user/credit/creditstoplist.do" />
+			<mvc:mapping path="/bank/user/credit/creditassignlist.do" />
+			<mvc:mapping path="/bank/user/credit/creditassigntenderlist.do" />
+			<mvc:mapping path="/bank/user/credit/websubmitcredittenderassign.do" />
+			<mvc:mapping path="/bank/user/credit/webcredittender.do" />
+			<mvc:mapping path="/bank/user/credit/webcheckcredittenderassign.do" />
+			<mvc:mapping path="/bank/user/credit/userCanCreditList.do" />
+			<!-- 债权转让 End -->
+			<!-- 银行提现相关 start-->
+			<mvc:mapping path="/bank/web/withdraw/check.do" />
+			<mvc:mapping path="/bank/web/withdraw/toWithdraw.do" />
+			<mvc:mapping path="/bank/web/withdraw/cash.do" />
+			<mvc:mapping path="/bank/web/withdraw/return.do" />
+			<!-- 银行提现相关 end -->
+			<bean class="com.hyjf.web.interceptor.SessionInterceptor"></bean>
+		</mvc:interceptor>
+		<!-- 登录验证拦截器 -->
+		<mvc:interceptor>
+			<!--汇计划资产管理订单详情-->
+			<mvc:mapping path="/user/assetmanage/toMyHjhPlanInfoDetailPage.do"/>
+			<mvc:mapping path="/user/assetmanage/init.do" />
+			<mvc:mapping path="/user/assetmanage/getCurrentHoldObligatoryRight.do" />
+			<mvc:mapping path="/user/assetmanage/getRepayMent.do" />
+			<mvc:mapping path="/rechargeFee/rechargeFeePage.do" />
+			<mvc:mapping path="/coupon/getUserCoupons.do" />
+			<mvc:mapping path="/bank/web/user/repay/userRepayDetail.do" />
+			<!-- 借款管理 -->
+			<!-- <mvc:mapping path="/user/repay/userRepayPage.do" /> -->
+			<mvc:mapping path="/bank/web//user/repay/userRepayPage.do" />
+			<mvc:mapping path="/user/repay/repaylist.do" />
+			<mvc:mapping path="/user/repay/repaydetail.do" />
+			<mvc:mapping path="/user/repay/repay.do" />
+			<mvc:mapping path="/plan/userRepay/repayDetail.do" />
+			<mvc:mapping path="/plan/userRepay/repay.do" />
+			<mvc:mapping path="/vip/manage/init.do" />
+			<mvc:mapping path="/user/safe/init.do" />
+			<mvc:mapping path="/user/safe/checkParam.do" />
+			<mvc:mapping path="/user/safe/updatePassword.do" />
+			<mvc:mapping path="/user/safe/updatenickname.do" />
+			<mvc:mapping path="/user/safe/updateRelation.do" />
+			<mvc:mapping path="/user/safe/changeMobile.do" />
+			<mvc:mapping path="/user/safe/sendEmail.do" />
+
+			<!-- 下载协议 -->
+			<mvc:mapping path="/createAgreementPDF/creditPaymentPlan.do" />
+			<mvc:mapping path="/createAgreementPDF/creditTransferAgreementPDF.do" />
+			<mvc:mapping path="/createAgreementPDF/creditPaymentPlan.do" />
+			<mvc:mapping path="/createAgreementPDF/planPaymentPlan.do" />
+			<mvc:mapping path="/createAgreementPDF/htjInvestPDF.do" />
+			<mvc:mapping path="/createAgreementPDF/planusercreditcontractsealpdf.do" />
+			<mvc:mapping path="/createAgreementPDF/intermediaryAgreementPDF.do" />
+			<mvc:mapping path="/createAgreementPDF/creditHJHTransferAgreementPDF.do" />
+
+			<mvc:mapping path="/createAgreementPDF/usercreditcontract.do" />
+			<mvc:mapping path="/createAgreementPDF/tendertocreditdetail.do" />
+			<mvc:mapping path="/createAgreementPDF/creditDiary.do" />
+			<mvc:mapping path="/createAgreementPDF/newHjhInvestPDF.do" />
+
+			<!-- <mvc:mapping path="/bank/web/user/repay/userRepayPage.do" /> -->
+			<!-- <mvc:mapping path="/user/safe/bindEmail.do" /> -->
+			<mvc:mapping path="/user/safe/updateSmsConfig.do" />
+			<!-- 下载协议借款 -->
+			<mvc:mapping path="/createAgreementPDF/creditDiary.do" />
+			<!-- 查看协议借款 -->
+			<mvc:mapping path="/agreement/hjhDiaryAgreement.do" />
+
+			<!-- 下载汇计划服务协议 -->
+			<mvc:mapping path="/createAgreementPDF/newHjhInvestPDF.do" />
+			<!-- 查看汇计划服务协议 -->
+			<!-- <mvc:mapping path="/agreement/hjhInfo.do" /> -->
+			<!-- 查看汇计投资协议 -->
+			<mvc:mapping path="/agreement/hjhBorrowAgreement.do" />
+			<!-- 汇付提现相关  start -->
+			<mvc:mapping path="/user/withdraw/check.do" />
+			<mvc:mapping path="/user/withdraw/toWithdraw.do" />
+			<mvc:mapping path="/user/withdraw/cash.do" />
+			<mvc:mapping path="/user/withdraw/return.do" />
+			<!-- 汇付提现相关 end -->
+			<mvc:mapping path="/user/planinfo/init.do" />
+			<mvc:mapping path="/user/planinfo/getPlanInfoDetail.do" />
+			<mvc:mapping path="/user/pandect/pandect.do" />
+
+			<!-- <mvc:mapping path="/user/repay/userRepayPage.do" /> -->
+			<mvc:mapping path="/user/repay/repaydetail.do" />
+			<mvc:mapping path="/user/repay/repaylist.do" />
+			<mvc:mapping path="/user/repay/getAgreement.do" />
+			<mvc:mapping path="/chinapnrLogin/login.do" />
+			<mvc:mapping path="/user/openaccount/init.do" />
+			<mvc:mapping path="/user/openaccount/open.do" />
+			<mvc:mapping path="/user/openaccount/openCorp.do" />
+			<mvc:mapping path="/plan/planInvest.do" />
+			<mvc:mapping path="/plan/planCheck.do" />
+			<!-- <mvc:mapping path="/plan/getPlanDetail.do" /> -->
+			<mvc:mapping path="/user/invest/invest.do" />
+			<mvc:mapping path="/user/invest/investCheck.do" />
+			<mvc:mapping path="/project/getProjectDetail.do" />
+			<mvc:mapping path="/project/getProjectInvest.do" />
+			<mvc:mapping path="/project/getProjectConsume.do" />
+			<mvc:mapping path="/project/getProjectStatus.do" />
+			<mvc:mapping path="/user/invite/toInvite.do" />
+			<mvc:mapping path="/user/invite/logs.do" />
+			<mvc:mapping path="/user/mytender/init.do" />
+			<mvc:mapping path="/user/mytender/projectlist.do" />
+			<mvc:mapping path="/user/mytender/userinvestlist.do" />
+			<mvc:mapping path="/user/mytender/createAgreementPDF.do" />
+			<mvc:mapping path="/htl/moveToInvestPage.do" />
+			<mvc:mapping path="/htl/moveToRedeemPage.do" />
+			<!-- 风险测评 -->
+			<mvc:mapping path="/financialAdvisor/financialAdvisorInit.do" />
+			<mvc:mapping path="/financialAdvisor/questionnaireInit.do" />
+			<mvc:mapping path="/user/appoint/initAppoint.do" />
+			<!-- 定向转账授权 -->
+			<mvc:mapping path="/direct/bindUser.do" />
+			<mvc:mapping path="/direct/bindInit.do" />
+			<!-- 定向转账 -->
+			<mvc:mapping path="/direct/direcTrans.do" />
+			<mvc:mapping path="/direct/directInit.do" />
+			<!-- 预约管理 -->
+			<mvc:mapping path="/user/appoint/initAppoint.do" />
+			<!-- 风险测评 -->
+			<mvc:mapping path="/financialAdvisor/questionInit.do" />
+			<mvc:mapping path="/financialAdvisor/evaluationResultNew.do" />
+			<!-- 银行存管相关拦截器 -->
+			<!-- <mvc:mapping path="/bank/web/borrow/getBorrowDetail.do" /> -->
+			<mvc:mapping path="/bank/user/trade/initTradeList.do" />
+			<mvc:mapping path="/bank/user/trade/tradelist.do" />
+			<!-- 债权转让 Start -->
+			<mvc:mapping path="/bank/user/credit/usercreditlist.do" />
+			<mvc:mapping path="/bank/user/credit/tendertocreditlist.do" />
+			<mvc:mapping path="/bank/user/credit/tenderabletocredit.do" />
+			<mvc:mapping path="/bank/user/credit/tendertocreditdetail.do" />
+			<mvc:mapping path="/bank/user/credit/getcaptcha.do" />
+			<mvc:mapping path="/bank/user/credit/checkcaptcha.do" />
+			<mvc:mapping path="/bank/user/credit/sendcode.do" />
+			<mvc:mapping path="/bank/user/credit/checkcode.do" />
+			<mvc:mapping path="/bank/user/credit/savetendertocredit.do" />
+			<mvc:mapping path="/bank/user/credit/tendertocreditresult.do" />
+			<mvc:mapping path="/bank/user/credit/creditinprogresslist.do" />
+			<mvc:mapping path="/bank/user/credit/creditstoplist.do" />
+			<mvc:mapping path="/bank/user/credit/creditassignlist.do" />
+			<!-- <mvc:mapping path="/bank/user/credit/creditassigntenderlist.do" /> -->
+			<mvc:mapping path="/bank/user/credit/websubmitcredittenderassign.do" />
+			<!-- <mvc:mapping path="/bank/user/credit/webcredittender.do" />
+            <mvc:mapping path="/bank/user/credit/webcheckcredittenderassign.do" />-->
+			<mvc:mapping path="/bank/user/credit/userCanCreditList.do" />
+			<!-- 债权转让 End -->
+			<!-- 充值相关 start -->
+			<mvc:mapping path="/bank/web/user/recharge/rechargeInfo.do" />
+			<mvc:mapping path="/bank/web/user/recharge/rechargePage.do" />
+			<mvc:mapping path="/bank/web/user/recharge/recharge.do" />
+			<!-- 短信充值 -->
+			<mvc:mapping path="/bank/web/user/recharge/sendCode.do" />
+			<mvc:mapping path="/bank/web/user/recharge/rechargeOnline.do" />
+			<mvc:mapping path="/bank/web/user/recharge/rechargeInfo.do" />
+			<!-- 充值相关 end -->
+			<!-- 江西银行提现相关  start -->
+			<mvc:mapping path="/bank/web/withdraw/check.do" />
+			<mvc:mapping path="/bank/web/withdraw/toWithdraw.do" />
+			<mvc:mapping path="/bank/web/withdraw/cash.do" />
+			<mvc:mapping path="/bank/web/withdraw/return.do" />
+			<!-- 江西银行提现相关 end -->
+
+			<!-- 江西银行绑卡相关  start-->
+			<mvc:mapping path="/bank/web/bindCard/bindCard.do" />
+			<mvc:mapping path="/bank/web/bindCard/index.do" />
+			<mvc:mapping path="/bank/web/bindCard/check.do" />
+			<!-- 江西银行绑卡相关  end-->
+
+			<!-- 江西银行开户相关 -->
+			<mvc:mapping path="/bank/web/user/bankopen/init.do" />
+			<mvc:mapping path="/bank/web/user/bankopen/sendCode.do" />
+			<mvc:mapping path="/bank/web/user/bankopen/open.do" />
+			<!-- 江西银行开户相关 -->
+			<!-- 江西银行投资相关 -->
+			<mvc:mapping path="/bank/web/user/tender/investCheck.do" />
+			<mvc:mapping path="/bank/web/user/tender/invest.do" />
+			<!-- 江西银行还款 -->
+			<mvc:mapping path="/bank/web/user/repay/repaydetail.do"/>
+			<mvc:mapping path="/bank/web/user/repay/orgUserBatchRepayPage.do"/>
+			<mvc:mapping path="/bank/web/user/repay/orgUserStartBatchRepayAction.do"/>
+			<mvc:mapping path="/bank/web/user/repay/orgUserStartBatchRepay.do"/>
+			<!-- 江西银行投资相关 -->
+			<bean class="com.hyjf.web.interceptor.LoginInterceptor"></bean>
+		</mvc:interceptor>
+		<!-- 汇付开户验证拦截器 -->
+		<mvc:interceptor>
+			<!-- 汇付提现相关 start -->
+			<mvc:mapping path="/user/withdraw/check.do" />
+			<mvc:mapping path="/user/withdraw/toWithdraw.do" />
+			<mvc:mapping path="/user/withdraw/cash.do" />
+			<mvc:mapping path="/user/withdraw/return.do" />
+			<!-- 汇付提现相关 end -->
+			<bean class="com.hyjf.web.interceptor.OpenAccountInterceptor"></bean>
+		</mvc:interceptor>
+		<!-- 江西银行开户验证拦截器 -->
+		<mvc:interceptor>
+			<mvc:mapping path="/plan/planInvest.do" />
+			<mvc:mapping path="/plan/planCheck.do" />
+			<!-- <mvc:mapping path="/plan/getPlanDetail.do" /> -->
+			<mvc:mapping path="/user/invest/invest.do" />
+			<mvc:mapping path="/user/invest/investCheck.do" />
+			<!-- <mvc:mapping path="/user/withdraw/toWithdraw.do" />
+            <mvc:mapping path="/user/withdraw/cash.do" />-->
+			<mvc:mapping path="/recharge/rechargePage.do" />
+			<mvc:mapping path="/project/getProjectDetail.do" />
+			<mvc:mapping path="/project/getProjectInvest.do" />
+			<mvc:mapping path="/project/getProjectConsume.do" />
+			<mvc:mapping path="/project/getProjectStatus.do" />
+			<!-- 预约授权 -->
+			<mvc:mapping path="/user/pandect/appointment.do" />
+			<!-- 我的投资 -->
+			<mvc:mapping path="/user/mytender/init.do" />
+			<!-- 预约管理 -->
+			<mvc:mapping path="/user/appoint/initAppoint.do" />
+			<!-- 汇添金计划 -->
+			<mvc:mapping path="/user/planinfo/init.do" />
+			<!-- 设置交易密码 -->
+			<!-- <mvc:mapping path="/bank/user/transpassword/setPassword.do" /> -->
+
+			<!-- 银行存管相关拦截器 -->
+			<!-- 交易明细  -->
+			<!-- modify by cwyang 产品提出           <mvc:mapping path="/bank/user/trade/initTradeList.do" /> -->
+			<mvc:mapping path="/bank/user/credit/usercreditlist.do" />
+			<mvc:mapping path="/bank/user/credit/savetendertocredit.do" />
+			<mvc:mapping path="/bank/user/credit/websubmitcredittenderassign.do" />
+			<mvc:mapping path="/bank/user/credit/webcheckcredittenderassign.do" />
+			<!-- <mvc:mapping path="/bank/web/borrow/getBorrowDetail.do" /> -->
+			<!-- 江西银行提现相关 start -->
+			<mvc:mapping path="/bank/web/withdraw/check.do" />
+			<mvc:mapping path="/bank/web/withdraw/toWithdraw.do" />
+			<mvc:mapping path="/bank/web/withdraw/cash.do" />
+			<mvc:mapping path="/bank/web/withdraw/return.do" />
+			<!-- 江西银行提现相关 end -->
+			<!-- 江西银行投资相关 -->
+			<mvc:mapping path="/bank/web/user/tender/investCheck.do" />
+			<mvc:mapping path="/bank/web/user/tender/invest.do" />
+			<!-- 江西银行投资相关 -->
+			<bean class="com.hyjf.web.interceptor.BankOpenAccountInterceptor"></bean>
+		</mvc:interceptor>
+
+		<!-- 江西银行是否设置交易密码验证拦截器 -->
+		<mvc:interceptor>
+			<mvc:mapping path="/bank/web/withdraw/toWithdraw1.do" />
+			<bean class="com.hyjf.web.interceptor.BankIsSetPasswordInterceptor"></bean>
+		</mvc:interceptor>
+		<!-- token发放拦截器 -->
+		<mvc:interceptor>
+			<mvc:mapping path="/user/withdraw/toWithdraw.do" />
+			<mvc:mapping path="/project/getProjectDetail.do" />
+			<mvc:mapping path="/plan/getPlanDetail.do" />
+			<mvc:mapping path="/htl/moveToInvestPage.do" />
+			<!-- 用户还款页面 -->
+			<mvc:mapping path="/user/repay/repaydetail.do" />
+			<mvc:mapping path="/plan/userRepay/repayDetail.do" />
+			<!-- 定向转账授权 -->
+			<mvc:mapping path="/direct/bindInit.do" />
+			<!-- 定向转账 -->
+			<mvc:mapping path="/direct/directInit.do" />
+			<!-- 定向转账授权修改 -->
+			<mvc:mapping path="/user/safe/init.do" />
+			<!-- 江西银行用户充值 -->
+			<mvc:mapping path="/bank/web/user/recharge/rechargePage.do" />
+			<!-- 江西银行用户提现 -->
+			<mvc:mapping path="/bank/web/withdraw/toWithdraw.do" />
+			<!-- 江西银行用户提现短信确认 -->
+			<mvc:mapping path="/bank/web/withdraw/toSMSConfirm.do" />
+			<!-- 项目详情 -投资 -->
+			<mvc:mapping path="/bank/web/borrow/getBorrowDetail.do" />
+			<mvc:mapping path="/bank/web/user/repay/repaydetail.do" />
+			<!-- 绑卡画面 -->
+			<mvc:mapping path="/bank/web/bindCard/index.do" />
+			<mvc:mapping path="/bank/user/credit/tendertocreditdetail.do" />
+			<mvc:mapping path="/bank/user/credit/webcredittender.do" />
+			<!-- 注册 去掉没有必要
+            <mvc:mapping path="/user/regist/init.do" />  -->
+			<!-- 着落页 -->
+			<mvc:mapping path="/landingpage/init.do"/>
+			<!-- 注册 -->
+			<!-- 修改手机号 -->
+			<mvc:mapping path="/bank/user/transpassword/initMobile.do" />
+			<!-- 发送邮箱验证-->
+			<mvc:mapping path="/user/safe/bindingEmail.do" />
+			<!--登录-->
+			<!--<mvc:mapping path="/user/login/init.do" />-->
+			<!--<mvc:mapping path="/user/login/login.do" />-->
+			<!--查看计划详情-->
+			<mvc:mapping path="/hjhdetail/getPlanDetail.do"/>
+			<mvc:mapping path="/hjhdetail/planInvest.do"/>
+			<!--修改密码-->
+			<mvc:mapping path="/user/safe/modifyCode.do"/>
+			<!--<mvc:mapping path="/user/safe/checkOrigimaPw.do"/>-->
+			<mvc:mapping path="/user/findpassword/sencodPage.do"/>
+			<bean class="com.hyjf.web.interceptor.TokenGrantInterceptor"></bean>
+		</mvc:interceptor>
+		<!-- token验证拦截器 -->
+		<mvc:interceptor>
+			<mvc:mapping path="/user/withdraw/cash.do" />
+			<mvc:mapping path="/user/invest/appointment.do" />
+			<mvc:mapping path="/plan/planInvest.do" />
+
+			<!-- 用户还款 -->
+			<mvc:mapping path="/user/repay/repay.do" />
+			<mvc:mapping path="/plan/userRepay/repay.do" />
+			<!-- 定向转账授权 -->
+			<mvc:mapping path="/direct/bindUser.do" />
+			<!-- 定向转账授权修改 -->
+			<mvc:mapping path="/direct/updateBindUser.do" />
+			<!-- 定向转账 -->
+			<mvc:mapping path="/direct/direcTrans.do" />
+			<!-- 江西银行用户充值 -->
+			<mvc:mapping path="/bank/web/user/recharge/recharge.do" />
+			<mvc:mapping path="/bank/web/user/recharge/rechargeOnline.do" />
+			<!-- 江西银行用户提现 -->
+			<mvc:mapping path="/bank/web/withdraw/cash.do" />
+			<!-- 用户投资 -->
+			<mvc:mapping path="/bank/web/user/tender/invest.do" />
+			<mvc:mapping path="/bank/web/user/repay/repay.do" />
+			<mvc:mapping path="/bank/user/credit/savetendertocredit.do" />
+			<mvc:mapping path="/bank/user/credit/websubmitcredittenderassign.do" />
+			<mvc:mapping path="/hjhdetail/planInvest.do"/>
+			<!-- 注册 去掉弃用
+            <mvc:mapping path="/user/regist/regist.do" />
+                   着落页注册
+            <mvc:mapping path="/user/regist/regist.do"/> -->
+
+			<!-- 注册 -->
+			<!-- 绑卡画面 -->
+			<mvc:mapping path="/bank/web/bindCard/bindCard.do" />
+			<!-- 修改手机号-->
+			<!-- <mvc:mapping path="/bank/user/transpassword/mobileModify.do" /> -->
+			<!-- 发送邮件-->
+			<mvc:mapping path="/user/safe/sendEmail.do" />
+			<!--登录-->
+			<!--<mvc:mapping path="/user/login/login.do" />-->
+			<!--修改密码-->
+			<mvc:mapping path="/user/safe/updatePassword.do"/>
+			<!--忘记密码-->
+			<mvc:mapping path="/user/findpassword/checkPwd.do"/>
+			<bean class="com.hyjf.web.interceptor.TokenCheckInterceptor"></bean>
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+			<bean class="com.hyjf.web.interceptor.ResourceVersionInterceptor"></bean>
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+			<mvc:exclude-mapping path="/user/findpassword/**"/>
+			<mvc:exclude-mapping path="/user/safe/**"/>
+			<mvc:exclude-mapping path="/bank/user/transpassword/**"/>
+			<mvc:exclude-mapping path="/bank/web/user/bankopen/**"/>
+			<mvc:exclude-mapping path="/api/**"/>
+			<bean class="com.hyjf.web.interceptor.RedirectUrlInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+	<bean
+			class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+		<property name="ignoreAcceptHeader" value="true" />
+		<property name="defaultContentType" value="text/html" />
+		<property name="order" value="1" />
+		<property name="mediaTypes">
+			<map>
+				<entry key="json" value="application/json" />
+				<entry key="xml" value="application/xml" />
+			</map>
+		</property>
+
+		<property name="favorParameter" value="false" />
+
+		<property name="viewResolvers">
+			<list>
+				<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />
+				<bean
+						class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+					<property name="viewClass"
+							  value="org.springframework.web.servlet.view.JstlView" />
+					<property name="prefix" value="/WEB-INF/jsp/" />
+					<property name="suffix" value=".jsp"></property>
+				</bean>
+			</list>
+		</property>
+
+		<property name="defaultViews">
+			<list>
+				<!-- for application/json -->
+				<bean
+						class="org.springframework.web.servlet.view.json.MappingJackson2JsonView" />
+				<!-- for application/xml -->
+				<bean class="org.springframework.web.servlet.view.xml.MarshallingView">
+					<property name="marshaller">
+						<bean class="org.springframework.oxm.xstream.XStreamMarshaller" />
+					</property>
+				</bean>
+			</list>
+		</property>
+
+	</bean>
+
+	<!-- SpringMVC在超出上传文件限制时，会抛出org.springframework.web.multipart.MaxUploadSizeExceededException -->
+	<!-- 该异常是SpringMVC在检查上传的文件信息时抛出来的，而且此时还没有进入到Controller方法中 -->
+	<bean
+			class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="exceptionMappings">
+			<props>
+				<!-- 遇到MaxUploadSizeExceededException异常时，自动跳转到/WEB-INF/error_fileupload.jsp页面 -->
+				<prop
+						key="org.springframework.web.multipart.MaxUploadSizeExceededException">WEB-INF/jsp/errors/error_fileupload</prop>
+				<!-- 处理其它异常(包括Controller抛出的) -->
+				<prop key="java.lang.Throwable">WEB-INF/jsp/errors/500</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- 配置国际化资源文件路径 -->
+	<bean id="messageSource"
+		  class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<!-- 定义消息资源文件的相对路径 -->
+				<value>classpath:properties/message/message</value>
+			</list>
+		</property>
+		<!-- 如果在国际化资源文件中找不到对应代码的信息，就用这个代码作为名称 -->
+		<property name="useCodeAsDefaultMessage" value="true" />
+		<property name="fileEncodings" value="utf-8" />
+	</bean>
+
+	<!-- 基于Cookie的本地化解析器 -->
+	<bean id="localeResolver"
+		  class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+		<property name="cookieMaxAge" value="604800" />
+		<property name="defaultLocale" value="zh_CN" />
+		<property name="cookieName" value="Language"></property>
+	</bean>
+
+	<!-- AOP 設定 -->
+	<!-- 使用cglib动态代理 -->
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+
+	<bean id="aopHandler" class="com.hyjf.common.aop.AOPHandler" />
+	<aop:config>
+		<aop:aspect id="myAop" ref="aopHandler">
+			<aop:pointcut id="targetApi"
+						  expression="execution(public com.hyjf.common.result.ResultBean *(..))" />
+			<aop:around method="apiLogAOPHandler" pointcut-ref="targetApi" />
+
+			<aop:pointcut id="targetWebApi"
+						  expression="execution(public org.springframework.web.servlet.ModelAndView com.hyjf.web.api..*Server.*(..)))" />
+			<aop:around method="webApiLogAOPHandler" pointcut-ref="targetWebApi" />
+		</aop:aspect>
+	</aop:config>
+
+	<bean id="springContextUtil" class="com.hyjf.web.util.SpringContextUtil"></bean>
+</beans>

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.NaMiActivityCustomizeMapper">
+	<resultMap id="UserListMap" type="com.hyjf.mybatis.model.customize.admin.NaMiActivityUserListCustomize">
+		<id column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="recommend_name" property="recommendName" jdbcType="VARCHAR" />
+		<result column="regionName" property="regionName" /> <!-- 大区  -->
+		<result column="branchName" property="branchName" /> <!-- 分公司  -->
+		<result column="departmentName" property="departmentName" /> <!-- 部门  -->
+	</resultMap>
+	
+	
+	<sql id="Where_Clause">
+		<where>
+			<if test="userName != null and userName !=''">
+				AND t.user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND t.mobile LIKE CONCAT('%', #{mobile}, '%')
+			</if>
+			<if test="combotreeListSrch != null and combotreeListSrch != ''">
+				AND od.id in
+				<foreach collection="combotreeListSrch" open="(" close=")" separator="," item="dep">
+					#{dep}
+				</foreach>
+			</if>
+		</where>
+	</sql>
+	
+	
+	<select id="selectRecordList" resultMap="UserListMap" parameterType="Map">
+		SELECT
+			t.*,
+		    `od3`.`name` AS `regionName`,
+			`od2`.`name` AS `branchName`,
+			`od`.`name` AS `departmentName`
+		FROM
+			(
+				SELECT
+					hydu.user_id,
+					hydu.username AS user_name,
+					hydu.mobile,
+					hydur.username AS recommend_name,
+					CASE WHEN hydui.attribute = 2 OR hydui.attribute = 3 THEN hydu.user_id ELSE hydsu.spreads_userid END AS hyd_id
+				FROM
+					huiyingdai_users hydu 
+				LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+				LEFT JOIN huiyingdai_spreads_users hydsu ON hydsu.user_id = hydu.user_id
+				LEFT JOIN huiyingdai_users hydur ON hydur.user_id = hydsu.spreads_userid
+				WHERE hydu.user_id IN(
+								SELECT user_id FROM (
+									SELECT
+										hbt.user_id user_id
+									FROM
+										huiyingdai_borrow_tender hbt
+									WHERE
+										hbt.addtime <![CDATA[>=]]> #{timeStart}
+									AND hbt.addtime <![CDATA[<=]]> #{timeEnd}
+									UNION
+									SELECT
+										hct.user_id user_id
+									FROM
+										huiyingdai_credit_tender hct
+									WHERE
+										hct.add_time <![CDATA[>=]]> #{timeStart}
+									AND hct.add_time <![CDATA[<=]]> #{timeEnd}
+									UNION
+									SELECT
+										bdpa.user_id user_id
+									FROM
+										hyjf_debt_plan_accede bdpa
+									WHERE
+										bdpa.create_time <![CDATA[>=]]> #{timeStart}
+									AND bdpa.create_time <![CDATA[<=]]> #{timeEnd}
+								) c
+								GROUP BY c.user_id
+					)
+				) t
+		LEFT JOIN `hyjf_crm`.`oa_users` `ou` ON `ou`.hyd_id = t.hyd_id AND ou.user_status IN ('E','Q1','Q11','Q2','Q21')
+		LEFT JOIN `hyjf_crm`.`oa_department` `od` ON `od`.`id` = `ou`.`departmentid` AND `od`.id IS NOT NULL
+		LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+		LEFT JOIN `hyjf_crm`.`oa_department` `od3` ON `od3`.`id` = `od2`.`parentid`
+		<include refid="Where_Clause" />
+		<if test="limitStart != null and limitEnd !=null" >
+	     		LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    	</if>
+	</select>
+	<select id="selectRecordCount" resultType="java.lang.Integer" parameterType="Map">
+		SELECT
+			count(1)
+		FROM
+			(
+				SELECT
+					hydu.user_id,
+					hydu.username AS user_name,
+					hydu.mobile,
+					hydur.username AS recommend_name,
+					CASE WHEN hydui.attribute = 2 OR hydui.attribute = 3 THEN hydu.user_id ELSE hydsu.spreads_userid END AS hyd_id
+				FROM
+					huiyingdai_users hydu 
+				LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+				LEFT JOIN huiyingdai_spreads_users hydsu ON hydsu.user_id = hydu.user_id
+				LEFT JOIN huiyingdai_users hydur ON hydur.user_id = hydsu.spreads_userid
+				WHERE hydu.user_id IN(
+								SELECT user_id FROM (
+									SELECT
+										hbt.user_id user_id
+									FROM
+										huiyingdai_borrow_tender hbt
+									WHERE
+										hbt.addtime <![CDATA[>=]]> #{timeStart}
+									AND hbt.addtime <![CDATA[<=]]> #{timeEnd}
+									UNION
+									SELECT
+										hct.user_id user_id
+									FROM
+										huiyingdai_credit_tender hct
+									WHERE
+										hct.add_time <![CDATA[>=]]> #{timeStart}
+									AND hct.add_time <![CDATA[<=]]> #{timeEnd}
+									UNION
+									SELECT
+										bdpa.user_id user_id
+									FROM
+										hyjf_debt_plan_accede bdpa
+									WHERE
+										bdpa.create_time <![CDATA[>=]]> #{timeStart}
+									AND bdpa.create_time <![CDATA[<=]]> #{timeEnd}
+								) c
+								GROUP BY c.user_id
+						
+					)
+				) t
+		LEFT JOIN `hyjf_crm`.`oa_users` `ou` ON `ou`.hyd_id = t.hyd_id AND ou.user_status IN ('E','Q1','Q11','Q2','Q21')
+		LEFT JOIN `hyjf_crm`.`oa_department` `od` ON `od`.`id` = `ou`.`departmentid` AND `od`.id IS NOT NULL
+		LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+		LEFT JOIN `hyjf_crm`.`oa_department` `od3` ON `od3`.`id` = `od2`.`parentid`
+		<include refid="Where_Clause" />
+	</select>
+	
+	
+	<!-- <resultMap id="investDataMap" type="com.hyjf.mybatis.model.customize.admin.NaMiActivityInvestDataCustomize">
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<result column="borrow_style" property="borrowStyle" jdbcType="INTEGER" />
+	</resultMap>
+	<select id="getFoldRatio" resultMap="investDataMap" parameterType="Map">
+		SELECT
+		hb.borrow_period,SUM(hbt.account) account,
+		CASE WHEN hb.borrow_style='endday' THEN 1 ELSE 0 END borrow_style
+		FROM
+			huiyingdai_borrow_tender hbt
+		LEFT JOIN huiyingdai_borrow hb ON hbt.borrow_nid=hb.borrow_nid
+		WHERE
+			hbt.user_id = #{userId}
+		GROUP BY hb.borrow_period,hb.borrow_style
+
+	</select>
+	-->
+	<select id= "getFoldRatio" resultType="java.lang.Double"  
+        parameterType="Map" statementType="CALLABLE">  
+          
+        {CALL nami_201612(#{userId,mode=IN,jdbcType=INTEGER},#{foldRatio,mode=OUT,jdbcType=DOUBLE})}  
+    </select>
+</mapper>

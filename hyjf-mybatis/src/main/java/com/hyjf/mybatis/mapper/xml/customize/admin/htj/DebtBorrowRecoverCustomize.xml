@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.htj.DebtBorrowRecoverCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+		    b.`status` = 3
+		    AND bt.status <![CDATA[<>]]> 4
+			<!-- 借款编号 -->
+			<if test="borrowNidSrch != null and borrowNidSrch != ''">
+				AND bt.borrow_nid LIKE CONCAT('%', #{borrowNidSrch}, '%')
+			</if>
+			<!-- 借款标题 -->
+			<if test="borrowNameSrch != null and borrowNameSrch != ''">
+				AND b.`name` LIKE CONCAT('%', #{borrowNameSrch}, '%')
+			</if>
+			<!-- 投资订单号 -->
+			<if test="orderNumSrch != null and orderNumSrch != ''">
+				AND bt.order_id = #{orderNumSrch}
+			</if>
+			<!-- 放款订单号 -->
+			<if test="loanOrdid != null and loanOrdid != ''">
+				AND bt.loan_order_id = #{loanOrdid}
+			</if>
+			<!-- 投资人 -->
+			<if test="usernameSrch != null and usernameSrch != ''">
+				AND bt.user_name LIKE CONCAT('%', #{usernameSrch}, '%')
+			</if>
+			<!-- 放款状态 -->
+			<if test="isRecoverSrch != null and isRecoverSrch != ''">
+				AND bt.status = #{isRecoverSrch}
+			</if>
+			<!-- 投资时间 -->
+			<if test="timeRecoverStartSrch != null and timeRecoverStartSrch != ''">
+				AND FROM_UNIXTIME( bt.create_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeRecoverStartSrch}
+			</if>
+			<if test="timeRecoverEndSrch != null and timeRecoverEndSrch != ''">
+				AND FROM_UNIXTIME( bt.create_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeRecoverEndSrch}
+			</if>
+			<!-- 放款时间 -->
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND FROM_UNIXTIME( br.create_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch != ''">
+				AND FROM_UNIXTIME( br.create_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+		</where>
+	</sql>
+	
+	<select id="countBorrowRecover" resultType="java.lang.Long" parameterType="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowRecoverCustomize">
+		SELECT
+		  COUNT(1)
+		FROM
+	      hyjf_debt_invest bt
+		  INNER JOIN hyjf_debt_borrow b ON bt.borrow_nid = b.borrow_nid
+		  LEFT JOIN hyjf_debt_loan br ON br.borrow_nid = bt.borrow_nid AND br.invest_id = bt.id
+		<include refid="Where_Clause" />
+	</select>
+	
+	<resultMap id="selectBorrowRecoverListMap" type="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowRecoverCustomize">
+		<!-- 借款标题 -->
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<!-- 借款编号 -->
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<!-- 投资订单号 -->
+		<result column="order_num" property="orderNum" jdbcType="VARCHAR" />
+		<!-- 投资人 -->
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<!-- 投资金额 -->
+		<result column="account" property="account" jdbcType="VARCHAR" />
+        <!-- 应收服务费 -->
+		<result column="service_price" property="servicePrice" jdbcType="VARCHAR" />
+        <!-- 应放款 -->
+		<result column="recover_price" property="recoverPrice" jdbcType="VARCHAR" />
+        <!-- 已放款 -->
+		<result column="recover_price_over" property="recoverPriceOver" jdbcType="VARCHAR" />
+        <!-- 放款状态 -->
+		<result column="is_recover" property="isRecover" jdbcType="VARCHAR" />
+        <!-- 放款时间 -->
+		<result column="addtime" property="addtime" jdbcType="VARCHAR" />
+        <!-- 投资时间 -->
+		<result column="time_recover" property="timeRecover" jdbcType="VARCHAR" />
+		 <!-- 放款订单号-->
+		<result column="loanOrdid" property="loanOrdid" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectBorrowRecoverList" resultMap="selectBorrowRecoverListMap" parameterType="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowRecoverCustomize">
+		SELECT
+		  b.`name` AS borrow_name,
+		  bt.borrow_nid,
+		  bt.order_id AS order_num,
+	  	  bt.user_name AS username,
+		  bt.account AS account,
+		  bt.loan_fee AS service_price,
+		  bt.loan_order_id AS loanOrdid,
+		  bt.account - bt.loan_fee AS recover_price,
+		  CASE WHEN bt.status = 1 THEN bt.loan_amount ELSE '0.00' END AS recover_price_over,
+		  IF(bt.status = 0 , '未放款', '已放款') AS is_recover,
+	      FROM_UNIXTIME( bt.create_time, '%Y-%m-%d %H:%i:%s' ) AS time_recover,
+		  FROM_UNIXTIME( br.create_time, '%Y-%m-%d %H:%i:%s' ) AS addtime
+		FROM
+	      hyjf_debt_invest bt
+		  INNER JOIN hyjf_debt_borrow b ON bt.borrow_nid = b.borrow_nid
+		  LEFT JOIN hyjf_debt_loan br ON br.borrow_nid = bt.borrow_nid AND br.invest_id = bt.id
+	    <include refid="Where_Clause" />
+		  ORDER BY
+		    bt.create_time DESC, br.id DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<resultMap id="sumBorrowRecoverListMap" type="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowRecoverCustomize">
+		<!-- 应放款金额 -->
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<!-- 实际放款金额 -->
+		<result column="recover_price" property="recoverPrice" jdbcType="VARCHAR" />
+		<!-- 实收放款金额 -->
+		<result column="recover_price_over" property="recoverPriceOver" jdbcType="VARCHAR" />
+		<!-- 实收服务费 -->
+		<result column="service_price" property="servicePrice" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="sumBorrowRecoverList" resultMap="sumBorrowRecoverListMap" parameterType="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowRecoverCustomize">
+		SELECT
+            SUM(a.account)                 AS account,
+		    SUM(a.recover_price)           AS recover_price,
+		    SUM(a.recover_price_over)      AS recover_price_over,
+            SUM(a.service_price)           AS service_price
+        FROM 
+        (
+           SELECT
+            bt.account                           AS account,
+		    bt.account - bt.loan_fee             AS recover_price,
+		    CASE 
+		      WHEN bt.status = 1 THEN 
+		        bt.loan_amount 
+		      ELSE 0.00 
+		    END                       AS recover_price_over,
+            bt.loan_fee               AS service_price
+		  FROM
+		      hyjf_debt_invest bt
+			  INNER JOIN hyjf_debt_borrow b ON bt.borrow_nid = b.borrow_nid
+			  LEFT JOIN hyjf_debt_loan br ON br.borrow_nid = bt.borrow_nid AND br.invest_id = bt.id
+		    <include refid="Where_Clause" />
+        ) a
+	</select>
+	
+	<resultMap id="exportBorrowRecoverListMap" type="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowRecoverCustomize">
+		<!-- 借款编号 -->
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<!-- 借款人ID -->
+		<result column="user_id" property="userId" jdbcType="VARCHAR" />
+		<!-- 借款人用户名 -->
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<!-- 借款标题 -->
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<!-- 项目类型 -->
+		<result column="borrow_project_type_name" property="borrowProjectTypeName" jdbcType="VARCHAR" />
+		<!-- 借款期限 -->
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<!-- 年化收益 -->
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<!-- 还款方式 -->
+		<result column="borrow_style_name" property="borrowStyleName" jdbcType="VARCHAR" />
+		<!-- 投资订单号 -->
+		<result column="order_num" property="orderNum" jdbcType="VARCHAR" />
+		<!-- 放款订单号 -->
+		<result column="loanOrdid" property="loanOrdid" jdbcType="VARCHAR" />
+		<!-- 投资人用户名 -->
+		<result column="tender_username" property="tenderUsername" jdbcType="VARCHAR" />
+		<!-- 投资人ID -->
+		<result column="tender_user_id" property="tenderUserId" jdbcType="VARCHAR" />
+		<!-- 投资时间 -->
+		<result column="addtime" property="addtime" jdbcType="VARCHAR" />
+		<!-- 借款金额 -->
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<!-- 应放款金额 -->
+		<result column="account_yes" property="accountYes" jdbcType="VARCHAR" />
+		<!-- 应收服务费 -->
+		<result column="loan_fee" property="loanFee" jdbcType="VARCHAR" />
+		<!-- 实际放款金额 -->
+		<result column="recover_price" property="recoverPrice" jdbcType="VARCHAR" />
+		<!-- 实收服务费 -->
+		<result column="service_price" property="servicePrice" jdbcType="VARCHAR" />
+		<!-- 放款状态 -->
+		<result column="is_recover" property="isRecover" jdbcType="VARCHAR" />
+		<!-- 放款时间 -->
+		<result column="time_recover" property="timeRecover" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="exportBorrowRecoverList" resultMap="exportBorrowRecoverListMap" parameterType="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowRecoverCustomize">
+		SELECT
+			b.borrow_nid              AS borrow_nid,
+			b.user_id                 AS user_id,
+			b.borrow_user_name        AS username,	
+			b.`name`                  AS borrow_name,
+			bpt.borrow_name           AS borrow_project_type_name,
+			CASE WHEN borrow_style = 'endday' THEN CONCAT(b.borrow_period, '天') ELSE CONCAT(b.borrow_period, '个月') END borrow_period,
+			CONCAT(b.borrow_apr, '%') AS borrow_apr,
+			bs.`name`                 AS borrow_style_name,
+      		bt.order_id               AS order_num,
+      		bt.loan_order_id          AS loanOrdid,
+      		bt.user_name              AS tender_username,
+			bt.user_id                AS tender_user_id,
+            FROM_UNIXTIME( bt.create_time, '%Y-%m-%d %H:%i:%s' ) AS addtime,
+            bt.account                AS account,
+            bt.account - bt.loan_fee  AS account_yes,
+            bt.loan_fee               AS loan_fee,
+		    CASE WHEN bt.status = 1 THEN bt.loan_amount ELSE '0.00' END          AS recover_price,
+            CASE WHEN bt.status = 1 THEN bt.loan_fee ELSE '0.00' END             AS service_price,
+            IF(bt.status = 0 , '未放款', '已放款') AS is_recover,
+            FROM_UNIXTIME( br.create_time, '%Y-%m-%d %H:%i:%s' ) AS time_recover
+		FROM
+	      hyjf_debt_invest bt
+		  INNER JOIN hyjf_debt_borrow b ON bt.borrow_nid = b.borrow_nid
+		  LEFT JOIN hyjf_debt_loan br ON br.borrow_nid = bt.borrow_nid AND br.invest_id = bt.id
+          LEFT JOIN huiyingdai_borrow_style bs ON bs.nid = b.borrow_style
+		  LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = CAST(b.project_type AS CHAR)
+	    <include refid="Where_Clause" />
+		  ORDER BY
+		    bt.create_time DESC, br.id DESC
+	</select>
+</mapper>

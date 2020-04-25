@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.wecat.WecatProjectListCustomizeMapper">
+<sql id="Where_Clause">
+		<where>
+			hydb.is_show <![CDATA[<>]]> 1
+			<if test="projectType != null and projectType != ''">
+				AND	hydbpt.borrow_project_type = #{projectType,jdbcType=VARCHAR}
+			</if>
+			<if test="type != null and type != ''">
+			 AND hydb.project_type = #{type,jdbcType=VARCHAR}
+			</if>
+			<if test="projectType != null and type == null">
+			 AND hydb.project_type <![CDATA[<>]]> 4
+			 AND hydb.project_type <![CDATA[<>]]> 11
+			 AND hydb.project_type <![CDATA[<>]]> 13
+			</if>
+			<if test="projectType == null and type == null">
+			 AND hydb.project_type <![CDATA[<>]]> 13
+			</if>
+			<if test="borrow_status == null or borrow_status == ''">
+				AND 
+		        ( 
+		           ( ( hydb.`status` = 0 AND ( hydb.verify_status = 1 )) )
+						OR ( hydb.`status` = 1 AND hydb.borrow_status = 1 AND hydb.borrow_account_yes <![CDATA[<]]> hydb.account AND hydb.verify_time + ( borrow_valid_time * 24 * 60 *60 ) <![CDATA[>]]> UNIX_TIMESTAMP( NOW() ) )
+		
+						OR (hydb.`status` = 1 AND hydb.reverify_time = '0' AND ((hydb.reverify_status = 0 AND hydb.borrow_account_yes <![CDATA[>=]]> hydb.account) OR (hydb.verify_time + ( hydb.borrow_valid_time * 24 * 60 * 60) <![CDATA[<]]> UNIX_TIMESTAMP(NOW()))))
+		
+						OR ( hydb.`status` = 3 AND hydb.repay_full_status = 0 )
+		        )
+			</if>
+			
+			<if test="borrow_status != null and borrow_status != ''">
+			<!-- 获取 等待投资中 -->
+				<if test="borrow_status == '10'.toString()">
+				AND ( hydb.`status` = 0 AND ( hydb.verify_status = 1 ))
+				</if>
+				<!-- 获取 投资中 -->
+				<if test="borrow_status == '11'.toString()">
+				AND ( hydb.`status` = 1 AND hydb.borrow_status = 1 AND hydb.borrow_account_yes <![CDATA[<]]> hydb.account AND hydb.verify_time + ( hydb.borrow_valid_time * 24 * 60 *60 ) <![CDATA[>]]> UNIX_TIMESTAMP( NOW() ) )
+				</if>
+				<!-- 获取 投标结束 -->
+				<if test="borrow_status == '12'.toString()">
+				AND (hydb.`status` = 1 AND hydb.reverify_time = '0' AND ((hydb.reverify_status = 0 AND hydb.borrow_account_yes <![CDATA[>=]]> hydb.account) OR (hydb.verify_time + ( hydb.borrow_valid_time * 24 * 60 * 60) <![CDATA[<]]> UNIX_TIMESTAMP(NOW()))))
+				</if>
+				<!-- 获取 还款中 -->
+				<if test="borrow_status == '13'.toString()">
+				AND ( hydb.`status` = 3 AND hydb.repay_full_status = 0 )
+				</if>
+				<!-- 已还款 -->
+				<!-- <if test="status == '14'.toString()">
+				AND ( hydb.`status` = 3 AND hydb.repay_full_status = 1 )
+				</if> -->
+			</if>
+			
+		</where>
+	</sql>
+	
+	<resultMap id="HztListMap" type="com.hyjf.mybatis.model.customize.wecat.WecatProjectListCustomize">
+		<id column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<id column="borrow_asset_number" property="borrowAssetNumber" jdbcType="VARCHAR" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<result column="borrow_apr" property="borrow_apr" jdbcType="VARCHAR" />
+		<result column="borrow_extra_yield" property="borrowExtraYield" jdbcType="VARCHAR" />
+		<result column="borrow_period_name" property="borrow_period_name" jdbcType="VARCHAR" />
+		<result column="borrow_time_name" property="borrow_time_name" jdbcType="VARCHAR" />
+		<result column="borrow_status" property="borrow_status" jdbcType="VARCHAR" />
+		<result column="borrow_account_wait" property="borrow_account_wait" jdbcType="VARCHAR" />
+		<result column="borrow_type_name" property="borrow_type_name" jdbcType="VARCHAR" />
+		<result column="borrow_account_scale" property="borrow_account_scale" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="selectProjectList" resultMap="HztListMap" parameterType="Map">
+		SELECT
+			hydb.borrow_asset_number,
+			hydb.borrow_nid,
+			hydbpt.borrow_cd AS type,
+			hydb.`name`,
+			hydb.account,
+			hydb.borrow_apr,
+			hydb.borrow_extra_yield,
+			hydb.borrow_period AS borrow_period_name,
+			CASE
+		WHEN hydb.borrow_style = 'endday' THEN
+			'天'
+		ELSE
+			'个月'
+		END borrow_time_name,
+		CASE 
+				WHEN hydb.`status` = 0 AND hydb.verify_status = 1 THEN '10'
+				WHEN hydb.`status` = 1 AND hydb.borrow_status = 1 AND hydb.borrow_account_yes <![CDATA[<]]> hydb.account AND ( hydb.verify_time + ( hydb.borrow_valid_time * 24 * 60 *60 ) <![CDATA[>]]> UNIX_TIMESTAMP( NOW() ) ) THEN '11'
+				WHEN hydb.`status` = 1 AND hydb.reverify_time = '0' AND ((hydb.reverify_status = 0 AND hydb.borrow_account_yes <![CDATA[>=]]> hydb.account) OR (hydb.verify_time + ( hydb.borrow_valid_time * 24 * 60 * 60) <![CDATA[<]]> UNIX_TIMESTAMP(NOW()))) THEN '12'
+        		WHEN hydb.`status` = 3 AND hydb.repay_full_status = 0 THEN '13'
+        		<!-- WHEN hydb.`status` = 3 AND hydb.repay_full_status = 1 THEN '14' -->
+			ELSE
+			  ''
+			END AS borrow_status,
+		CASE 
+				WHEN hydb.`status` = 0 AND hydb.verify_status = 1 THEN '10'
+				WHEN hydb.`status` = 1 AND hydb.borrow_status = 1 AND hydb.borrow_account_yes <![CDATA[<]]> hydb.account AND ( hydb.verify_time + ( hydb.borrow_valid_time * 24 * 60 *60 ) <![CDATA[>]]> UNIX_TIMESTAMP( NOW() ) ) THEN '11'
+				WHEN hydb.`status` = 1 AND hydb.reverify_time = '0' AND ((hydb.reverify_status = 0 AND hydb.borrow_account_yes <![CDATA[>=]]> hydb.account) OR (hydb.verify_time + ( hydb.borrow_valid_time * 24 * 60 * 60) <![CDATA[<]]> UNIX_TIMESTAMP(NOW()))) THEN '12'
+        		WHEN hydb.`status` = 3 AND hydb.repay_full_status = 0 THEN '13'
+			ELSE
+			  ''
+			END AS brstatus,
+		 hydb.borrow_account_wait,
+		 CASE
+		WHEN hydb.guarantee_type = 0 THEN
+			'抵押+担保'
+		WHEN hydb.guarantee_type = 1 THEN
+			'抵押'
+		ELSE
+			'担保'
+		END AS borrow_type_name,
+		 hydb.borrow_account_scale
+		FROM
+			huiyingdai_borrow hydb
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+        <include refid="Where_Clause" />		ORDER BY
+			brstatus ASC,
+			CASE
+				WHEN brstatus = '10' AND hydb.ontime IS NOT NULL AND LENGTH(trim(hydb.ontime)) <![CDATA[>]]> 1 
+				THEN
+					hydb.ontime
+			END ASC,
+			CASE
+				WHEN brstatus = '11'
+				THEN hydb.borrow_account_scale 
+			END DESC,
+			CASE
+				WHEN brstatus = '12'
+				THEN hydb.verify_time 
+			END DESC,
+			CASE
+				WHEN brstatus = '13'
+				THEN hydb.verify_time
+			END DESC
+		<if test="limitStart != null and limitEnd !=null" > 
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER} 
+	    </if> 
+	</select>
+	<select id="countProjectListRecordTotal" resultType="java.lang.Integer" parameterType="Map">
+		SELECT
+			 COUNT(hydb.borrow_nid) AS total
+		FROM
+			huiyingdai_borrow hydb
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+        <include refid="Where_Clause" />	</select>
+</mapper>

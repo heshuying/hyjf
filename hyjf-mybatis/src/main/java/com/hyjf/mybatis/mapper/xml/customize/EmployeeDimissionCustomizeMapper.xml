@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.EmployeeDimissionCustomizeMapper">
+	<resultMap id="selectAllDimission" type="com.hyjf.mybatis.model.customize.EmployeeDimissionCustomize">
+		<result column="oprocess" 		property="oprocess" 	 jdbcType="CHAR" />
+		<result column="userid" 		property="userid" 	   	 jdbcType="INTEGER" />
+		<result column="creater"  		property="creater" 		 jdbcType="INTEGER" />
+		<result column="leave_time" 	property="leave_time" 	 jdbcType="DATE" />
+		<result column="end_time" 		property="end_time" 	 jdbcType="DATE" />
+		<result column="remark" 		property="remark" 	  	 jdbcType="INTEGER" />
+		<result column="f_creater" 	 	property="f_creater"  	 jdbcType="INTEGER" />
+		<result column="f_remark"  		property="f_remark"  	 jdbcType="VARCHAR" />
+		<result column="user_realname"  property="user_realname" jdbcType="VARCHAR" />
+		<result column="level" 			property="level" 	  	 jdbcType="INTEGER" />
+		<result column="mobile" 		property="mobile" 	  	 jdbcType="CHAR" />
+		<result column="entrydate" 	 	property="entrydate"  	 jdbcType="DATE" />
+		<result column="temporary"  	property="temporary"  	 jdbcType="INTEGER" />
+		<result column="hyd_name" 		property="hyd_name" 	 jdbcType="VARCHAR" />	
+		<result column="end_time" 		property="end_time" 	 jdbcType="DATE" />		
+	</resultMap>
+	<select id="selectDimission" resultMap="selectAllDimission" resultType="com.hyjf.mybatis.model.customize.EmployeeDimissionCustomize">
+		SELECT  d2.name AS seconddepart,	
+				(SELECT us.user_realname
+					FROM hyjf_crm.oa_department de LEFT JOIN hyjf_crm.oa_users us on  us.id = de.header 
+					WHERE (de.id=u.id))  AS cityManager,
+		 	    d3.name as thirddepart, u.user_realname, u.level, p.name as pname, u.mobile, 
+		 	      u.entrydate AS entrydatetime,	 	     
+		 	     u.temporary, u.hyd_name, ul.oprocess AS oprocess, 
+		 	     ul.end_time AS enddatetime,
+		 	     ul.id AS id
+		FROM hyjf_crm.oa_user_leave ul LEFT JOIN hyjf_crm.oa_users u ON ul.userid = u.id
+				LEFT JOIN hyjf_crm.oa_department d3 ON u.departmentid = d3.id
+				LEFT JOIN hyjf_crm.oa_department d2 ON d2.id = d3.parentid 
+				LEFT JOIN hyjf_crm.oa_position p ON u.positionid = p.id
+		WHERE ul.id IS NOT NULL
+			<if test="id != null and id != ''">
+				AND u.id = #{ul.userid}
+			</if>
+			<if test="levelSrch != null and levelSrch != ''">
+				AND u.level = #{levelSrch}
+			</if>
+			<if test="truenameSrch != null and truenameSrch != ''">
+				AND u.user_realname like CONCAT('%', #{truenameSrch}, '%')
+			</if>
+			<if test="mobileSrch != null and mobileSrch != ''">
+				AND u.mobile like CONCAT('%', #{mobileSrch}, '%')
+			</if>
+			<if test="temporarySrch != null and temporarySrch != ''">
+				AND u.temporary = #{temporarySrch}
+			</if>	
+			<if test="oprocessSrch != null and oprocessSrch != ''">
+				AND ul.oprocess = #{oprocessSrch}
+			</if>			
+		<if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<select id="countEmployee" resultType="int">
+		SELECT count(*)
+		FROM hyjf_crm.oa_user_leave 
+	</select>
+	
+	<resultMap id="selectDetail" type="com.hyjf.mybatis.model.customize.EmployeeDimissionCustomize">
+		<result column="id" 			property="id" 	  	 	 jdbcType="INTEGER" />
+		<result column="user_login" 	property="user_login" 	 jdbcType="VARCHAR" />
+		<result column="user_realname"  property="user_realname" jdbcType="VARCHAR" />
+		<result column="user_email"   	property="user_email" 	 jdbcType="VARCHAR" />
+		<result column="idcard" 		property="idcard" 	  	 jdbcType="VARCHAR" />
+		<result column="avatar" 		property="avatar" 	 	 jdbcType="VARCHAR" />
+		<result column="sex" 			property="sex" 	  	 	 jdbcType="INTEGER" />
+		<result column="acc_province" 	property="acc_province"  jdbcType="VARCHAR" />
+		<result column="acc_city" 		property="acc_city" 	 jdbcType="VARCHAR" />
+		<result column="acc_address" 	property="acc_address" 	 jdbcType="VARCHAR" />
+		<result column="departmentid" 	property="departmentid"  jdbcType="INTEGER" />
+		<result column="positionid" 	property="positionid" 	 jdbcType="INTEGER" />
+		<result column="level" 			property="level" 	  	 jdbcType="INTEGER" />
+		<result column="temporary"  	property="temporary"  	 jdbcType="INTEGER" />
+		<result column="ispart" 		property="ispart" 	  	 jdbcType="CHAR" />
+		<result column="payroll_try" 	property="payroll_try" 	 jdbcType="INTEGER" />
+		<result column="payroll" 		property="payroll" 	  	 jdbcType="INTEGER" />
+		<result column="entrydate" 	 	property="entrydate"  	 jdbcType="DATE" />
+		<result column="reference" 		property="reference"  	 jdbcType="VARCHAR" />
+		<result column="education" 		property="education" 	 jdbcType="INTEGER" />
+		<result column="school" 		property="school" 	 	 jdbcType="VARCHAR" />
+		<result column="specialty" 		property="specialty"  	 jdbcType="VARCHAR" />	
+		<result column="mobile" 	 	property="mobile"  	 	 jdbcType="CHAR" />
+		<result column="last_login_ip" 	property="last_login_ip" jdbcType="VARCHAR" />
+		<result column="last_login_time" property="last_login_time" jdbcType="CHAR" />
+		<result column="create_time" 	property="create_time" 	 jdbcType="CHAR" />
+		<result column="bank_address" 	property="bank_address"  jdbcType="VARCHAR" />	
+		<result column="bank_user" 		property="bank_user" 	 jdbcType="VARCHAR" />
+		<result column="bank_num" 		property="bank_num"  	 jdbcType="VARCHAR" />	
+		<result column="user_status" 	property="user_status"   jdbcType="CHAR" />	
+		<result column="age" 			property="age"  		 jdbcType="INTEGER" />	
+		<result column="hyd_name" 		property="hyd_name" 	 jdbcType="VARCHAR" />
+		<result column="hyd_id" 		property="hyd_id" 	  	 jdbcType="INTEGER" />	
+		<result column="user_type" 		property="user_type"   jdbcType="INTEGER" />	
+	</resultMap>
+	<select id="selectDimissionDetail" resultMap="selectDetail" resultType="com.hyjf.mybatis.model.customize.EmployeeDimissionCustomize" parameterType="int">
+		SELECT ul.id,(SELECT de.name
+					FROM hyjf_crm.oa_department de LEFT JOIN hyjf_crm.oa_users us on  us.id = de.header 
+					WHERE (de.id=ul.id))  AS two,
+			   (SELECT d.name FROM hyjf_crm.oa_department d LEFT JOIN hyjf_crm.oa_users u ON d.id=u.departmentid WHERE u.id=ul.userid) AS dename , 
+				u.level,
+			   (SELECT p.name FROM hyjf_crm.oa_position p LEFT JOIN hyjf_crm.oa_users u ON p.id = u.positionid WHERE u.id = ul.userid) AS pename, 
+				u.payroll,u.user_realname,u.sex,u.age,u.mobile,u.idcard,u.acc_address,u.temporary,u.hyd_name, 
+				u.bank_address,u.bank_user,u.bank_num,u.user_email,u.reference,
+				u.entrydate,u.education,u.specialty,ul.f_remark,FROM_UNIXTIME(ul.f_time,'%Y-%m-%d %H:%i:%s') AS f_time 
+		FROM hyjf_crm.oa_user_leave ul LEFT JOIN hyjf_crm.oa_users u ON ul.userid = u.id
+		WHERE ul.id = #{ul.id}
+	</select>
+	
+	
+	<update id="approvalStaff">
+		UPDATE hyjf_crm.oa_user_leave 
+		SET oprocess='Q3'
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

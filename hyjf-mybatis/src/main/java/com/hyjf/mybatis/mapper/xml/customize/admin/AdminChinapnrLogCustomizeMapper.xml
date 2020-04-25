@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.hyjf.mybatis.mapper.customize.admin.AdminChinapnrLogCustomizeMapper">
+	<resultMap id="BaseResultMap"
+		type="com.hyjf.mybatis.model.customize.admin.AdminChinapnrLogCustomize">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="isbg" property="isbg" jdbcType="TINYINT" />
+		<result column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="ordid" property="ordid" jdbcType="VARCHAR" />
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="resp_code" property="respCode" jdbcType="VARCHAR" />
+		<result column="resp_desc" property="respDesc" jdbcType="VARCHAR" />
+		<result column="msg_type" property="msgType" jdbcType="VARCHAR" />
+		<result column="trxid" property="trxid" jdbcType="VARCHAR" />
+		<result column="addtime" property="addtime" jdbcType="VARCHAR" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="ip" property="ip" jdbcType="VARCHAR" />
+		<result column="msgdata" property="msgdata" jdbcType="LONGVARCHAR" />
+	</resultMap>
+	<select id="getAllOpenAccount" resultMap="BaseResultMap">
+		SELECT
+		*
+		FROM
+		huiyingdai_chinapnr_log
+		WHERE
+		resp_code = '000'
+		AND msg_type = 'UserRegister'
+		AND user_id IS NOT NULL
+		AND msgdata IS NOT NULL
+	</select>
+</mapper>

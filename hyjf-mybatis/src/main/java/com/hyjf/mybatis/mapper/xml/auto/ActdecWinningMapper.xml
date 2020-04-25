@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.ActdecWinningMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.ActdecWinning" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="corps_id" property="corpsId" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="CHAR" />
+    <result column="winning_opid" property="winningOpid" jdbcType="VARCHAR" />
+    <result column="winning_head" property="winningHead" jdbcType="VARCHAR" />
+    <result column="winning_name" property="winningName" jdbcType="VARCHAR" />
+    <result column="corps_name" property="corpsName" jdbcType="VARCHAR" />
+    <result column="captain_name" property="captainName" jdbcType="VARCHAR" />
+    <result column="winning_type" property="winningType" jdbcType="INTEGER" />
+    <result column="amount" property="amount" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="INTEGER" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+    <result column="del_flg" property="delFlg" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, corps_id, user_id, user_name, mobile, winning_opid, winning_head, winning_name, 
+    corps_name, captain_name, winning_type, amount, `type`, create_user, create_time, 
+    update_user, update_time, del_flg
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.ActdecWinningExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_actdec_winning
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_actdec_winning
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_actdec_winning
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.ActdecWinningExample" >
+    delete from hyjf_actdec_winning
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.ActdecWinning" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_actdec_winning (corps_id, user_id, user_name, 
+      mobile, winning_opid, winning_head, 
+      winning_name, corps_name, captain_name, 
+      winning_type, amount, `type`, 
+      create_user, create_time, update_user, 
+      update_time, del_flg)
+    values (#{corpsId,jdbcType=INTEGER}, #{userId,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, 
+      #{mobile,jdbcType=CHAR}, #{winningOpid,jdbcType=VARCHAR}, #{winningHead,jdbcType=VARCHAR}, 
+      #{winningName,jdbcType=VARCHAR}, #{corpsName,jdbcType=VARCHAR}, #{captainName,jdbcType=VARCHAR}, 
+      #{winningType,jdbcType=BIT}, #{amount,jdbcType=INTEGER}, #{type,jdbcType=BIT}, 
+      #{createUser,jdbcType=VARCHAR}, #{createTime,jdbcType=INTEGER}, #{updateUser,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=INTEGER}, #{delFlg,jdbcType=BIT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.ActdecWinning" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_actdec_winning
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="corpsId != null" >
+        corps_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="userName != null" >
+        user_name,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="winningOpid != null" >
+        winning_opid,
+      </if>
+      <if test="winningHead != null" >
+        winning_head,
+      </if>
+      <if test="winningName != null" >
+        winning_name,
+      </if>
+      <if test="corpsName != null" >
+        corps_name,
+      </if>
+      <if test="captainName != null" >
+        captain_name,
+      </if>
+      <if test="winningType != null" >
+        winning_type,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="type != null" >
+        `type`,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="delFlg != null" >
+        del_flg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="corpsId != null" >
+        #{corpsId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=CHAR},
+      </if>
+      <if test="winningOpid != null" >
+        #{winningOpid,jdbcType=VARCHAR},
+      </if>
+      <if test="winningHead != null" >
+        #{winningHead,jdbcType=VARCHAR},
+      </if>
+      <if test="winningName != null" >
+        #{winningName,jdbcType=VARCHAR},
+      </if>
+      <if test="corpsName != null" >
+        #{corpsName,jdbcType=VARCHAR},
+      </if>
+      <if test="captainName != null" >
+        #{captainName,jdbcType=VARCHAR},
+      </if>
+      <if test="winningType != null" >
+        #{winningType,jdbcType=BIT},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=BIT},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="delFlg != null" >
+        #{delFlg,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.ActdecWinningExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_actdec_winning
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_actdec_winning
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.corpsId != null" >
+        corps_id = #{record.corpsId,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userName != null" >
+        user_name = #{record.userName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mobile != null" >
+        mobile = #{record.mobile,jdbcType=CHAR},
+      </if>
+      <if test="record.winningOpid != null" >
+        winning_opid = #{record.winningOpid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.winningHead != null" >
+        winning_head = #{record.winningHead,jdbcType=VARCHAR},
+      </if>
+      <if test="record.winningName != null" >
+        winning_name = #{record.winningName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.corpsName != null" >
+        corps_name = #{record.corpsName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.captainName != null" >
+        captain_name = #{record.captainName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.winningType != null" >
+        winning_type = #{record.winningType,jdbcType=BIT},
+      </if>
+      <if test="record.amount != null" >
+        amount = #{record.amount,jdbcType=INTEGER},
+      </if>
+      <if test="record.type != null" >
+        `type` = #{record.type,jdbcType=BIT},
+      </if>
+      <if test="record.createUser != null" >
+        create_user = #{record.createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateUser != null" >
+        update_user = #{record.updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.delFlg != null" >
+        del_flg = #{record.delFlg,jdbcType=BIT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_actdec_winning
+    set id = #{record.id,jdbcType=INTEGER},
+      corps_id = #{record.corpsId,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=VARCHAR},
+      user_name = #{record.userName,jdbcType=VARCHAR},
+      mobile = #{record.mobile,jdbcType=CHAR},
+      winning_opid = #{record.winningOpid,jdbcType=VARCHAR},
+      winning_head = #{record.winningHead,jdbcType=VARCHAR},
+      winning_name = #{record.winningName,jdbcType=VARCHAR},
+      corps_name = #{record.corpsName,jdbcType=VARCHAR},
+      captain_name = #{record.captainName,jdbcType=VARCHAR},
+      winning_type = #{record.winningType,jdbcType=BIT},
+      amount = #{record.amount,jdbcType=INTEGER},
+      `type` = #{record.type,jdbcType=BIT},
+      create_user = #{record.createUser,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=INTEGER},
+      update_user = #{record.updateUser,jdbcType=VARCHAR},
+      update_time = #{record.updateTime,jdbcType=INTEGER},
+      del_flg = #{record.delFlg,jdbcType=BIT}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.ActdecWinning" >
+    update hyjf_actdec_winning
+    <set >
+      <if test="corpsId != null" >
+        corps_id = #{corpsId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=CHAR},
+      </if>
+      <if test="winningOpid != null" >
+        winning_opid = #{winningOpid,jdbcType=VARCHAR},
+      </if>
+      <if test="winningHead != null" >
+        winning_head = #{winningHead,jdbcType=VARCHAR},
+      </if>
+      <if test="winningName != null" >
+        winning_name = #{winningName,jdbcType=VARCHAR},
+      </if>
+      <if test="corpsName != null" >
+        corps_name = #{corpsName,jdbcType=VARCHAR},
+      </if>
+      <if test="captainName != null" >
+        captain_name = #{captainName,jdbcType=VARCHAR},
+      </if>
+      <if test="winningType != null" >
+        winning_type = #{winningType,jdbcType=BIT},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        `type` = #{type,jdbcType=BIT},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="delFlg != null" >
+        del_flg = #{delFlg,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.ActdecWinning" >
+    update hyjf_actdec_winning
+    set corps_id = #{corpsId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=VARCHAR},
+      user_name = #{userName,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=CHAR},
+      winning_opid = #{winningOpid,jdbcType=VARCHAR},
+      winning_head = #{winningHead,jdbcType=VARCHAR},
+      winning_name = #{winningName,jdbcType=VARCHAR},
+      corps_name = #{corpsName,jdbcType=VARCHAR},
+      captain_name = #{captainName,jdbcType=VARCHAR},
+      winning_type = #{winningType,jdbcType=BIT},
+      amount = #{amount,jdbcType=INTEGER},
+      `type` = #{type,jdbcType=BIT},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=INTEGER},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=INTEGER},
+      del_flg = #{delFlg,jdbcType=BIT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

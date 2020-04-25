@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.GetRecommendCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+			<!-- 用户名 -->
+			<if test="userName != null and userName != ''">
+				AND u.username LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<!-- 手机号 -->
+			<if test="mobile != null and mobile != ''">
+				AND u.mobile LIKE CONCAT('%', #{mobile}, '%')
+			</if>
+			<!-- 部门 -->
+			<if test="combotreeListSrch != null and combotreeListSrch != ''">
+				AND od2.id in
+				<foreach collection="combotreeListSrch" open="(" close=")" separator="," item="dep">
+					#{dep}
+				</foreach>
+			</if>
+			<!-- 推荐好友 -->
+			<if test="inviteByUserName != null and inviteByUserName != ''">
+				AND bu.username LIKE CONCAT('%', #{inviteByUserName}, '%')
+			</if>
+			<!-- 推荐好友手机号 -->
+			<if test="inviteByMobile != null and inviteByMobile != ''">
+				AND bu.mobile LIKE CONCAT('%', #{inviteByMobile}, '%')
+			</if>
+			<!-- 推荐星类别 -->
+			<if test="recommendSourceSrch != null">
+				AND ii.recommend_source = #{recommendSourceSrch}
+			</if>
+			<!-- 推荐星发放状态 -->
+			<if test="sendFlagSrch != null">
+				AND ii.send_flag = #{sendFlagSrch}
+			</if>
+			
+			<!-- 获得时间 -->
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND FROM_UNIXTIME( ii.send_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch != ''">
+				AND FROM_UNIXTIME( ii.send_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+			
+		</where>
+	</sql>
+
+	<resultMap id="InviteUser" type="com.hyjf.mybatis.model.customize.admin.GetRecommendCustomize">
+		<id column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="username" property="userName" />
+		<result column="truename" property="trueName" />
+		<result column="mobile" property="mobile" />
+		<result column="departmentName" property="departmentName" />
+		<result column="recommendSource" property="recommendSource" />
+		<result column="recommend_count" property="recommendCount" />
+		<result column="inviteByUserName" property="inviteByUserName" />
+		<result column="inviteByTrueName" property="inviteByTrueName" />
+		<result column="inviteByMobile" property="inviteByMobile" />
+		<result column="sendTime" property="sendTime" />
+		<result column="send_flag" property="sendFlag" />
+	</resultMap>
+	<select id="selectInviteRecommendList" resultMap="InviteUser" parameterType="com.hyjf.mybatis.model.customize.admin.GetRecommendCustomize">
+		SELECT
+			ii.invite_user AS userId,
+			u.username,
+			ui.truename,
+			u.mobile,
+			od2.`name` AS departmentName,
+			k.`name` AS recommendSource,
+			ii.recommend_count,
+			bu.username AS inviteByUserName,
+			bui.truename AS inviteByTrueName,
+			bu.mobile AS inviteByMobile,
+			FROM_UNIXTIME(
+				ii.send_time,
+				'%Y-%m-%d %H:%i:%S'
+			) AS sendTime,
+			CASE
+		WHEN ii.send_flag = 1 THEN
+			'已发放'
+		ELSE
+			'未发放'
+		END AS send_flag
+		FROM
+			hyjf_invite_info ii
+		LEFT JOIN huiyingdai_users u ON ii.invite_user = u.user_id
+		LEFT JOIN huiyingdai_users_info ui ON ui.user_id = u.user_id 
+		LEFT JOIN `hyjf_crm`.`oa_users` `ou` ON `ou`.hyd_id = u.referrer
+		AND ou.user_status IN ('E', 'Q1', 'Q11', 'Q2', 'Q21')
+		LEFT JOIN `hyjf_crm`.`oa_department` `od` ON `od`.`id` = `ou`.`departmentid`
+		AND `od`.id IS NOT NULL
+		LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+		LEFT JOIN huiyingdai_users bu ON ii.invite_by_user = bu.user_id
+		LEFT JOIN huiyingdai_users_info bui ON bui.user_id = bu.user_id 
+		LEFT JOIN hyjf_param_name k ON ii.recommend_source = k.name_cd
+		AND k.name_class = 'RECOMMEND_SOURCE'
+		<include refid="Where_Clause" />
+		ORDER BY
+			ii.update_time DESC
+		<if test="limitStart != null and limitStart >= 0 and limitEnd !=null and limitEnd >= 0" >
+     		LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+    	</if>
+	</select>
+	
+	<select id="selectInviteRecommendTotal" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.admin.GetRecommendCustomize">
+		SELECT
+			count(1)
+		FROM
+			hyjf_invite_info ii
+		LEFT JOIN huiyingdai_users u ON ii.invite_user = u.user_id
+		LEFT JOIN `hyjf_crm`.`oa_users` `ou` ON `ou`.hyd_id = u.referrer
+		AND ou.user_status IN ('E', 'Q1', 'Q11', 'Q2', 'Q21')
+		LEFT JOIN `hyjf_crm`.`oa_department` `od` ON `od`.`id` = `ou`.`departmentid`
+		AND `od`.id IS NOT NULL
+		LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+		LEFT JOIN huiyingdai_users bu ON ii.invite_by_user = bu.user_id
+		LEFT JOIN hyjf_param_name k ON ii.recommend_source = k.name_cd
+		AND k.name_class = 'RECOMMEND_SOURCE'
+		<include refid="Where_Clause" />
+	</select>
+
+	
+</mapper>

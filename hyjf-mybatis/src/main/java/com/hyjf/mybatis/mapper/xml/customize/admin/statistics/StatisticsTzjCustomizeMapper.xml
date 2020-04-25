@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.statistics.StatisticsTZJCustomizeMapper">
+
+  <sql id="Base_Column_List" >
+    id, `day`, regist_count, open_count, open_rate, cardbind_count, cardbind_rate, rechargenew_count, 
+    recharge_count, tendernew_count, tenderfirst_count, tenderfirst_money, tendernew_rate, 
+    tender_count, tender_money, tender_again_count, tender_again_rate, channel_name, 
+    channel_flg, add_time, update_time
+  </sql>
+  <sql id="Base_Hour_Column_List" >
+    id, `day`, `hour`, regist_count, tenderfirst_count, add_time, update_time
+  </sql>
+  
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.StatisticsTzj" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="day" property="day" jdbcType="VARCHAR" />
+    <result column="regist_count" property="registCount" jdbcType="INTEGER" />
+    <result column="open_count" property="openCount" jdbcType="INTEGER" />
+    <result column="open_rate" property="openRate" jdbcType="DECIMAL" />
+    <result column="cardbind_count" property="cardbindCount" jdbcType="INTEGER" />
+    <result column="cardbind_rate" property="cardbindRate" jdbcType="DECIMAL" />
+    <result column="rechargenew_count" property="rechargenewCount" jdbcType="INTEGER" />
+    <result column="recharge_count" property="rechargeCount" jdbcType="INTEGER" />
+    <result column="tendernew_count" property="tendernewCount" jdbcType="INTEGER" />
+    <result column="tenderfirst_count" property="tenderfirstCount" jdbcType="INTEGER" />
+    <result column="tenderfirst_money" property="tenderfirstMoney" jdbcType="DECIMAL" />
+    <result column="tendernew_rate" property="tendernewRate" jdbcType="DECIMAL" />
+    <result column="tender_count" property="tenderCount" jdbcType="INTEGER" />
+    <result column="tender_money" property="tenderMoney" jdbcType="DECIMAL" />
+    <result column="tender_again_count" property="tenderAgainCount" jdbcType="INTEGER" />
+    <result column="tender_again_rate" property="tenderAgainRate" jdbcType="DECIMAL" />
+    <result column="channel_name" property="channelName" jdbcType="VARCHAR" />
+    <result column="channel_flg" property="channelFlg" jdbcType="INTEGER" />
+    <result column="add_time" property="addTime" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="BaseHourResultMap" type="com.hyjf.mybatis.model.auto.StatisticsTzjHour" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="day" property="day" jdbcType="VARCHAR" />
+    <result column="hour" property="hour" jdbcType="VARCHAR" />
+    <result column="regist_count" property="registCount" jdbcType="INTEGER" />
+    <result column="tenderfirst_count" property="tenderfirstCount" jdbcType="INTEGER" />
+    <result column="add_time" property="addTime" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+  </resultMap>
+  
+	<select id="selectRecordList" resultMap="BaseResultMap" parameterType="Map">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			hyjf_statistics_tzj hst
+		WHERE 1=1
+		<if test="timeStartSrch != null and timeStartSrch != ''">
+		AND day <![CDATA[>=]]> #{timeStartSrch}
+		</if>
+		<if test="timeEndSrch != null and timeEndSrch != ''">
+		AND day <![CDATA[<=]]> #{timeEndSrch}
+		</if>
+		ORDER BY
+			day DESC
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	<select id="countRecordTotal" resultType="java.lang.Integer" parameterType="Map">
+		SELECT
+			count(id)
+		FROM
+			hyjf_statistics_tzj hst
+		WHERE 1=1
+		<if test="timeStartSrch != null and timeStartSrch != ''">
+		AND day <![CDATA[>=]]> #{timeStartSrch}
+		</if>
+		<if test="timeEndSrch != null and timeEndSrch != ''">
+		AND day <![CDATA[<=]]> #{timeEndSrch}
+		</if>
+	</select>
+	<select id="selectDayList" resultMap="BaseResultMap" parameterType="Map">
+		SELECT
+			<include refid="Base_Column_List" />
+		FROM
+			hyjf_statistics_tzj hst
+		WHERE 1=1
+		<if test="timeStartSrch != null and timeStartSrch != ''">
+		AND day <![CDATA[>=]]> #{timeStartSrch}
+		</if>
+		<if test="timeEndSrch != null and timeEndSrch != ''">
+		AND day <![CDATA[<=]]> #{timeEndSrch}
+		</if>
+		ORDER BY
+			day
+		<if test="timeStartSrch == null or timeEndSrch ==null" >
+	      LIMIT 30
+	    </if>
+	</select>
+
+	<select id="selectDayUpdateTime" resultType="string">
+		SELECT
+			FROM_UNIXTIME(
+				hst.update_time,
+				'%Y-%m-%d %H:%i:%s'
+			) AS last_update_time
+		FROM
+			hyjf_statistics_tzj hst
+		ORDER BY
+			add_time DESC
+		LIMIT 1
+	</select>
+	
+	<select id="selectHourList" resultMap="BaseHourResultMap" parameterType="Map">
+		SELECT
+			<include refid="Base_Hour_Column_List" />
+		FROM
+			hyjf_statistics_tzj_hour hsth
+		WHERE 1=1
+		<if test="timeStartSrch != null and timeStartSrch != '' and timeStartSrch == timeEndSrch">
+		AND day = #{timeStartSrch}
+		</if>
+		ORDER BY
+			--hour 
+	</select>
+
+	<select id="selectHourUpdateTime" resultType="String">
+		SELECT
+			FROM_UNIXTIME(
+				hsth.update_time,
+				'%Y-%m-%d %H:%i:%s'
+			) AS last_update_time
+		FROM
+			hyjf_statistics_tzj_hour hsth
+		ORDER BY
+			add_time DESC
+		LIMIT 1
+	</select>
+	
+	<select id="getTenderCountTotal" resultType="int" parameterType="Map">
+		SELECT
+			COUNT(user_id) total_num
+		FROM
+			(
+				SELECT
+					t.user_id
+				FROM
+					huiyingdai_borrow_tender t
+				JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+				LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+				LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+				LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+				LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+				LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+				WHERE
+					t.addtime <![CDATA[>=]]> #{timeStartSrch} 
+				AND t.addtime <![CDATA[<=]]> #{timeEndSrch} 
+				AND hydu.reg_time >= 1490544000
+				AND hydui.attribute = 0
+				AND (
+					hydup.source_name LIKE '%投之家推广%'
+					OR hacsd.source_name LIKE '%投之家推广%'
+				)
+				GROUP BY
+					t.user_id
+				UNION
+					SELECT
+						t.user_id
+					FROM
+						huiyingdai_credit_tender t
+					JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+					LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+					LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+					LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+					LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+					LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+					WHERE
+						t.add_time <![CDATA[>=]]> #{timeStartSrch} 
+					AND t.add_time <![CDATA[<=]]> #{timeEndSrch} 
+					AND hydu.reg_time >= 1490544000
+					AND hydui.attribute = 0
+					AND (
+						hydup.source_name LIKE '%投之家推广%'
+						OR hacsd.source_name LIKE '%投之家推广%'
+					)
+					GROUP BY
+						t.user_id
+					UNION
+							SELECT
+								t.user_id
+							FROM
+								hyjf_debt_plan_accede t
+							JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+							LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+							LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+							LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+							LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+							LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+							WHERE
+								t.create_time <![CDATA[>=]]> #{timeStartSrch} 
+							AND t.create_time <![CDATA[<=]]> #{timeEndSrch} 
+							AND hydu.reg_time >= 1490544000
+							AND hydui.attribute = 0
+							AND (
+								hydup.source_name LIKE '%投之家推广%'
+								OR hacsd.source_name LIKE '%投之家推广%'
+							)
+							GROUP BY
+								t.user_id
+							UNION
+								SELECT
+									t.user_id
+								FROM
+									hyjf_debt_credit_tender t
+								JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+								LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+								LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+								LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+								LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+								LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+								WHERE
+									t.create_time <![CDATA[>=]]> #{timeStartSrch} 
+								AND t.create_time <![CDATA[<=]]> #{timeEndSrch} 
+								AND hydu.reg_time >= 1490544000
+								AND	t.del_flag = 1
+								AND hydui.attribute = 0
+								AND (
+									hydup.source_name LIKE '%投之家推广%'
+									OR hacsd.source_name LIKE '%投之家推广%'
+								)
+								GROUP BY
+									t.user_id
+			) tempt
+	</select>
+	
+	<select id="getTenderMoneyTotal" resultType="double" parameterType="Map">
+		SELECT
+			SUM(IFNULL(accountSum,0)) total_num
+		FROM
+			(
+				SELECT
+					SUM(IFNULL(t.account,0)) accountSum
+				FROM
+					huiyingdai_borrow_tender t
+				JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+				LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+				LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+				LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+				LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+				LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+				WHERE
+					t.addtime <![CDATA[>=]]> #{timeStartSrch} 
+				AND t.addtime <![CDATA[<=]]> #{timeEndSrch} 
+				AND hydu.reg_time >= 1490544000
+				AND hydui.attribute = 0
+				AND (
+					hydup.source_name LIKE '%投之家推广%'
+					OR hacsd.source_name LIKE '%投之家推广%'
+				)
+				UNION ALL
+					SELECT
+						SUM(IFNULL(t.assign_pay, 0)) accountSum
+					FROM
+						huiyingdai_credit_tender t
+					JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+					LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+					LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+					LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+					LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+					LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+					WHERE
+						t.add_time <![CDATA[>=]]> #{timeStartSrch} 
+					AND t.add_time <![CDATA[<=]]> #{timeEndSrch} 
+					AND hydu.reg_time >= 1490544000
+					AND hydui.attribute = 0
+					AND (
+						hydup.source_name LIKE '%投之家推广%'
+						OR hacsd.source_name LIKE '%投之家推广%'
+					)
+					UNION ALL
+							SELECT
+								SUM(IFNULL(t.accede_account,0)) accountSum
+							FROM
+								hyjf_debt_plan_accede t
+							JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+							LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+							LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+							LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+							LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+							LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+							WHERE
+								t.create_time <![CDATA[>=]]> #{timeStartSrch} 
+							AND t.create_time <![CDATA[<=]]> #{timeEndSrch} 
+							AND hydu.reg_time >= 1490544000
+							AND hydui.attribute = 0
+							AND (
+								hydup.source_name LIKE '%投之家推广%'
+								OR hacsd.source_name LIKE '%投之家推广%'
+							)
+							UNION ALL
+								SELECT
+									SUM(IFNULL(t.assign_capital,0)) accountSum
+								FROM
+									hyjf_debt_credit_tender t
+								JOIN huiyingdai_users hydu ON t.user_id = hydu.user_id
+								LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+								LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+								LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id
+								LEFT JOIN huiyingdai_utm_plat hydup ON hydup.source_id = hydutm.source_id
+								LEFT JOIN hyjf_app_channel_statistics_detail hacsd ON hacsd.user_id = hydu.user_id
+								WHERE
+									t.del_flag = 1
+								AND t.create_time <![CDATA[>=]]> #{timeStartSrch} 
+								AND t.create_time <![CDATA[<=]]> #{timeEndSrch} 
+								AND hydu.reg_time >= 1490544000
+								AND hydui.attribute = 0
+								AND (
+									hydup.source_name LIKE '%投之家推广%'
+									OR hacsd.source_name LIKE '%投之家推广%'
+								)
+			) tempt
+	</select>
+	
+	
+	
+</mapper>

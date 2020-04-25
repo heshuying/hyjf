@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.HtlCommonCustomizeMapper">
+	<resultMap id="getCreateProductInfoMap" type="com.hyjf.mybatis.model.auto.ProductInfo">
+	    <id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="in_count" property="inCount" jdbcType="INTEGER" />
+	    <result column="out_count" property="outCount" jdbcType="INTEGER" />
+	    <result column="in_amount" property="inAmount" jdbcType="DECIMAL" />
+	    <result column="out_amount" property="outAmount" jdbcType="DECIMAL" />
+	    <result column="out_interest" property="outInterest" jdbcType="DECIMAL" />
+	    <result column="loan_balance" property="loanBalance" jdbcType="DECIMAL" />
+	    <result column="invest_amount" property="investAmount" jdbcType="DECIMAL" />
+	    <result column="create_time" property="createTime" jdbcType="INTEGER" />
+	    <result column="data_date" property="dataDate" jdbcType="VARCHAR" />
+	    <result column="data_month" property="dataMonth" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="getRecordsForPage" type="com.hyjf.mybatis.model.customize.ProductSearchForPage">
+	    <result column="status" property="status" jdbcType="VARCHAR" />
+	    <result column="time" property="time" jdbcType="VARCHAR" />
+	    <result column="amount" property="amount" jdbcType="DECIMAL" />
+	    <result column="restInterest" property="restInterest" jdbcType="DECIMAL" />
+	    <result column="alreadyInterest" property="alreadyInterest" jdbcType="DECIMAL" />
+	    <result column="amountStr" property="amountStr" jdbcType="VARCHAR" />
+	    <result column="interestStr" property="interestStr" jdbcType="VARCHAR" />
+	    
+	</resultMap>
+	
+	
+	<select id="getCreateProductInfo_productlist" resultMap="getCreateProductInfoMap" parameterType="com.hyjf.mybatis.model.customize.ProductInfoCustomize">
+		SELECT COUNT(DISTINCT p.user_id) AS in_count ,
+			   TRUNCATE (SUM(p.amount), 2) AS in_amount 
+	     FROM huiyingdai_product_list p 
+		<where>
+		  p.invest_status = 0
+	    <if test="timeStart != null">
+		  AND p.invest_time <![CDATA[>=]]> #{timeStart}
+		</if>
+	    <if test="timeEnd != null">
+		  AND p.invest_time <![CDATA[<=]]> #{timeEnd}
+		</if>
+		</where>
+	</select>
+    <select id="getCreateProductInfo_restamount" resultMap="getCreateProductInfoMap" parameterType="com.hyjf.mybatis.model.customize.ProductInfoCustomize">
+		SELECT TRUNCATE (SUM(p.rest_amount), 2) AS invest_amount
+	     FROM huiyingdai_product_list p where p.invest_status = 0
+
+	</select>
+	<select id="getCreateProductInfo_productredeem" resultMap="getCreateProductInfoMap" parameterType="com.hyjf.mybatis.model.customize.ProductInfoCustomize">
+		SELECT COUNT(DISTINCT r.user_id) AS out_count,
+		       TRUNCATE (SUM(r.amount), 2) AS out_amount  
+		 FROM huiyingdai_product_redeem r
+		<where>
+		  r.status = 0
+	    <if test="timeStart != null">
+		  AND r.redeem_time <![CDATA[>=]]> #{timeStart}
+		</if>
+	    <if test="timeEnd != null">
+		  AND r.redeem_time <![CDATA[<=]]> #{timeEnd}
+		</if>
+		</where>
+	</select>
+	<select id="getCreateProductInfo_productinterest" resultMap="getCreateProductInfoMap" parameterType="com.hyjf.mybatis.model.customize.ProductInfoCustomize">
+		SELECT TRUNCATE (SUM(i.interest), 2) AS out_interest FROM huiyingdai_product_interest i
+		<where>
+	    <if test="timeStart != null">
+		  AND i.interest_time <![CDATA[>=]]> #{timeStart}
+		</if>
+	    <if test="timeEnd != null">
+		  AND i.interest_time <![CDATA[<=]]> #{timeEnd}
+		</if>
+		</where>
+	</select>
+	<select id="getCreateProductInfo_account" resultMap="getCreateProductInfoMap" parameterType="com.hyjf.mybatis.model.customize.ProductInfoCustomize">
+		SELECT TRUNCATE (t.balance, 2) as loan_balance 
+		 FROM huiyingdai_account t
+		 WHERE t.user_id = #{userId}
+	</select>
+	
+	<!-- 获得记录数 -->
+	 <select id="countRedeemRecordPage" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.ProductSearchForPage">
+	     SELECT count(1)  FROM  huiyingdai_product_redeem p
+		    <where>
+				<if test="userId != null" >
+			      AND p.user_id = #{userId}
+			    </if>
+			   	<if test="dateStartStr != null">
+				  AND p.redeem_time <![CDATA[>=]]> #{dateStartStr}
+				</if>
+			    <if test="dateEndStr != null">
+				  AND p.redeem_time <![CDATA[<=]]> #{dateEndStr}
+				</if>
+			</where>
+	</select>
+	
+	    <select id="countInterestRecordPage" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.ProductSearchForPage">
+	     SELECT count(1)  FROM  huiyingdai_product_redeem p
+		    <where>
+		    	 p.`status` = 0 AND p.interest >= 0.01
+				<if test="userId != null" >
+			      AND p.user_id = #{userId}
+			    </if>
+			   	<if test="dateStartStr != null">
+				  AND p.redeem_time <![CDATA[>=]]> #{dateStartStr}
+				</if>
+			    <if test="dateEndStr != null">
+				  AND p.redeem_time <![CDATA[<=]]> #{dateEndStr}
+				</if>
+			</where>
+	</select>
+	
+	    <select id="countBuyRecordPage" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.ProductSearchForPage">
+	     SELECT count(1)  FROM huiyingdai_product_list p
+		    <where>
+				<if test="userId != null" >
+			      AND p.user_id = #{userId}
+			    </if>
+			   	<if test="dateStartStr != null">
+				  AND p.invest_time <![CDATA[>=]]> #{dateStartStr}
+				</if>
+			    <if test="dateEndStr != null">
+				  AND p.invest_time <![CDATA[<=]]> #{dateEndStr}
+				</if>
+			</where>
+	</select>
+	
+	<!-- PHP页面查询接口 -->
+	<select id="selectBuyRecordPage" resultMap="getRecordsForPage" parameterType="com.hyjf.mybatis.model.customize.ProductSearchForPage">
+				SELECT
+				 FORMAT(TRUNCATE (p.amount, 2), 2) as amountStr,
+				 FROM_UNIXTIME(p.invest_time,'%Y-%m-%d %H:%i:%s') AS time,
+				 CASE p.invest_status 
+				 when 0 THEN '成功'
+				 when 1 THEN '未付款'
+				 when 2 THEN '失败'
+				 END AS status
+				FROM
+					huiyingdai_product_list p
+			    <where>
+					<if test="userId != null" >
+				      AND p.user_id = #{userId}
+				    </if>
+				    <if test="dateStartStr != null">
+					  AND p.invest_time <![CDATA[>=]]> #{dateStartStr}
+					</if>
+				    <if test="dateEndStr != null">
+					  AND p.invest_time <![CDATA[<=]]> #{dateEndStr}
+					</if>
+				</where>
+				ORDER BY  p.invest_time DESC    
+		    <if test="limitStart >= 0" >
+		      LIMIT #{limitStart} , #{limitEnd}
+		    </if>
+	</select>
+	
+	<select id="selectRedeemRecordPage" resultMap="getRecordsForPage" parameterType="com.hyjf.mybatis.model.customize.ProductSearchForPage">
+				SELECT
+				 FORMAT(TRUNCATE (p.amount, 2), 2) as amountStr,
+				 FROM_UNIXTIME(p.redeem_time,'%Y-%m-%d %H:%i:%s') AS time,
+				 CASE p.`status` 
+				 when 0 THEN '成功'
+				 when 1 THEN '失败'
+				 END AS status
+				FROM
+					huiyingdai_product_redeem p
+			    <where>
+					<if test="userId != null" >
+				      AND p.user_id = #{userId}
+				    </if>
+				   	<if test="dateStartStr != null">
+					  AND p.redeem_time <![CDATA[>=]]> #{dateStartStr}
+					</if>
+				    <if test="dateEndStr != null">
+					  AND p.redeem_time <![CDATA[<=]]> #{dateEndStr}
+					</if>
+				</where>
+				ORDER BY  p.redeem_time DESC   
+		    <if test="limitStart >= 0" >
+		      LIMIT #{limitStart} , #{limitEnd}
+		    </if>
+	</select>
+	<select id="selectInterestRecordPage" resultMap="getRecordsForPage" parameterType="com.hyjf.mybatis.model.customize.ProductSearchForPage">
+				SELECT
+				 FORMAT(TRUNCATE (p.amount, 2), 2) as amountStr,
+				 FROM_UNIXTIME(p.redeem_time,'%Y-%m-%d %H:%i:%s') AS time,
+				 FORMAT(TRUNCATE (p.interest, 2),2 ) AS interestStr
+				FROM
+					huiyingdai_product_redeem p
+			    <where>
+			        p.`status` = 0  AND p.interest >= 0.01
+					<if test="userId != null" >
+				      AND p.user_id = #{userId}
+				    </if>
+				   	<if test="dateStartStr != null">
+					  AND p.redeem_time <![CDATA[>=]]> #{dateStartStr}
+					</if>
+				    <if test="dateEndStr != null">
+					  AND p.redeem_time <![CDATA[<=]]> #{dateEndStr}
+					</if>
+				</where>
+				ORDER BY  p.redeem_time DESC    
+		    <if test="limitStart >= 0" >
+		      LIMIT #{limitStart} , #{limitEnd}
+		    </if>
+	</select>
+	
+	<!-- 获取汇天利已提起收益-->
+	<select id="selectUserAlreadyInterest" resultMap="getRecordsForPage" parameterType="com.hyjf.mybatis.model.customize.ProductSearchForPage">
+				SELECT
+				    p.historyEarnings as alreadyInterest  FROM 
+					view_htl_user_interest p
+			    <where>
+					<if test="userId != null" >
+				      AND p.user_id = #{userId}
+				    </if>
+				</where>
+	</select>	
+	
+    <!-- 获取汇天利本金 -->
+	<select id="selectUserPrincipal" resultMap="getRecordsForPage" parameterType="com.hyjf.mybatis.model.customize.ProductSearchForPage">
+		SELECT 
+		  TRUNCATE (SUM(p.rest_amount), 2) AS principal
+		  FROM huiyingdai_product_list p
+		<where>
+		  p.`status` = 0 AND p.invest_status=0
+	    <if test="userId != null" >
+	      AND p.user_id = #{userId} 
+	    </if>
+		</where>
+	</select>
+	
+	<!-- 获取汇天利 未赎回记录 -->
+	<select id="selectUserNotRedeemRecord" resultMap="getRecordsForPage" parameterType="com.hyjf.mybatis.model.customize.ProductSearchForPage">
+		SELECT 
+		  p.rest_amount as amount, FROM_UNIXTIME(p.invest_time,'%Y-%m-%d') AS time
+		  FROM huiyingdai_product_list p
+		<where>
+		  p.`status` = 0 AND p.invest_status=0
+	    <if test="userId != null" >
+	      AND p.user_id = #{userId} 
+	    </if>
+		</where>
+	</select>
+
+	
+</mapper>

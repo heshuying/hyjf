@@ -1,0 +1,879 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+    xsi:schemaLocation="http://www.springframework.org/schema/rabbit
+           http://www.springframework.org/schema/rabbit/spring-rabbit.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.1.xsd">
+
+	<!-- 定义RabbitMQ的连接工厂 -->
+	<rabbit:connection-factory id="connectionFactory"
+		host="${rabbitmq.host}" port="${rabbitmq.port}" username="${rabbitmq.username}" password="${rabbitmq.password}"
+		virtual-host="${rabbitmq.vhost}" />
+
+	<!-- 定义Rabbit模板，指定连接工厂以及定义exchange
+	<rabbit:template id="rabbitUserTemplate" connection-factory="connectionFactory" exchange="CRM-USERINFO-EXCHANGE" />
+	 <rabbit:template id="amqpTemplate" connection-factory="connectionFactory"
+		exchange="fanoutExchange" routing-key="foo.bar" /> -->
+
+	<!-- MQ的管理，包括队列、交换器等 -->
+	<rabbit:admin connection-factory="connectionFactory" />
+
+	<!--优惠券还款-->
+    <rabbit:queue id="hyjf-coupon-repay" name="hyjf-coupon-repay" durable="true" auto-delete="false" exclusive="false"/>
+    <!--优惠券放款-->
+    <rabbit:queue id="hyjf-coupon-loans" name="hyjf-coupon-loans" durable="true" auto-delete="false" exclusive="false"/>
+    <!--优惠券还款（汇计划）-->
+    <rabbit:queue id="hyjf-coupon-planrepay" name="hyjf-coupon-planrepay" durable="true" auto-delete="false" exclusive="false"/>
+    <!--优惠券放款（汇计划）-->
+    <rabbit:queue id="hyjf-coupon-planloans" name="hyjf-coupon-planloans" durable="true" auto-delete="false" exclusive="false"/>
+    <!--优惠券发放-->
+    <rabbit:queue id="hyjf-coupon-send" name="hyjf-coupon-send" durable="true" auto-delete="false" exclusive="false"/>
+    <!--批次还款请求-->
+    <rabbit:queue id="hyjf-Repay-Request" name="hyjf-Repay-Request" durable="true" auto-delete="false" exclusive="false"/>
+    <!--批次放款请求-->
+    <!-- <rabbit:queue id="hyjf-Loan-Request" name="hyjf-Loan-Request" durable="true" auto-delete="false" exclusive="false"/> -->
+    <!-- 直投类还款业务处理 -->
+    <rabbit:queue id="hyjf-Repay-ZT" name="hyjf-Repay-ZT" durable="true" auto-delete="false" exclusive="false"/>
+    <!-- 直投类放款业务处理 -->
+    <!-- <rabbit:queue id="hyjf-Loan-ZT" name="hyjf-Loan-ZT" durable="true" auto-delete="false" exclusive="false"/> -->
+    <!-- 计划类还款业务处理 -->
+    <rabbit:queue id="hyjf-Repay-Plan" name="hyjf-Repay-Plan" durable="true" auto-delete="false" exclusive="false"/>
+    <!-- 计划类放款业务处理 -->
+    <!-- <rabbit:queue id="hyjf-Loan-Plan" name="hyjf-Loan-Plan" durable="true" auto-delete="false" exclusive="false"/> -->
+	<!-- 直投类实时放款 -->
+    <rabbit:queue id="hyjf-realTimeLoan-Request" name="hyjf-realTimeLoan-Request" durable="true" auto-delete="false" exclusive="false"/>
+    <!-- 计划类实时放款 -->
+    <rabbit:queue id="hyjf-realTimeLoan-Plan-Request" name="hyjf-realTimeLoan-Plan-Request" durable="true" auto-delete="false" exclusive="false"/>
+	<!-- 退出计划业务处理 -->
+    <rabbit:queue id="hyjf-Repqy-Quit-Plan" name="hyjf-Repqy-Quit-Plan" durable="true" auto-delete="false" exclusive="false"/>
+    <!-- 双十二气球活动 -->
+    <rabbit:queue id="hyjf-queue-act-balloon" name="hyjf-queue-act-balloon" durable="true" auto-delete="false" exclusive="false"/>
+	<!-- 2018中秋活动 -->
+	<rabbit:queue id="hyjf-mdiau-activity" name="hyjf-mdiau-activity" durable="true" auto-delete="false" exclusive="false"/>
+	<!-- 2018用户日志 -->
+	<rabbit:queue id="hyjf-user-log" name="hyjf-user-log" durable="true" auto-delete="false" exclusive="false"/>
+	<!-- 2018纳觅返现活动-->
+	<rabbit:queue id="hyjf-return-cash-activity" name="hyjf-return-cash-activity" durable="true" auto-delete="false" exclusive="false"/>
+	<rabbit:queue id="hyjf-return-cash1-activity" name="hyjf-return-cash1-activity" durable="true" auto-delete="false" exclusive="false"/>
+
+	<!-- 2018发放优惠券 -->
+	<rabbit:queue id="hyjf-send-coupon-activity" name="hyjf-send-coupon-activity" durable="true" auto-delete="false" exclusive="false"/>
+
+    <!-- 自动录标 -->
+    <rabbit:queue id="hyjf-borrow-send" name="hyjf-borrow-send" durable="true" auto-delete="false" exclusive="false"/>
+
+   <!-- 红包账户 -->
+    <rabbit:queue id="hyjf-Readaleve-Plan" name="hyjf-Readaleve-Plan" durable="true" auto-delete="false" exclusive="false"/>
+    <rabbit:queue id="hyjf-Readeve-Plan" name="hyjf-Readeve-Plan" durable="true" auto-delete="false" exclusive="false"/>
+    <!-- 自动备案 -->
+    <rabbit:queue id="hyjf-borrow-record" name="hyjf-borrow-record" durable="true" auto-delete="false" exclusive="false"/>
+    <!-- 自动审核保证金 -->
+    <rabbit:queue id="hyjf-borrow-bail" name="hyjf-borrow-bail" durable="true" auto-delete="false" exclusive="false"/>
+    <!-- 自动初审 -->
+    <rabbit:queue id="hyjf-borrow-preaudit" name="hyjf-borrow-preaudit" durable="true" auto-delete="false" exclusive="false"/>
+    <!-- 自动关联计划 -->
+    <rabbit:queue id="hyjf-borrow-issue" name="hyjf-borrow-issue" durable="true" auto-delete="false" exclusive="false"/>
+	<!--汇直投优惠券使用-->
+    <rabbit:queue id="hyjf-hzt-coupon-tender" name="hyjf-hzt-coupon-tender" durable="true" auto-delete="false" exclusive="false"/>
+    <!-- 利息同步 -->
+    <rabbit:queue id="hyjf-aleve-interest" name="hyjf-aleve-interest" durable="true"/>
+    <!-- 自动冲正 -->
+    <rabbit:queue id="hyjf-aleve-reverse" name="hyjf-aleve-reverse" durable="true"/>
+	<!--法大大客户信息修改-->
+	<rabbit:queue id="fdd-user-info-change" name="fdd-user-info-change" durable="true" auto-delete="false" exclusive="false"/>
+	<!--法大大电子签章CA认证-->
+	<rabbit:queue id="fdd-certificate-authority" name="fdd-certificate-authority" durable="true" auto-delete="false" exclusive="false"/>
+	<!--法大大生成合同-->
+	<rabbit:queue id="fdd-generate_contract" name="fdd-generate_contract" durable="true" auto-delete="false" exclusive="false"/>
+	<!--法大大自动签署处理-->
+	<rabbit:queue id="fdd-auto_sign" name="fdd-auto_sign" durable="true" auto-delete="false" exclusive="false"/>
+	<!--法大大下载脱敏处理-->
+	<rabbit:queue id="fdd-downdessenesitization_contract" name="fdd-downdessenesitization_contract" durable="true" auto-delete="false" exclusive="false"/>
+
+	<!--风车理财通知队列-->
+	<rabbit:queue id="hyjf-queue-wrb-callback-notify" name="hyjf-queue-wrb-callback-notify" durable="true" auto-delete="false" exclusive="false"/>
+
+	<!--crm投资信息同步-->
+	<rabbit:queue id="crm-post-interface" name="crm-post-interface" durable="true" auto-delete="false" exclusive="false"/>
+
+	<!--crm开户信息同步-->
+	<rabbit:queue id="crm-banckopen-interface" name="crm-banckopen-interface" durable="true" auto-delete="false" exclusive="false"/>
+
+	<!--crm账户信息同步-->
+	<rabbit:queue id="crm-account-interface" name="crm-account-interface" durable="true" auto-delete="false" exclusive="false"/>
+
+	<rabbit:queue id="crm-account-interface_new" name="crm-account-interface_new" durable="true" auto-delete="false" exclusive="false"/>
+
+	<!-- 运营数据更新 -->
+	<rabbit:queue id="queue-operation-data" name="queue-operation-data" durable="true" auto-delete="false" exclusive="false"/>
+
+	<!--计算汇计划加入订单的公允价值-->
+	<rabbit:queue id="hjh-calculate-fair-value" name="hjh-calculate-fair-value" durable="true" auto-delete="false" exclusive="false"/>
+	<!--生成居间服务协议后根据投资记录生成合同要素信息-->
+	<rabbit:queue id="nifa-contract-essence" name="nifa-contract-essence" durable="true" auto-delete="false" exclusive="false"/>
+	<!--生成还款记录、合同状态、出借人回款信息-->
+	<rabbit:queue id="nifa-repay-info" name="nifa-repay-info" durable="true" auto-delete="false" exclusive="false"/>
+	<!--逾期未还更新合同信息-->
+	<rabbit:queue id="nifa-repay-late" name="nifa-repay-late" durable="true" auto-delete="false" exclusive="false"/>
+    <!-- 用户ip同步 -->
+    <rabbit:queue id="hyjf-user-sync-ip" name="hyjf-user-sync-ip" durable="true" auto-delete="false" exclusive="false"/>
+
+
+	<!--神策数据统计相关MQ add by liuyang 20180724 start-->
+	<!-- 神策数据:用户登录事件 -->
+	<rabbit:queue id="sensors_data_login" name="sensors_data_login" durable="true" auto-delete="false" exclusive="false"/>
+	<!-- 神策数据:充值结果事件 -->
+	<rabbit:queue id="sensors_data_recharge_result" name="sensors_data_recharge_result" durable="true" auto-delete="false" exclusive="false"/>
+	<!-- 神策数据:用户注册事件 -->
+	<rabbit:queue id="sensors_data_sign_up" name="sensors_data_sign_up" durable="true" auto-delete="false" exclusive="false"/>
+	<!-- 神策数据:提现结果事件 -->
+	<rabbit:queue id="sensors_data_withdraw_result" name="sensors_data_withdraw_result" durable="true" auto-delete="false" exclusive="false"/>
+	<!-- 神策数据:债转相关事件 -->
+	<rabbit:queue id="sensors_data_credit" name="sensors_data_credit" durable="true" auto-delete="false" exclusive="false"/>
+	<!-- 神策数据:汇计划加入相关事件 -->
+	<rabbit:queue id="sensors_data_hjh_invest" name="sensors_data_hjh_invest" durable="true" auto-delete="false" exclusive="false"/>
+	<!-- 神策数据:汇直投投资事件 -->
+	<rabbit:queue id="sensors_data_hzt_invest" name="sensors_data_hzt_invest" durable="true" auto-delete="false" exclusive="false"/>
+	<!-- 神策数据:开户相关事件 -->
+	<rabbit:queue id="sensors_data_open_account" name="sensors_data_open_account" durable="true" auto-delete="false" exclusive="false"/>
+	<!-- 神策数据:授权结果相关事件 -->
+	<rabbit:queue id="sensors_data_auth_result" name="sensors_data_auth_result" durable="true" auto-delete="false" exclusive="false"/>
+
+	<!-- *********合规数据上报 MQ配置 liubin 20181122 start********* -->
+	<rabbit:queue id="hyjf-bifa-borrow-status" name="hyjf-bifa-borrow-status" durable="true" auto-delete="false" exclusive="false"/>
+
+	<rabbit:queue id="hyjf-bifa-borrowinfo" name="hyjf-bifa-borrowinfo" durable="true" auto-delete="false" exclusive="false"/>
+	<rabbit:queue id="hyjf-bifa-credittenderinfo" name="hyjf-bifa-credittenderinfo" durable="true" auto-delete="false" exclusive="false"/>
+	<rabbit:queue id="hyjf-bifa-hjh-planinfo" name="hyjf-bifa-hjh-planinfo" durable="true" auto-delete="false" exclusive="false"/>
+	<rabbit:queue id="hyjf-cert-borrower-userinfo" name="hyjf-cert-borrower-userinfo" durable="true" auto-delete="false" exclusive="false"/>
+	<rabbit:queue id="hyjf-cert-borrowinfo" name="hyjf-cert-borrowinfo" durable="true" auto-delete="false" exclusive="false"/>
+	<rabbit:queue id="hyjf-cert-borrow-repaymentplan" name="hyjf-cert-borrow-repaymentplan" durable="true" auto-delete="false" exclusive="false"/>
+	<rabbit:queue id="hyjf-cert-borrow-status" name="hyjf-cert-borrow-status" durable="true" auto-delete="false" exclusive="false"/>
+	<rabbit:queue id="hyjf-cert-creditinfo" name="hyjf-cert-creditinfo" durable="true" auto-delete="false" exclusive="false"/>
+	<rabbit:queue id="hyjf-cert-credit-status" name="hyjf-cert-credit-status" durable="true" auto-delete="false" exclusive="false"/>
+	<rabbit:queue id="hyjf-cert-credittenderinfo" name="hyjf-cert-credittenderinfo" durable="true" auto-delete="false" exclusive="false"/>
+	<rabbit:queue id="hyjf-cert-tender-info" name="hyjf-cert-tender-info" durable="true" auto-delete="false" exclusive="false"/>
+
+	<!--合规数据上报 CERT: 交易流水-->
+	<rabbit:queue id="hyjf-cert-transact" name="hyjf-cert-transact" durable="true" auto-delete="false" exclusive="false"/>
+	<!--合规数据上报 CERT: 异常处理-->
+	<rabbit:queue id="hyjf-cert-error-send" name="hyjf-cert-error-send" durable="true" auto-delete="false" exclusive="false"/>
+
+
+	<!--合规数据上报 CERT: 旧数据上报  start-->
+	<!--合规数据上报 CERT: 手机号哈希-->
+	<rabbit:queue id="hyjf-cert-mobile-hash" name="hyjf-cert-mobile-hash" durable="true" auto-delete="false" exclusive="false"/>
+	<!--合规数据上报 CERT: 用户旧数据同步 投资人-->
+	<rabbit:queue id="hyjf-cert-old-users" name="hyjf-cert-old-users" durable="true" auto-delete="false" exclusive="false"/>
+	<!--合规数据上报 CERT: 用户旧数据同步 借款人-->
+	<rabbit:queue id="hyjf-cert-old-borrow-users" name="hyjf-cert-old-borrow-users" durable="true" auto-delete="false" exclusive="false"/>
+	<!--合规数据上报 CERT: 标的旧数据同步-->
+	<rabbit:queue id="hyjf-cert-old-borrow" name="hyjf-cert-old-borrow" durable="true" auto-delete="false" exclusive="false"/>
+	<!--合规数据上报 CERT: 散标状态 历史数据上报 add by nxl -->
+	<rabbit:queue id="hyjf-cert-old-borrow-status" name="hyjf-cert-old-borrow-status" durable="true" auto-delete="false" exclusive="false"/>
+	<!--合规数据上报 CERT: 还款计划 历史数据上报 add by nxl -->
+	<rabbit:queue id="hyjf-cert-old-borrow-repaymentplan" name="hyjf-cert-old-borrow-repaymentplan" durable="true" auto-delete="false" exclusive="false"/>
+	<!--合规数据上报 CERT: 债权信息 历史数据上报 add by nxl -->
+	<rabbit:queue id="hyjf-cert-old-tender-info" name="hyjf-cert-old-tender-info" durable="true" auto-delete="false" exclusive="false"/>
+	<!--合规数据上报 CERT: 承接信息 历史数据上报 add by nxl -->
+	<rabbit:queue id="hyjf-cert-old-credittenderinfo" name="hyjf-cert-old-credittenderinfo" durable="true" auto-delete="false" exclusive="false"/>
+	<!--合规数据上报 CERT: 查询批次数据入库消息 add by nxl -->
+	<rabbit:queue id="hyjf-cert-getyibu-message" name="hyjf-cert-getyibu-message" durable="true" auto-delete="false" exclusive="false"/>
+	<!--合规数据上报 CERT: 转让信息 历史数据上报 add by pcc -->
+	<rabbit:queue id="hyjf-cert-old-creditinfo" name="hyjf-cert-old-creditinfo" durable="true" auto-delete="false" exclusive="false"/>
+	<!--合规数据上报 CERT: 转让状态 历史数据上报 add by pcc -->
+	<rabbit:queue id="hyjf-cert-old-credit-status" name="hyjf-cert-old-credit-status" durable="true" auto-delete="false" exclusive="false"/>
+	<!--合规数据上报 CERT: 交易明细 历史数据上报 add by pcc -->
+	<rabbit:queue id="hyjf-cert-old-transact" name="hyjf-cert-old-transact" durable="true" auto-delete="false" exclusive="false"/>
+	<!--合规数据上报 CERT: 交易明细 历史数据上报 add by pcc -->
+	<rabbit:queue id="hyjf-cert-old-transact-repay-success" name="hyjf-cert-old-transact-repay-success" durable="true" auto-delete="false" exclusive="false"/>
+	<!--合规数据上报 CERT: 交易明细 历史数据mongo上报 add by sss -->
+	<rabbit:queue id="hyjf-cert-old-accountlist" name="hyjf-cert-old-accountlist" durable="true" auto-delete="false" exclusive="false"/>
+
+	<!--合规数据上报 CERT: 旧数据上报  end-->
+
+	<rabbit:queue id="hyjf-nifa-creditinfo" name="hyjf-nifa-creditinfo" durable="true" auto-delete="false" exclusive="false"/>
+	<rabbit:queue id="hyjf-nifa-repay-info" name="hyjf-nifa-repay-info" durable="true" auto-delete="false" exclusive="false"/>
+	<rabbit:queue id="hyjf-nifa-tender-info" name="hyjf-nifa-tender-info" durable="true" auto-delete="false" exclusive="false"/>
+	<rabbit:queue id="hyjf-nifa-credit-info-repair" name="hyjf-nifa-credit-info-repair" durable="true" auto-delete="false" exclusive="false"/>
+	<rabbit:queue id="hyjf-nifa-repay-info-repair" name="hyjf-nifa-repay-info-repair" durable="true" auto-delete="false" exclusive="false"/>
+	<rabbit:queue id="hyjf-nifa-tender-info-repair" name="hyjf-nifa-tender-info-repair" durable="true" auto-delete="false" exclusive="false"/>
+	<!-- *********合规数据上报 MQ配置 liubin 20181122 end********* -->
+
+
+	<!--神策数据统计相关MQ add by liuyang 20180724 end-->
+	<!-- 定义direct exchange，绑定 queue -->
+    <rabbit:direct-exchange name="hyjf-direct-exchange" durable="true" auto-delete="false">
+        <rabbit:bindings>
+        	<rabbit:binding queue="hyjf-coupon-repay" key="hyjf-routingkey-coupon-repay"></rabbit:binding>
+        	<rabbit:binding queue="hyjf-coupon-loans" key="hyjf-routingkey-coupon-loans"></rabbit:binding>
+        	<rabbit:binding queue="hyjf-coupon-planrepay" key="hyjf-routingkey-coupon-planrepay"></rabbit:binding>
+        	<rabbit:binding queue="hyjf-coupon-planloans" key="hyjf-routingkey-coupon-planloans"></rabbit:binding>
+        	<rabbit:binding queue="hyjf-coupon-send" key="hyjf-routingkey-coupon-send"></rabbit:binding>
+            <rabbit:binding queue="hyjf-Repay-Request" key="hyjf-routingkey-Repay-Request"></rabbit:binding>
+            <!-- <rabbit:binding queue="hyjf-Loan-Request" key="hyjf-routingkey-Loan-Request"></rabbit:binding> -->
+            <rabbit:binding queue="hyjf-Repay-ZT" key="hyjf-routingkey-Repay-ZT"></rabbit:binding>
+            <!-- <rabbit:binding queue="hyjf-Loan-ZT" key="hyjf-routingkey-Loan-ZT"></rabbit:binding> -->
+            <rabbit:binding queue="hyjf-Repay-Plan" key="hyjf-routingkey-Repay-Plan"></rabbit:binding>
+            <!-- <rabbit:binding queue="hyjf-Loan-Plan" key="hyjf-routingkey-Loan-Plan"></rabbit:binding> -->
+            <rabbit:binding queue="hyjf-realTimeLoan-Request" key="hyjf-routingkey-realTimeLoan-Request"></rabbit:binding>
+            <rabbit:binding queue="hyjf-realTimeLoan-Plan-Request" key="hyjf-routingkey-planRealTimeLoan-Request"></rabbit:binding>
+	    	<rabbit:binding queue="hyjf-Repqy-Quit-Plan" key="hyjf-routingkey-Repay-hjhQuit"></rabbit:binding>
+	    	<rabbit:binding queue="hyjf-queue-act-balloon" key="hyjf-routingkey-act-balloon"></rabbit:binding>
+	    	<rabbit:binding queue="hyjf-Repqy-Quit-Plan" key="hyjf-routingkey-Repay-hjhQuit"></rabbit:binding>
+	        <rabbit:binding queue="hyjf-borrow-send" key="hyjf-routingkey-borrow-send"></rabbit:binding>
+            <rabbit:binding queue="hyjf-borrow-record" key="hyjf-routingkey-borrow-record"></rabbit:binding>
+            <rabbit:binding queue="hyjf-borrow-bail" key="hyjf-routingkey-borrow-bail"></rabbit:binding>
+            <rabbit:binding queue="hyjf-borrow-preaudit" key="hyjf-routingkey-borrow-preaudit"></rabbit:binding>
+            <rabbit:binding queue="hyjf-borrow-issue" key="hyjf-routingkey-borrow-issue"></rabbit:binding>
+            <rabbit:binding queue="hyjf-hzt-coupon-tender" key="hyjf-routingkey-hzt-coupon-tender"></rabbit:binding>
+       		<rabbit:binding queue="hyjf-Readaleve-Plan" key="hyjf-read-file-aleve" ></rabbit:binding>
+			<rabbit:binding queue="hyjf-Readeve-Plan" key="hyjf-read-file-eve" exchange=""></rabbit:binding>
+			<!--法大大修改客户信息-->
+			<rabbit:binding queue="fdd-user-info-change" key="fdd-routingkey-user-info-change"></rabbit:binding>
+			<!--法大大电子签章CA认证-->
+			<rabbit:binding queue="fdd-certificate-authority" key="fdd-routingkey-certificate-authority"></rabbit:binding>
+			<!--法大大生成合同-->
+			<rabbit:binding queue="fdd-generate_contract" key="fdd-routingkey-generate_contract"></rabbit:binding>
+			<rabbit:binding queue="fdd-auto_sign" key="fdd-routingkey-auto_sign"></rabbit:binding>
+			<rabbit:binding queue="fdd-downdessenesitization_contract" key="fdd-routingkey-downdessenesitization_contract"></rabbit:binding>
+            <rabbit:binding queue="hyjf-queue-wrb-callback-notify" key="hyjf-routingkey-wrb-callback-notify"></rabbit:binding>
+
+			<!--Crm投资信息同步-->
+			<rabbit:binding queue="crm-post-interface" key="crm-routingkey-post-interface"></rabbit:binding>
+			<!--Crm开户信息同步-->
+			<rabbit:binding queue="crm-banckopen-interface" key="crm-routingkey-banckopen-interface"></rabbit:binding>
+			<!--Crm账户信息同步-->
+			<rabbit:binding queue="crm-account-interface" key="crm-routingkey-account-interface"></rabbit:binding>
+			<rabbit:binding queue="crm-account-interface_new" key="crm-routingkey-account-interface_new"></rabbit:binding>
+
+			<!-- 放款更新运营数据 -->
+			<rabbit:binding queue="queue-operation-data" key="queue-operation-data"></rabbit:binding>
+
+			<!--计算汇计划加入订单的公允价值-->
+			<rabbit:binding queue="hjh-calculate-fair-value" key="hjh-calculate-fair-value"></rabbit:binding>
+			<!--生成居间服务协议后根据投资记录生成合同要素信息-->
+			<rabbit:binding queue="nifa-contract-essence" key="nifa-routingkey-contract-essence"></rabbit:binding>
+			<!--生成还款记录、合同状态、出借人回款信息-->
+			<rabbit:binding queue="nifa-repay-info" key="nifa-routingkey-repay-info"></rabbit:binding>
+			<!--逾期未还更新合同信息-->
+			<rabbit:binding queue="nifa-repay-late" key="nifa-routingkey-repay-late"></rabbit:binding>
+
+            <rabbit:binding queue="hyjf-user-sync-ip" key="hyjf-routingkey-userip-sync"></rabbit:binding>
+			<!-- 神策数据统计相关MQ add by liuyang 20180725 start -->
+			<!-- 神策数据:用户登录事件 -->
+			<rabbit:binding queue="sensors_data_login" key="sensors_data_login"></rabbit:binding>
+			<!-- 神策数据:充值结果事件 -->
+			<rabbit:binding queue="sensors_data_recharge_result" key="sensors_data_recharge_result"></rabbit:binding>
+			<!-- 神策数据:用户注册事件 -->
+			<rabbit:binding queue="sensors_data_sign_up" key="sensors_data_sign_up"></rabbit:binding>
+			<!-- 神策数据:提现结果事件 -->
+			<rabbit:binding queue="sensors_data_withdraw_result" key="sensors_data_withdraw_result"></rabbit:binding>
+			<!-- 神策数据:债转相关事件 -->
+			<rabbit:binding queue="sensors_data_credit" key="sensors_data_credit"></rabbit:binding>
+			<!-- 神策数据:汇计划加入事件 -->
+			<rabbit:binding queue="sensors_data_hjh_invest" key="sensors_data_hjh_invest"></rabbit:binding>
+			<!-- 神策数据:汇直投投资事件 -->
+			<rabbit:binding queue="sensors_data_hzt_invest" key="sensors_data_hzt_invest"></rabbit:binding>
+			<!-- 神策数据:开户结果事件 -->
+			<rabbit:binding queue="sensors_data_open_account" key="sensors_data_open_account"></rabbit:binding>
+			<!-- 神策数据:授权结果事件 -->
+			<rabbit:binding queue="sensors_data_auth_result" key="sensors_data_auth_result"></rabbit:binding>
+			<!-- 神策数据统计相关MQ add by liuyang 20180725 end -->
+			<!--2018中秋活动-->
+			<rabbit:binding queue="hyjf-mdiau-activity" key="hyjf-routingkey-mdiau-activity"></rabbit:binding>
+			<!--2018用户日志-->
+			<rabbit:binding queue="hyjf-user-log" key="hyjf-user-log-save"></rabbit:binding>
+			<!--2018纳觅返现活动-->
+			<rabbit:binding queue="hyjf-return-cash-activity" key="hyjf-return-cash-activity-save"></rabbit:binding>
+			<!--2018纳觅返现活动散标更新放款时间-->
+			<rabbit:binding queue="hyjf-return-cash1-activity" key="hyjf-return-cash1-activity-save"></rabbit:binding>
+			<!--2018发放优惠券-->
+			<rabbit:binding queue="hyjf-send-coupon-activity" key="hyjf-routingkey-sendcoupon-activity"></rabbit:binding>
+
+			<!-- *********合规数据上报 MQ配置 liubin 20181122 start********* -->
+			<!-- routingKey开户成功 -->
+			<rabbit:binding queue="hyjf-cert-borrower-userinfo" key="open_account_success"></rabbit:binding>
+			<!-- routingKey投资中 -->
+			<rabbit:binding queue="hyjf-cert-borrower-userinfo" key="issue_investing"></rabbit:binding>
+			<!--<rabbit:binding queue="hyjf-cert-borrowinfo" key="issue_investing"></rabbit:binding>
+			<rabbit:binding queue="hyjf-cert-borrow-status" key="issue_investing"></rabbit:binding>-->
+			<!-- routingKey满标 -->
+			<rabbit:binding queue="hyjf-cert-borrow-status" key="issue_invested"></rabbit:binding>
+			<!-- routingKey放款成功 -->
+			<rabbit:binding queue="hyjf-cert-borrow-status" key="loan_success"></rabbit:binding>
+			<rabbit:binding queue="hyjf-cert-borrowinfo" key="loan_success"></rabbit:binding>
+			<rabbit:binding queue="hyjf-cert-borrow-repaymentplan" key="loan_success"></rabbit:binding>
+			<rabbit:binding queue="hyjf-cert-tender-info" key="loan_success"></rabbit:binding>
+			<rabbit:binding queue="hyjf-nifa-tender-info" key="loan_success"></rabbit:binding>
+			<!--<rabbit:binding queue="hyjf-bifa-borrow-status" key="loan_success"></rabbit:binding>-->
+			<rabbit:binding queue="hyjf-bifa-borrowinfo" key="loan_success"></rabbit:binding>
+			<!-- routingKey智投放款成功 -->
+			<rabbit:binding queue="hyjf-bifa-borrow-status" key="loan_hjh_success"></rabbit:binding>
+			<!--<rabbit:binding queue="hyjf-nifa-tender-info" key="loan_hjh_success"></rabbit:binding>-->
+			<!-- routingKey转让成功 -->
+			<rabbit:binding queue="hyjf-cert-creditinfo" key="transfer_success"></rabbit:binding>
+			<rabbit:binding queue="hyjf-cert-credit-status" key="transfer_success"></rabbit:binding>
+			<!-- routingKey单笔承接成功 -->
+			<rabbit:binding queue="hyjf-cert-credittenderinfo" key="undertake_single_success"></rabbit:binding>
+			<!-- routingKey全部承接失败 -->
+			<rabbit:binding queue="hyjf-cert-credit-status" key="undertake_all_fail"></rabbit:binding>
+			<!-- routingKey全部承接成功 -->
+			<rabbit:binding queue="hyjf-cert-credit-status" key="undertake_all_success"></rabbit:binding>
+			<rabbit:binding queue="hyjf-cert-credit-status" key="undertake_all_success"></rabbit:binding>
+			<rabbit:binding queue="hyjf-bifa-credittenderinfo" key="undertake_all_success"></rabbit:binding>
+			<rabbit:binding queue="hyjf-nifa-creditinfo" key="undertake_all_success"></rabbit:binding>
+			<!-- routingKey单笔还款成功 -->
+			<rabbit:binding queue="hyjf-nifa-repay-info" key="repay_single_success"></rabbit:binding>
+			<!-- routingKey全部还款成功 -->
+			<rabbit:binding queue="hyjf-cert-borrow-status" key="repay_all_success"></rabbit:binding>
+			<rabbit:binding queue="hyjf-cert-credit-status" key="repay_all_success"></rabbit:binding>
+			<rabbit:binding queue="hyjf-bifa-borrow-status" key="repay_all_success"></rabbit:binding>
+			<!-- routingKey新增智投 -->
+			<rabbit:binding queue="hyjf-bifa-hjh-planinfo" key="hjhplan_add"></rabbit:binding>
+			<!-- routingKey用户信息修改(修改手机号,修改银行卡号,风险测评) -->
+			<rabbit:binding queue="hyjf-cert-borrower-userinfo" key="userinfo_change"></rabbit:binding>
+			<!-- routingKey用户信息修改(修改手机号,修改银行卡号,风险测评) -->
+			<rabbit:binding queue="hyjf-cert-borrower-userinfo" key="userinfo_change"></rabbit:binding>
+			<!--合规数据上报 CERT: 转让状态-->
+			<rabbit:binding queue="hyjf-cert-credit-status" key="cert_credit_status"></rabbit:binding>
+			<!--合规数据上报 CERT: 转让信息-->
+			<rabbit:binding queue="hyjf-cert-creditinfo" key="cert_creditinfo"></rabbit:binding>
+			<!--合规数据上报 CERT: 交易流水-->
+			<rabbit:binding queue="hyjf-cert-transact" key="cert_transact"></rabbit:binding>
+			<!--合规数据上报 CERT: 异常处理-->
+			<rabbit:binding queue="hyjf-cert-error-send" key="cert_error_send"></rabbit:binding>
+
+			<!--合规数据上报 CERT: 旧数据上报  start-->
+			<!--合规数据上报 CERT: 手机号哈希-->
+			<rabbit:binding queue="hyjf-cert-mobile-hash" key="cert_mobile_hash"></rabbit:binding>
+			<!--合规数据上报 CERT: 用户旧数据同步 投资人-->
+			<rabbit:binding queue="hyjf-cert-old-users" key="cert_old_data_tender_user"></rabbit:binding>
+			<!--合规数据上报 CERT: 用户旧数据同步 借款人-->
+			<rabbit:binding queue="hyjf-cert-old-borrow-users" key="cert_old_data_borrow_user"></rabbit:binding>
+			<!--合规数据上报 CERT: 标的旧数据同步-->
+			<rabbit:binding queue="hyjf-cert-old-borrow" key="cert_old_data_borrow"></rabbit:binding>
+			<!--合规数据上报 CERT: 散标状态 历史数据上报 add by nxl -->
+			<rabbit:binding queue="hyjf-cert-old-borrow-status" key="cert_old_borrow_status"></rabbit:binding>
+			<!--合规数据上报 CERT: 还款计划 历史数据上报 add by nxl -->
+			<rabbit:binding queue="hyjf-cert-old-borrow-repaymentplan" key="cert_old_borrow_repaymentplan"></rabbit:binding>
+			<!--合规数据上报 CERT: 债权信息 历史数据上报 add by nxl -->
+			<rabbit:binding queue="hyjf-cert-old-tender-info" key="cert_old_tender_info"></rabbit:binding>
+			<!--合规数据上报 CERT: 承接信息 历史数据上报 add by nxl -->
+			<rabbit:binding queue="hyjf-cert-old-credittenderinfo" key="cert_old_credittenderinfo"></rabbit:binding>
+			<!--合规数据上报 CERT: 查询批次数据入库消息 add by nxl -->
+			<rabbit:binding queue="hyjf-cert-getyibu-message" key="cert_getyibu_message"></rabbit:binding>
+			<!--合规数据上报 CERT: 转让信息 历史数据上报 add by pcc -->
+			<rabbit:binding queue="hyjf-cert-old-creditinfo" key="cert-old-creditinfo"></rabbit:binding>
+			<!--合规数据上报 CERT: 转让状态 历史数据上报 add by pcc -->
+			<rabbit:binding queue="hyjf-cert-old-credit-status" key="cert-old-credit-status"></rabbit:binding>
+			<!--合规数据上报 CERT: 交易明细 历史数据上报 add by pcc -->
+			<rabbit:binding queue="hyjf-cert-old-transact" key="cert-old-transact"></rabbit:binding>
+			<!--合规数据上报 CERT: 交易明细 历史数据上报 add by pcc -->
+			<rabbit:binding queue="hyjf-cert-old-transact-repay-success" key="cert-old-transact-repay-success"></rabbit:binding>
+			
+			
+			<!--合规数据上报 CERT: 交易明细 历史数据mongo上报 add by sss -->
+			<rabbit:binding queue="hyjf-cert-old-accountlist" key="cert-old-accountlist"></rabbit:binding>
+			<!--合规数据上报 CERT: 旧数据上报  end-->
+
+			<!--合规数据上报 CERT: 异常中心  start-->
+			<!--合规数据上报 CERT: 用户信息-->
+			<rabbit:binding queue="hyjf-cert-borrower-userinfo" key="cert_exception_user"></rabbit:binding>
+			<!--合规数据上报 CERT: 标的信息-->
+			<rabbit:binding queue="hyjf-cert-borrowinfo" key="cert_exception_borrow"></rabbit:binding>
+			<!--合规数据上报 CERT: 交易流水-->
+			<rabbit:binding queue="hyjf-cert-transact" key="cert_exception_transact"></rabbit:binding>
+			<!--合规数据上报 CERT: 散标状态 -->
+			<rabbit:binding queue="hyjf-cert-borrow-status" key="cert_exception_borrow_status"></rabbit:binding>
+			<!--合规数据上报 CERT: 还款计划-->
+			<rabbit:binding queue="hyjf-cert-borrow-repaymentplan" key="cert_exception_borrow_repaymentplan"></rabbit:binding>
+			<!--合规数据上报 CERT: 债权信息-->
+			<rabbit:binding queue="hyjf-cert-tender-info" key="cert_exception_tender_info"></rabbit:binding>
+			<!--合规数据上报 CERT: 承接信息-->
+			<rabbit:binding queue="hyjf-cert-credittenderinfo" key="cert_exception_credittenderinfo"></rabbit:binding>
+			<!--合规数据上报 CERT: 转让信息-->
+			<rabbit:binding queue="hyjf-cert-creditinfo" key="cert_exception_creditinfo"></rabbit:binding>
+			<!--合规数据上报 CERT: 转让状态-->
+			<rabbit:binding queue="hyjf-cert-credit-status" key="cert_exception_credit_status"></rabbit:binding>
+			<!--合规数据上报 CERT: 异常中心  end-->
+
+			<!-- 中互金修复mq用队列绑定 -->
+			<rabbit:binding queue="hyjf-nifa-tender-info-repair" key="hyjf_nifa_tender_info_repair"></rabbit:binding>
+			<rabbit:binding queue="hyjf-nifa-credit-info-repair" key="hyjf_nifa_credit_info_repair"></rabbit:binding>
+			<rabbit:binding queue="hyjf-nifa-repay-info-repair" key="hyjf_nifa_repay_info_repair"></rabbit:binding>
+			<!-- *********合规数据上报 MQ配置 liubin 20181122 end********* -->
+        </rabbit:bindings>
+    </rabbit:direct-exchange>
+    <!-- fanout模式(发布者订阅者模式) -->
+    <rabbit:fanout-exchange name="hyjf-aleve-fanout-exchange">
+    	<rabbit:bindings>
+    		<rabbit:binding queue="hyjf-aleve-interest"></rabbit:binding>
+    		<rabbit:binding queue="hyjf-aleve-reverse"></rabbit:binding>
+    	</rabbit:bindings>
+    </rabbit:fanout-exchange>
+
+	<!-- topic模式(发布者订阅者模式) -->
+	<!--<rabbit:topic-exchange name="hyjf-topic-exchange">-->
+		<!--<rabbit:bindings>-->
+			<!--<rabbit:binding queue="hyjf-XXXXXXX"></rabbit:binding>-->
+			<!--<rabbit:binding queue="hyjf-XXXXXXX"></rabbit:binding>-->
+		<!--</rabbit:bindings>-->
+	<!--</rabbit:topic-exchange>-->
+
+   	<!--定义rabbit template用于数据的接收和发送-->
+   	<rabbit:template id="myAmqpTemplate" connection-factory="connectionFactory" exchange="hyjf-direct-exchange"/>
+
+	<!-- 定义交换器，自动声明
+	<rabbit:topic-exchange name="CRM-USERINFO-EXCHANGE" auto-declare="true" durable="false"/>-->
+	<!-- 优惠券还款 -->
+	<bean id="couponRepayMessageHadnle1" class="com.hyjf.mqreceiver.coupon.repay.CouponRepayMessageHadnle"/>
+	<!--<bean id="couponRepayMessageHadnle2" class="com.hyjf.mqreceiver.coupon.repay.CouponRepayMessageHadnle"/>-->
+	<!-- 优惠券放款 -->
+	<bean id="couponLoansMessageHadnle1" class="com.hyjf.mqreceiver.coupon.loans.CouponLoansMessageHadnle"/>
+	<bean id="couponLoansMessageHadnle2" class="com.hyjf.mqreceiver.coupon.loans.CouponLoansMessageHadnle"/>
+	<!-- 优惠券还款(汇计划) -->
+	<bean id="couponRepayHjhMessageHadnle1" class="com.hyjf.mqreceiver.coupon.repay.CouponRepayHjhMessageHadnle"/>
+	<!--<bean id="couponRepayHjhMessageHadnle2" class="com.hyjf.mqreceiver.coupon.repay.CouponRepayHjhMessageHadnle"/>-->
+	<!-- 优惠券放款 （汇计划）-->
+	<bean id="couponLoansHjhMessageHadnle1" class="com.hyjf.mqreceiver.coupon.loans.CouponLoansHjhMessageHadnle"/>
+	<bean id="couponLoansHjhMessageHadnle2" class="com.hyjf.mqreceiver.coupon.loans.CouponLoansHjhMessageHadnle"/>
+	<!-- 优惠券发放  -->
+	<bean id="couponSendMessageHadnle1" class="com.hyjf.mqreceiver.coupon.send.CouponSendMessageHadnle"/>
+	<bean id="couponSendMessageHadnle2" class="com.hyjf.mqreceiver.coupon.send.CouponSendMessageHadnle"/>
+	<bean id="couponSendMessageHadnle3" class="com.hyjf.mqreceiver.coupon.send.CouponSendMessageHadnle"/>
+
+	<!-- 还款请求 -->
+	<bean id="borrowRepayRequestMessageHadnle1" class="com.hyjf.mqreceiver.borrow.repayrequest.BorrowRepayRequestMessageHadnle"/>
+	<bean id="borrowRepayRequestMessageHadnle2" class="com.hyjf.mqreceiver.borrow.repayrequest.BorrowRepayRequestMessageHadnle"/>
+
+	<!-- 放款请求 -->
+	<!-- <bean id="borrowLoanRequestMessageHadnle1" class="com.hyjf.mqreceiver.borrow.loanrequest.BorrowLoanRequestMessageHadnle"/>
+	<bean id="borrowLoanRequestMessageHadnle2" class="com.hyjf.mqreceiver.borrow.loanrequest.BorrowLoanRequestMessageHadnle"/> -->
+
+	<!-- 直投还款 -->
+	<bean id="borrowRepayZTMessageHadnle1" class="com.hyjf.mqreceiver.borrow.repay.BorrowRepayZTMessageHadnle"/>
+	<!--<bean id="borrowRepayZTMessageHadnle2" class="com.hyjf.mqreceiver.borrow.repay.BorrowRepayZTMessageHadnle"/>-->
+	<!--<bean id="borrowRepayZTMessageHadnle3" class="com.hyjf.mqreceiver.borrow.repay.BorrowRepayZTMessageHadnle"/>-->
+
+	<!-- 直投放款 -->
+	<!-- <bean id="borrowLoanZTMessageHadnle1" class="com.hyjf.mqreceiver.borrow.loan.BorrowLoanZTMessageHadnle"/>
+	<bean id="borrowLoanZTMessageHadnle2" class="com.hyjf.mqreceiver.borrow.loan.BorrowLoanZTMessageHadnle"/>
+	<bean id="borrowLoanZTMessageHadnle3" class="com.hyjf.mqreceiver.borrow.loan.BorrowLoanZTMessageHadnle"/> -->
+
+	<!-- 计划还款 -->
+	<bean id="borrowRepayPlanMessageHadnle1" class="com.hyjf.mqreceiver.borrow.planrepay.BorrowRepayPlanMessageHadnle"/>
+	<!--<bean id="borrowRepayPlanMessageHadnle2" class="com.hyjf.mqreceiver.borrow.planrepay.BorrowRepayPlanMessageHadnle"/>-->
+	<!--<bean id="borrowRepayPlanMessageHadnle3" class="com.hyjf.mqreceiver.borrow.planrepay.BorrowRepayPlanMessageHadnle"/>-->
+	<!-- 红包账户 -->
+	<bean id="aleveFileMessageHadnle" class="com.hyjf.mqreceiver.borrow.eve.AleveFileMessageHadnle"/>
+	<bean id="eveFileMessageHadnle" class="com.hyjf.mqreceiver.borrow.eve.EveFileMessageHadnle"/>
+	<!-- 计划放款 -->
+	<!-- <bean id="borrowLoanPlanMessageHadnle1" class="com.hyjf.mqreceiver.borrow.planloan.BorrowLoanPlanMessageHadnle"/>
+	<bean id="borrowLoanPlanMessageHadnle2" class="com.hyjf.mqreceiver.borrow.planloan.BorrowLoanPlanMessageHadnle"/>
+	<bean id="borrowLoanPlanMessageHadnle3" class="com.hyjf.mqreceiver.borrow.planloan.BorrowLoanPlanMessageHadnle"/> -->
+	<!-- 直投实时放款 -->
+	<bean id="borrowRealTimeLoanMessageHadnle1" class="com.hyjf.mqreceiver.borrow.realtimeloan.BorrowLoanRealTimeMessageHadnle"/>
+	<bean id="borrowRealTimeLoanMessageHadnle2" class="com.hyjf.mqreceiver.borrow.realtimeloan.BorrowLoanRealTimeMessageHadnle"/>
+	<bean id="borrowRealTimeLoanMessageHadnle3" class="com.hyjf.mqreceiver.borrow.realtimeloan.BorrowLoanRealTimeMessageHadnle"/>
+	<!-- 计划实时放款 -->
+	<bean id="borrowPlanRealTimeLoanMessageHadnle1" class="com.hyjf.mqreceiver.borrow.planrealtimeloan.BorrowLoanPlanRealTimeMessageHadnle"/>
+	<bean id="borrowPlanRealTimeLoanMessageHadnle2" class="com.hyjf.mqreceiver.borrow.planrealtimeloan.BorrowLoanPlanRealTimeMessageHadnle"/>
+	<bean id="borrowPlanRealTimeLoanMessageHadnle3" class="com.hyjf.mqreceiver.borrow.planrealtimeloan.BorrowLoanPlanRealTimeMessageHadnle"/>
+		<!-- 计划退出 -->
+	<bean id="borrowQuitPlanMessageHadnle1" class="com.hyjf.mqreceiver.borrow.planrepayquit.BorrowRepayPlanQuitMessageHadnle"/>
+	<bean id="borrowQuitPlanMessageHadnle2" class="com.hyjf.mqreceiver.borrow.planrepayquit.BorrowRepayPlanQuitMessageHadnle"/>
+	<bean id="borrowQuitPlanMessageHadnle3" class="com.hyjf.mqreceiver.borrow.planrepayquit.BorrowRepayPlanQuitMessageHadnle"/>
+	<!-- 双十二气球活动 -->
+	<bean id="balloonMessageHandle1" class="com.hyjf.mqreceiver.act.balloon.BalloonMessageHandle"/>
+	<!-- 2018中秋活动 -->
+	<bean id="midauActivityMessageHandle" class="com.hyjf.mqreceiver.activity.MidauActivityMessageHandle"/>
+	<!-- 2018用户日志 -->
+	<bean id="operationLogHandle" class="com.hyjf.mqreceiver.user.operation.log.OperationLogHandle"/>
+	<!-- 2018纳觅返现活动 -->
+	<bean id="returnCashActivityMessageHandle" class="com.hyjf.mqreceiver.returncash.ReturnCashActivityMessageHandle"/>
+	<!-- 2018纳觅返现活动 -->
+	<bean id="returnCashOneActivityMessageHandle" class="com.hyjf.mqreceiver.returncash.ReturnCashOneActivityMessageHandle"/>
+	<!-- 2018发放优惠券 -->
+	<bean id="sendCouponActivityMessageHandle" class="com.hyjf.mqreceiver.activity.SendCouponActivityMessageHandle"/>
+
+	<!-- 自动录标 -->
+	<bean id="autoSendMessageHandle" class="com.hyjf.mqreceiver.borrow.send.AutoSendMessageHandle"/>
+
+	<!-- 自动备案 -->
+	<bean id="autoRecordMessageHandle" class="com.hyjf.mqreceiver.borrow.record.AutoRecordMessageHandle"/>
+
+	<!-- 自动审核保证金 -->
+	<bean id="autoBailMessageHandle" class="com.hyjf.mqreceiver.borrow.bail.AutoBailMessageHandle"/>
+
+	<!-- 自动初审 -->
+	<bean id="autoPreAuditMessageHandle" class="com.hyjf.mqreceiver.borrow.preaudit.AutoPreAuditMessageHandle"/>
+
+	<!-- 自动关联计划 -->
+	<bean id="autoIssueMessageHandle" class="com.hyjf.mqreceiver.borrow.issue.AutoIssueMessageHandle"/>
+
+	<!-- 汇直投优惠券使用 -->
+	<bean id="hztCouponTenderMessageHadnle" class="com.hyjf.mqreceiver.coupon.tender.HztCouponTenderMessageHadnle"/>
+
+	<!-- 法大大修改客户信息 -->
+	<bean id="fddUserInfoChangeMessageHandle" class="com.hyjf.mqreceiver.fdd.fdduserinfochange.FddUserInfoChangeMessageHandle"/>
+
+	<!-- 法大大电子签章CA认证 -->
+	<bean id="fddCertificateAuthorityMessageHandle1" class="com.hyjf.mqreceiver.fdd.fddcertificateauthority.FddCertificateAuthorityMessageHandle"/>
+
+
+	<!-- 法大大生成合同 -->
+	<bean id="fddGenerateContractMessageHandle" class="com.hyjf.mqreceiver.fdd.fddgeneratecontract.FddGenerateContractMessageHandle "/>
+
+	<!-- 法大大自动签署合同处理 -->
+	<bean id="fddAutoSignMessageHandle" class="com.hyjf.mqreceiver.fdd.fddAutoSign.FddAutoSignMessageHandle "/>
+	<!--法大大下载脱敏处理-->
+	<bean id="fddDownPDFandDessensitizationMessageHandle" class="com.hyjf.mqreceiver.fdd.fddDesensitization.FddDownPDFandDessensitizationMessageHandle"/>
+
+
+	<!-- 利息同步 -->
+	<bean id="interestMessageHandle" class="com.hyjf.mqreceiver.aleve.interest.InterestMessageHandle"/>
+	<!-- 自动同步 -->
+	<bean id="reverseMessageHandle" class="com.hyjf.mqreceiver.aleve.reverse.ReverseMessageHandle"/>
+
+	<!-- crm投资同步 -->
+	<bean id="crmInvestMessageHandle" class="com.hyjf.mqreceiver.crm.invest.CrmInvestMessageHandle"/>
+	<!-- crm开户同步 -->
+	<bean id="crmBankOpenMessageHandle" class="com.hyjf.mqreceiver.crm.bankopen.CrmBankOpenMessageHandle"/>
+
+	<!-- 放款更新运营数据 -->
+	<bean id="tenderLoanMessageHandle" class="com.hyjf.mqreceiver.borrow.operationdata.OperationDataMessageHandle"/>
+
+	<!-- 生成居间服务协议后根据投资记录生成合同要素信息 -->
+	<bean id="nifaContractEssenceMessageHadnle1" class="com.hyjf.mqreceiver.nifa.contractessence.NifaContractEssenceMessageHadnle"/>
+	<bean id="nifaContractEssenceMessageHadnle2" class="com.hyjf.mqreceiver.nifa.contractessence.NifaContractEssenceMessageHadnle"/>
+	<bean id="nifaContractEssenceMessageHadnle3" class="com.hyjf.mqreceiver.nifa.contractessence.NifaContractEssenceMessageHadnle"/>
+
+	<!-- 生成还款记录、合同状态、出借人回款信息 -->
+	<bean id="NifaRepayInfoMessageHadnle1" class="com.hyjf.mqreceiver.nifa.repayinfo.NifaRepayInfoMessageHadnle"/>
+	<bean id="NifaRepayInfoMessageHadnle2" class="com.hyjf.mqreceiver.nifa.repayinfo.NifaRepayInfoMessageHadnle"/>
+	<bean id="NifaRepayInfoMessageHadnle3" class="com.hyjf.mqreceiver.nifa.repayinfo.NifaRepayInfoMessageHadnle"/>
+
+	<!-- 逾期未还更新合同信息 -->
+	<bean id="NifaRepayLateMessageHadnle1" class="com.hyjf.mqreceiver.nifa.repaylate.NifaRepayLateMessageHadnle"/>
+	<bean id="NifaRepayLateMessageHadnle2" class="com.hyjf.mqreceiver.nifa.repaylate.NifaRepayLateMessageHadnle"/>
+	<bean id="NifaRepayLateMessageHadnle3" class="com.hyjf.mqreceiver.nifa.repaylate.NifaRepayLateMessageHadnle"/>
+
+
+	<!-- 计算汇计划加入订单的公允价值 -->
+	<bean id="hjhCalculateFairValueMessageHandle" class="com.hyjf.mqreceiver.hjh.calculatefairvalue.HjhCalculateFairValueMessageHandle"/>
+
+	<!-- 神策数据统计相关MQ add by liuyang 20180725 start -->
+	<!-- 神策数据:用户登录事件 -->
+	<bean id="sensorsDataLoginMessageHandle" class="com.hyjf.mqreceiver.sensorsdata.login.SensorsDataLoginMessageHandle"/>
+	<!-- 神策数据:充值结果事件 -->
+	<bean id="sensorsDataRechargeResultMessageHandle" class="com.hyjf.mqreceiver.sensorsdata.recharge.SensorsDataRechargeMessageHandle"/>
+	<!-- 神策数据:用户注册事件 -->
+	<bean id="sensorsDataSignUpMessageHandle" class="com.hyjf.mqreceiver.sensorsdata.register.SensorsDataRegisterMessageHandle"/>
+	<!-- 神策数据:提现结果事件 -->
+	<bean id="sensorsDataWithdrawResultMessageHandle" class="com.hyjf.mqreceiver.sensorsdata.withdraw.SensorsDataWithdrawMessageHandle"/>
+	<!-- 神策数据:债转相关事件 -->
+	<bean id="sensorsDataCreditMessageHandle" class="com.hyjf.mqreceiver.sensorsdata.credit.SensorsDataCreditMessageHandle"/>
+	<!-- 神策数据:汇计划加入事件 -->
+	<bean id="sensorsDataHjhInvestMessageHandle" class="com.hyjf.mqreceiver.sensorsdata.hjh.SensorsDataHjhInvestMessageHandle"/>
+	<!-- 神策数据:汇直投投资事件 -->
+	<bean id="sensorsDataHztInvestMessageHandle" class="com.hyjf.mqreceiver.sensorsdata.hzt.SensorsDataHztInvestMessageHandle"/>
+	<!-- 神策数据:开户结果事件 -->
+	<bean id="sensorsDataOpenResultMessageHandle" class="com.hyjf.mqreceiver.sensorsdata.openaccount.SensorsDataOpenAccountMessageHandle"/>
+	<!-- 神策数据:授权结果事件 -->
+	<bean id="sensorsDataAuthResultMessageHandle" class="com.hyjf.mqreceiver.sensorsdata.auth.SensorsDataAuthMessageHandle"/>
+	<!-- 神策数据统计相关MQ add by liuyang 20180725 end -->
+
+
+	<!-- 根据用户IP获取地址 -->
+	<bean id="syncIpMessageHandle" class="com.hyjf.mqreceiver.user.syncip.SyncIpMessageHandle"/>
+
+	<!--*********合规数据上报 MQ配置 liubin 20181122 start*********-->
+	<bean id="bifaBorrowStatusHandle" class="com.hyjf.mqreceiver.hgdatareport.bifa.borrowstatus.BifaBorrowStatusHandle"/>
+	<bean id="bifaBorrowInfoHandle" class="com.hyjf.mqreceiver.hgdatareport.bifa.borrowinfo.BifaBorrowInfoHandle"/>
+	<bean id="bifaCredittenderInfoHandle" class="com.hyjf.mqreceiver.hgdatareport.bifa.credittenderinfo.BifaCreditTenderInfoHandle"/>
+	<bean id="bifaHjhPlanInfoHandle" class="com.hyjf.mqreceiver.hgdatareport.bifa.hjhplaninfo.BifaHjhPlanInfoHandle"/>
+
+	<!-- 国家互联网应急中心 CERT  start-->
+	<!-- 合规数据上报 CERT: 用户信息-->
+	<bean id="certBorroweruserInfoHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.userinfo.CertUserInfoMessageHadnle"/>
+	<!-- 合规数据上报 CERT: 散标信息-->
+	<bean id="certBorrowInfoHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.scatterinvest.CertScatterInveMessageHadnle"/>
+	<!-- 合规数据上报 CERT: 还款计划信息上报-->
+	<bean id="certBorrowRepaymentplanHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.repayplan.CertRepayPlanMessageHadnle"/>
+	<!-- 合规数据上报 CERT: 散标状态信息上报-->
+	<bean id="certBorrowStatusHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.status.CertBorrowStatusMessageHadnle"/>
+	<!-- 合规数据上报 CERT: 转让项目-->
+	<bean id="certCreditInfoHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.transferproject.CertTransferProjectMessageHadnle"/>
+	<!-- 合规数据上报 CERT: 转让状态-->
+	<bean id="certCreditStatusHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.transferstatus.CertTransferStatusMessageHadnle"/>
+	<!-- 合规数据上报 CERT: 承接订单信息上报-->
+	<bean id="certCreditTenderInfoHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.undertake.CertCreditInfoMessageHadnle"/>
+	<!-- 合规数据上报 CERT: 债权信息上报-->
+	<bean id="certTenderInfoHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.creditor.CertTenderInfoMessageHadnle"/>
+	<!-- 合规数据上报 CERT: 交易流水-->
+	<bean id="certTransactMessageHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.transact.CertTransactMessageHadnle"/>
+
+	<!-- 合规数据上报 CERT: 异常处理-->
+	<bean id="certSendErrorMessageHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.exception.CertSendErrorMessageHadnle"/>
+	<!-- 合规数据上报 CERT: 手机号哈希-->
+	<bean id="certMobileHashMessageHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.olddata.mobilehash.CertMobileHashMessageHadnle"/>
+	<!-- 合规数据上报 CERT: 用户旧数据同步 投资人-->
+	<bean id="certOldUserMessageHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.olddata.userinfo.CertOldUserMessageHadnle"/>
+	<!-- 合规数据上报 CERT: 用户旧数据同步 借款人-->
+	<bean id="certOldBorrowUserMessageHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.olddata.borrowuser.CertOldBorrowUserMessageHadnle"/>
+	<!-- 合规数据上报 CERT: 散标旧数据同步-->
+	<bean id="certOldBorrowMessageHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.olddata.borrow.CertOldBorrowMessageHadnle"/>
+	<!-- 合规数据上报 CERT: 散标状态 历史数据保送 add by nxl-->
+	<bean id="certOldBorrowStatusMessageHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.olddata.status.CertOldBorrowStatusMessageHadnle"/>
+	<!-- 合规数据上报 CERT: 还款计划 历史数据保送 add by nxl-->
+	<bean id="certOldRepayPlanMessageHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.olddata.repayplan.CertOldRepayPlanMessageHadnle"/>
+	<!-- 合规数据上报 CERT: 债权信息 历史数据保送 add by nxl-->
+	<bean id="certOldTenderInfoMessageHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.olddata.creditor.CertOldTenderInfoMessageHadnle"/>
+	<!-- 合规数据上报 CERT: 承接信息 历史数据保送 add by nxl-->
+	<bean id="certOldCreditInfoMessageHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.olddata.undertake.CertOldCreditInfoMessageHadnle"/>
+
+	<!-- 合规数据上报 CERT: 查询批次数据入库消息 add by nxl-->
+	<bean id="certGetYiBuMessageMessageHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.getyibumessage.CertGetYiBuMessageMessageHadnle"/>
+
+
+	<!-- 合规数据上报 CERT: 转让项目 历史数据保送 add by pcc-->
+	<bean id="oldCertTransferStatusMessageHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.olddata.transferstatus.OldCertTransferStatusMessageHadnle"/>
+	<!-- 合规数据上报 CERT: 状态状态 历史数据保送 add by pcc-->
+	<bean id="oldCertTransferProjectMessageHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.olddata.transferproject.OldCertTransferProjectMessageHadnle"/>
+	<!-- 合规数据上报 CERT: 交易明细 历史数据保送 add by pcc-->
+	<bean id="oldCertTransactMessageHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.olddata.transact.OldCertTransactMessageHadnle"/>
+	<!-- 合规数据上报 CERT: 交易明细 历史数据保送 add by pcc-->
+	<bean id="oldCertTransactRepaySuccessMessageHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.olddata.transact.repay.OldCertTransactRepaySuccessMessageHadnle"/>
+	
+	<!--合规数据上报 CERT: 交易明细 历史数据mongo上报 add by sss -->
+	<bean id="oldCertAccountlListMessageHadnle" class="com.hyjf.mqreceiver.hgdatareport.cert.olddata.accountlist.OldCertAccountlListMessageHadnle"/>
+	<!--国家互联网应急中心 CERT  end-->
+
+	<bean id="nifaCreditInfoHadnle" class="com.hyjf.mqreceiver.hgdatareport.nifa.creditinfo.NifaCreditInfoMessageHadnle"/>
+	<bean id="nifaRepayInfoHadnle" class="com.hyjf.mqreceiver.hgdatareport.nifa.repayinfos.NifaRepayInfosMessageHadnle"/>
+	<bean id="nifaTenderInfoHadnle" class="com.hyjf.mqreceiver.hgdatareport.nifa.tenderinfo.NifaTenderInfoMessageHadnle"/>
+	<!-- *********合规数据上报 MQ配置 liubin 20181122 end********* -->
+
+	<rabbit:listener-container connection-factory="connectionFactory" acknowledge="manual">
+        <!-- 优惠券还款 -->
+        <rabbit:listener ref="couponRepayMessageHadnle1" method="execute" queue-names="hyjf-coupon-repay"></rabbit:listener>
+        <!--<rabbit:listener ref="couponRepayMessageHadnle2" method="execute" queue-names="hyjf-coupon-repay"></rabbit:listener>-->
+        <!-- 优惠券还款(汇计划) -->
+        <rabbit:listener ref="couponRepayHjhMessageHadnle1" method="execute" queue-names="hyjf-coupon-planrepay"></rabbit:listener>
+        <!--<rabbit:listener ref="couponRepayHjhMessageHadnle2" method="execute" queue-names="hyjf-coupon-planrepay"></rabbit:listener>-->
+        <!-- 优惠券放款 -->
+        <rabbit:listener ref="couponLoansMessageHadnle1" method="execute" queue-names="hyjf-coupon-loans"></rabbit:listener>
+        <rabbit:listener ref="couponLoansMessageHadnle2" method="execute" queue-names="hyjf-coupon-loans"></rabbit:listener>
+        <!-- 优惠券放款（汇计划） -->
+        <rabbit:listener ref="couponLoansHjhMessageHadnle1" method="execute" queue-names="hyjf-coupon-planloans"></rabbit:listener>
+        <rabbit:listener ref="couponLoansHjhMessageHadnle2" method="execute" queue-names="hyjf-coupon-planloans"></rabbit:listener>
+        <!-- 优惠券发放 -->
+        <rabbit:listener ref="couponSendMessageHadnle1" method="execute" queue-names="hyjf-coupon-send"></rabbit:listener>
+        <rabbit:listener ref="couponSendMessageHadnle2" method="execute" queue-names="hyjf-coupon-send"></rabbit:listener>
+        <rabbit:listener ref="couponSendMessageHadnle3" method="execute" queue-names="hyjf-coupon-send"></rabbit:listener>
+        <!-- 批次还款请求 -->
+        <rabbit:listener ref="borrowRepayRequestMessageHadnle1" method="execute" queue-names="hyjf-Repay-Request"></rabbit:listener>
+        <rabbit:listener ref="borrowRepayRequestMessageHadnle2" method="execute" queue-names="hyjf-Repay-Request"></rabbit:listener>
+        <!-- 批次放款请求 -->
+        <!-- <rabbit:listener ref="borrowLoanRequestMessageHadnle1" method="execute" queue-names="hyjf-Loan-Request"></rabbit:listener>
+        <rabbit:listener ref="borrowLoanRequestMessageHadnle2" method="execute" queue-names="hyjf-Loan-Request"></rabbit:listener> -->
+        <!-- 批次直投类还款 -->
+        <rabbit:listener ref="borrowRepayZTMessageHadnle1" method="execute" queue-names="hyjf-Repay-ZT"></rabbit:listener>
+        <!--<rabbit:listener ref="borrowRepayZTMessageHadnle2" method="execute" queue-names="hyjf-Repay-ZT"></rabbit:listener>-->
+        <!--<rabbit:listener ref="borrowRepayZTMessageHadnle3" method="execute" queue-names="hyjf-Repay-ZT"></rabbit:listener>-->
+        <!-- 批次直投类放款 -->
+        <!-- <rabbit:listener ref="borrowLoanZTMessageHadnle1" method="execute" queue-names="hyjf-Loan-ZT"></rabbit:listener>
+        <rabbit:listener ref="borrowLoanZTMessageHadnle2" method="execute" queue-names="hyjf-Loan-ZT"></rabbit:listener>
+        <rabbit:listener ref="borrowLoanZTMessageHadnle3" method="execute" queue-names="hyjf-Loan-ZT"></rabbit:listener> -->
+        <!-- 批次计划类放款 -->
+        <!-- <rabbit:listener ref="borrowLoanPlanMessageHadnle1" method="execute" queue-names="hyjf-Loan-Plan"></rabbit:listener>
+        <rabbit:listener ref="borrowLoanPlanMessageHadnle2" method="execute" queue-names="hyjf-Loan-Plan"></rabbit:listener>
+        <rabbit:listener ref="borrowLoanPlanMessageHadnle3" method="execute" queue-names="hyjf-Loan-Plan"></rabbit:listener> -->
+        <!-- 批次计划类还款 -->
+        <rabbit:listener ref="borrowRepayPlanMessageHadnle1" method="execute" queue-names="hyjf-Repay-Plan"></rabbit:listener>
+        <!--<rabbit:listener ref="borrowRepayPlanMessageHadnle2" method="execute" queue-names="hyjf-Repay-Plan"></rabbit:listener>-->
+        <!--<rabbit:listener ref="borrowRepayPlanMessageHadnle3" method="execute" queue-names="hyjf-Repay-Plan"></rabbit:listener>-->
+        <!-- 直投实时放款 -->
+        <rabbit:listener ref="borrowRealTimeLoanMessageHadnle1" method="execute" queue-names="hyjf-realTimeLoan-Request"></rabbit:listener>
+        <rabbit:listener ref="borrowRealTimeLoanMessageHadnle2" method="execute" queue-names="hyjf-realTimeLoan-Request"></rabbit:listener>
+        <rabbit:listener ref="borrowRealTimeLoanMessageHadnle3" method="execute" queue-names="hyjf-realTimeLoan-Request"></rabbit:listener>
+        <!-- 计划实时放款 -->
+        <rabbit:listener ref="borrowPlanRealTimeLoanMessageHadnle1" method="execute" queue-names="hyjf-realTimeLoan-Plan-Request"></rabbit:listener>
+        <rabbit:listener ref="borrowPlanRealTimeLoanMessageHadnle2" method="execute" queue-names="hyjf-realTimeLoan-Plan-Request"></rabbit:listener>
+        <rabbit:listener ref="borrowPlanRealTimeLoanMessageHadnle3" method="execute" queue-names="hyjf-realTimeLoan-Plan-Request"></rabbit:listener>
+        <!-- 退出计划 -->
+        <rabbit:listener ref="borrowQuitPlanMessageHadnle1" method="execute" queue-names="hyjf-Repqy-Quit-Plan"></rabbit:listener>
+        <rabbit:listener ref="borrowQuitPlanMessageHadnle2" method="execute" queue-names="hyjf-Repqy-Quit-Plan"></rabbit:listener>
+        <rabbit:listener ref="borrowQuitPlanMessageHadnle3" method="execute" queue-names="hyjf-Repqy-Quit-Plan"></rabbit:listener>
+        <!-- 双十二气球活动 -->
+        <rabbit:listener ref="balloonMessageHandle1" method="execute" queue-names="hyjf-queue-act-balloon"></rabbit:listener>
+		<!-- 2018中秋活动 -->
+		<rabbit:listener ref="midauActivityMessageHandle" method="execute" queue-names="hyjf-mdiau-activity"></rabbit:listener>
+		<!-- 2018用户日志 -->
+		<rabbit:listener ref="operationLogHandle" method="execute" queue-names="hyjf-user-log"></rabbit:listener>
+		<!-- 2018纳觅返现活动 -->
+		<rabbit:listener ref="returnCashActivityMessageHandle" method="execute" queue-names="hyjf-return-cash-activity"></rabbit:listener>
+		<!-- 2018纳觅返现活动 -->
+		<rabbit:listener ref="returnCashOneActivityMessageHandle" method="execute" queue-names="hyjf-return-cash1-activity"></rabbit:listener>
+		<!-- 2018中秋活动 -->
+		<rabbit:listener ref="sendCouponActivityMessageHandle" method="execute" queue-names="hyjf-send-coupon-activity"></rabbit:listener>
+
+
+        <!-- 自动录标,备案，审核，关联计划 -->
+        <rabbit:listener ref="autoSendMessageHandle" method="execute" queue-names="hyjf-borrow-send"></rabbit:listener>
+        <rabbit:listener ref="autoRecordMessageHandle" method="execute" queue-names="hyjf-borrow-record"></rabbit:listener>
+        <rabbit:listener ref="autoBailMessageHandle" method="execute" queue-names="hyjf-borrow-bail"></rabbit:listener>
+		<rabbit:listener ref="autoPreAuditMessageHandle" method="execute" queue-names="hyjf-borrow-preaudit"></rabbit:listener>
+        <rabbit:listener ref="autoIssueMessageHandle" method="execute" queue-names="hyjf-borrow-issue"></rabbit:listener>
+
+        <!-- 汇直投优惠券使用 -->
+        <rabbit:listener ref="hztCouponTenderMessageHadnle" method="execute" queue-names="hyjf-hzt-coupon-tender"></rabbit:listener>
+        <!-- 红包账户 -->
+        <rabbit:listener ref="aleveFileMessageHadnle" method="execute" queue-names="hyjf-Readaleve-Plan"></rabbit:listener>
+        <rabbit:listener ref="eveFileMessageHadnle" method="execute" queue-names="hyjf-Readeve-Plan"></rabbit:listener>
+
+        <!-- 风车理财通知监听 -->
+        <rabbit:listener ref="wrbCallBackHandle" method="execute" queue-names="hyjf-queue-wrb-callback-notify"></rabbit:listener>
+
+        <!-- 法大大客户信息修改 -->
+        <rabbit:listener ref="fddUserInfoChangeMessageHandle" method="execute" queue-names="fdd-user-info-change"></rabbit:listener>
+
+        <!-- 法大大电子签章CA认证 -->
+        <rabbit:listener ref="fddCertificateAuthorityMessageHandle1" method="execute" queue-names="fdd-certificate-authority"></rabbit:listener>
+
+        <!-- 法大大合同生成接口 -->
+        <rabbit:listener ref="fddGenerateContractMessageHandle" method="execute" queue-names="fdd-generate_contract"></rabbit:listener>
+        <rabbit:listener ref="fddAutoSignMessageHandle" method="execute" queue-names="fdd-auto_sign"></rabbit:listener>
+        <!--法大大下载脱敏处理-->
+        <rabbit:listener ref="fddDownPDFandDessensitizationMessageHandle" method="execute" queue-names="fdd-downdessenesitization_contract"></rabbit:listener>
+
+        <!-- 利息同步 -->
+        <rabbit:listener ref="interestMessageHandle" method="execute" queue-names="hyjf-aleve-interest"></rabbit:listener>
+        <!-- 自动冲正 -->
+        <rabbit:listener ref="reverseMessageHandle" method="execute" queue-names="hyjf-aleve-reverse"></rabbit:listener>
+        <!-- crm投资同步 -->
+        <rabbit:listener ref="crmInvestMessageHandle" method="execute" queue-names="crm-post-interface"></rabbit:listener>
+        <!-- crm开户同步 -->
+        <rabbit:listener ref="crmBankOpenMessageHandle" method="execute" queue-names="crm-banckopen-interface"></rabbit:listener>
+        <!-- crm用户账户资金变化同步 -->
+        <rabbit:listener ref="crmAccountMessageHandle" method="execute" queue-names="crm-account-interface"></rabbit:listener>
+		<rabbit:listener ref="newcrmAccountMessageHandle" method="execute" queue-names="crm-account-interface_new"></rabbit:listener>
+
+        <rabbit:listener ref="operationDataMessageHandle" method="execute" queue-names="queue-operation-data"></rabbit:listener>
+
+		<!-- 计算汇计划加入订单的公允价值 -->
+		<rabbit:listener ref="hjhCalculateFairValueMessageHandle" method="execute" queue-names="hjh-calculate-fair-value"></rabbit:listener>
+
+		<!-- 生成居间服务协议后根据投资记录生成合同要素信息 -->
+		<rabbit:listener ref="nifaContractEssenceMessageHadnle1" method="execute" queue-names="nifa-contract-essence"></rabbit:listener>
+		<rabbit:listener ref="nifaContractEssenceMessageHadnle2" method="execute" queue-names="nifa-contract-essence"></rabbit:listener>
+		<rabbit:listener ref="nifaContractEssenceMessageHadnle3" method="execute" queue-names="nifa-contract-essence"></rabbit:listener>
+
+		<!-- 生成还款记录、合同状态、出借人回款信息 -->
+		<rabbit:listener ref="NifaRepayInfoMessageHadnle1" method="execute" queue-names="nifa-repay-info"></rabbit:listener>
+		<rabbit:listener ref="NifaRepayInfoMessageHadnle2" method="execute" queue-names="nifa-repay-info"></rabbit:listener>
+		<rabbit:listener ref="NifaRepayInfoMessageHadnle3" method="execute" queue-names="nifa-repay-info"></rabbit:listener>
+
+		<!-- 逾期未还更新合同信息 -->
+		<rabbit:listener ref="NifaRepayLateMessageHadnle1" method="execute" queue-names="nifa-repay-late"></rabbit:listener>
+		<rabbit:listener ref="NifaRepayLateMessageHadnle2" method="execute" queue-names="nifa-repay-late"></rabbit:listener>
+		<rabbit:listener ref="NifaRepayLateMessageHadnle3" method="execute" queue-names="nifa-repay-late"></rabbit:listener>
+
+        <!-- 根据用户IP获取地址  -->
+        <rabbit:listener ref="syncIpMessageHandle" method="execute" queue-names="hyjf-user-sync-ip"></rabbit:listener>
+
+
+		<!-- 神策数据统计相关MQ add by liuyang 20180725 start -->
+		<!-- 神策数据:用户登录事件 -->
+		<rabbit:listener ref="sensorsDataLoginMessageHandle" method="execute" queue-names="sensors_data_login"></rabbit:listener>
+		<!-- 神策数据:充值结果事件 -->
+		<rabbit:listener ref="sensorsDataRechargeResultMessageHandle" method="execute" queue-names="sensors_data_recharge_result"></rabbit:listener>
+		<!-- 神策数据:用户注册事件 -->
+		<rabbit:listener ref="sensorsDataSignUpMessageHandle" method="execute" queue-names="sensors_data_sign_up"></rabbit:listener>
+		<!-- 神策数据:提现结果事件 -->
+		<rabbit:listener ref="sensorsDataWithdrawResultMessageHandle" method="execute" queue-names="sensors_data_withdraw_result"></rabbit:listener>
+		<!-- 神策数据:债转相关事件 -->
+		<rabbit:listener ref="sensorsDataCreditMessageHandle" method="execute" queue-names="sensors_data_credit"></rabbit:listener>
+		<!-- 神策数据:汇计划加入相关事件 -->
+		<rabbit:listener ref="sensorsDataHjhInvestMessageHandle" method="execute" queue-names="sensors_data_hjh_invest"></rabbit:listener>
+		<!-- 神策数据:汇直投投资相关事件 -->
+		<rabbit:listener ref="sensorsDataHztInvestMessageHandle" method="execute" queue-names="sensors_data_hzt_invest"></rabbit:listener>
+		<!-- 神策数据:开户相关事件 -->
+		<rabbit:listener ref="sensorsDataOpenResultMessageHandle" method="execute" queue-names="sensors_data_open_account"></rabbit:listener>
+		<!-- 神策数据:授权结果相关事件 -->
+		<rabbit:listener ref="sensorsDataAuthResultMessageHandle" method="execute" queue-names="sensors_data_auth_result"></rabbit:listener>
+		<!-- 神策数据统计相关MQ add by liuyang 20180725 end -->
+
+		<!--*********合规数据上报 MQ配置 liubin 20181122 start*********-->
+		<rabbit:listener ref="bifaBorrowStatusHandle" method="execute" queue-names="hyjf-bifa-borrow-status"></rabbit:listener>
+		<rabbit:listener ref="bifaBorrowInfoHandle" method="execute" queue-names="hyjf-bifa-borrowinfo"></rabbit:listener>
+		<rabbit:listener ref="bifaCredittenderInfoHandle" method="execute" queue-names="hyjf-bifa-credittenderinfo"></rabbit:listener>
+		<rabbit:listener ref="bifaHjhPlanInfoHandle" method="execute" queue-names="hyjf-bifa-hjh-planinfo"></rabbit:listener>
+		<!-- 国家互联网应急中心 CERT  start-->
+		<!-- 合规数据上报 CERT: 用户信息-->
+		<rabbit:listener ref="certBorroweruserInfoHadnle" method="execute" queue-names="hyjf-cert-borrower-userinfo"></rabbit:listener>
+		<!-- 合规数据上报 CERT: 散标信息-->
+		<rabbit:listener ref="certBorrowInfoHadnle" method="execute" queue-names="hyjf-cert-borrowinfo"></rabbit:listener>
+		<!-- 合规数据上报 CERT: 还款计划信息上报-->
+		<rabbit:listener ref="certBorrowRepaymentplanHadnle" method="execute" queue-names="hyjf-cert-borrow-repaymentplan"></rabbit:listener>
+		<!-- 合规数据上报 CERT: 散标状态信息上报-->
+		<rabbit:listener ref="certBorrowStatusHadnle" method="execute" queue-names="hyjf-cert-borrow-status"></rabbit:listener>
+		<!-- 合规数据上报 CERT: 转让项目-->
+		<rabbit:listener ref="certCreditInfoHadnle" method="execute" queue-names="hyjf-cert-creditinfo"></rabbit:listener>
+		<!-- 合规数据上报 CERT: 转让状态-->
+		<rabbit:listener ref="certCreditStatusHadnle" method="execute" queue-names="hyjf-cert-credit-status"></rabbit:listener>
+		<!-- 合规数据上报 CERT: 承接订单信息上报-->
+		<rabbit:listener ref="certCreditTenderInfoHadnle" method="execute" queue-names="hyjf-cert-credittenderinfo"></rabbit:listener>
+		<!-- 合规数据上报 CERT: 债权信息上报-->
+		<rabbit:listener ref="certTenderInfoHadnle" method="execute" queue-names="hyjf-cert-tender-info"></rabbit:listener>
+		<!-- 合规数据上报 CERT: 交易流水-->
+		<rabbit:listener ref="certTransactMessageHadnle" method="execute" queue-names="hyjf-cert-transact"></rabbit:listener>
+
+		<!-- 合规数据上报 CERT: 异常处理-->
+		<rabbit:listener ref="certSendErrorMessageHadnle" method="execute" queue-names="hyjf-cert-error-send"></rabbit:listener>
+		<!-- 合规数据上报 CERT: 手机号哈希-->
+		<rabbit:listener ref="certMobileHashMessageHadnle" method="execute" queue-names="hyjf-cert-mobile-hash"></rabbit:listener>
+		<!-- 合规数据上报 CERT: 用户旧数据同步-->
+		<rabbit:listener ref="certOldUserMessageHadnle" method="execute" queue-names="hyjf-cert-old-users"></rabbit:listener>
+		<!-- 合规数据上报 CERT: 用户旧数据同步 借款人-->
+		<rabbit:listener ref="certOldBorrowUserMessageHadnle" method="execute" queue-names="hyjf-cert-old-borrow-users"></rabbit:listener>
+		<!-- 合规数据上报 CERT: 散标旧数据同步-->
+		<rabbit:listener ref="certOldBorrowMessageHadnle" method="execute" queue-names="hyjf-cert-old-borrow"></rabbit:listener>
+		<!-- 合规数据上报 CERT: 散标状态 历史数据保送 add by nxl-->
+		<rabbit:listener ref="certOldBorrowStatusMessageHadnle" method="execute" queue-names="hyjf-cert-old-borrow-status"></rabbit:listener>
+		<!-- 合规数据上报 CERT: 还款计划 历史数据保送 add by nxl-->
+		<rabbit:listener ref="certOldRepayPlanMessageHadnle" method="execute" queue-names="hyjf-cert-old-borrow-repaymentplan"></rabbit:listener>
+		<!-- 合规数据上报 CERT: 债权信息 历史数据保送 add by nxl-->
+		<rabbit:listener ref="certOldTenderInfoMessageHadnle" method="execute" queue-names="hyjf-cert-old-tender-info"></rabbit:listener>
+		<!-- 合规数据上报 CERT: 承接信息 历史数据保送 add by nxl-->
+		<rabbit:listener ref="certOldCreditInfoMessageHadnle" method="execute" queue-names="hyjf-cert-old-credittenderinfo"></rabbit:listener>
+
+		<!-- 合规数据上报 CERT: 承接信息 查询批次数据入库消息 add by nxl-->
+		<rabbit:listener ref="certGetYiBuMessageMessageHadnle" method="execute" queue-names="hyjf-cert-getyibu-message"></rabbit:listener>
+
+		<!-- 合规数据上报 CERT: 还款计划 历史数据保送 add by pcc-->
+		<rabbit:listener ref="oldCertTransferProjectMessageHadnle" method="execute" queue-names="hyjf-cert-old-creditinfo"></rabbit:listener>
+		<!-- 合规数据上报 CERT: 债权信息 历史数据保送 add by pcc-->
+		<rabbit:listener ref="oldCertTransferStatusMessageHadnle" method="execute" queue-names="hyjf-cert-old-credit-status"></rabbit:listener>
+		<!-- 合规数据上报 CERT: 承接信息 历史数据保送 add by pcc-->
+		<rabbit:listener ref="oldCertTransactMessageHadnle" method="execute" queue-names="hyjf-cert-old-transact"></rabbit:listener>
+		<!-- 合规数据上报 CERT: 承接信息 历史数据保送 add by pcc-->
+		<rabbit:listener ref="oldCertTransactRepaySuccessMessageHadnle" method="execute" queue-names="hyjf-cert-old-transact-repay-success"></rabbit:listener>
+		
+		
+		<!-- 合规数据上报 CERT: 承接信息 历史数据保送 add by pcc-->
+		<rabbit:listener ref="oldCertAccountlListMessageHadnle" method="execute" queue-names="hyjf-cert-old-accountlist"></rabbit:listener>
+
+
+		<!--国家互联网应急中心 CERT  end-->
+		<rabbit:listener ref="nifaCreditInfoHadnle" method="execute" queue-names="hyjf-nifa-creditinfo"></rabbit:listener>
+		<rabbit:listener ref="nifaRepayInfoHadnle" method="execute" queue-names="hyjf-nifa-repay-info"></rabbit:listener>
+		<rabbit:listener ref="nifaTenderInfoHadnle" method="execute" queue-names="hyjf-nifa-tender-info"></rabbit:listener>
+		<rabbit:listener ref="nifaCreditInfoHadnle" method="execute" queue-names="hyjf-nifa-credit-info-repair"></rabbit:listener>
+		<rabbit:listener ref="nifaRepayInfoHadnle" method="execute" queue-names="hyjf-nifa-repay-info-repair"></rabbit:listener>
+		<rabbit:listener ref="nifaTenderInfoHadnle" method="execute" queue-names="hyjf-nifa-tender-info-repair"></rabbit:listener>
+		<!-- *********合规数据上报 MQ配置 liubin 20181122 end********* -->
+	</rabbit:listener-container>
+</beans>

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.AdminRecoverExceptionCustomizeMapper">
+	<sql id="Where_Clause">
+		<where>
+			 b.`status` = 3
+			<if test="borrowNidSrch != null and borrowNidSrch != ''">
+				AND b.borrow_nid LIKE CONCAT('%', #{borrowNidSrch}, '%')
+			</if>
+			<if test="borrowNameSrch != null and borrowNameSrch != ''">
+				AND b.`name` LIKE CONCAT('%', #{borrowNameSrch}, '%')
+			</if>
+			<if test="usernameSrch != null and usernameSrch != ''">
+				AND b.borrow_user_name LIKE CONCAT('%', #{usernameSrch}, '%')
+			</if>
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND FROM_UNIXTIME( b.addtime, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch != ''">
+				AND FROM_UNIXTIME( b.addtime, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+		</where>
+	</sql>
+
+	<select id="queryCount" resultType="java.lang.Long" parameterType="com.hyjf.mybatis.model.customize.admin.AdminRecoverExceptionCustomize">
+		SELECT
+          COUNT(1)
+		FROM
+			huiyingdai_borrow b
+		INNER JOIN huiyingdai_borrow_apicron ba ON ba.borrow_nid = b.borrow_nid AND ba.api_type = 0 AND ba.`status` in (4,5,7,8)
+		<include refid="Where_Clause" />
+	</select>
+
+	<resultMap id="queryRecordListMap" type="com.hyjf.mybatis.model.customize.admin.AdminRecoverExceptionCustomize">
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="status_name" property="statusName" jdbcType="VARCHAR" />
+		<result column="borrow_account_yes" property="borrowAccountYes" jdbcType="VARCHAR" />
+		<result column="service_scale" property="serviceScale" jdbcType="VARCHAR" />
+		<result column="over_time" property="overTime" jdbcType="VARCHAR" />
+		<result column="data" property="data" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="queryRecordList" resultMap="queryRecordListMap" parameterType="com.hyjf.mybatis.model.customize.admin.AdminRecoverExceptionCustomize">
+		SELECT
+			b.id,
+			b.borrow_nid,
+			b.`name` AS borrow_name,
+			b.borrow_user_name AS username,
+			b.account,
+			CONCAT(b.borrow_apr, '%') borrow_apr,
+			CASE WHEN borrow_style = 'endday' THEN CONCAT(b.borrow_period, '天') ELSE CONCAT(b.borrow_period, '个月') END borrow_period,
+			b.borrow_account_yes AS borrow_account_yes,
+			CASE WHEN b.borrow_service IS NULL OR b.borrow_service = '' THEN '' ELSE b.borrow_service END service_scale,
+			CASE WHEN b.borrow_full_time IS NOT NULL AND b.borrow_full_time != '' THEN FROM_UNIXTIME( b.borrow_full_time, '%Y-%m-%d %H:%i:%s' ) ELSE FROM_UNIXTIME(b.verify_time + (borrow_valid_time * 24 * 60 * 60), '%Y-%m-%d %H:%i:%s') END AS over_time,
+			b.addtime,
+			ba.`status`,
+			ba.`data`
+		FROM
+			huiyingdai_borrow b
+		INNER JOIN huiyingdai_borrow_apicron ba ON ba.borrow_nid = b.borrow_nid AND ba.api_type = 0 AND ba.`status` in (4,5,7,8)
+		<include refid="Where_Clause" />
+		ORDER BY
+		  b.addtime DESC, b.id DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+
+	<sql id="Where_Clause_Recover">
+		<where>
+		    b.`status` = 3
+			<!-- 借款编号 -->
+			<if test="borrowNidSrch != null and borrowNidSrch != ''">
+				AND bt.borrow_nid LIKE CONCAT('%', #{borrowNidSrch}, '%')
+			</if>
+			<!-- 借款标题 -->
+			<if test="borrowNameSrch != null and borrowNameSrch != ''">
+				AND b.`name` LIKE CONCAT('%', #{borrowNameSrch}, '%')
+			</if>
+			<!-- 投资订单号 -->
+			<if test="orderNumSrch != null and orderNumSrch != ''">
+				AND bt.nid = #{orderNumSrch}
+			</if>
+			<!-- 投资人 -->
+			<if test="usernameSrch != null and usernameSrch != ''">
+				AND bt.tender_user_name LIKE CONCAT('%', #{usernameSrch}, '%')
+			</if>
+			<!-- 放款状态 -->
+			<if test="isRecoverSrch != null and isRecoverSrch != ''">
+				AND bt.api_status = #{isRecoverSrch}
+			</if>
+			<!-- 投资时间 -->
+			<if test="timeRecoverStartSrch != null and timeRecoverStartSrch != ''">
+				AND bt.addtime <![CDATA[>=]]> #{timeRecoverStartSrch}
+			</if>
+			<if test="timeRecoverEndSrch != null and timeRecoverEndSrch != ''">
+				AND bt.addtime <![CDATA[<=]]> #{timeRecoverEndSrch}
+			</if>
+			<!-- 放款时间 -->
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND br.create_time <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch != ''">
+				AND br.create_time <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+		</where>
+	</sql>
+
+	<select id="queryCountBorrowRecover" resultType="java.lang.Long" parameterType="com.hyjf.mybatis.model.customize.admin.AdminRecoverExceptionCustomize">
+		SELECT
+		  COUNT(1)
+		FROM
+	      huiyingdai_borrow_tender bt
+		  INNER JOIN huiyingdai_borrow b ON bt.borrow_nid = b.borrow_nid
+		  LEFT JOIN huiyingdai_borrow_recover br ON br.borrow_nid = bt.borrow_nid AND br.nid = bt.nid
+		<include refid="Where_Clause_Recover" />
+	</select>
+
+	<resultMap id="queryBorrowRecoverListMap" type="com.hyjf.mybatis.model.customize.admin.AdminRecoverExceptionCustomize">
+		<!-- 借款标题 -->
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<!-- 借款编号 -->
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<!-- 投资订单号 -->
+		<result column="order_num" property="orderNum" jdbcType="VARCHAR" />
+		<!-- 投资人 -->
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<!-- 投资金额 -->
+		<result column="account" property="account" jdbcType="VARCHAR" />
+        <!-- 应收服务费 -->
+		<result column="service_price" property="servicePrice" jdbcType="VARCHAR" />
+        <!-- 应放款 -->
+		<result column="recover_price" property="recoverPrice" jdbcType="VARCHAR" />
+        <!-- 已放款 -->
+		<result column="recover_price_over" property="recoverPriceOver" jdbcType="VARCHAR" />
+        <!-- 放款状态 -->
+		<result column="is_recover" property="isRecover" jdbcType="VARCHAR" />
+        <!-- 放款时间 -->
+		<result column="addtime" property="addtime" jdbcType="VARCHAR" />
+        <!-- 投资时间 -->
+		<result column="time_recover" property="timeRecover" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="queryBorrowRecoverList" resultMap="queryBorrowRecoverListMap" parameterType="com.hyjf.mybatis.model.customize.admin.AdminRecoverExceptionCustomize">
+		SELECT
+		  b.`name` AS borrow_name,
+		  bt.borrow_nid,
+		  bt.nid AS order_num,
+	  	  bt.tender_user_name AS username,
+		  bt.account AS account,
+		  bt.loan_fee AS service_price,
+		  bt.account - bt.loan_fee AS recover_price,
+		  CASE WHEN bt.api_status = 1 THEN bt.loan_amount ELSE '0.00' END AS recover_price_over,
+		  IF(bt.api_status = 0, '未放款', '已放款') AS is_recover,
+	      FROM_UNIXTIME( bt.addtime, '%Y-%m-%d %H:%i:%s' ) AS time_recover,
+		  FROM_UNIXTIME( br.create_time, '%Y-%m-%d %H:%i:%s' ) AS addtime
+		FROM
+	      huiyingdai_borrow_tender bt
+		  INNER JOIN huiyingdai_borrow b ON bt.borrow_nid = b.borrow_nid
+		  LEFT JOIN huiyingdai_borrow_recover br ON br.borrow_nid = bt.borrow_nid AND br.nid = bt.nid
+	    <include refid="Where_Clause_Recover" />
+		  ORDER BY
+		    bt.addtime DESC, br.id DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+
+	<resultMap id="querySumBorrowRecoverListMap" type="com.hyjf.mybatis.model.customize.admin.AdminRecoverExceptionCustomize">
+		<!-- 应放款金额 -->
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<!-- 实际放款金额 -->
+		<result column="recover_price" property="recoverPrice" jdbcType="VARCHAR" />
+		<!-- 实收放款金额 -->
+		<result column="recover_price_over" property="recoverPriceOver" jdbcType="VARCHAR" />
+		<!-- 实收服务费 -->
+		<result column="service_price" property="servicePrice" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="querySumBorrowRecoverList" resultMap="querySumBorrowRecoverListMap" parameterType="com.hyjf.mybatis.model.customize.admin.AdminRecoverExceptionCustomize">
+		SELECT
+            SUM(a.account)                 AS account,
+		    SUM(a.recover_price)           AS recover_price,
+		    SUM(a.recover_price_over)      AS recover_price_over,
+            SUM(a.service_price)           AS service_price
+        FROM
+        (
+           SELECT
+            bt.account                           AS account,
+		    bt.account - bt.loan_fee             AS recover_price,
+		    CASE
+		      WHEN bt.api_status = 1 THEN
+		        bt.loan_amount
+		      ELSE 0.00
+		    END                       AS recover_price_over,
+            bt.loan_fee               AS service_price
+		  FROM
+		      huiyingdai_borrow_tender bt
+			  INNER JOIN huiyingdai_borrow b ON bt.borrow_nid = b.borrow_nid
+			  LEFT JOIN huiyingdai_borrow_recover br ON br.borrow_nid = bt.borrow_nid AND br.nid = bt.nid
+		    <include refid="Where_Clause_Recover" />
+        ) a
+	</select>
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.CreditRepayCustomizeMapper">
+	<select id="countCreditRepaySum" resultType="java.lang.String" parameterType="Map">
+		SELECT
+		SUM(hcr.assign_account)
+		FROM
+		huiyingdai_credit_repay hcr
+		WHERE
+		hcr.credit_tender_nid = #{nid}
+		AND hcr.recover_period = #{period}
+		AND hcr.bid_nid =#{borrowNid}
+	</select>
+  <resultMap id="sumResultMap" type="com.hyjf.mybatis.model.customize.admin.AdminBorrowCreditRepayCustomize" >
+    <result column="assign_capital" property="sumAssignCapital" jdbcType="VARCHAR" />
+    <result column="assign_interest" property="sumAssignInterest" jdbcType="VARCHAR" />
+    <result column="assign_account" property="sumAssignAccount" jdbcType="VARCHAR" />
+    <result column="manage_fee" property="sumManageFee" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="sumCreditRepay" resultMap="sumResultMap" parameterType="com.hyjf.mybatis.model.auto.CreditRepayExample" >
+    select
+      SUM(assign_capital) AS assign_capital,
+      SUM(assign_interest) AS assign_interest,
+      SUM(assign_account) AS assign_account,
+      SUM(manage_fee) AS manage_fee
+    from huiyingdai_credit_repay
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+</mapper>

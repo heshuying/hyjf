@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.ActJanBargainMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.ActJanBargain" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="prize_id" property="prizeId" jdbcType="INTEGER" />
+    <result column="prize_name" property="prizeName" jdbcType="VARCHAR" />
+    <result column="wechat_name" property="wechatName" jdbcType="VARCHAR" />
+    <result column="wechat_nickname" property="wechatNickname" jdbcType="VARCHAR" />
+    <result column="wechat_name_help" property="wechatNameHelp" jdbcType="VARCHAR" />
+    <result column="wechat_nickname_help" property="wechatNicknameHelp" jdbcType="VARCHAR" />
+    <result column="money_bargain" property="moneyBargain" jdbcType="DECIMAL" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="client_ip" property="clientIp" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+    <result column="del_flg" property="delFlg" jdbcType="TINYINT" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, prize_id, prize_name, wechat_name, wechat_nickname, wechat_name_help, wechat_nickname_help, 
+    money_bargain, mobile, client_ip, create_time, update_time, del_flg
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.ActJanBargainExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_act_jan_bargain
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_act_jan_bargain
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_act_jan_bargain
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.ActJanBargainExample" >
+    delete from hyjf_act_jan_bargain
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.ActJanBargain" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_act_jan_bargain (prize_id, prize_name, wechat_name, 
+      wechat_nickname, wechat_name_help, wechat_nickname_help, 
+      money_bargain, mobile, client_ip, 
+      create_time, update_time, del_flg
+      )
+    values (#{prizeId,jdbcType=INTEGER}, #{prizeName,jdbcType=VARCHAR}, #{wechatName,jdbcType=VARCHAR}, 
+      #{wechatNickname,jdbcType=VARCHAR}, #{wechatNameHelp,jdbcType=VARCHAR}, #{wechatNicknameHelp,jdbcType=VARCHAR}, 
+      #{moneyBargain,jdbcType=DECIMAL}, #{mobile,jdbcType=VARCHAR}, #{clientIp,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=INTEGER}, #{updateTime,jdbcType=INTEGER}, #{delFlg,jdbcType=TINYINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.ActJanBargain" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_act_jan_bargain
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="prizeId != null" >
+        prize_id,
+      </if>
+      <if test="prizeName != null" >
+        prize_name,
+      </if>
+      <if test="wechatName != null" >
+        wechat_name,
+      </if>
+      <if test="wechatNickname != null" >
+        wechat_nickname,
+      </if>
+      <if test="wechatNameHelp != null" >
+        wechat_name_help,
+      </if>
+      <if test="wechatNicknameHelp != null" >
+        wechat_nickname_help,
+      </if>
+      <if test="moneyBargain != null" >
+        money_bargain,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="clientIp != null" >
+        client_ip,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="delFlg != null" >
+        del_flg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="prizeId != null" >
+        #{prizeId,jdbcType=INTEGER},
+      </if>
+      <if test="prizeName != null" >
+        #{prizeName,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatName != null" >
+        #{wechatName,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatNickname != null" >
+        #{wechatNickname,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatNameHelp != null" >
+        #{wechatNameHelp,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatNicknameHelp != null" >
+        #{wechatNicknameHelp,jdbcType=VARCHAR},
+      </if>
+      <if test="moneyBargain != null" >
+        #{moneyBargain,jdbcType=DECIMAL},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="clientIp != null" >
+        #{clientIp,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="delFlg != null" >
+        #{delFlg,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.ActJanBargainExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_act_jan_bargain
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_act_jan_bargain
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.prizeId != null" >
+        prize_id = #{record.prizeId,jdbcType=INTEGER},
+      </if>
+      <if test="record.prizeName != null" >
+        prize_name = #{record.prizeName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.wechatName != null" >
+        wechat_name = #{record.wechatName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.wechatNickname != null" >
+        wechat_nickname = #{record.wechatNickname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.wechatNameHelp != null" >
+        wechat_name_help = #{record.wechatNameHelp,jdbcType=VARCHAR},
+      </if>
+      <if test="record.wechatNicknameHelp != null" >
+        wechat_nickname_help = #{record.wechatNicknameHelp,jdbcType=VARCHAR},
+      </if>
+      <if test="record.moneyBargain != null" >
+        money_bargain = #{record.moneyBargain,jdbcType=DECIMAL},
+      </if>
+      <if test="record.mobile != null" >
+        mobile = #{record.mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="record.clientIp != null" >
+        client_ip = #{record.clientIp,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.delFlg != null" >
+        del_flg = #{record.delFlg,jdbcType=TINYINT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_act_jan_bargain
+    set id = #{record.id,jdbcType=INTEGER},
+      prize_id = #{record.prizeId,jdbcType=INTEGER},
+      prize_name = #{record.prizeName,jdbcType=VARCHAR},
+      wechat_name = #{record.wechatName,jdbcType=VARCHAR},
+      wechat_nickname = #{record.wechatNickname,jdbcType=VARCHAR},
+      wechat_name_help = #{record.wechatNameHelp,jdbcType=VARCHAR},
+      wechat_nickname_help = #{record.wechatNicknameHelp,jdbcType=VARCHAR},
+      money_bargain = #{record.moneyBargain,jdbcType=DECIMAL},
+      mobile = #{record.mobile,jdbcType=VARCHAR},
+      client_ip = #{record.clientIp,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=INTEGER},
+      update_time = #{record.updateTime,jdbcType=INTEGER},
+      del_flg = #{record.delFlg,jdbcType=TINYINT}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.ActJanBargain" >
+    update hyjf_act_jan_bargain
+    <set >
+      <if test="prizeId != null" >
+        prize_id = #{prizeId,jdbcType=INTEGER},
+      </if>
+      <if test="prizeName != null" >
+        prize_name = #{prizeName,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatName != null" >
+        wechat_name = #{wechatName,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatNickname != null" >
+        wechat_nickname = #{wechatNickname,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatNameHelp != null" >
+        wechat_name_help = #{wechatNameHelp,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatNicknameHelp != null" >
+        wechat_nickname_help = #{wechatNicknameHelp,jdbcType=VARCHAR},
+      </if>
+      <if test="moneyBargain != null" >
+        money_bargain = #{moneyBargain,jdbcType=DECIMAL},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="clientIp != null" >
+        client_ip = #{clientIp,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="delFlg != null" >
+        del_flg = #{delFlg,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.ActJanBargain" >
+    update hyjf_act_jan_bargain
+    set prize_id = #{prizeId,jdbcType=INTEGER},
+      prize_name = #{prizeName,jdbcType=VARCHAR},
+      wechat_name = #{wechatName,jdbcType=VARCHAR},
+      wechat_nickname = #{wechatNickname,jdbcType=VARCHAR},
+      wechat_name_help = #{wechatNameHelp,jdbcType=VARCHAR},
+      wechat_nickname_help = #{wechatNicknameHelp,jdbcType=VARCHAR},
+      money_bargain = #{moneyBargain,jdbcType=DECIMAL},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      client_ip = #{clientIp,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=INTEGER},
+      del_flg = #{delFlg,jdbcType=TINYINT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

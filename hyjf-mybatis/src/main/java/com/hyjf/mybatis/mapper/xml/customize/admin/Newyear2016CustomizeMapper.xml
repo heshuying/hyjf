@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.Newyear2016CustomizeMapper">
+
+	<sql id="Where_Clause_Prize">
+		<where>
+			p.del_flg=0
+			<if test="usernameSrch != null and usernameSrch != ''">
+				AND u.username LIKE CONCAT('%', #{usernameSrch}, '%')
+			</if>
+			<!-- 奖品获得方式 -->
+			<if test="truenameSrch != null and truenameSrch != ''">
+				AND i.truename LIKE CONCAT('%', #{truenameSrch}, '%')
+			</if>
+			<if test="mobileSrch != null and mobileSrch != ''">
+				AND u.mobile = #{mobileSrch}
+			</if>
+			<if test="activitySrch != null ">
+				AND p.activity_flg = #{activitySrch}
+			</if>
+			<if test="couponJineSrch != null  and couponJineSrch != ''">
+				AND p.coupon_jine = #{couponJineSrch}
+			</if>
+			<if test="timeStartSrch != null  and timeStartSrch != ''">
+				AND FROM_UNIXTIME( p.add_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null  and timeEndSrch != ''">
+				AND FROM_UNIXTIME( p.add_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+			<if test="sendStatusSrch != null ">
+				AND p.send_status = #{sendStatusSrch}
+			</if>
+		</where>
+	</sql>
+
+	<resultMap id="userPrizeMap" type="com.hyjf.mybatis.model.customize.admin.Newyear2016UserPrizeCustomize">
+		<result column="username" property="username" />
+		<result column="truename" property="truename" />
+		<result column="mobile" property="mobile" />
+		<result column="activity" property="activity" />
+		<result column="coupon_code" property="couponCode" />
+		<result column="coupon_jine" property="couponJine" />
+		<result column="send_time" property="sendTime" />
+		<result column="send_status" property="sendStatusStr" />
+	</resultMap>
+	<select id="selectUserPrizeList" resultMap="userPrizeMap" parameterType="com.hyjf.mybatis.model.customize.admin.Newyear2016UserPrizeCustomize">
+		SELECT
+			u.username,
+			i.truename,
+			u.mobile,
+			CASE
+		WHEN p.activity_flg = 1 THEN
+			'财神来敲我家门'
+		ELSE
+			'红红火火闹元宵'
+		END activity,
+		 p.coupon_code,
+		 p.coupon_jine,
+		FROM_UNIXTIME(
+						p.add_time,
+						'%Y-%m-%d %H:%i:%S'
+					) AS send_time,
+		  CASE
+		WHEN p.send_status = 0 THEN
+			'失败'
+		ELSE
+			'成功'
+		END send_status
+		FROM
+			hyjf_newyear_send_prize p
+		LEFT JOIN huiyingdai_users u ON p.user_id = u.user_id
+		LEFT JOIN huiyingdai_users_info i ON u.user_id = i.user_id
+		<include refid="Where_Clause_Prize" />
+		ORDER BY
+			p.add_time DESC
+		<if test="limitStart != null and limitStart >= 0 and limitEnd !=null and limitEnd >= 0" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	
+	<select id="selectUserPrizeTotal" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.admin.Newyear2016UserPrizeCustomize">
+		SELECT
+			count(1)
+		FROM
+			hyjf_newyear_send_prize p
+		LEFT JOIN huiyingdai_users u ON p.user_id = u.user_id
+		LEFT JOIN huiyingdai_users_info i ON u.user_id = i.user_id
+		<include refid="Where_Clause_Prize" />
+	</select>
+	
+	<sql id="Where_Clause_Card">
+		<where>
+			c.del_flg=0
+			<if test="usernameSrch != null and usernameSrch != ''">
+				AND u.username LIKE CONCAT('%', #{usernameSrch}, '%')
+			</if>
+			<!-- 奖品获得方式 -->
+			<if test="truenameSrch != null and truenameSrch != ''">
+				AND i.truename LIKE CONCAT('%', #{truenameSrch}, '%')
+			</if>
+			<if test="mobileSrch != null and mobileSrch != ''">
+				AND u.mobile = #{mobileSrch}
+			</if>
+			<if test="operateTypeSrch != null ">
+				AND c.operate_type = #{operateTypeSrch}
+			</if>
+			<if test="cardSourceSrch != null ">
+				AND c.card_source = #{cardSourceSrch}
+			</if>
+			<if test="cardTypeSrch != null ">
+				AND c.card_type = #{cardTypeSrch}
+			</if>
+			<if test="timeStartSrch != null  and timeStartSrch != ''">
+				AND FROM_UNIXTIME( c.add_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null  and timeEndSrch != ''">
+				AND FROM_UNIXTIME( c.add_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+			<!-- 备注 -->
+			<if test="remarkSrch != null and remarkSrch != ''">
+				AND c.remark LIKE CONCAT('%', #{remarkSrch}, '%')
+			</if>
+		</where>
+	</sql>
+
+	<resultMap id="userCardMap" type="com.hyjf.mybatis.model.customize.admin.Newyear2016UserCardCustomize">
+		<result column="username" property="username" />
+		<result column="truename" property="truename" />
+		<result column="mobile" property="mobile" />
+		<result column="operate_type" property="operateTypeStr" />
+		<result column="card_source" property="cardSourceStr" />
+		<result column="card_type" property="cardTypeStr" />
+		<result column="card_jin_quantity" property="cardJinQuantity" />
+		<result column="card_ji_quantity" property="cardJiQuantity" />
+		<result column="card_na_quantity" property="cardNaQuantity" />
+		<result column="card_fu_quantity" property="cardFuQuantity" />
+		<result column="operateTime" property="operateTime" />
+		<result column="remark" property="remark" />
+	</resultMap>
+	<select id="selectUserCardList" resultMap="userCardMap" parameterType="com.hyjf.mybatis.model.customize.admin.Newyear2016UserCardCustomize">
+		SELECT
+			u.username,
+			i.truename,
+			u.mobile,
+			CASE
+		WHEN c.operate_type = 1 THEN
+			'获取'
+		ELSE
+			'使用'
+		END operate_type,
+		 n1.`name` card_source,
+		 n2.`name` card_type,
+		 c.card_jin_quantity,
+		 c.card_ji_quantity,
+		 c.card_na_quantity,
+		 c.card_fu_quantity,
+		 FROM_UNIXTIME(
+			c.add_time,
+			'%Y-%m-%d %H:%i:%S'
+		) AS operateTime,
+		 c.remark
+		FROM
+			hyjf_newyear_caishen_card_user c
+		INNER JOIN huiyingdai_users u ON c.user_id = u.user_id
+		INNER JOIN huiyingdai_users_info i ON u.user_id = i.user_id
+		LEFT JOIN hyjf_param_name n1 ON c.card_source = n1.name_cd
+		AND n1.name_class = 'NEWYEAR_CARD_SOURCE'
+		LEFT JOIN hyjf_param_name n2 ON c.card_type = n2.name_cd
+		AND n2.name_class = 'NEWYEAR_CARD_TYPE'
+		<include refid="Where_Clause_Card" />
+		ORDER BY
+			c.add_time DESC,c.id DESC
+		<if test="limitStart != null and limitStart >= 0 and limitEnd !=null and limitEnd >= 0" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	
+	<select id="selectUserCardTotal" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.admin.Newyear2016UserCardCustomize">
+		SELECT
+			count(1)
+		FROM
+			hyjf_newyear_caishen_card_user c
+		INNER JOIN huiyingdai_users u ON c.user_id = u.user_id
+		INNER JOIN huiyingdai_users_info i ON u.user_id = i.user_id
+		<include refid="Where_Clause_Card" />
+	</select>
+	
+	
+	<sql id="Where_Clause_Yuan_Xiao">
+		<where>
+			q.user_answer_result = 0
+			<if test="usernameSrch != null and usernameSrch != ''">
+				AND u.username LIKE CONCAT('%', #{usernameSrch}, '%')
+			</if>
+			<!-- 奖品获得方式 -->
+			<if test="truenameSrch != null and truenameSrch != ''">
+				AND i.truename LIKE CONCAT('%', #{truenameSrch}, '%')
+			</if>
+			<if test="mobileSrch != null and mobileSrch != ''">
+				AND u.mobile = #{mobileSrch}
+			</if>
+			<if test="timeStartSrch != null  and timeStartSrch != ''">
+				AND FROM_UNIXTIME( q.add_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null  and timeEndSrch != ''">
+				AND FROM_UNIXTIME( q.add_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+			<if test="viewNameSrch != null and viewNameSrch != ''">
+				AND q.view_name = #{viewNameSrch}
+			</if>
+		</where>
+	</sql>
+	<resultMap id="userYuanXiaoMap" type="com.hyjf.mybatis.model.customize.admin.Newyear2016UserYuanXiaoCustomize">
+		<result column="username" property="username" />
+		<result column="truename" property="truename" />
+		<result column="mobile" property="mobile" />
+		<result column="question_num" property="questionNum" />
+		<result column="question_time" property="questionTime" />
+		<result column="view_name" property="viewName" />
+	</resultMap>
+	<select id="selectUserYuanXiaoList" resultMap="userYuanXiaoMap" parameterType="com.hyjf.mybatis.model.customize.admin.Newyear2016UserYuanXiaoCustomize">
+		SELECT
+			u.username,
+			i.truename,
+			u.mobile,
+			q.question_num,
+			FROM_UNIXTIME(
+				q.add_time,
+				'%Y-%m-%d %H:%i:%S'
+			) AS question_time,
+			q.view_name
+		FROM
+			hyjf_newyear_question_user q
+		INNER JOIN huiyingdai_users u ON q.user_id = u.user_id
+		INNER JOIN huiyingdai_users_info i ON u.user_id = i.user_id
+		<include refid="Where_Clause_Yuan_Xiao" />
+		ORDER BY
+			q.add_time DESC
+		<if test="limitStart != null and limitStart >= 0 and limitEnd !=null and limitEnd >= 0" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	
+	<select id="selectUserYuanXiaoTotal" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.admin.Newyear2016UserYuanXiaoCustomize">
+		SELECT
+			count(1)
+		FROM
+			hyjf_newyear_question_user q
+		INNER JOIN huiyingdai_users u ON q.user_id = u.user_id
+		INNER JOIN huiyingdai_users_info i ON u.user_id = i.user_id
+		<include refid="Where_Clause_Yuan_Xiao" />
+	</select>
+	
+</mapper>

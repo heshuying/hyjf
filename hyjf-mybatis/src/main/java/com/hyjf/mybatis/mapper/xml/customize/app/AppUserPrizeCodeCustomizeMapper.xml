@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.app.AppUserPrizeCodeCustomizeMapper">
+	<resultMap id="selectRecordListMap" type="com.hyjf.mybatis.model.customize.app.AppUserPrizeCodeCustomize">
+	    <result column="user_id" property="userId" />
+	    <result column="username" property="username" />
+	    <result column="truename" property="truename" />
+	    <result column="mobile" property="mobile" />
+	    <result column="referrer_user_name" property="referrerUserName" />
+	    <result column="prize_name" property="prizeName" />
+	    <result column="prize_code" property="prizeCode" />
+	    <result column="add_time" property="addTime" />
+	    <result column="add_time_stamp" property="addTimeStamp" />
+	    <result column="prize_flg" property="prizeFlg" />
+	</resultMap>
+	
+	<resultMap id="selectPrizeOpportunityMap" type="com.hyjf.mybatis.model.customize.app.AppUserPrizeOpportunityCustomize">
+	    <result column="user_id" property="userId" />
+	    <result column="username" property="username" />
+	    <result column="truename" property="truename" />
+	    <result column="mobile" property="mobile" />
+	    <result column="referrer_user_name" property="referrerUserName" />
+	    <result column="reg_time_format" property="regTimeFormat" />
+	    <result column="invest_total" property="investTotal" />
+	    <result column="prize_count_already" property="prizeCountAlready" />
+	    <result column="prize_count_remain" property="prizeCountRemain" />
+	    <result column="is_coupon_send" property="isCouponSend" />
+	</resultMap>
+
+	<sql id="Where_Clause">
+		<where>
+			upc.del_flg = 0
+			<if test="userid != null and userid != ''">
+			  AND upc.user_id = #{userid}
+			</if>
+			<if test="username != null and username != ''">
+			  AND hu.username LIKE CONCAT('%', #{username}, '%') 
+			</if>
+			<if test="prizeCode != null and prizeCode != ''">
+			  AND upc.prize_code = #{prizeCode}
+			</if>
+			<if test="prizeFlg != null and prizeFlg != ''">
+			  AND upc.prize_flg = #{prizeFlg}
+			</if>
+			<if test="prizeId != null and prizeId != ''">
+			  AND upc.prize_id = #{prizeId}
+			</if>
+		</where>
+	</sql>
+	<select id="selectRecordCount" resultType="java.lang.Integer" parameterType="Map">
+	  	SELECT
+			COUNT(upc.user_id)
+		FROM
+			hyjf_user_prize_code upc
+		LEFT JOIN hyjf_prize_list pl ON upc.prize_id = pl.id
+		LEFT JOIN huiyingdai_users hu ON upc.user_id = hu.user_id
+		LEFT JOIN huiyingdai_users_info hui ON hu.user_id = hui.user_id
+		<include refid="Where_Clause" />
+	</select>
+	<select id="selectRecordList" resultMap="selectRecordListMap" parameterType="Map">
+	  	SELECT
+	  	    hu.user_id,
+			hu.username,
+			hui.truename,
+			hu.mobile,
+			IFNULL(hu.referrer_user_name, '') referrer_user_name,
+			pl.prize_name,
+			upc.prize_code,
+			FROM_UNIXTIME(
+				upc.add_time,
+				'%Y-%m-%d %H:%i:%s'
+			) AS add_time,
+			upc.add_time add_time_stamp,
+		  CASE
+			WHEN upc.prize_flg = 0 THEN '未中奖' WHEN upc.prize_flg = 1 THEN '已中奖' ELSE '' END prize_flg
+		FROM
+			hyjf_user_prize_code upc
+		LEFT JOIN hyjf_prize_list pl ON upc.prize_id = pl.id
+		LEFT JOIN huiyingdai_users hu ON upc.user_id = hu.user_id
+		LEFT JOIN huiyingdai_users_info hui ON hu.user_id = hui.user_id
+		<include refid="Where_Clause" />
+		ORDER BY upc.add_time DESC
+		<if test="limitStart != null and limitStart >= 0" >
+	      limit #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<select id="selectPrizeOpportunityList" resultMap="selectPrizeOpportunityMap" parameterType="Map">
+	  SELECT tt.* FROM (
+		SELECT
+		    t.user_id,
+			t.username,
+			t.truename,
+			t.mobile,
+			t.referrer_user_name,
+			t.reg_time_format,
+			t.invest_total,
+			t.prize_count_already,
+			floor(t.invest_total / 1000) - t.prize_count_already AS prize_count_remain,
+			IF(coupon_send_already=2,'已发','未发') AS is_coupon_send
+		FROM
+			(
+				SELECT
+				    hu.user_id,
+					hu.username,
+					hui.truename,
+					hu.mobile,
+					IFNULL(hu.referrer_user_name,'') referrer_user_name,
+					FROM_UNIXTIME(
+						hu.reg_time,
+						'%Y-%m-%d %H:%i:%s'
+					) reg_time_format,
+					hu.reg_time,
+					SUM(IF(b.project_type <![CDATA[<>]]> 11,IFNULL(hbt.account, 0), 0)) invest_total,
+					(
+						SELECT
+							count(hupc.id)
+						FROM
+							hyjf_user_prize_code hupc
+						WHERE
+							hupc.user_id = hu.user_id
+						AND hupc.del_flg = 0
+					) prize_count_already,
+					(
+						SELECT
+							count(hcu.id)
+						FROM
+							hyjf_coupon_user hcu
+						WHERE
+							hcu.user_id = hu.user_id
+						AND hcu.coupon_source = 2
+						AND hcu.activity_id = #{activityId}
+					) coupon_send_already
+				FROM
+					huiyingdai_users hu
+				LEFT JOIN huiyingdai_users_info hui ON hu.user_id = hui.user_id
+				LEFT JOIN huiyingdai_borrow_tender hbt ON hbt.user_id = hu.user_id
+				LEFT JOIN huiyingdai_borrow b ON b.borrow_nid = hbt.borrow_nid
+				WHERE
+					hu.reg_time <![CDATA[>=]]>  #{startTime}
+				AND hu.reg_time <![CDATA[<=]]> #{endTime}
+				AND (
+					hbt.id IS NULL
+					OR (
+						hbt.addtime <![CDATA[>=]]> #{startTime}
+						AND hbt.addtime <![CDATA[<=]]> #{endTime}
+					)
+				)
+				<if test="userid != null and userid != ''">
+				  AND hu.user_id = #{userid}
+				</if>
+				<if test="username != null and username != ''">
+				  AND hu.username LIKE CONCAT('%', #{username}, '%') 
+				</if>
+				GROUP BY
+					hu.user_id
+			) t	) tt
+			<if test="opportunity != null and opportunity != ''">
+				  WHERE tt.prize_count_remain = #{opportunity}
+			</if>
+			<if test="prizeValid != null and prizeValid != '' and prizeValid == 0">
+				  WHERE tt.invest_total <![CDATA[<]]> 1000
+			</if>
+			<if test="prizeValid != null and prizeValid != '' and prizeValid == 1">
+				  WHERE tt.invest_total <![CDATA[>=]]> 1000
+			</if>
+			ORDER BY tt.invest_total DESC, tt.reg_time_format DESC
+		<if test="limitStart != null and limitStart >= 0" >
+	      limit #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<select id="selectPrizeOpportunityCount" resultType="java.lang.Integer" parameterType="Map">
+	  SELECT count(tt.user_id) FROM (
+		SELECT
+		    t.user_id,
+			t.username,
+			t.truename,
+			t.mobile,
+			t.referrer_user_name,
+			t.reg_time_format,
+			t.invest_total,
+			t.prize_count_already,
+			floor(t.invest_total / 1000) - t.prize_count_already AS prize_count_remain,
+			IF(coupon_send_already=2,'已发','未发') AS is_coupon_send
+		FROM
+			(
+				SELECT
+				    hu.user_id,
+					hu.username,
+					hui.truename,
+					hu.mobile,
+					IFNULL(hu.referrer_user_name,'') referrer_user_name,
+					FROM_UNIXTIME(
+						hu.reg_time,
+						'%Y-%m-%d %H:%i:%s'
+					) reg_time_format,
+					hu.reg_time,
+					SUM(IF(b.project_type <![CDATA[<>]]> 11,IFNULL(hbt.account, 0), 0)) invest_total,
+					(
+						SELECT
+							count(hupc.id)
+						FROM
+							hyjf_user_prize_code hupc
+						WHERE
+							hupc.user_id = hu.user_id
+						AND hupc.del_flg = 0
+					) prize_count_already,
+					(
+						SELECT
+							count(hcu.id)
+						FROM
+							hyjf_coupon_user hcu
+						WHERE
+							hcu.user_id = hu.user_id
+						AND hcu.coupon_source = 2
+						AND hcu.activity_id = #{activityId}
+					) coupon_send_already
+				FROM
+					huiyingdai_users hu
+				LEFT JOIN huiyingdai_users_info hui ON hu.user_id = hui.user_id
+				LEFT JOIN huiyingdai_borrow_tender hbt ON hbt.user_id = hu.user_id
+				LEFT JOIN huiyingdai_borrow b ON b.borrow_nid = hbt.borrow_nid
+				WHERE
+					hu.reg_time <![CDATA[>=]]> #{startTime}
+				AND hu.reg_time <![CDATA[<=]]> #{endTime}
+				AND (
+					hbt.id IS NULL
+					OR (
+						hbt.addtime <![CDATA[>=]]> #{startTime}
+						AND hbt.addtime <![CDATA[<=]]> #{endTime}
+					)
+				)
+				<if test="userid != null and userid != ''">
+				  AND hu.user_id = #{userid}
+				</if>
+				<if test="username != null and username != ''">
+				  AND hu.username LIKE CONCAT('%', #{username}, '%') 
+				</if>
+				GROUP BY
+					hu.user_id
+			) t	) tt
+			<if test="opportunity != null and opportunity != ''">
+				  WHERE tt.prize_count_remain = #{opportunity}
+			</if>
+			<if test="prizeValid != null and prizeValid != '' and prizeValid == 0">
+				  WHERE tt.invest_total <![CDATA[<]]> 1000
+			</if>
+			<if test="prizeValid != null and prizeValid != '' and prizeValid == 1">
+				  WHERE tt.invest_total <![CDATA[>=]]> 1000
+			</if>
+	</select>
+	
+	<select id="getUserTenderAccountSum" resultType="java.math.BigDecimal" parameterType="Map">
+		SELECT
+			IFNULL(SUM(IFNULL(t.account,0)),0)
+		FROM
+			huiyingdai_borrow_tender t 
+			JOIN huiyingdai_borrow b ON t.borrow_nid = b.borrow_nid
+			JOIN huiyingdai_users hu ON t.user_id = hu.user_id
+		WHERE
+			t.user_id = #{userId}
+		AND b.project_type <![CDATA[<>]]> #{projectType1}
+		AND b.project_type <![CDATA[<>]]> #{projectType2}
+		AND t.addtime <![CDATA[>=]]> #{startDate}
+		AND t.addtime <![CDATA[<=]]> #{endDate}
+		AND hu.reg_time <![CDATA[>=]]> #{startDate}
+		AND hu.reg_time <![CDATA[<=]]> #{endDate}
+	</select>
+	
+	<resultMap id="selectUserPrizeMax" type="com.hyjf.mybatis.model.customize.app.AppUserPrizeCodeCustomize">
+	    <result column="id" property="prizeId" />
+	    <result column="prize_name" property="prizeName" />
+	    <result column="all_person_count" property="allPersonCount" />
+	    <result column="joined_person_count" property="joinedPersonCount" />
+	    <result column="prize_identity_id" property="prizeIdentityId" />
+	</resultMap>
+	<select id="getUserPrizeIdentityId" resultMap="selectUserPrizeMax" parameterType="Map">
+		SELECT
+			l.id,
+			l.prize_name,
+			l.all_person_count,
+			l.joined_person_count,
+			CASE
+			WHEN ISNULL(c.prize_identity_id) THEN
+				0
+			ELSE
+				c.prize_identity_id
+			END prize_identity_id
+		FROM
+			hyjf_prize_list l
+		LEFT JOIN hyjf_user_prize_code c ON l.id = c.prize_id
+		WHERE
+			l.prize_self_code = #{prizeSelfCode}
+			AND l.del_flg = 0
+		ORDER BY
+			c.id DESC
+		LIMIT 1
+	</select>
+	
+	<resultMap id="userPrizeCodeList" type="com.hyjf.mybatis.model.customize.app.AppUserPrizeCodeCustomize">
+	    <result column="add_time" property="addTime" />
+	    <result column="prize_name" property="prizeName" />
+	    <result column="prize_code" property="prizeCode" />
+	    <result column="prize_flg" property="prizeFlg" />
+	</resultMap>
+	<select id="getUserPrizeCodeList" resultMap="userPrizeCodeList" parameterType="Map">
+		SELECT
+			FROM_UNIXTIME(c.add_time, '%Y-%m-%d %H:%i') add_time,
+			l.prize_name,
+			c.prize_code,
+			c.prize_flg
+		FROM
+			hyjf_user_prize_code c
+		LEFT JOIN hyjf_prize_list l ON c.prize_id = l.id
+		WHERE
+			c.user_id = #{userId}
+			AND l.del_flg = 0
+		ORDER BY
+			c.prize_id,
+			c.add_time DESC
+	</select>
+	
+	<resultMap id="prizeList" type="com.hyjf.mybatis.model.customize.app.AppUserPrizeCodeCustomize">
+	    <result column="prize_name" property="prizeName" />
+	    <result column="prize_self_code" property="prizeSelfCode" />
+	    <result column="all_person_count" property="allPersonCount" />
+	    <result column="joined_person_count" property="joinedPersonCount" />
+	    <result column="prize_status" property="prizeStatus" />
+	    <result column="prize_code" property="prizeCode" />
+	    <result column="username" property="username" />
+	</resultMap>
+	<select id="getPrizeList" resultMap="prizeList" parameterType="Map">
+		SELECT
+			l.prize_name,
+			l.prize_self_code,
+			l.all_person_count,
+			l.joined_person_count,
+			l.prize_status,
+			l.prize_code,
+			u.username
+		FROM
+			hyjf_prize_list l
+		LEFT JOIN hyjf_user_prize_code c ON l.id = c.prize_id
+		AND c.prize_flg = 1
+		LEFT JOIN huiyingdai_users u ON c.user_id = u.user_id
+		WHERE
+			l.del_flg = 0
+		<if test="prizeSelfCode != null and prizeSelfCode != '' ">
+			AND l.prize_self_code = #{prizeSelfCode}
+		</if>
+	</select>
+	
+	<update id="updatePrizeJoinedCount" parameterType="map" >
+	    UPDATE hyjf_prize_list l
+		SET l.joined_person_count = l.joined_person_count + 1
+		WHERE
+			l.prize_self_code = #{prizeSelfCode}
+  	</update>
+  	
+  	<select id="checkMaxJoinedCount" resultType="java.lang.Integer" parameterType="Map">
+	  	SELECT
+			COUNT(l.id)
+		FROM
+			hyjf_prize_list l
+		WHERE
+			l.prize_self_code = #{prizeSelfCode}
+		AND l.all_person_count > l.joined_person_count
+	</select>
+	
+</mapper>

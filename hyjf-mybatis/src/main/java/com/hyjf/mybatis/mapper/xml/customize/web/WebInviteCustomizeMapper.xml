@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.web.WebInviteCustomizeMapper">
+	<resultMap id="RewardRecordResult" type="com.hyjf.mybatis.model.customize.web.WebRewardRecordCustomize">
+		<result column="tender_user_id" property="userId" />
+		<result column="username" property="username" />
+		<result column="rewardTime" property="rewardTime" />
+		<result column="borrow_nid" property="borrowNid" />
+		<result column="account_tender" property="account" />
+		<result column="commission" property="pushMoney" />
+		<result column="type" property="type" />
+		<result column="coupon_type" property="couponType" />
+	</resultMap>
+
+	<!-- 奖励记录 -->
+	<select id="queryRewardRecords" resultMap="RewardRecordResult" parameterType="java.lang.Integer">
+		SELECT
+			t.tender_user_id,
+			u.username,
+			t.account_tender,
+			t.commission,
+			FROM_UNIXTIME(
+				t.update_time,
+				'%Y-%m-%d %H:%i:%s'
+			) AS rewardTime,
+			t.borrow_nid,
+			0 type,
+			0 coupon_type
+		FROM
+			huiyingdai_tender_commission t
+		INNER JOIN huiyingdai_users u ON t.tender_user_id = u.user_id
+		WHERE
+			t. STATUS = 1
+		AND t.user_id = #{userId}
+		ORDER BY
+			t.update_time DESC
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	
+	<!-- 奖励数量  -->
+	<select id="queryRewardRecordsCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		SELECT
+			count(1)
+		FROM
+			huiyingdai_tender_commission t
+		INNER JOIN huiyingdai_users u ON t.user_id = u.user_id
+		WHERE
+			t. STATUS = 1
+		AND t.user_id = #{userId}
+	</select>
+	
+	<resultMap id="InviteRecordResult" type="com.hyjf.mybatis.model.customize.web.WebInviteRecordCustomize">
+		<result column="user_id" property="userId" />
+		<result column="username" property="username" />
+		<result column="inviteTime" property="inviteTime" />
+		<result column="bank_open_account" property="userStatus" /> <!-- 是否开户 0 未开户；1 已开户 -->
+		<result column="tzze" property="account" />
+		<result column="balance" property="balance" />
+	</resultMap>
+	<!-- 邀请记录 -->
+	<select id="queryInviteRecords" resultMap="InviteRecordResult" parameterType="java.lang.Integer">
+		SELECT
+			u.user_id,
+			u.username,
+			FROM_UNIXTIME(
+				u.reg_time,
+				'%Y-%m-%d %H:%i:%s'
+			) AS inviteTime,
+			u.bank_open_account,
+			a.balance,
+			us.invest_total AS tzze
+		FROM
+			huiyingdai_spreads_users su
+		INNER JOIN huiyingdai_users u ON u.user_id = su.user_id
+		INNER JOIN huiyingdai_account a ON u.user_id = a.user_id
+		LEFT JOIN (
+			SELECT
+				r.user_id,
+				SUM(r.recover_capital) AS invest_total
+			FROM
+				huiyingdai_borrow_recover r
+			INNER JOIN huiyingdai_spreads_users su ON su.user_id = r.user_id
+			WHERE
+				su.spreads_userid = #{userId}
+			AND r.recover_time <![CDATA[>]]> UNIX_TIMESTAMP()
+			GROUP BY r.user_id
+		) us ON u.user_id = us.user_id
+		WHERE
+			su.spreads_userid = #{userId}
+		ORDER BY
+			u.user_id DESC
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	
+	<!-- 邀请数量  -->
+	<select id="queryInviteCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		SELECT count(1)
+		FROM
+			huiyingdai_spreads_users su
+		INNER JOIN huiyingdai_users u ON u.user_id = su.user_id
+		INNER JOIN huiyingdai_account a ON u.user_id = a.user_id
+		LEFT JOIN (
+			SELECT
+				r.user_id,
+				SUM(r.recover_capital) AS invest_total
+			FROM
+				huiyingdai_borrow_recover r
+			INNER JOIN huiyingdai_spreads_users su ON su.user_id = r.user_id
+			WHERE
+				su.spreads_userid = #{userId}
+			AND r.recover_time <![CDATA[>]]> UNIX_TIMESTAMP()
+			GROUP BY r.user_id
+		) us ON u.user_id = us.user_id
+		WHERE
+			su.spreads_userid = #{userId}
+		ORDER BY
+			u.user_id DESC
+	</select>
+	
+	<!-- 奖励金额统计 -->
+	<select id="queryRewardRecordsSum" resultType="java.math.BigDecimal" parameterType="java.lang.Integer">
+		SELECT
+			SUM(t.commission)
+		FROM
+			huiyingdai_tender_commission t
+		INNER JOIN huiyingdai_users u ON t.tender_user_id = u.user_id
+		WHERE
+			t. STATUS = 1
+		AND t.user_id = #{userId}
+	</select>
+</mapper>
+

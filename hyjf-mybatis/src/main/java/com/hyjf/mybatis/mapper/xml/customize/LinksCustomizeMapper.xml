@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.LinksCustomizeMapper">
+
+	<resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.Links" >
+    <id column="id" property="id" jdbcType="SMALLINT" />
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="status" property="status" jdbcType="SMALLINT" />
+    <result column="order" property="order" jdbcType="SMALLINT" />
+    <result column="url" property="url" jdbcType="CHAR" />
+    <result column="webname" property="webname" jdbcType="CHAR" />
+    <result column="summary" property="summary" jdbcType="VARCHAR" />
+    <result column="logo" property="logo" jdbcType="VARCHAR" />
+    <result column="province" property="province" jdbcType="CHAR" />
+    <result column="city" property="city" jdbcType="CHAR" />
+    <result column="area" property="area" jdbcType="CHAR" />
+    <result column="phone" property="phone" jdbcType="CHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="setup_time" property="setupTime" jdbcType="VARCHAR" />
+    <result column="cooperation_time" property="cooperationTime" jdbcType="VARCHAR" />
+    <result column="logo1" property="logo1" jdbcType="VARCHAR" />
+    <result column="approval_by" property="approvalBy" jdbcType="VARCHAR" />
+    <result column="register_capital" property="registerCapital" jdbcType="INTEGER" />
+    <result column="partner_type" property="partnerType" jdbcType="TINYINT" />
+    <result column="hits" property="hits" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+    <result column="isindex" property="isindex" jdbcType="TINYINT" />
+    </resultMap>
+    
+	<select id="selectContentLinks" resultMap="BaseResultMap"
+		parameterType="com.hyjf.mybatis.model.customize.LinksCustomize">
+		SELECT * FROM huiyingdai_links p
+		<include refid="Where_Clause" />
+	</select>
+
+	<sql id="Where_Clause">
+		<where>
+				AND type = 1
+			<if test="webname != null">
+				AND webname LIKE CONCAT('%', #{webname}, '%')
+			</if>
+			<if test="status != null">
+				AND status = #{status}
+			</if>
+			<if test="startCreate != null">
+				AND create_time <![CDATA[>=]]> #{startCreate}
+			</if>
+			<if test="endCreate != null">
+				AND create_time <![CDATA[<=]]> #{endCreate}
+			</if>
+			ORDER BY p.partner_type ASC,p.order Asc,p.create_time DESC
+			<if test="limitStart >= 0">
+				limit #{limitStart} , #{limitEnd}
+			</if>
+		</where>
+	</sql>
+	
+</mapper>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:batch="http://www.springframework.org/schema/batch" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
+    http://www.springframework.org/schema/batch 
+    http://www.springframework.org/schema/batch/spring-batch-3.0.xsd  
+    http://www.springframework.org/schema/context 
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd  
+    http://www.springframework.org/schema/tx 
+    http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+	<!-- <bean id="transactionManager" class="org.springframework.batch.support.transaction.ResourcelessTransactionManager"/> -->
+	<!-- 每个Batch都会包含一个Job。Job就像一个容器，这个容器里装了若干Step，Batch中实际干活的也就是这些Step， 至于Step干什么活，无外乎读取数据，处理数据，然后将这些数据存储起来(ItemReader用来读取数据，ItemProcessor用来处理数据， 
+		ItemWriter用来写数据) 。JobLauncher用来启动Job，JobRepository是上述处理提供的一种持久化机制， 它为JobLauncher，Job，和Step实例提供CRUD操作。 -->
+    <import resource="spring.xml"/>
+	<import resource="spring-mybatis.xml"/>
+	
+	<!-- jobLauncher 配置-->
+	<bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">  
+        <property name="jobRepository" ref="jobRepository"/>  
+    </bean>  
+    <bean id="jobRepository" class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean">
+   	    <property name="transactionManager" ref="transactionManager" />
+    </bean>  
+
+	<!-- JOB -->
+	<batch:job id="csvJob">
+		<batch:step id="csvStep">
+			<batch:tasklet transaction-manager="transactionManager">
+				<batch:chunk reader="csvItemReader" writer="csvItemWriter" processor="csvItemProcessor" commit-interval="5" /> <!-- 500条进行一次commit -->
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+
+
+    <!-- 读取csv文件 -->  
+        <bean id="csvItemReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">  
+            <property name="resource" value="classpath:inputFile/input.csv"/>  
+            <property name="lineMapper">  
+                <bean class="org.springframework.batch.item.file.mapping.DefaultLineMapper">  
+                    <property name="lineTokenizer" ref="lineTokenizer"/>  
+                    <property name="fieldSetMapper">  
+                        <bean  
+                            class="org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper">  
+                            <property name="prototypeBeanName" value="student"></property>  
+                        </bean>  
+                    </property>  
+                </bean>  
+            </property>  
+        </bean>  
+      
+        <bean id="student" class="com.hyjf.batch.test.Student" scope="prototype"></bean>  
+      
+        <!-- lineTokenizer -->  
+        <bean id="lineTokenizer" class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">  
+            <property name="delimiter" value=","/>  
+            <property name="names">  
+                <list>  
+                    <value>userId</value>  
+                    <value>username</value>  
+                    <value>realname</value>  
+                    <value>phone</value>  
+                </list>  
+            </property>  
+        </bean>  
+
+   		<!-- 写CSV文件 -->  
+        <bean id="csvItemWriter"  
+            class="org.springframework.batch.item.file.FlatFileItemWriter" scope="step">  
+           <property name="resource" value="file:src/main/resources/inputFile/out.csv"/>  
+            <property name="lineAggregator">  
+                <bean  class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">  
+                    <property name="delimiter" value=","></property>  
+                    <property name="fieldExtractor">  
+                        <bean class="org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor">  
+                            <property name="names" value="username,realname,phone"></property>  
+                        </bean>  
+                    </property>  
+                </bean>  
+            </property>  
+        </bean>  
+
+</beans>   

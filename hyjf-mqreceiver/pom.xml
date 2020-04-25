@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>hyjf</groupId>
+    <artifactId>hyjf</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <groupId>hyjf-mqreceiver</groupId>
+  <artifactId>hyjf-mqreceiver</artifactId>
+  <packaging>war</packaging>
+  <name>hyjf-mqreceiver Maven Webapp</name>
+  <url>http://maven.apache.org</url>
+  <dependencies>
+  	 <dependency>
+		<groupId>hyjf-common</groupId>
+		<artifactId>hyjf-common</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</dependency>
+	<dependency>
+		<groupId>hyjf-mybatis</groupId>
+		<artifactId>hyjf-mybatis</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</dependency>
+	<dependency>
+		<groupId>hyjf-api</groupId>
+		<artifactId>hyjf-api</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</dependency>
+	<dependency>
+			<groupId>hyjf-pay-lib</groupId>
+			<artifactId>hyjf-pay-lib</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+	</dependency>
+	<dependency>
+			<groupId>hyjf-bank-service</groupId>
+			<artifactId>hyjf-bank-service</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+	</dependency>
+
+    <dependency>
+	    <groupId>org.springframework.amqp</groupId>
+	    <artifactId>spring-rabbit</artifactId>
+	    <version>1.7.3.RELEASE</version>
+	</dependency>
+
+	  <dependency>
+		  <groupId>hyjf</groupId>
+		  <artifactId>hyjf-mongo</artifactId>
+		  <version>0.0.1-SNAPSHOT</version>
+	  </dependency>
+
+	  <!-- //合规数据上报 CERT start-->
+	  <dependency>
+		  <groupId>commons-httpclient</groupId>
+		  <artifactId>commons-httpclient</artifactId>
+		  <version>3.1</version>
+	  </dependency>
+
+	  <dependency>
+		  <groupId>org.apache.httpcomponents</groupId>
+		  <artifactId>httpcore</artifactId>
+		  <version>4.4.10</version>
+	  </dependency>
+
+	  <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+	  <dependency>
+		  <groupId>org.apache.httpcomponents</groupId>
+		  <artifactId>httpclient</artifactId>
+		  <version>4.5.2</version>
+	  </dependency>
+
+	  <dependency>
+		  <groupId>org.cert.open</groupId>
+		  <artifactId>cert</artifactId>
+		  <version>0.0.1</version>
+	  </dependency>
+
+	  <!-- JSON ，可能是fastjson 对不可见字符的支持问题-->
+	  <dependency>
+		  <groupId>com.alibaba</groupId>
+		  <artifactId>fastjson</artifactId>
+		  <version>1.2.47</version>
+	  </dependency>
+	  <!-- //合规数据上报 CERT end-->
+
+  </dependencies>
+  <build>
+    <finalName>hyjf-mqreceiver</finalName>
+  </build>
+</project>

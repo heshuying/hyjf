@@ -1,0 +1,601 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.hyjf.mybatis.mapper.customize.admin.AdminPlanAccedeListCustomizeMapper">
+	           
+	<resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.customize.admin.AdminPlanAccedeListCustomize">
+	    <!-- 加入订单号 -->
+		<result column="accede_order_id" property="planOrderId" />                  
+		<!-- 计划编号 -->
+		<result column="plan_nid" property="debtPlanNid" />
+		<!-- 加入明细用户ID -->
+		<result column="user_id" property="userId" />
+		<!-- 加入明细用户名 -->
+		<result column="user_name" property="userName" />
+		<!-- 用户属性 -->
+		<result column="user_attribute" property="userAttribute" />
+		<!-- 用户属性 -->
+		<result column="attribute" property="attribute" />
+		<!-- 锁定期 -->
+		<result column="lock_period" property="debtLockPeriod" />
+		<!-- 锁定期 0 天 1 个月 -->
+		<result column="is_month" property="isMonth" />
+		<!-- 推荐人用户名 -->
+		<result column="referee_name" property="refereeUserName" />
+		<result column="recommend_attr" property="recommendAttr" />
+	
+		<!-- 加入计划时推荐人用户名(二期需求-不变) -->
+		<result column="invite_name" property="inviteName" />
+		
+		<!-- 加入金额 -->
+		<result column="accede_account" property="accedeAccount" />
+		<!-- 已投资金额 -->
+		<result column="already_invest" property="alreadyInvest" />
+		<!-- 平台 0PC，1微信，2安卓APP，3IOS，4其他'-->
+		<result column="client" property="platform" />
+		<!-- 订单状态：0自动投标中 1锁定中 2退出中 3已退出-->
+		<result column="order_status" property="orderStatus" />
+		<!-- 加入时间 -->
+		<result column="create_time" property="createTime" />
+		<!-- 计息时间 -->
+		<result column="count_interest_time" property="countInterestTime" />
+		<!-- 协议发送状态 ：0未发送 1已发送-->
+		<result column="send_status" property="sendStatus" />
+		<!-- 提成计算状态:0:未计算,1:已计算'，2:计算失败,-->
+		<result column="commission_status" property="commissionStatus" />
+		<!-- 提成计算时间 -->
+		<result column="commission_count_time" property="commissionCountTime" />
+		<!-- 可投金额 -->
+		<result column="available_invest_account" property="availableInvestAccount" />
+		<!-- 预期年化 -->
+		<!-- <result column="expect_apr" property="expectApr" /> -->
+		<!-- 优惠券 -->
+		<result column="coupon_code" property="couponCode" />
+		<!-- 投资状态 -->
+		<result column="plan_invest_status" property="debtPlanStatus" />
+		<!-- 投资类型 -->
+		<result column="tender_type" property="tenderType" />
+		<!-- 待(收)还总额 -->
+		<result column="wait_total" property="waitTotal" />
+		<!-- 待(收)还本金 -->
+		<result column="wait_captical" property="waitCaptical" />
+		<!-- 待(收)还利息 -->
+		<result column="wait_interest" property="waitInterest" />
+		<!-- 异常返回码 -->
+		<result column="resp_code" property="respCode" />
+		<!-- 异常返回错误信息 -->
+		<result column="resp_desc" property="respDesc" />
+		<result column="invite_user_regionname" property="inviteUserRegionname" />
+		<result column="invite_user_branchname" property="inviteUserBranchname" />
+		<result column="invite_user_departmentname" property="inviteUserDepartmentname" />
+		<result column="invite_user_attributename" property="inviteUserAttributeName" />
+		
+		<result column="invite_user_branchname1" property="inviteUserBranchname1" />
+		<result column="invite_user_departmentname1" property="inviteUserDepartmentname1" />
+		<result column="invite_user_regionname1" property="inviteUserRegionname1" />
+		
+		<result column="invite_user_branchname2" property="inviteUserBranchname2" />
+		<result column="invite_user_departmentname2" property="inviteUserDepartmentname2" />
+		<result column="invite_user_regionname2" property="inviteUserRegionname2" />
+		<result column="referee_user_id" property="refereeUserId" />
+		<result column="referee_true_name" property="refereeTrueName" />
+		<result column="invite_true_name" property="inviteTrueName" />
+		<result column="invite_user_id" property="inviteUserId" />
+
+		<!--合同状态-->
+		<result column="contractStatus" property="contractStatus"  />
+		<!--合同编号-->
+		<result column="contract_number" property="contractNumber"  />
+		<!--合同下载地址-->
+		<result column="download_url" property="downloadUrl"  />
+		<!--合同查看地址-->
+		<result column="viewpdf_url" property="viewpdfUrl"  />
+		<!--脱敏后合同查看地址-->
+		<result column="img_url" property="imgUrl"  />
+		<!-- 汇计划三期新增 -->
+		<!--加入时预期年化率-->
+		<result column="expectApr" property="expectApr"  />
+		<!--计算用加入金额-->
+		<result column="jAccedeAccount" property="jAccedeAccount"  />
+		<!--计算用已投资金额-->
+		<result column="jalreadyInvest" property="jalreadyInvest"  />
+		<!--计划剩余可投额度(可用余额)-->
+		<result column="availableInvestAccount" property="availableInvestAccount"  />
+		<!--计划冻结额度-->
+		<result column="frostAccount" property="frostAccount"  />
+		<!--公允价值-->
+		<result column="fairValue" property="fairValue"  />
+		<!--实际年化收益率-->
+		<result column="actualApr" property="actualApr"  />
+		<!--投资笔数-->
+		<result column="investCounts" property="investCounts"  />
+		<!--匹配期-->
+		<result column="matchDates" property="matchDates"  />
+		<!--计划名称-->
+		<result column="debtPlanName" property="debtPlanName"  />
+		<!-- 预计开始退出时间 -->
+		<result column="end_date" property="endDate"/>
+		<!-- 实际退出时间 -->
+		<result column="acctual_payment_time" property="acctualPaymentTime"/>
+
+	</resultMap>
+
+	<sql id="Where_Clause_New">
+		<where>
+			<if test="debtPlanNidSrch != null and debtPlanNidSrch != ''">
+				AND hdpas.plan_nid LIKE CONCAT(#{debtPlanNidSrch}, '%')
+			</if>
+			<if test="accedeOrderIdSrch != null and accedeOrderIdSrch != ''">
+				AND hdpas.accede_order_id LIKE CONCAT(#{accedeOrderIdSrch}, '%')
+			</if>
+			<if test="userNameSrch != null and userNameSrch != ''">
+				AND hdpas.user_name LIKE CONCAT(#{userNameSrch},'%')
+			</if>
+			<if test="debtLockPeriodSrch != null and debtLockPeriodSrch != ''">
+				AND hdpas.lock_period = #{debtLockPeriodSrch}
+			</if>
+			<if test="refereeNameSrch != null and refereeNameSrch != ''">
+				AND hydui.username LIKE CONCAT(#{refereeNameSrch},'%')
+			</if>
+			<if test="orderStatus != null and orderStatus != ''">
+				AND hdpas.order_status = #{orderStatus}
+			</if>
+			<if test="platformSrch != null and platformSrch != ''">
+				AND hdpas.client = #{platformSrch}
+			</if>
+			<if test="searchStartDate != null and searchStartDate !='' ">
+				AND hdpas.add_time <![CDATA[>=]]> unix_timestamp(CONCAT(#{searchStartDate}, ' 00:00:00'))
+			</if>
+			<if test="searchEndDate != null and searchEndDate !='' ">
+				AND hdpas.add_time <![CDATA[<=]]> unix_timestamp(CONCAT(#{searchEndDate}, ' 23:59:59'))
+			</if>
+			<if test="countInterestTimeStartDate != null and countInterestTimeStartDate !='' ">
+				AND hdpas.count_interest_time <![CDATA[>=]]> unix_timestamp(CONCAT(#{countInterestTimeStartDate}, ' 00:00:00'))
+			</if>
+			<if test="countInterestTimeEndDate != null and countInterestTimeEndDate !='' ">
+				AND hdpas.count_interest_time <![CDATA[<=]]> unix_timestamp(CONCAT(#{countInterestTimeEndDate}, ' 23:59:59'))
+			</if>
+			<if test="matchDatesSrch != null and matchDatesSrch != ''">
+				AND hdpas.match_dates = #{matchDatesSrch}
+			</if>
+			<if test="investCountsSrch != null and investCountsSrch != ''">
+				AND hdpas.invest_counts = #{investCountsSrch}
+			</if>
+			<if test="endDateStartSrch != null and endDateStartSrch!=''">
+				and hdpas.end_date <![CDATA[>=]]> CONCAT(#{endDateStartSrch},' 00:00:00')
+			</if>
+			<if test="endDateEndSrch != null and endDateEndSrch!=''">
+				and hdpas.end_date <![CDATA[<=]]> CONCAT(#{endDateEndSrch},' 23:59:59')
+			</if>
+
+			<if test="acctualPaymentTimeStartSrch != null and acctualPaymentTimeStartSrch !='' ">
+				AND FROM_UNIXTIME( hdpas.acctual_payment_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> CONCAT(#{acctualPaymentTimeStartSrch},' 00:00:00')
+			</if>
+			<if test="acctualPaymentTimeEndSrch != null and acctualPaymentTimeEndSrch !='' ">
+				AND FROM_UNIXTIME( hdpas.acctual_payment_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> CONCAT(#{acctualPaymentTimeEndSrch},' 23:59:59')
+			</if>
+
+		</where>
+	</sql>
+
+	<select id="countAccedeRecord" resultType="java.lang.Integer" parameterType="Map">
+			SELECT
+				COUNT(*) AS record_count
+			FROM
+				hyjf_hjh_accede hdpas
+			LEFT JOIN huiyingdai_spreads_users hydsu ON hdpas.user_id = hydsu.user_id
+			LEFT JOIN huiyingdai_users hydui ON hydsu.spreads_userid = hydui.user_id
+			<include refid="Where_Clause_New" />
+	</select>
+	
+	<select id="selectAccedeRecordList" resultMap="BaseResultMap" parameterType="Map">
+		SELECT
+			hdp.lock_period,
+			hdp.expect_apr,
+			hdp.plan_invest_status,
+			
+			hdpa.user_id,
+			hdpa.accede_order_id,
+			hdpa.user_name,
+			hdpa.client,
+			hdpa.user_attribute,
+			hdpa.plan_nid,
+			hdpa.accede_account,
+			hdpa.already_invest,
+			hdpa.order_status,
+			
+			hdpa.wait_total,
+			hdpa.wait_captical,
+			hdpa.wait_interest,
+			
+			IFNULL(FROM_UNIXTIME( IF(hdpa.count_interest_time=0,NULL,hdpa.count_interest_time), '%Y-%m-%d' ),'') AS count_interest_time,
+		
+			hdpa.send_status,
+			hdpa.commission_status,
+			hdpa.available_invest_account,
+			FROM_UNIXTIME(hdpa.commission_count_time,'%Y-%m-%d %H:%i') AS commission_count_time,
+			FROM_UNIXTIME(hdpa.create_time,'%Y-%m-%d %H:%i') AS create_time,
+			hdpa.add_time AS add_time_long,
+			hydui.username referee_name,
+			pna.`name` AS recommend_attr,
+			
+			hdpa.invite_user_name AS invite_name,
+			pna_tender.`name` AS invite_user_attributename,
+			hdpa.invite_user_regionname,
+			hdpa.invite_user_branchname,
+			hdpa.invite_user_departmentname,
+			CASE
+				WHEN hcc.coupon_type = '1' THEN '体验金'
+				WHEN hcc.coupon_type = '2' THEN '加息券'
+				WHEN hcc.coupon_type = '3' THEN '代金券'
+			ELSE
+				'现金'
+			END AS tender_type,
+			IFNULL(hcu.coupon_user_code,'') AS coupon_code
+		FROM
+			hyjf_hjh_accede hdpa
+		LEFT JOIN 
+			hyjf_hjh_plan hdp ON hdpa.plan_nid = hdp.plan_nid
+        LEFT JOIN huiyingdai_spreads_users hydsu ON  hdpa.user_id = hydsu.user_id
+		LEFT JOIN huiyingdai_users hydui ON hydsu.spreads_userid = hydui.user_id
+		LEFT JOIN huiyingdai_users_info hyduif ON hyduif.user_id = hydui.user_id
+		LEFT JOIN hyjf_coupon_real_tender hcrt ON hcrt.real_tender_id = hdpa.accede_order_id
+		LEFT JOIN hyjf_coupon_tender hct ON hct.order_id = hcrt.coupon_tender_id
+		LEFT JOIN hyjf_coupon_user hcu ON hcu.id = hct.coupon_grant_id
+        LEFT JOIN hyjf_coupon_config hcc ON hcc.coupon_code = hcu.coupon_code
+        LEFT JOIN hyjf_param_name pna ON cast(hyduif.attribute AS CHAR) = pna.name_cd AND pna.name_class = 'USER_PROPERTY'
+        LEFT JOIN hyjf_param_name pna_tender ON cast(hdpa.invite_user_attribute AS CHAR) = pna_tender.name_cd AND pna_tender.name_class = 'USER_PROPERTY'
+			<where>
+				<if test="debtPlanNidSrch != null and debtPlanNidSrch != ''">
+					AND hdp.plan_nid LIKE CONCAT('%', #{debtPlanNidSrch}, '%')
+				</if>
+				<if test="accedeOrderIdSrch != null and accedeOrderIdSrch != ''">
+					AND hdpa.accede_order_id LIKE CONCAT('%', #{accedeOrderIdSrch}, '%')
+				</if>
+				<if test="userNameSrch != null and userNameSrch != ''">
+					AND hdpa.user_name LIKE CONCAT('%', #{userNameSrch},'%')
+				</if>
+				<if test="refereeNameSrch != null and refereeNameSrch != ''">
+					AND hydui.username LIKE CONCAT('%', #{refereeNameSrch},'%')
+				</if>
+				<if test="orderStatus != null and orderStatus != ''">
+					AND hdpa.order_status = #{orderStatus}
+				</if>
+				<if test="platformSrch != null and platformSrch != ''">
+					AND hdpa.client = #{platformSrch}
+				</if>
+				<if test="searchStartDate != null and searchStartDate !='' ">
+					AND FROM_UNIXTIME( hdpa.add_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{searchStartDate}
+				</if>
+				<if test="searchEndDate != null and searchEndDate !='' ">
+					AND FROM_UNIXTIME( hdpa.add_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{searchEndDate}
+				</if>
+			</where>
+			ORDER BY
+				add_time_long DESC
+			<if test="limitStart != null and limitStart >= 0" >
+				limit #{limitStart} , #{limitEnd}
+			</if>
+	</select>
+	
+	<select id="countAccedeExceptionRecord" resultType="java.lang.Integer" parameterType="Map">
+		SELECT
+			  COUNT(*) AS record_count
+		FROM
+			hyjf_hjh_accede hdpa
+		LEFT JOIN 
+			hyjf_hjh_plan hdp ON hdpa.plan_nid = hdp.plan_nid
+			<where>
+				<if test="debtPlanNidSrch != null and debtPlanNidSrch != ''">
+					AND hdp.plan_nid LIKE CONCAT('%', #{debtPlanNidSrch}, '%')
+				</if>
+				<if test="accedeOrderIdSrch != null and accedeOrderIdSrch != ''">
+					AND hdpa.accede_order_id LIKE CONCAT('%', #{accedeOrderIdSrch}, '%')
+				</if>
+				<if test="userNameSrch != null and userNameSrch != ''">
+					AND hdpa.user_name LIKE CONCAT('%', #{userNameSrch},'%')
+				</if>
+				<if test="refereeNameSrch != null and refereeNameSrch != ''">
+					AND hydui.username LIKE CONCAT('%', #{refereeNameSrch},'%')
+				</if>
+				<if test="orderStatus != null and orderStatus != ''">
+					AND hdpa.order_status <![CDATA[>=]]> #{orderStatus}
+				</if>
+				<if test="platformSrch != null and platformSrch != ''">
+					AND hdpa.client = #{platformSrch}
+				</if>
+				<if test="searchStartDate != null and searchStartDate !='' ">
+					AND FROM_UNIXTIME( hdpa.add_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{searchStartDate}
+				</if>
+				<if test="searchEndDate != null and searchEndDate !='' ">
+					AND FROM_UNIXTIME( hdpa.add_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{searchEndDate}
+				</if>
+			</where>
+	</select>
+	
+	<select id="selectAccedeExceptionList" resultMap="BaseResultMap" parameterType="Map">
+		SELECT
+			hdp.lock_period,
+			hdp.is_month,
+			hdp.expect_apr,
+			hdp.plan_invest_status,
+			hdpa.user_id,
+			hdpa.accede_order_id,
+			hdpa.user_name,
+			hdpa.client,
+			hdpa.user_attribute,
+			hdpa.plan_nid,
+			hdpa.accede_account,
+			hdpa.already_invest,
+			hdpa.order_status,
+			
+			hdpa.wait_total,
+			hdpa.wait_captical,
+			hdpa.wait_interest,
+			
+			IFNULL(FROM_UNIXTIME( IF(hdpa.count_interest_time=0,NULL,hdpa.count_interest_time), '%Y-%m-%d' ),'') AS count_interest_time,
+		
+			hdpa.send_status,
+			hdpa.commission_status,
+			hdpa.available_invest_account,
+			FROM_UNIXTIME(hdpa.commission_count_time,'%Y-%m-%d %H:%i') AS commission_count_time,
+			FROM_UNIXTIME(hdpa.create_time,'%Y-%m-%d %H:%i') AS create_time,
+			hdpa.add_time AS add_time_long,
+			hdpa.invite_user_name AS invite_name
+		FROM
+			hyjf_hjh_accede hdpa
+		LEFT JOIN 
+			hyjf_hjh_plan hdp ON hdpa.plan_nid = hdp.plan_nid
+			<where>
+				<if test="debtPlanNidSrch != null and debtPlanNidSrch != ''">
+					AND hdp.plan_nid LIKE CONCAT('%', #{debtPlanNidSrch}, '%')
+				</if>
+				<if test="accedeOrderIdSrch != null and accedeOrderIdSrch != ''">
+					AND hdpa.accede_order_id LIKE CONCAT('%', #{accedeOrderIdSrch}, '%')
+				</if>
+				<if test="userNameSrch != null and userNameSrch != ''">
+					AND hdpa.user_name LIKE CONCAT('%', #{userNameSrch},'%')
+				</if>
+				<if test="refereeNameSrch != null and refereeNameSrch != ''">
+					AND hydui.username LIKE CONCAT('%', #{refereeNameSrch},'%')
+				</if>
+				<if test="orderStatus != null and orderStatus != ''">
+					AND hdpa.order_status <![CDATA[>=]]> #{orderStatus}
+				</if>
+				<if test="platformSrch != null and platformSrch != ''">
+					AND hdpa.client = #{platformSrch}
+				</if>
+				<if test="searchStartDate != null and searchStartDate !='' ">
+					AND FROM_UNIXTIME( hdpa.add_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{searchStartDate}
+				</if>
+				<if test="searchEndDate != null and searchEndDate !='' ">
+					AND FROM_UNIXTIME( hdpa.add_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{searchEndDate}
+				</if>
+			</where>
+			ORDER BY
+				add_time_long DESC
+			<if test="limitStart != null and limitStart >= 0" >
+				limit #{limitStart} , #{limitEnd}
+			</if>
+	</select>
+
+	<select id="selectAccedeRecordListExport" resultMap="BaseResultMap" parameterType="Map">
+		SELECT
+	CASE
+	WHEN hdp.is_month = '0' THEN
+		CONCAT(hdpa.lock_period, '天')
+	WHEN hdp.is_month = '1' THEN
+		CONCAT(hdpa.lock_period, '个月')
+	END AS lock_period,
+	 hdpa.lock_period AS lock_periodaa,
+	 hdp.plan_invest_status,
+	 hdp.plan_name AS debtPlanName,
+	 hdpa.user_id,
+	 hdpa.accede_order_id,
+	 hdpa.user_name,
+	 hdpa.client,
+	 hdpa.plan_nid,
+	 hdpa.accede_account,
+	 hdpa.already_invest,
+	 hdpa.order_status,
+	 hdpa.wait_total,
+	 hdpa.wait_captical,
+	 hdpa.wait_interest,
+	 hdpa.count_interest_time,
+	 hdpa.send_status,
+	 hdpa.commission_status,
+	 hdpa.available_invest_account,
+	 hdpa.commission_count_time,
+	 hdpa.create_time,
+	 hdpa.add_time_long,
+	 hdpa.referee_name,
+	 pna.`name` AS recommend_attr,
+	 hdpa.invite_name,
+	 pna_tender.`name` AS invite_user_attributename,
+	 pna_tender2.`name` AS attribute,
+	 ziji.attribute AS user_attribute,
+	 hdpa.invite_user_regionname,
+	 hdpa.invite_user_branchname,
+	 hdpa.invite_user_departmentname,
+	 CASE
+	WHEN hcc.coupon_type = '1' THEN
+		'体验金'
+	WHEN hcc.coupon_type = '2' THEN
+		'加息券'
+	WHEN hcc.coupon_type = '3' THEN
+		'代金券'
+	ELSE
+		'现金'
+	END AS tender_type,
+	 IFNULL(hcu.coupon_user_code, '') AS coupon_code,
+	 `od3`.`name` AS `invite_user_regionname1`,
+	 `od2`.`name` AS `invite_user_branchname1`,
+	 `od`.`name` AS `invite_user_departmentname1`,
+	 `odx3`.`name` AS `invite_user_regionname2`,
+	 `odx2`.`name` AS `invite_user_branchname2`,
+	 `odx`.`name` AS `invite_user_departmentname2`,
+	 hyduif.user_id AS referee_user_id,
+	 hyduif.truename AS referee_true_name,
+	 hdpa.invite_user_id,
+	 invitehui.truename AS invite_true_name,
+	 hta. STATUS AS contractStatus,
+	 hta.contract_number AS contract_number,
+	 hta.download_url AS download_url,
+	 hta.viewpdf_url AS viewpdf_url,
+	 hta.img_url AS img_url,
+	 hdpa.expectApr,
+	 hdpa.jAccedeAccount,
+	 hdpa.jalreadyInvest,
+	 hdpa.availableInvestAccount,
+	 hdpa.frostAccount,
+	 hdpa.fairValue,
+	 hdpa.actualApr,
+	 hdpa.investCounts,
+	 hdpa.matchDates,
+	 hdpa.invite_user_attribute,
+	 hdpa.hdpa_user_attribute,
+	 hdpa.end_date,
+	 hdpa.acctual_payment_time
+FROM
+(
+	SELECT
+	 hdpas.lock_period,
+	 hdpas.user_id,
+	 hdpas.accede_order_id,
+	 hdpas.user_name,
+	 hdpas.client,
+	 hdpas.plan_nid,
+	 hdpas.accede_account,
+	 hdpas.already_invest,
+	 hdpas.order_status,
+	 hdpas.wait_total,
+	 hdpas.wait_captical,
+	 hdpas.wait_interest,
+	 IFNULL(
+		FROM_UNIXTIME(
+
+			IF (
+				hdpas.count_interest_time = 0,
+				NULL,
+				hdpas.count_interest_time
+			),
+			'%Y-%m-%d'
+		),
+		''
+	) AS count_interest_time,
+	 hdpas.send_status,
+	 hdpas.commission_status,
+	 hdpas.available_invest_account,
+	 FROM_UNIXTIME(
+		hdpas.commission_count_time,
+		'%Y-%m-%d %H:%i'
+	) AS commission_count_time,
+	 FROM_UNIXTIME(
+		hdpas.create_time,
+		'%Y-%m-%d %H:%i'
+	) AS create_time,
+	 	hdpas.add_time AS add_time_long,
+		hydui.username AS referee_name,
+		hdpas.invite_user_name AS invite_name,
+		hdpas.invite_user_regionname,
+		hdpas.invite_user_branchname,
+		hdpas.invite_user_departmentname,
+		hdpas.invite_user_id AS invite_user_id,
+		hdpas.expect_apr AS expectApr,
+		 hdpas.accede_account AS jAccedeAccount,
+		 hdpas.already_invest AS jalreadyInvest,
+		 hdpas.available_invest_account AS availableInvestAccount,
+		 hdpas.frost_account AS frostAccount,
+	 CASE
+	WHEN hdpas.order_status = 5
+	OR hdpas.order_status = 7 THEN
+		hdpas.fair_value
+	ELSE
+		0
+	END AS fairValue,
+	 hdpas.actual_apr AS actualApr,
+	 hdpas.invest_counts AS investCounts,
+	 hdpas.match_dates AS matchDates,
+	 hydsu.spreads_userid AS hydsu_spreads_userid,
+	 hydui.user_id AS hydui_user_id,
+	 hdpas.invite_user_attribute,
+	 hdpas.user_attribute AS hdpa_user_attribute,
+		hdpas.end_date,
+		hdpas.acctual_payment_time
+	FROM
+		hyjf_hjh_accede hdpas
+		LEFT JOIN huiyingdai_spreads_users hydsu ON hdpas.user_id = hydsu.user_id
+		LEFT JOIN huiyingdai_users hydui ON hydsu.spreads_userid = hydui.user_id
+		<include refid="Where_Clause_New" />
+	  	ORDER BY add_time_long DESC
+		<if test="limitStart != null and limitStart >= 0" >
+			limit #{limitStart} , #{limitEnd}
+		</if>
+		)  hdpa
+	LEFT JOIN huiyingdai_users_info invitehui ON invitehui.user_id = hdpa.invite_user_id
+	LEFT JOIN hyjf_hjh_plan hdp ON hdpa.plan_nid = hdp.plan_nid
+	LEFT JOIN huiyingdai_users_info hyduif ON hyduif.user_id = hdpa.hydui_user_id
+	LEFT JOIN hyjf_coupon_real_tender hcrt ON hcrt.real_tender_id = hdpa.accede_order_id
+	LEFT JOIN hyjf_coupon_tender hct ON hct.order_id = hcrt.coupon_tender_id
+	LEFT JOIN hyjf_coupon_user hcu ON hcu.id = hct.coupon_grant_id
+	LEFT JOIN hyjf_coupon_config hcc ON hcc.coupon_code = hcu.coupon_code
+	LEFT JOIN hyjf_param_name pna ON cast(hyduif.attribute AS CHAR) = pna.name_cd AND pna.name_class = 'USER_PROPERTY'
+	LEFT JOIN hyjf_param_name pna_tender ON cast(	hdpa.invite_user_attribute AS CHAR) = pna_tender.name_cd AND pna_tender.name_class = 'USER_PROPERTY'
+	LEFT JOIN hyjf_param_name pna_tender2 ON cast(hdpa.hdpa_user_attribute AS CHAR) = pna_tender2.name_cd AND pna_tender2.name_class = 'USER_PROPERTY'
+	LEFT JOIN `hyjf_crm`.`oa_users` `ou` ON `ou`.hyd_id = hdpa.hydsu_spreads_userid AND ou.user_status IN ('E', 'Q1', 'Q11', 'Q2', 'Q21')
+	LEFT JOIN `hyjf_crm`.`oa_department` `od` ON `od`.`id` = `ou`.`departmentid` AND `od`.id IS NOT NULL
+	LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+	LEFT JOIN `hyjf_crm`.`oa_department` `od3` ON `od3`.`id` = `od2`.`parentid`
+	LEFT JOIN `hyjf_crm`.`oa_users` `oux` ON `oux`.hyd_id = hdpa.user_id AND oux.user_status IN ('E', 'Q1', 'Q11', 'Q2', 'Q21')
+	LEFT JOIN `hyjf_crm`.`oa_department` `odx` ON `odx`.`id` = `oux`.`departmentid` AND `odx`.id IS NOT NULL
+	LEFT JOIN `hyjf_crm`.`oa_department` `odx2` ON `odx2`.`id` = `odx`.`parentid`
+	LEFT JOIN `hyjf_crm`.`oa_department` `odx3` ON `odx3`.`id` = `odx2`.`parentid`
+	LEFT JOIN huiyingdai_users_info ziji ON ziji.user_id = hdpa.user_id
+	LEFT JOIN hyjf_tender_agreement hta ON hta.tender_nid = hdpa.accede_order_id
+		ORDER BY hdpa.add_time_long DESC
+	</select>
+	
+	<!-- add by LSY START -->
+	<resultMap id="SumResultMap" type="com.hyjf.mybatis.model.customize.admin.AdminPlanAccedeListCustomize">
+		<!-- 加入金额 -->
+		<result column="accede_account" property="sumAccedeAccount" />
+		<!-- 已投资金额 -->
+		<result column="already_invest" property="sumAlreadyInvest" />
+		<!-- 待(收)还总额 -->
+		<result column="wait_total" property="sumWaitTotal" />
+		<!-- 待(收)还本金 -->
+		<result column="wait_captical" property="sumWaitCaptical" />
+		<!-- 待(收)还利息 -->
+		<result column="wait_interest" property="sumWaitInterest" />
+		<!-- 剩余合计 -->
+		<result column="sumAvailableInvestAccount" property="sumAvailableInvestAccount" />
+		<!-- 冻结合计 -->
+		<result column="sumFrostAccount" property="sumFrostAccount" />
+		<!-- 公允合计 -->
+		<result column="sumFairValue" property="sumFairValue" />
+	</resultMap>
+
+	<select id="sumAccedeRecord" resultMap="SumResultMap" parameterType="Map">
+	SELECT
+		SUM(hdpas.accede_account) AS accede_account,
+		SUM(hdpas.already_invest) AS already_invest,
+		SUM(hdpas.wait_total) AS wait_total,
+		SUM(hdpas.wait_captical) AS wait_captical,
+		SUM(hdpas.wait_interest) AS wait_interest,
+		SUM(hdpas.available_invest_account) AS sumAvailableInvestAccount,
+		SUM(hdpas.frost_account) AS sumFrostAccount,
+		CASE WHEN hdpas.order_status =5 OR hdpas.order_status =7 THEN  SUM(hdpas.fair_value)
+		ELSE 0 END AS sumFairValue
+	FROM
+		hyjf_hjh_accede hdpas
+		LEFT JOIN huiyingdai_spreads_users hydsu ON hdpas.user_id = hydsu.user_id
+		LEFT JOIN huiyingdai_users hydui ON hydsu.spreads_userid = hydui.user_id
+		<include refid="Where_Clause_New" />
+		<if test="limitStart != null and limitStart >= 0" >
+			limit #{limitStart} , #{limitEnd}
+		</if>
+
+	</select>
+
+	<!-- add by LSY END -->
+</mapper>

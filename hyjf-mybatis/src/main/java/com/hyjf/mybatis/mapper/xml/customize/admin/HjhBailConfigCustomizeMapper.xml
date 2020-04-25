@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.HjhBailConfigCustomizeMapper">
+    <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.customize.admin.HjhBailConfigInfoCustomize">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="inst_code" property="instCode" jdbcType="VARCHAR"/>
+        <result column="inst_name" property="instName" jdbcType="VARCHAR"/>
+        <result column="bail_tatol" property="bailTatol" jdbcType="DECIMAL"/>
+        <result column="bail_rate" property="bailRate" jdbcType="INTEGER"/>
+        <result column="timeStart" property="timestart" jdbcType="VARCHAR"/>
+        <result column="timeEnd" property="timeend" jdbcType="VARCHAR"/>
+        <result column="new_credit_line" property="newCreditLine" jdbcType="DECIMAL"/>
+        <result column="loan_credit_line" property="loanCreditLine" jdbcType="DECIMAL"/>
+        <result column="day_mark_line" property="dayMarkLine" jdbcType="DECIMAL"/>
+        <result column="month_mark_line" property="monthMarkLine" jdbcType="DECIMAL"/>
+        <result column="push_mark_line" property="pushMarkLine" jdbcType="DECIMAL"/>
+        <result column="loan_mark_line" property="loanMarkLine" jdbcType="DECIMAL"/>
+        <result column="remain_mark_line" property="remainMarkLine" jdbcType="DECIMAL"/>
+        <result column="repayed_capital" property="repayedCapital" jdbcType="DECIMAL"/>
+        <result column="his_loan_total" property="hisLoanTotal" jdbcType="DECIMAL"/>
+        <result column="cyc_loan_total" property="cycLoanTotal" jdbcType="DECIMAL"/>
+        <result column="loan_balance" property="loanBalance" jdbcType="DECIMAL"/>
+        <result column="is_accumulate" property="isAccumulate" jdbcType="TINYINT"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="create_user_id" property="createUserId" jdbcType="INTEGER"/>
+        <result column="update_user_id" property="updateUserId" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="monthNCL" property="monthNCL" jdbcType="TINYINT"/>
+        <result column="monthLCL" property="monthLCL" jdbcType="TINYINT"/>
+        <result column="monthRCT" property="monthRCT" jdbcType="TINYINT"/>
+        <result column="monthDEL" property="monthDEL" jdbcType="TINYINT"/>
+        <result column="endNCL" property="endNCL" jdbcType="TINYINT"/>
+        <result column="endLCL" property="endLCL" jdbcType="TINYINT"/>
+        <result column="endRCT" property="endRCT" jdbcType="TINYINT"/>
+        <result column="endDEL" property="endDEL" jdbcType="TINYINT"/>
+        <result column="endmonthNCL" property="endmonthNCL" jdbcType="TINYINT"/>
+        <result column="endmonthLCL" property="endmonthLCL" jdbcType="TINYINT"/>
+        <result column="endmonthRCT" property="endmonthRCT" jdbcType="TINYINT"/>
+        <result column="endmonthDEL" property="endmonthDEL" jdbcType="TINYINT"/>
+        <result column="enddayNCL" property="enddayNCL" jdbcType="TINYINT"/>
+        <result column="enddayLCL" property="enddayLCL" jdbcType="TINYINT"/>
+        <result column="enddayRCT" property="enddayRCT" jdbcType="TINYINT"/>
+        <result column="enddayDEL" property="enddayDEL" jdbcType="TINYINT"/>
+        <result column="principalNCL" property="principalNCL" jdbcType="TINYINT"/>
+        <result column="principalLCL" property="principalLCL" jdbcType="TINYINT"/>
+        <result column="principalRCT" property="principalRCT" jdbcType="TINYINT"/>
+        <result column="principalDEL" property="principalDEL" jdbcType="TINYINT"/>
+        <result column="seasonNCL" property="seasonNCL" jdbcType="TINYINT"/>
+        <result column="seasonLCL" property="seasonLCL" jdbcType="TINYINT"/>
+        <result column="seasonRCT" property="seasonRCT" jdbcType="TINYINT"/>
+        <result column="seasonDEL" property="seasonDEL" jdbcType="TINYINT"/>
+        <result column="endmonthsNCL" property="endmonthsNCL" jdbcType="TINYINT"/>
+        <result column="endmonthsLCL" property="endmonthsLCL" jdbcType="TINYINT"/>
+        <result column="endmonthsRCT" property="endmonthsRCT" jdbcType="TINYINT"/>
+        <result column="endmonthsDEL" property="endmonthsDEL" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <select id="selectHjhBailConfigList" resultMap="BaseResultMap"
+            parameterType="com.hyjf.mybatis.model.customize.admin.HjhBailConfigCustomize">
+        SELECT
+        hhbc.id,
+        hhbc.inst_code,
+        hhic.inst_name,
+        hhbc.bail_tatol,
+        hhbc.bail_rate,
+        hhbc.new_credit_line,
+        hhbc.loan_credit_line,
+        hhbc.day_mark_line,
+        hhbc.month_mark_line,
+        hhbc.push_mark_line,
+        hhbc.loan_mark_line,
+        hhbc.remain_mark_line,
+        hhbc.repayed_capital,
+        hhbc.his_loan_total,
+        hhbc.cyc_loan_total,
+        hhbc.loan_balance,
+        hhbc.is_accumulate,
+        hhbc.remark,
+        hhbc.create_user_id,
+        hhbc.update_user_id,
+        hhbc.create_time,
+        hhbc.update_time,
+        hhbc.del_flg
+        FROM
+        hyjf_hjh_bail_config hhbc
+        INNER JOIN hyjf_hjh_inst_config hhic ON hhbc.inst_code = hhic.inst_code
+        WHERE hhbc.del_flg = 0
+        <if test="limitStart >= 0">
+            limit #{limitStart} , #{limitEnd}
+        </if>
+    </select>
+    <select id="selectHjhBailConfigInfo" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT
+            hhbc.id,
+            hhbc.inst_code,
+            hhic.inst_name,
+            hhbc.bail_tatol,
+            hhbc.bail_rate,
+            hhbc.new_credit_line,
+            hhbc.loan_credit_line,
+            hhbc.timeStart,
+            hhbc.timeEnd,
+            hhbc.day_mark_line,
+            hhbc.month_mark_line,
+            hhbc.push_mark_line,
+            hhbc.loan_mark_line,
+            hhbc.remain_mark_line,
+            hhbc.repayed_capital,
+            hhbc.his_loan_total,
+            hhbc.cyc_loan_total,
+            hhbc.loan_balance,
+            hhbc.is_accumulate,
+            hhbc.remark,
+            m.is_new_credit as monthNCL,
+            m.is_loan_credit as monthLCL,
+            m.repay_capital_type as monthRCT,
+            m.del_flg as monthDEL,
+            e.is_new_credit as endNCL,
+            e.is_loan_credit as endLCL,
+            e.repay_capital_type as endRCT,
+            e.del_flg as endDEL,
+            em.is_new_credit as endmonthNCL,
+            em.is_loan_credit as endmonthLCL,
+            em.repay_capital_type as endmonthRCT,
+            em.del_flg as endmonthDEL,
+            ed.is_new_credit as enddayNCL,
+            ed.is_loan_credit as enddayLCL,
+            ed.repay_capital_type as enddayRCT,
+            ed.del_flg as enddayDEL,
+            p.is_new_credit as principalNCL,
+            p.is_loan_credit as principalLCL,
+            p.repay_capital_type as principalRCT,
+            p.del_flg as principalDEL,
+            s.is_new_credit as seasonNCL,
+            s.is_loan_credit as seasonLCL,
+            s.repay_capital_type as seasonRCT,
+            s.del_flg as seasonDEL,
+            ems.is_new_credit as endmonthsNCL,
+            ems.is_loan_credit as endmonthsLCL,
+            ems.repay_capital_type as endmonthsRCT,
+            ems.del_flg as endmonthsDEL
+        FROM
+        hyjf_hjh_bail_config hhbc
+        INNER JOIN hyjf_hjh_inst_config hhic ON hhbc.inst_code = hhic.inst_code
+        LEFT JOIN hyjf_hjh_bail_config_info m ON hhbc.inst_code = m.inst_code and m.borrow_style = 'month'
+        LEFT JOIN hyjf_hjh_bail_config_info e ON hhbc.inst_code = e.inst_code and e.borrow_style = 'end'
+        LEFT JOIN hyjf_hjh_bail_config_info em ON hhbc.inst_code = em.inst_code and em.borrow_style = 'endmonth'
+        LEFT JOIN hyjf_hjh_bail_config_info ed ON hhbc.inst_code = ed.inst_code and ed.borrow_style = 'endday'
+        LEFT JOIN hyjf_hjh_bail_config_info p ON hhbc.inst_code = p.inst_code and p.borrow_style = 'principal'
+        LEFT JOIN hyjf_hjh_bail_config_info s ON hhbc.inst_code = s.inst_code and s.borrow_style = 'season'
+        LEFT JOIN hyjf_hjh_bail_config_info ems ON hhbc.inst_code = ems.inst_code and ems.borrow_style = 'endmonths'
+        WHERE hhbc.del_flg = 0 and hhbc.id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <resultMap id="HjhInstConfigResultMap" type="com.hyjf.mybatis.model.auto.HjhInstConfig">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="inst_code" property="instCode" jdbcType="VARCHAR"/>
+        <result column="inst_name" property="instName" jdbcType="VARCHAR"/>
+        <result column="inst_type" property="instType" jdbcType="TINYINT"/>
+        <result column="capital_toplimit" property="capitalToplimit" jdbcType="DECIMAL"/>
+        <result column="commission_fee" property="commissionFee" jdbcType="DECIMAL"/>
+        <result column="repay_capital_type" property="repayCapitalType" jdbcType="TINYINT"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="create_user" property="createUser" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="INTEGER"/>
+        <result column="update_user" property="updateUser" jdbcType="INTEGER"/>
+        <result column="update_time" property="updateTime" jdbcType="INTEGER"/>
+        <result column="del_flg" property="delFlg" jdbcType="TINYINT"/>
+    </resultMap>
+    <select id="hjhNoUsedInstConfigList" resultMap="HjhInstConfigResultMap">
+        SELECT
+            hhic.id,
+            hhic.inst_code,
+            hhic.inst_name,
+            hhic.inst_type,
+            hhic.capital_toplimit,
+            hhic.commission_fee,
+            hhic.repay_capital_type,
+            hhic.remark,
+            hhic.create_user,
+            hhic.create_time,
+            hhic.update_user,
+            hhic.update_time,
+            hhic.del_flg
+        FROM
+            hyjf_hjh_inst_config hhic
+        WHERE
+            hhic.inst_code NOT IN (
+                SELECT
+                    hhbc.inst_code
+                FROM
+                    hyjf_hjh_bail_config hhbc
+                WHERE
+                    hhbc.del_flg = 0
+            )
+        AND hhic.del_flg = 0
+    </select>
+
+    <!--发标已发额度-->
+    <select id="selectSendedAccount" resultType="java.lang.String"
+            parameterType="com.hyjf.mybatis.model.customize.admin.HjhBailConfigCustomize">
+        SELECT
+	      sum(account)
+        FROM
+            hyjf_hjh_plan_asset
+        WHERE
+            inst_code = #{instCode}
+        AND `status` in(11,12,3,4,5,7,9)
+    </select>
+
+    <!--发标已发额度-->
+    <select id="selectRepayedAccount" resultType="java.lang.String"
+            parameterType="com.hyjf.mybatis.model.customize.admin.HjhBailConfigCustomize">
+        SELECT
+            sum(repay_capital_yes)
+        FROM
+            huiyingdai_borrow_repay hbr
+        INNER JOIN hyjf_hjh_plan_asset hhpa ON hhpa.borrow_nid = hbr.borrow_nid
+        AND hhpa.inst_code = #{instCode}
+        WHERE
+            repay_type = 'wait_yes'
+    </select>
+
+    <!--周期内发标已发额度-->
+    <select id="selectSendedAccountByCyc" resultType="java.lang.String"
+            parameterType="com.hyjf.mybatis.model.customize.admin.HjhBailConfigCustomize">
+        SELECT
+            sum(hb.account)
+        FROM
+            huiyingdai_borrow hb
+        INNER JOIN hyjf_hjh_plan_asset hhpa ON hhpa.borrow_nid = hb.borrow_nid
+        AND hhpa.inst_code = #{instCode}
+        WHERE
+            hhpa.`status` IN (11, 12, 3, 4, 5, 7, 9)
+        AND FROM_UNIXTIME(hb.addtime, '%Y-%m-%d %H:%i:%S') <![CDATA[>=]]> STR_TO_DATE(CONCAT(#{timestart},'00:00:00'
+        ),'%Y-%m-%d %H:%i:%s')
+        AND FROM_UNIXTIME(hb.addtime, '%Y-%m-%d %H:%i:%S') <![CDATA[<=]]> STR_TO_DATE(CONCAT(#{timeend},'23:59:59'
+        ),'%Y-%m-%d %H:%i:%s')
+        AND hb.borrow_nid NOT IN (
+            SELECT
+                hbd.borrow_nid
+            FROM
+                hyjf_borrow_delete hbd
+        )
+    </select>
+
+    <!--在贷额度 未使用-->
+    <select id="selectLoanCredit" resultType="java.lang.String"
+            parameterType="com.hyjf.mybatis.model.customize.admin.HjhBailConfigCustomize">
+        SELECT
+            sum(repay_capital_yes)
+        FROM
+            huiyingdai_borrow_repay hbr
+        INNER JOIN hyjf_hjh_plan_asset hhpa ON hhpa.borrow_nid = hbr.borrow_nid
+        AND hhpa.inst_code = #{instCode}
+        WHERE
+            repay_type = 'wait'
+    </select>
+
+    <!--历史标的放款总额-->
+    <select id="selectLoanAccount" resultType="java.lang.String"
+            parameterType="com.hyjf.mybatis.model.customize.admin.HjhBailConfigCustomize">
+        SELECT
+            sum(hbr.repay_capital)
+        FROM
+            huiyingdai_borrow_repay hbr
+        INNER JOIN hyjf_hjh_plan_asset hhpa ON hhpa.borrow_nid = hbr.borrow_nid
+        AND hhpa.inst_code = #{instCode}
+    </select>
+    <!-- 获取资产表中某段时间推标总额 -->
+    <select id="selectAccountByCyc" resultType="java.lang.String" parameterType="java.util.Map">
+        SELECT
+            sum(hb.account)
+        FROM
+            huiyingdai_borrow hb
+        INNER JOIN hyjf_hjh_plan_asset hhpa ON hhpa.borrow_nid = hb.borrow_nid
+        AND hhpa.inst_code = #{instCode}
+        WHERE
+            hhpa.`status` IN (11, 12, 3, 4, 5, 7, 9)
+        AND FROM_UNIXTIME(hb.addtime, '%Y-%m-%d %H:%i:%S') <![CDATA[>=]]> STR_TO_DATE(CONCAT(#{timeStart},'00:00:00'
+        ),'%Y-%m-%d %H:%i:%s')
+        AND FROM_UNIXTIME(hb.addtime, '%Y-%m-%d %H:%i:%S') <![CDATA[<=]]> STR_TO_DATE(CONCAT(#{timeEnd},'23:59:59'
+        ),'%Y-%m-%d %H:%i:%s')
+    </select>
+
+    <!-- 获取资产表中某段时间推标总额 -->
+    <select id="selectRepayMethod" resultType="java.lang.String" parameterType="java.lang.String">
+        SELECT DISTINCT
+            hbpr.repay_method
+        FROM
+            hyjf_hjh_asset_borrowtype hhab
+        INNER JOIN huiyingdai_borrow_project_type hbpt ON hhab.borrow_cd = hbpt.borrow_cd
+        INNER JOIN huiyingdai_borrow_project_repay hbpr ON hbpr.borrow_class = hbpt.borrow_class
+        WHERE
+            hhab.inst_code = #{instCode}
+    </select>
+</mapper>

@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.ChannelStatisticsDetailCustomizeMapper">
+
+	<resultMap id="selectListMap" type="com.hyjf.mybatis.model.customize.ChannelStatisticsDetailCustomize">
+		<result column="id" property="id" jdbcType="INTEGER" />
+		<result column="utm_id" property="utmId" jdbcType="INTEGER" />
+		<result column="key_name" property="keyName" jdbcType="VARCHAR" />		
+		<result column="source_id" property="sourceId" jdbcType="INTEGER" />
+		<result column="source_name" property="sourceName" jdbcType="VARCHAR" />
+		<result column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="true_name" property="trueName" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="register_time" property="registerTime" jdbcType="VARCHAR" />
+		<result column="open_account_time" property="openAccountTime" jdbcType="VARCHAR" />
+		<result column="first_invest_time" property="firstInvestTime" jdbcType="VARCHAR" />
+		<result column="cumulative_invest" property="cumulativeInvest" jdbcType="DECIMAL" />
+		<result column="htj_invest" property="htjInvest" jdbcType="DECIMAL" />
+		<result column="hzr_invest" property="hzrInvest" jdbcType="DECIMAL" />
+		<result column="invest_amount" property="investAmount" jdbcType="DECIMAL" />
+		<result column="invest_project_type" property="investProjectType" jdbcType="VARCHAR" />
+		<result column="invest_project_period" property="investProjectPeriod" jdbcType="VARCHAR" />
+		<result column="sex" property="sex" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="exportList" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.ChannelStatisticsDetailCustomize">
+			SELECT
+				t.id,
+				t.utm_id,
+				t.user_id,
+				u.username AS user_name,
+				FROM_UNIXTIME( t.create_time, '%Y-%m-%d %H:%i:%S' ) AS register_time,
+				FROM_UNIXTIME( t.invest_time, '%Y-%m-%d %H:%i:%S' ) AS first_invest_time,
+				FROM_UNIXTIME( c.addtime, '%Y-%m-%d %H:%i:%S' ) AS open_account_time,
+				CASE ui.sex
+				WHEN 1 THEN '男'
+				WHEN 2 THEN '女'
+				ELSE '未知'  END AS sex,
+				ui.truename AS true_name,
+				u.mobile,
+				utm.source_id,
+				utm.utm_source AS source_name,
+				utm.utm_term AS key_name,
+					(SELECT
+						CASE
+					WHEN SUM(tender.account) IS NULL THEN
+						0
+					ELSE
+						SUM(tender.account)
+					END account
+					FROM
+						huiyingdai_utm_reg reg
+					INNER JOIN huiyingdai_borrow_tender tender ON tender.user_id = reg.user_id
+					INNER JOIN huiyingdai_borrow borrow ON borrow.borrow_nid = tender.borrow_nid
+					AND borrow.project_type <![CDATA[<>]]> 8  WHERE reg.user_id = t.user_id ) AS cumulative_invest,
+				(SELECT
+					CASE
+				WHEN SUM(hdpa.accede_account) IS NULL THEN
+					0
+				ELSE
+					SUM(hdpa.accede_account)
+				END account
+				FROM
+					huiyingdai_utm_reg reg
+				INNER JOIN hyjf_debt_plan_accede hdpa ON hdpa.user_id = reg.user_id
+				WHERE reg.user_id = t.user_id ) AS htj_invest,
+				
+				(SELECT
+					CASE
+				WHEN SUM(hct.assign_capital) IS NULL THEN
+					0
+				ELSE
+					SUM(hct.assign_capital)
+				END account
+				FROM
+					huiyingdai_utm_reg reg
+				INNER JOIN huiyingdai_credit_tender hct ON hct.user_id = reg.user_id
+				WHERE reg.user_id = t.user_id ) AS hzr_invest,
+				IFNULL(t.invest_amount,0) AS invest_amount,
+				t.invest_project_type,
+				t.invest_project_period
+			FROM
+				huiyingdai_utm_reg t
+				LEFT JOIN huiyingdai_users_info ui ON t.user_id = ui.user_id
+				LEFT JOIN huiyingdai_users u ON t.user_id = u.user_id
+				LEFT JOIN huiyingdai_utm utm ON t.utm_id = utm.utm_id
+				LEFT JOIN huiyingdai_account_chinapnr c ON t.user_id = c.user_id
+		<where>
+		    <if test="userName != null and userName !='' " >
+		      AND u.username LIKE CONCAT('%', #{userName}, '%')
+		    </if>
+		    <if test="sourceId != null and sourceId != ''" >
+		      AND utm.source_id <![CDATA[=]]> #{sourceId}
+		    </if>
+		    <if test="keyName != null and keyName != ''" >
+		      AND utm.utm_term LIKE CONCAT('%', #{keyName}, '%')
+		    </if>
+		    <if test="utmIdsSrch != null and utmIdsSrch != ''">
+				AND utm.source_id in
+				<foreach collection="utmIdsSrch" open="(" close=")" separator="," item="utmId">
+					#{utmId}
+				</foreach>
+			</if>
+		</where>
+		      ORDER BY t.id DESC 
+	</select>
+	
+	<!-- 后台展示列表 -->
+	<select id="selectList" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.ChannelStatisticsDetailCustomize">
+			SELECT
+				t.id,
+				t.utm_id,
+				t.user_id,
+				u.username AS user_name,
+				FROM_UNIXTIME( t.create_time, '%Y-%m-%d %H:%i:%S' ) AS register_time,
+				FROM_UNIXTIME( t.invest_time, '%Y-%m-%d %H:%i:%S' ) AS first_invest_time,
+				FROM_UNIXTIME( c.addtime, '%Y-%m-%d %H:%i:%S' ) AS open_account_time,
+				CASE ui.sex
+				WHEN 1 THEN '男'
+				WHEN 2 THEN '女'
+				ELSE '未知'  END AS sex,
+				ui.truename AS true_name,
+				u.mobile,
+				utm.source_id,
+				utm.utm_source AS source_name,
+				utm.utm_term AS key_name,
+				
+				(SELECT
+					CASE
+				WHEN SUM(tender.account) IS NULL THEN
+					0
+				ELSE
+					SUM(tender.account)
+				END account
+				FROM
+					huiyingdai_utm_reg reg
+				INNER JOIN huiyingdai_borrow_tender tender ON tender.user_id = reg.user_id
+				INNER JOIN huiyingdai_borrow borrow ON borrow.borrow_nid = tender.borrow_nid
+				AND borrow.project_type <![CDATA[<>]]> 8  WHERE reg.user_id = t.user_id ) AS cumulative_invest,
+				(SELECT
+					CASE
+				WHEN SUM(hdpa.accede_account) IS NULL THEN
+					0
+				ELSE
+					SUM(hdpa.accede_account)
+				END account
+				FROM
+					huiyingdai_utm_reg reg
+				INNER JOIN hyjf_debt_plan_accede hdpa ON hdpa.user_id = reg.user_id
+				WHERE reg.user_id = t.user_id ) AS htj_invest,
+				
+				(SELECT
+					CASE
+				WHEN SUM(hct.assign_capital) IS NULL THEN
+					0
+				ELSE
+					SUM(hct.assign_capital)
+				END account
+				FROM
+					huiyingdai_utm_reg reg
+				INNER JOIN huiyingdai_credit_tender hct ON hct.user_id = reg.user_id
+				WHERE reg.user_id = t.user_id ) AS hzr_invest,
+				IFNULL(t.invest_amount,0) AS invest_amount,
+				t.invest_project_type,
+				t.invest_project_period
+			FROM
+				huiyingdai_utm_reg t
+				LEFT JOIN huiyingdai_users_info ui ON t.user_id = ui.user_id
+				LEFT JOIN huiyingdai_users u ON t.user_id = u.user_id
+				LEFT JOIN huiyingdai_utm utm ON t.utm_id = utm.utm_id
+				LEFT JOIN huiyingdai_account_chinapnr c ON t.user_id = c.user_id
+		<where>
+		    <if test="userName != null and userName !='' " >
+		      AND u.username LIKE CONCAT('%', #{userName}, '%')
+		    </if>
+		    <if test="sourceId != null and sourceId != ''" >
+		      AND utm.source_id <![CDATA[=]]> #{sourceId}
+		    </if>
+		    <if test="keyName != null and keyName != ''" >
+		      AND utm.utm_term LIKE CONCAT('%', #{keyName}, '%')
+		    </if>
+		    <if test="utmIdsSrch != null and utmIdsSrch != ''">
+				AND utm.source_id in
+				<foreach collection="utmIdsSrch" open="(" close=")" separator="," item="utmId">
+					#{utmId}
+				</foreach>
+			</if>
+		</where>
+		  ORDER BY t.id DESC 
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	   
+	</select>
+	
+	<select id="countList" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.ChannelStatisticsDetailCustomize">
+		SELECT
+			COUNT(1)
+		FROM
+			huiyingdai_utm_reg t
+			LEFT JOIN huiyingdai_users_info ui ON t.user_id = ui.user_id
+			LEFT JOIN huiyingdai_users u ON t.user_id = u.user_id
+			LEFT JOIN huiyingdai_utm utm ON t.utm_id = utm.utm_id
+		<where>
+		    <if test="userName != null and userName !='' " >
+		      AND u.username LIKE CONCAT('%', #{userName}, '%')
+		    </if>
+		    <if test="sourceId != null and sourceId != ''" >
+		      AND utm.source_id <![CDATA[=]]> #{sourceId}
+		    </if>
+		    <if test="keyName != null and keyName != ''" >
+		      AND utm.utm_term LIKE CONCAT('%', #{keyName}, '%')
+		    </if>
+		    <if test="utmIdsSrch != null and utmIdsSrch != ''">
+				AND utm.source_id in
+				<foreach collection="utmIdsSrch" open="(" close=")" separator="," item="utmId">
+					#{utmId}
+				</foreach>
+			</if>
+		</where>
+	</select>
+	
+
+	
+</mapper>

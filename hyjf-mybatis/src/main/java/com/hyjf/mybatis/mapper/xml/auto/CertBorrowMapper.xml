@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.CertBorrowMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.CertBorrow" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+    <result column="borrow_user_id" property="borrowUserId" jdbcType="INTEGER" />
+    <result column="is_user_info" property="isUserInfo" jdbcType="INTEGER" />
+    <result column="is_scatter" property="isScatter" jdbcType="INTEGER" />
+    <result column="is_status" property="isStatus" jdbcType="INTEGER" />
+    <result column="is_repay_plan" property="isRepayPlan" jdbcType="INTEGER" />
+    <result column="is_credit" property="isCredit" jdbcType="INTEGER" />
+    <result column="is_transfer" property="isTransfer" jdbcType="INTEGER" />
+    <result column="is_transfer_status" property="isTransferStatus" jdbcType="INTEGER" />
+    <result column="is_underTake" property="isUndertake" jdbcType="INTEGER" />
+    <result column="is_transact" property="isTransact" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, borrow_nid, borrow_user_id, is_user_info, is_scatter, is_status, is_repay_plan, 
+    is_credit, is_transfer, is_transfer_status, is_underTake, is_transact
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.CertBorrowExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from ht_cert_borrow
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ht_cert_borrow
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from ht_cert_borrow
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.CertBorrowExample" >
+    delete from ht_cert_borrow
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.CertBorrow" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ht_cert_borrow (borrow_nid, borrow_user_id, is_user_info, 
+      is_scatter, is_status, is_repay_plan, 
+      is_credit, is_transfer, is_transfer_status, 
+      is_underTake, is_transact)
+    values (#{borrowNid,jdbcType=VARCHAR}, #{borrowUserId,jdbcType=INTEGER}, #{isUserInfo,jdbcType=INTEGER}, 
+      #{isScatter,jdbcType=INTEGER}, #{isStatus,jdbcType=INTEGER}, #{isRepayPlan,jdbcType=INTEGER}, 
+      #{isCredit,jdbcType=INTEGER}, #{isTransfer,jdbcType=INTEGER}, #{isTransferStatus,jdbcType=INTEGER}, 
+      #{isUndertake,jdbcType=INTEGER}, #{isTransact,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.CertBorrow" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ht_cert_borrow
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="borrowNid != null" >
+        borrow_nid,
+      </if>
+      <if test="borrowUserId != null" >
+        borrow_user_id,
+      </if>
+      <if test="isUserInfo != null" >
+        is_user_info,
+      </if>
+      <if test="isScatter != null" >
+        is_scatter,
+      </if>
+      <if test="isStatus != null" >
+        is_status,
+      </if>
+      <if test="isRepayPlan != null" >
+        is_repay_plan,
+      </if>
+      <if test="isCredit != null" >
+        is_credit,
+      </if>
+      <if test="isTransfer != null" >
+        is_transfer,
+      </if>
+      <if test="isTransferStatus != null" >
+        is_transfer_status,
+      </if>
+      <if test="isUndertake != null" >
+        is_underTake,
+      </if>
+      <if test="isTransact != null" >
+        is_transact,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="borrowNid != null" >
+        #{borrowNid,jdbcType=VARCHAR},
+      </if>
+      <if test="borrowUserId != null" >
+        #{borrowUserId,jdbcType=INTEGER},
+      </if>
+      <if test="isUserInfo != null" >
+        #{isUserInfo,jdbcType=INTEGER},
+      </if>
+      <if test="isScatter != null" >
+        #{isScatter,jdbcType=INTEGER},
+      </if>
+      <if test="isStatus != null" >
+        #{isStatus,jdbcType=INTEGER},
+      </if>
+      <if test="isRepayPlan != null" >
+        #{isRepayPlan,jdbcType=INTEGER},
+      </if>
+      <if test="isCredit != null" >
+        #{isCredit,jdbcType=INTEGER},
+      </if>
+      <if test="isTransfer != null" >
+        #{isTransfer,jdbcType=INTEGER},
+      </if>
+      <if test="isTransferStatus != null" >
+        #{isTransferStatus,jdbcType=INTEGER},
+      </if>
+      <if test="isUndertake != null" >
+        #{isUndertake,jdbcType=INTEGER},
+      </if>
+      <if test="isTransact != null" >
+        #{isTransact,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.CertBorrowExample" resultType="java.lang.Integer" >
+    select count(*) from ht_cert_borrow
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update ht_cert_borrow
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.borrowNid != null" >
+        borrow_nid = #{record.borrowNid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.borrowUserId != null" >
+        borrow_user_id = #{record.borrowUserId,jdbcType=INTEGER},
+      </if>
+      <if test="record.isUserInfo != null" >
+        is_user_info = #{record.isUserInfo,jdbcType=INTEGER},
+      </if>
+      <if test="record.isScatter != null" >
+        is_scatter = #{record.isScatter,jdbcType=INTEGER},
+      </if>
+      <if test="record.isStatus != null" >
+        is_status = #{record.isStatus,jdbcType=INTEGER},
+      </if>
+      <if test="record.isRepayPlan != null" >
+        is_repay_plan = #{record.isRepayPlan,jdbcType=INTEGER},
+      </if>
+      <if test="record.isCredit != null" >
+        is_credit = #{record.isCredit,jdbcType=INTEGER},
+      </if>
+      <if test="record.isTransfer != null" >
+        is_transfer = #{record.isTransfer,jdbcType=INTEGER},
+      </if>
+      <if test="record.isTransferStatus != null" >
+        is_transfer_status = #{record.isTransferStatus,jdbcType=INTEGER},
+      </if>
+      <if test="record.isUndertake != null" >
+        is_underTake = #{record.isUndertake,jdbcType=INTEGER},
+      </if>
+      <if test="record.isTransact != null" >
+        is_transact = #{record.isTransact,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update ht_cert_borrow
+    set id = #{record.id,jdbcType=INTEGER},
+      borrow_nid = #{record.borrowNid,jdbcType=VARCHAR},
+      borrow_user_id = #{record.borrowUserId,jdbcType=INTEGER},
+      is_user_info = #{record.isUserInfo,jdbcType=INTEGER},
+      is_scatter = #{record.isScatter,jdbcType=INTEGER},
+      is_status = #{record.isStatus,jdbcType=INTEGER},
+      is_repay_plan = #{record.isRepayPlan,jdbcType=INTEGER},
+      is_credit = #{record.isCredit,jdbcType=INTEGER},
+      is_transfer = #{record.isTransfer,jdbcType=INTEGER},
+      is_transfer_status = #{record.isTransferStatus,jdbcType=INTEGER},
+      is_underTake = #{record.isUndertake,jdbcType=INTEGER},
+      is_transact = #{record.isTransact,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.CertBorrow" >
+    update ht_cert_borrow
+    <set >
+      <if test="borrowNid != null" >
+        borrow_nid = #{borrowNid,jdbcType=VARCHAR},
+      </if>
+      <if test="borrowUserId != null" >
+        borrow_user_id = #{borrowUserId,jdbcType=INTEGER},
+      </if>
+      <if test="isUserInfo != null" >
+        is_user_info = #{isUserInfo,jdbcType=INTEGER},
+      </if>
+      <if test="isScatter != null" >
+        is_scatter = #{isScatter,jdbcType=INTEGER},
+      </if>
+      <if test="isStatus != null" >
+        is_status = #{isStatus,jdbcType=INTEGER},
+      </if>
+      <if test="isRepayPlan != null" >
+        is_repay_plan = #{isRepayPlan,jdbcType=INTEGER},
+      </if>
+      <if test="isCredit != null" >
+        is_credit = #{isCredit,jdbcType=INTEGER},
+      </if>
+      <if test="isTransfer != null" >
+        is_transfer = #{isTransfer,jdbcType=INTEGER},
+      </if>
+      <if test="isTransferStatus != null" >
+        is_transfer_status = #{isTransferStatus,jdbcType=INTEGER},
+      </if>
+      <if test="isUndertake != null" >
+        is_underTake = #{isUndertake,jdbcType=INTEGER},
+      </if>
+      <if test="isTransact != null" >
+        is_transact = #{isTransact,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.CertBorrow" >
+    update ht_cert_borrow
+    set borrow_nid = #{borrowNid,jdbcType=VARCHAR},
+      borrow_user_id = #{borrowUserId,jdbcType=INTEGER},
+      is_user_info = #{isUserInfo,jdbcType=INTEGER},
+      is_scatter = #{isScatter,jdbcType=INTEGER},
+      is_status = #{isStatus,jdbcType=INTEGER},
+      is_repay_plan = #{isRepayPlan,jdbcType=INTEGER},
+      is_credit = #{isCredit,jdbcType=INTEGER},
+      is_transfer = #{isTransfer,jdbcType=INTEGER},
+      is_transfer_status = #{isTransferStatus,jdbcType=INTEGER},
+      is_underTake = #{isUndertake,jdbcType=INTEGER},
+      is_transact = #{isTransact,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

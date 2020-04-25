@@ -1,0 +1,260 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xsi:schemaLocation="http://www.springframework.org/schema/rabbit
+           http://www.springframework.org/schema/rabbit/spring-rabbit.xsd
+           	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-4.1.xsd  
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <rabbit:connection-factory id="connectionFactory"
+    			host="${rabbitmq.host}" port="${rabbitmq.port}" username="${rabbitmq.username}" password="${rabbitmq.password}"
+		virtual-host="${rabbitmq.vhost}" />
+
+    <!--通过指定下面的admin信息，当前producer中的exchange和queue会在rabbitmq服务器上自动生成-->
+    <rabbit:admin connection-factory="connectionFactory"/>
+
+	<!--优惠券还款-->
+    <rabbit:queue id="hyjf-coupon-repay" name="hyjf-coupon-repay" durable="true" auto-delete="false" exclusive="false"/>
+    <!--优惠券放款-->
+    <rabbit:queue id="hyjf-coupon-loans" name="hyjf-coupon-loans" durable="true" auto-delete="false" exclusive="false"/>
+    <!--优惠券还款（汇计划）-->
+    <rabbit:queue id="hyjf-coupon-planrepay" name="hyjf-coupon-planrepay" durable="true" auto-delete="false" exclusive="false"/>
+    <!--优惠券放款（汇计划）-->
+    <rabbit:queue id="hyjf-coupon-planloans" name="hyjf-coupon-planloans" durable="true" auto-delete="false" exclusive="false"/>
+    <!--批次还款请求-->
+    <rabbit:queue id="hyjf-Repay-Request" name="hyjf-Repay-Request" durable="true" auto-delete="false" exclusive="false"/>
+    <!--批次放款请求-->
+    <!-- <rabbit:queue id="hyjf-Loan-Request" name="hyjf-Loan-Request" durable="true" auto-delete="false" exclusive="false"/> -->
+    <!-- 直投类还款业务处理 -->
+    <rabbit:queue id="hyjf-Repay-ZT" name="hyjf-Repay-ZT" durable="true" auto-delete="false" exclusive="false"/>
+    <!-- 直投类放款业务处理 -->
+    <!-- <rabbit:queue id="hyjf-Loan-ZT" name="hyjf-Loan-ZT" durable="true" auto-delete="false" exclusive="false"/> -->
+    <!-- 计划类还款业务处理 -->
+    <rabbit:queue id="hyjf-Repay-Plan" name="hyjf-Repay-Plan" durable="true" auto-delete="false" exclusive="false"/>
+    <!-- 计划类放款业务处理 -->
+    <!-- <rabbit:queue id="hyjf-Loan-Plan" name="hyjf-Loan-Plan" durable="true" auto-delete="false" exclusive="false"/> -->
+    <!-- 直投实时放款-->
+    <rabbit:queue id="hyjf-realTimeLoan-Request" name="hyjf-realTimeLoan-Request" durable="true" auto-delete="false" exclusive="false"/>
+    <!-- 计划实时放款 -->
+    <rabbit:queue id="hyjf-realTimeLoan-Plan-Request" name="hyjf-realTimeLoan-Plan-Request" durable="true" auto-delete="false" exclusive="false"/>
+    <!-- 退出计划 -->
+    <rabbit:queue id="hyjf-Repqy-Quit-Plan" name="hyjf-Repqy-Quit-Plan" durable="true" auto-delete="false" exclusive="false"/>
+    
+    <!-- 自动录标 -->
+    <rabbit:queue id="hyjf-borrow-send" name="hyjf-borrow-send" durable="true" auto-delete="false" exclusive="false"/>
+    <!-- 自动备案 -->
+    <rabbit:queue id="hyjf-borrow-record" name="hyjf-borrow-record" durable="true" auto-delete="false" exclusive="false"/>
+    <!-- 自动审核保证金 -->
+    <rabbit:queue id="hyjf-borrow-bail" name="hyjf-borrow-bail" durable="true" auto-delete="false" exclusive="false"/>
+    <!-- 自动初审 -->
+    <rabbit:queue id="hyjf-borrow-preaudit" name="hyjf-borrow-preaudit" durable="true" auto-delete="false" exclusive="false"/>
+    <!-- 自动关联计划 -->
+    <rabbit:queue id="hyjf-borrow-issue" name="hyjf-borrow-issue" durable="true" auto-delete="false" exclusive="false"/>
+    <!--法大大客户信息修改-->
+    <rabbit:queue id="fdd-user-info-change" name="fdd-user-info-change" durable="true" auto-delete="false" exclusive="false"/>
+    <!--法大大电子签章CA认证-->
+    <rabbit:queue id="fdd-certificate-authority" name="fdd-certificate-authority" durable="true" auto-delete="false" exclusive="false"/>
+    <!--crm账户信息处理-->
+    <rabbit:queue id="crm-account-interface" name="crm-account-interface" durable="true" auto-delete="false" exclusive="false"/>
+    <!-- crm账户余额同步 -->
+    <rabbit:queue id="crm-account-interface_new" name="crm-account-interface_new" durable="true" auto-delete="false" exclusive="false"/>
+    <!-- 2018纳觅返现活动-->
+    <rabbit:queue id="hyjf-return-cash1-activity" name="hyjf-return-cash1-activity" durable="true" auto-delete="false" exclusive="false"/>
+
+    <rabbit:queue id="delay_queue" name="delay_queue" auto-declare="true">
+        <rabbit:queue-arguments>
+            <entry key="x-message-ttl" value="60000" value-type="java.lang.Long" />
+            <entry key="x-dead-letter-exchange" value="hyjf-direct-exchange" />
+            <entry key="x-dead-letter-routing-key" value="crm-routingkey-account-interface" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+
+    <!-- 新的延迟队列用于CRM客户余额同步 -->
+    <rabbit:queue id="crm_delay_queue" name="crm_delay_queue" auto-declare="true">
+        <rabbit:queue-arguments>
+            <entry key="x-message-ttl" value="300000" value-type="java.lang.Long" />
+            <entry key="x-dead-letter-exchange" value="hyjf-direct-exchange" />
+            <entry key="x-dead-letter-routing-key" value="crm-routingkey-account-interface_new" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+
+    <!-- *********合规数据上报 MQ配置 liubin 20181122 start********* -->
+    <!-- routingKey开户成功 -->
+    <rabbit:queue id="hyjf-open-account-success-delay" name="hyjf-open-account-success-delay" auto-declare="true">
+        <rabbit:queue-arguments>
+            <entry key="x-message-ttl" value="30000" value-type="java.lang.Long" />
+            <entry key="x-dead-letter-exchange" value="hyjf-direct-exchange" />
+            <entry key="x-dead-letter-routing-key" value="open_account_success" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+    <!-- routingKey投资中 -->
+    <rabbit:queue id="hyjf-issue-investing-delay" name="hyjf-issue-investing-delay" auto-declare="true">
+        <rabbit:queue-arguments>
+            <entry key="x-message-ttl" value="30000" value-type="java.lang.Long" />
+            <entry key="x-dead-letter-exchange" value="hyjf-direct-exchange" />
+            <entry key="x-dead-letter-routing-key" value="issue_investing" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+    <!-- routingKey满标 -->
+    <rabbit:queue id="hyjf-issue-invested-delay" name="hyjf-issue-invested-delay" auto-declare="true">
+        <rabbit:queue-arguments>
+            <entry key="x-message-ttl" value="30000" value-type="java.lang.Long" />
+            <entry key="x-dead-letter-exchange" value="hyjf-direct-exchange" />
+            <entry key="x-dead-letter-routing-key" value="issue_invested" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+    <!-- routingKey放款成功 -->
+    <rabbit:queue id="hyjf-loan-success-delay" name="hyjf-loan-success-delay" auto-declare="true">
+        <rabbit:queue-arguments>
+            <entry key="x-message-ttl" value="30000" value-type="java.lang.Long" />
+            <entry key="x-dead-letter-exchange" value="hyjf-direct-exchange" />
+            <entry key="x-dead-letter-routing-key" value="loan_success" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+    <!-- routingKey智投放款成功 -->
+    <rabbit:queue id="hyjf-loan-hjh-success-delay" name="hyjf-loan-hjh-success-delay" auto-declare="true">
+        <rabbit:queue-arguments>
+            <entry key="x-message-ttl" value="30000" value-type="java.lang.Long" />
+            <entry key="x-dead-letter-exchange" value="hyjf-direct-exchange" />
+            <entry key="x-dead-letter-routing-key" value="loan_hjh_success" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+    <!-- routingKey转让成功 -->
+    <rabbit:queue id="hyjf-transfer-success-delay" name="hyjf-transfer-success-delay" auto-declare="true">
+        <rabbit:queue-arguments>
+            <entry key="x-message-ttl" value="30000" value-type="java.lang.Long" />
+            <entry key="x-dead-letter-exchange" value="hyjf-direct-exchange" />
+            <entry key="x-dead-letter-routing-key" value="transfer_success" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+    <!-- routingKey单笔承接成功 -->
+    <rabbit:queue id="hyjf-undertake-single-success-delay" name="hyjf-undertake-single-success-delay" auto-declare="true">
+        <rabbit:queue-arguments>
+            <entry key="x-message-ttl" value="30000" value-type="java.lang.Long" />
+            <entry key="x-dead-letter-exchange" value="hyjf-direct-exchange" />
+            <entry key="x-dead-letter-routing-key" value="undertake_single_success" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+    <!-- routingKey全部承接失败 -->
+    <rabbit:queue id="hyjf-undertake-all-fail-delay" name="hyjf-undertake-all-fail-delay" auto-declare="true">
+        <rabbit:queue-arguments>
+            <entry key="x-message-ttl" value="30000" value-type="java.lang.Long" />
+            <entry key="x-dead-letter-exchange" value="hyjf-direct-exchange" />
+            <entry key="x-dead-letter-routing-key" value="undertake_all_fail" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+    <!-- routingKey全部承接成功 -->
+    <rabbit:queue id="hyjf-undertake-all-success-delay" name="hyjf-undertake-all-success-delay" auto-declare="true">
+        <rabbit:queue-arguments>
+            <entry key="x-message-ttl" value="30000" value-type="java.lang.Long" />
+            <entry key="x-dead-letter-exchange" value="hyjf-direct-exchange" />
+            <entry key="x-dead-letter-routing-key" value="undertake_all_success" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+    <!-- routingKey单笔还款成功 -->
+    <rabbit:queue id="hyjf-repay-single-success-delay" name="hyjf-repay-single-success-delay" auto-declare="true">
+        <rabbit:queue-arguments>
+            <entry key="x-message-ttl" value="30000" value-type="java.lang.Long" />
+            <entry key="x-dead-letter-exchange" value="hyjf-direct-exchange" />
+            <entry key="x-dead-letter-routing-key" value="repay_single_success" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+    <!-- routingKey全部还款成功 -->
+    <rabbit:queue id="hyjf-repay-all-success-delay" name="hyjf-repay-all-success-delay" auto-declare="true">
+        <rabbit:queue-arguments>
+            <entry key="x-message-ttl" value="30000" value-type="java.lang.Long" />
+            <entry key="x-dead-letter-exchange" value="hyjf-direct-exchange" />
+            <entry key="x-dead-letter-routing-key" value="repay_all_success" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+    <!-- routingKey新增智投 -->
+    <rabbit:queue id="hyjf-hjhplan-add-delay" name="hyjf-hjhplan-add-delay" auto-declare="true">
+        <rabbit:queue-arguments>
+            <entry key="x-message-ttl" value="30000" value-type="java.lang.Long" />
+            <entry key="x-dead-letter-exchange" value="hyjf-direct-exchange" />
+            <entry key="x-dead-letter-routing-key" value="hjhplan_add" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+    <!-- routingKey用户信息修改(修改手机号,修改银行卡号,风险测评) -->
+    <rabbit:queue id="hyjf-userinfo-change-delay" name="hyjf-userinfo-change-delay" auto-declare="true">
+        <rabbit:queue-arguments>
+            <entry key="x-message-ttl" value="30000" value-type="java.lang.Long" />
+            <entry key="x-dead-letter-exchange" value="hyjf-direct-exchange" />
+            <entry key="x-dead-letter-routing-key" value="userinfo_change" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+    <!-- *********合规数据上报 MQ配置 liubin 20181122 end********* -->
+
+    <!-- 定义direct exchange，绑定 queue -->
+    <rabbit:direct-exchange name="hyjf-direct-exchange" durable="true" auto-delete="false">
+        <rabbit:bindings>
+        	<rabbit:binding queue="hyjf-coupon-repay" key="hyjf-routingkey-coupon-repay"></rabbit:binding>
+        	<rabbit:binding queue="hyjf-coupon-loans" key="hyjf-routingkey-coupon-loans"></rabbit:binding>
+        	<rabbit:binding queue="hyjf-coupon-planrepay" key="hyjf-routingkey-coupon-planrepay"></rabbit:binding>
+        	<rabbit:binding queue="hyjf-coupon-planloans" key="hyjf-routingkey-coupon-planloans"></rabbit:binding>
+            <rabbit:binding queue="hyjf-Repay-Request" key="hyjf-routingkey-Repay-Request"></rabbit:binding>
+            <!-- <rabbit:binding queue="hyjf-Loan-Request" key="hyjf-routingkey-Loan-Request"></rabbit:binding> -->
+            <rabbit:binding queue="hyjf-Repay-ZT" key="hyjf-routingkey-Repay-ZT"></rabbit:binding>
+            <!-- <rabbit:binding queue="hyjf-Loan-ZT" key="hyjf-routingkey-Loan-ZT"></rabbit:binding> -->
+            <rabbit:binding queue="hyjf-Repay-Plan" key="hyjf-routingkey-Repay-Plan"></rabbit:binding>
+            <!-- <rabbit:binding queue="hyjf-Loan-Plan" key="hyjf-routingkey-Loan-Plan"></rabbit:binding> -->
+            <rabbit:binding queue="hyjf-realTimeLoan-Request" key="hyjf-routingkey-realTimeLoan-Request"></rabbit:binding>
+            <rabbit:binding queue="hyjf-realTimeLoan-Plan-Request" key="hyjf-routingkey-planRealTimeLoan-Request"></rabbit:binding>
+	        <rabbit:binding queue="hyjf-Repqy-Quit-Plan" key="hyjf-routingkey-Repay-hjhQuit"></rabbit:binding>
+	        <rabbit:binding queue="hyjf-borrow-send" key="hyjf-routingkey-borrow-send"></rabbit:binding>
+            <rabbit:binding queue="hyjf-borrow-record" key="hyjf-routingkey-borrow-record"></rabbit:binding>
+            <rabbit:binding queue="hyjf-borrow-bail" key="hyjf-routingkey-borrow-bail"></rabbit:binding>
+            <rabbit:binding queue="hyjf-borrow-preaudit" key="hyjf-routingkey-borrow-preaudit"></rabbit:binding>
+            <rabbit:binding queue="hyjf-borrow-issue" key="hyjf-routingkey-borrow-issue"></rabbit:binding>
+            <!--法大大修改客户信息-->
+            <rabbit:binding queue="fdd-user-info-change" key="fdd-routingkey-user-info-change"></rabbit:binding>
+            <!--法大大电子签章CA认证-->
+            <rabbit:binding queue="fdd-certificate-authority" key="fdd-routingkey-certificate-authority"></rabbit:binding>
+            <rabbit:binding queue="crm-account-interface" key="crm-routingkey-account-interface"></rabbit:binding>
+            <rabbit:binding queue="delay_queue" key="routingkey_delay_queue"></rabbit:binding>
+
+            <rabbit:binding queue="crm-account-interface_new" key="crm-routingkey-account-interface_new"></rabbit:binding>
+            <rabbit:binding queue="crm_delay_queue" key="routingkey_delay_queue_new"></rabbit:binding>
+            <!--2018纳觅返现活动-->
+            <rabbit:binding queue="hyjf-return-cash1-activity" key="hyjf-return-cash1-activity-save"></rabbit:binding>
+
+            <!-- *********合规数据上报 MQ配置 liubin 20181122 start********* -->
+            <!-- routingKey开户成功 -->
+            <rabbit:binding queue="hyjf-open-account-success-delay" key="open_account_success_delay"></rabbit:binding>
+            <!-- routingKey投资中 -->
+            <rabbit:binding queue="hyjf-issue-investing-delay" key="issue_investing_delay"></rabbit:binding>
+            <!-- routingKey满标 -->
+            <rabbit:binding queue="hyjf-issue-invested-delay" key="issue_invested_delay"></rabbit:binding>
+            <!-- routingKey放款成功 -->
+            <rabbit:binding queue="hyjf-loan-success-delay" key="loan_success_delay"></rabbit:binding>
+            <!-- routingKey智投放款成功 -->
+            <rabbit:binding queue="hyjf-loan-hjh-success-delay" key="loan_hjh_success_delay"></rabbit:binding>
+            <!-- routingKey转让成功 -->
+            <rabbit:binding queue="hyjf-transfer-success-delay" key="transfer_success_delay"></rabbit:binding>
+            <!-- routingKey单笔承接成功 -->
+            <rabbit:binding queue="hyjf-undertake-single-success-delay" key="undertake_single_success_delay"></rabbit:binding>
+            <!-- routingKey全部承接失败 -->
+            <rabbit:binding queue="hyjf-undertake-all-fail-delay" key="undertake_all_fail_delay"></rabbit:binding>
+            <!-- routingKey全部承接成功 -->
+            <rabbit:binding queue="hyjf-undertake-all-success-delay" key="undertake_all_success_delay"></rabbit:binding>
+            <!-- routingKey单笔还款成功 -->
+            <rabbit:binding queue="hyjf-repay-single-success-delay" key="repay_single_success_delay"></rabbit:binding>
+            <!-- routingKey全部还款成功 -->
+            <rabbit:binding queue="hyjf-repay-all-success-delay" key="repay_all_success_delay"></rabbit:binding>
+            <!-- routingKey新增智投 -->
+            <rabbit:binding queue="hyjf-hjhplan-add-delay" key="hjhplan_add_delay"></rabbit:binding>
+            <!-- routingKey用户信息修改(修改手机号,修改银行卡号,风险测评) -->
+            <rabbit:binding queue="hyjf-userinfo-change-delay" key="userinfo_change_delay"></rabbit:binding>
+
+            <!-- *********合规数据上报 MQ配置 liubin 20181122 end********* -->
+
+        </rabbit:bindings>
+    </rabbit:direct-exchange>
+    
+    <!--定义rabbit template用于数据的接收和发送-->
+    <rabbit:template id="myAmqpTemplate" connection-factory="connectionFactory" exchange="hyjf-direct-exchange"/>
+
+</beans>

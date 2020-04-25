@@ -1,0 +1,189 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+.clear{clear:both}
+.colorblue {
+	background: #7ac0fa;
+	font-family: "microsoft yahei";
+	color: #333333;
+}
+
+.colorblue img {
+	display: block;
+	width: 100%;
+}
+
+.colorblue>img {
+	min-width: 1300px;
+}
+
+.invite-active {
+	width: 1010px;
+	margin: 0 auto;
+}
+
+.invite-position {
+	position: relative;
+	width: 100%;
+}
+
+.invite-cont {
+	position: absolute;
+	top: 187px;
+	left: 0;
+	right: 0;
+	margin: auto;
+	letter-spacing: 1px;
+	width: 1010px;
+	padding: 0px 35px;
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+}
+
+.unload-cont {
+	text-align: center;
+	top: 220px;
+}
+
+.invite-cont .copy {
+	float: left;
+	width: 435px;
+	height: 225px;
+	background: url(../../img/active/active_201706/invite-copybg.png) no-repeat center;
+	background-size: 100%;
+	padding-left: 35px;
+	padding-right: 35px;
+	padding-top: 62px;
+	box-sizing: border-box;
+	-webkit-border-radius: border-box;
+	-moz-border-radius: border-box;
+}
+
+.invite-cont .copy a {
+	display: block;
+	float: left;
+	width: 155px;
+	height: 42px;
+	line-height: 42px;
+	text-decoration: none;
+	background: #f9bb00;
+	color: #ffffff;
+	font-size: 20px;
+	text-align: center;
+	border-radius: 5px;
+}
+
+.invite-cont .copy span {
+	display: block;
+	float: right;
+	font-size: 36px;
+	color: #28a7e1;
+	line-height: 41px;
+}
+
+.invite-cont .copy p {
+	width: 100%;
+	font-size: 20px;
+	margin-top: 30px;
+	float: left;
+	letter-spacing: 1px;
+}
+
+.down {
+	float: right;
+}
+
+
+.down .down-top p {
+	display: inline-block;
+	width: 340px;
+	height: 130px;
+	padding: 38px 25px;
+	background: #cfecea;
+	word-wrap: break-word;
+	box-sizing: border-box;
+	-webkit-border-radius: border-box;
+	-moz-border-radius: border-box;
+}
+
+.down .down-mid {
+	margin-top: 15px;
+}
+
+.down-mid a {
+	display: inline-block;
+	margin-left: 33px;
+}
+
+a.down-btn {
+	width: 185px;
+	height: 50px;
+	line-height: 50px;
+	background: #fd6d6d;
+	color: #fff;
+	border-radius: 10px;
+	text-align: center;
+	font-size: 20px;
+	text-decoration: none;
+	box-shadow: 0px 3px 2px 1px #f65f4e;
+	-webkit-box-shadow: 0px 3px 2px 1px #f65f4e;
+	-moz-box-shadow: 0px 3px 2px 1px #f65f4e;
+}
+
+.down .down-mid p {
+	font-size: 15px;
+	margin-top: 10px;
+}
+
+.invite-bot {
+	width: 100%;
+	height: 80px;
+	line-height: 80px;
+	text-align: center;
+	background: #1c6fbe;
+	font-size: 20px;
+	color: #FFFFFF;
+	letter-spacing: 1px;
+}
+
+.invite-copy-hint {
+	background: url(../../img/active/active_201706/invite-copy.jpg) no-repeat 7% 52%;
+	z-index: 11;
+	background-color: #606060;
+	position: absolute;
+	font-size: 14px;
+	text-align: center;
+	color: white;
+	width: 255px;
+	height: 58px;
+	line-height: 58px;
+	left: 50%;
+	margin-left: -127.5px;
+	top: 35px;
+	display: none;
+}
+
+.unload-cont>a {
+	display: block;
+	margin: 0 auto;
+}
+
+.unload-cont p {
+	font-size: 20px;
+	margin-top: 15px
+}
+
+.unload-cont .colorred {
+	color: #fd6d6d;
+	text-decoration: none;
+}
+.down-top .invite-ewm{float:left;position:relative;}
+.down-top .invite-link{float:right}
+.invite-ewm img{
+	    position: absolute;
+    width: 30px;
+    left: 49px;
+    top: 49px;
+}

@@ -1,0 +1,53 @@
+var
+// --------------------------------------------------------------------------------------------------------------------------------
+/* 事件动作处理 */
+Events = {
+	// 确认按键单击事件绑定
+	confirmClkAct : function() {
+		if(Page.validate.check(false) && Page.form.find(".has-error").length == 0) {
+			Page.confirm("", "确定要保存当前的账户信息吗？", function(isConfirm) {
+				if(isConfirm) {
+					Page.submit();
+				}
+			})
+		}
+	},
+	// 取消按键单击事件绑定
+	cancelClkAct : function() {
+//		parent.$.colorbox.close();
+		window.location.href="employeeinfo_list";
+//		location.window.href="employeeinfo_list";
+
+	}
+};
+
+// --------------------------------------------------------------------------------------------------------------------------------
+/* 画面对象 */
+$.extend(Page, {
+	// 初始化画面事件处理
+	initEvents : function() {
+		// 确认按键单击事件绑定
+		$(".fn-Confirm").click(Events.confirmClkAct);
+		$(".fn-Cancel").click(Events.cancelClkAct);
+	},
+	// 画面初始化
+	initialize : function() {
+		// 执行成功后刷新画面
+		($("#success").val() && parent.Events.refreshClkAct()) || Page.coverLayer();
+
+		// 初始化表单验证
+		Page.validate = Page.form.Validform({
+			tiptype: 3,
+		});
+		
+		$("#departmentId").select2({
+			placeholder: "请选择所属部门"
+		});
+
+		$("#roleId").select2({
+			placeholder: "请选择角色"
+		});
+	},
+}),
+
+Page.initialize();

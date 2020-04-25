@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.report.ReportTenderCustomizeMapper">
+	<resultMap id="ReportTenderMapResult"
+		type="com.hyjf.mybatis.model.customize.report.ReportTenderCustomize">
+		<result column="user_id" property="userId" /> <!-- 用户id -->
+		<result column="username" property="userName" /> <!-- 用户名 -->
+		<result column="truename" property="trueName" /> <!-- 用户名 -->
+		<result column="referrer_name" property="referrerName" /> <!-- 推荐人 -->
+		<result column="region_name" property="regionName" /> <!-- 大区 -->
+		<result column="branch_name" property="branchName" /> <!-- 分公司  -->
+		<result column="tenderMoney" property="tenderMoney" /> <!-- 投资金额  -->
+		<result column="tenderTime" property="tenderTime" /> <!-- 投资时间  -->
+	</resultMap>
+
+	<sql id="where-all-page-condition">
+		<if test="userId != null and userId != 0">
+			AND w.user_id = #{userId}
+		</if>
+		<if test="regionNameSer != null and regionNameSer != ''">
+			AND d3.name = #{regionNameSer}
+		</if>
+		<if test="branchNameSer != null and branchNameSer != ''">
+			AND d2.name = #{branchNameSer}
+		</if>
+		<if test="username != null and username != ''">
+			AND ou.hyd_name = #{username}
+		</if>
+		<if test="startDate != null and startDate != ''">
+			AND FROM_UNIXTIME(w.addtime, '%Y-%m-%d %H:%i:%S') &gt;= STR_TO_DATE(CONCAT(#{startDate},'00:00:00'
+			),'%Y-%m-%d %H:%i:%s')
+		</if>
+		<if test="endDate != null and endDate != ''">
+			AND FROM_UNIXTIME(w.addtime, '%Y-%m-%d %H:%i:%S') &lt;= STR_TO_DATE(CONCAT(#{endDate},'23:59:59'
+			),'%Y-%m-%d %H:%i:%s')
+		</if>
+	</sql>
+
+ 	<select id="queryTenders" resultMap="ReportTenderMapResult"
+		parameterType="com.hyjf.mybatis.model.customize.report.ReportTenderCustomize">
+			SELECT d3.`name` as region_name, d2.`name` as branch_name,w.user_id ,ou.hyd_name as username, 
+			ou.user_realname as referrer_name, w.account as tenderMoney, 
+			FROM_UNIXTIME(w.addtime,'%Y-%m-%d %H:%i:%S') as tenderTime
+			FROM huiyingdai_borrow_tender w
+			LEFT JOIN huiyingdai_spreads_users su ON w.user_id= su.user_id
+			INNER JOIN huiyingdai_users_info ui ON ui.user_id= w.user_id AND ui.attribute in (0,1)
+			LEFT JOIN hyjf_crm.oa_users ou ON ou.hyd_id= su.spreads_userid   AND ou.user_status in('E','Q1','Q2')
+			LEFT JOIN hyjf_crm.oa_department d ON ou.departmentid= d.id
+			LEFT JOIN hyjf_crm.oa_department d2 ON d2.id= d.parentid
+			LEFT JOIN hyjf_crm.oa_department d3 ON d3.id= d2.parentid
+			WHERE 1=1
+			<include refid="where-all-page-condition"/> 
+			UNION 
+			SELECT d3.`name` as region_name, d2.`name` as branch_name,w.user_id ,ou.hyd_name as username, 
+			'' as referrer_name, w.account as tenderMoney, 
+			FROM_UNIXTIME(w.addtime,'%Y-%m-%d %H:%i:%S') as tenderTime
+			FROM huiyingdai_borrow_tender w
+			INNER JOIN hyjf_crm.oa_users ou ON ou.hyd_id= w.user_id  AND ou.user_status in('E','Q1','Q2')
+			LEFT JOIN hyjf_crm.oa_department d ON ou.departmentid= d.id
+			LEFT JOIN hyjf_crm.oa_department d2 ON d2.id= d.parentid
+			LEFT JOIN hyjf_crm.oa_department d3 ON d3.id= d2.parentid
+			WHERE 1=1
+			<include refid="where-all-page-condition"/>  
+
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select> 
+
+</mapper>
+

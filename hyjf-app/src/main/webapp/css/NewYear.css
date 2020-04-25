@@ -1,0 +1,201 @@
+@charset "utf-8";/* import common.css*/
+/*css reset*/
+*{margin:0;padding:0;  -webkit-tap-highlight-color:transparent;}
+body{margin:0;font:12px/2 "Microsoft YaHei","΢���ź�",Arial,sans-serif,Tahoma,Helvetica;width:100%;}
+/*links*/
+a{color:#525252;text-decoration:none;outline:0;-webkit-tap-highlight-color:transparent;}
+a:hover{text-decoration:none}
+h1,h2,h3,h4,h5,h6{font-weight:normal;}
+body,dl,dt,dd,ol,ul,li,p,h1,h2,h3,h4{margin:0;padding:0;}
+ul{list-style:none;}
+em,i{font-style:normal;}
+table{border-spacing:0;border-collapse:collapse;width:100%;}
+img{border:0;vertical-align:middle;max-width:100%;}
+button,input,select,textarea{font-size:100%;font-family:"Microsoft YaHei";margin:0;outline:0 none;vertical-align:baseline;*vertical-align:middle;}
+textarea{overflow:auto;vertical-align:top;resize:none;}
+button,input{line-height:normal;}
+button[disabled],input[disabled],.disable{cursor:no-drop;opacity:.7;}
+input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0;*height:13px;*width:13px;}
+button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0;}
+article,aside,details,figcaption,figure,footer,header,hgroup,nav,section,summary{display:block;}
+/*-----------------------------------------------活动一开始-----------------------------------------------*/
+.clear{clear:both;}
+.newYear-top img{width:100%;}
+.newYear-tab ul li{float:left;width:50%;color:#cccccc;background:#f0e6dc;text-align:center;font-weight:800;position:relative;}
+.newYear-tab ul li.tabActive span{display:block;width:100%;height:3px;background:#DD5043;position:absolute;bottom:0;}
+.newYear-tab ul li.tabActive{color:#dd5043;background:#fdf3e9;}
+.newYear-tab ul li{font-size:0.6rem;height:2.15rem;line-height:2.15rem;letter-spacing:2px;}
+.newYear-cont>div{display:none;width:100%;}
+.newYear-cont>div.contActive{display:block;}
+.newYear-active-1>img{display:block;width:100%}
+.active-lottery{width:100%;height:4.87rem;background:url(../images/newyear/active-one-ban3.jpg) no-repeat top;background-size:100% 100%;box-sizing:border-box;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;}
+.active-lottery ul{display:block;width:10rem;margin:0 auto}
+.active-lottery ul li{display:block;width:2.12rem;position:relative;float:left;margin-right:0.49rem;}
+.active-lottery ul li span{display:block;width:0.7rem;height:0.7rem;color:#FFF;line-height:0.7rem;font-size:0.5rem;background:#ee3726;text-align:center;border-radius:50%;-webkit-border-radius:50%;-moz-border-radius:50%;border:solid 2px #e68d7a;position:absolute;top:-0.35rem;right:-0.35rem;}
+.active-lottery ul li img{display:block;width:100%;}
+.active-lottery ul li.active1-last{margin-right:0;}
+.active-prize{width:100%;height:12.70rem;background:url(../images/newyear/active-one-ban4.jpg) no-repeat center;background-size:100% 100%;position:relative;}
+.active-prize .active-baozhu-list img{display:block;width:100%;}
+.baozhu{width:7.20rem;height:11rem;margin:0 auto;background:url(../images/newyear/baozhu0.png) no-repeat center;background-size:contain;}
+.baozhu.boom{-webkit-animation:boom 1s infinite;animation:boom 1s infinite;}
+@keyframes boom{0%{background-image:url(../images/newyear/baozhu1.png);}
+14.28%{background-image:url(../images/newyear/baozhu2.png);}
+28.57%{background-image:url(../images/newyear/baozhu3.png);}
+42.85%{background-image:url(../images/newyear/baozhu4.png);}
+57.14%{background-image:url(../images/newyear/baozhu5.png);}
+71.42%{background-image:url(../images/newyear/baozhu6.png);}
+85.71%{background-image:url(../images/newyear/baozhu7.png);}
+100%{background-image:url(../images/newyear/baozhu8.png);}
+}
+@-webkit-keyframes boom{0%{background-image:url(../images/newyear/baozhu1.png);}
+14.28%{background-image:url(../images/newyear/baozhu2.png);}
+28.57%{background-image:url(../images/newyear/baozhu3.png);}
+42.85%{background-image:url(../images/newyear/baozhu4.png);}
+57.14%{background-image:url(../images/newyear/baozhu5.png);}
+71.42%{background-image:url(../images/newyear/baozhu6.png);}
+85.71%{background-image:url(../images/newyear/baozhu7.png);}
+100%{background-image:url(../images/newyear/baozhu8.png);}
+}
+@-moz-keyframes boom{0%{background-image:url(../images/newyear/baozhu1.png);}
+14.28%{background-image:url(../images/newyear/baozhu2.png);}
+28.57%{background-image:url(../images/newyear/baozhu3.png);}
+42.85%{background-image:url(../images/newyear/baozhu4.png);}
+57.14%{background-image:url(../images/newyear/baozhu5.png);}
+71.42%{background-image:url(../images/newyear/baozhu6.png);}
+85.71%{background-image:url(../images/newyear/baozhu7.png);}
+100%{background-image:url(../images/newyear/baozhu8.png);}
+}
+.btn-style{display:block;width:7.18rem;height:1.45rem;line-height:1.45rem;font-size:0.65rem;text-align:center;letter-spacing:2px;border-radius:0.90rem;-webkit-border-radius:0.90rem;-moz-border-radius:0.90rem;}
+.baozhu-btn{background:#ba3125;color:#fff2bf;position:absolute;left:0;right:0;margin:auto;bottom:3.0rem;}
+.active-bot{width:100%;height:15.00rem;background:url(../images/newyear/active-bot-bg.jpg) no-repeat center;background-size:100% 100%;padding:0 1.45rem;box-sizing:border-box;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;}
+.invite-btn{background:#fcdb6a;color:#d7574b;margin:0 auto;margin-bottom:0.85rem;}
+.active-rules{font-size:0.48rem;color:#fff2bf;letter-spacing:1px;line-height:1.0rem}
+.active-rules a{display:block;text-decoration:underline;color:#fff;}
+.active-one-zhushi{margin-top:0.65rem;font-size:0.42rem;line-height:0.65rem;}
+.active-lottery ul li p{display:none;}
+.tips-bg{width:100%;height:100%;background:rgba(0,0,0,0.7);position:fixed;z-index:111;top:0}
+.tips-content{width:100%;position:fixed;z-index:222;top:3.0rem;}
+.tips-content .tips-cont-prize{width:9.60rem;height:11.50rem;margin:0 auto;color:#966a2f;text-align:center;background:url(../images/newyear/active-one-tips-1.png) no-repeat center;background-size:100% 100%;padding:0 0.95rem;padding-top:2.7rem;position:relative;letter-spacing:1px;box-sizing:border-box;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;}
+.tips-content .tips-cont-tishi{height:8.0rem;background:url(../images/newyear/active-one-tips-2.png) no-repeat center;background-size:100% 100%;}
+.tips-content .tips-cont-sorry{height:8.0rem;background:url(../images/newyear/active-one-tips-3.png) no-repeat center;background-size:100% 100%;}
+.prize-name{font-size:0.55rem;line-height:0.75rem;}
+.prize-name span{color:#b81f1f;font-weight:800}
+.tips-cont-prize .prize-introduct{font-size:0.40rem;line-height:0.6rem;}
+.tips-line{width:100%;height:1px;background:#c18639;margin:0.7rem 0 0.55rem;}
+.knew-btn{display:block;width:6.84rem;height:1.28rem;line-height:1.28rem;text-align:center;background:url(../images/newyear/knew-btn-bg.png) no-repeat center;background-size:100% 100%;position:absolute;bottom:0;left:0;right:0;margin:auto;font-size:0.52rem;color:#b67630;letter-spacing:1px;}
+.tishi-name{font-size:0.45rem;line-height:0.7rem;}
+.sorry-name{font-size:0.52rem;line-height:0.9rem;}
+.tips-close{display:none;}
+.tips-invite{width:8.34rem;height:8.24rem;margin:0 auto;color:#4c4c4c;text-align:center;background:url(../images/newyear/active-one-tips-4.png) no-repeat center;background-size:100% 100%;padding:0 0.86rem;padding-top:1.90rem;position:relative;box-sizing:border-box;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;}
+.miss-invite{height:7.43rem;background:url(../images/newyear/active-one-tips-5.png) no-repeat center;background-size:100% 100%;}
+.invite-type{font-size:0.60rem;letter-spacing:1px;}
+.invite-frid{border:solid 1px #B7B7B7;outline:none;margin-top:0.45rem;}
+.send-condition-btn>a,.invite-frid{display:block;width:100%;height:1.20rem;line-height:1.20rem;text-align:center;font-size:0.45rem;letter-spacing:1px;border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;}
+.send-condition-btn{width:6.61rem;position:absolute;bottom:0;}
+.send-sure{color:#fff;background:#d5564a;}
+.send-quxiao{color:#b7b7b7}
+.invite-frid-tip,.invite-message{font-size:0.36rem;color:#D5564A;margin-top:0.18rem;display:none;}
+.send-again{margin-bottom:0.6rem;color:#fff;background:#d5564a;}
+.tips-invite .invite-detial{text-align:left;color:#808080;font-size:0.45rem;line-height:0.8rem;margin-top:0.3rem;padding-left:0.35rem;letter-spacing:1px;}
+.newYear-tips-7 .tips-content{top:0}
+.newYear-tips-6 .invite-type{font-size:0.45rem;}
+/*active rules*/
+.newYear-active-rule>div{width: 100%;padding: 0 1.24rem;box-sizing: border-box;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;letter-spacing:1px}
+.newYear-active-rule dd{line-height:0.80rem;font-size: 0.45rem;color: #fff;}
+.newYear-active-rule2 dd{line-height:0.95rem}
+.newYear-active-rule dt{font-size: 0.50rem;color: #fffa7a;letter-spacing: 2px;}
+.active1-rule-1 h3{font-size: 0.68rem;letter-spacing: 2px;color: #FFF;text-align: center;padding-top:3.7rem}
+.active2-rule-1 h3{font-size: 0.68rem;letter-spacing: 2px;color: #FFF;text-align: center;padding-top:2.0rem}
+.active1-rule-1{height:5.09rem;background:url(../images/newyear/active-one-rule-1.jpg) no-repeat center;background-size:100% 100%;}
+.active1-rule-2{height:6.95rem;background:url(../images/newyear/active-one-rule-2.jpg) no-repeat center;background-size:100% 100%;}
+.active1-rule-3{height:7.15rem;background:url(../images/newyear/active-one-rule-3.jpg) no-repeat center;background-size:100% 100%;}
+.active1-rule-4{height:5.13rem;background:url(../images/newyear/active-one-rule-4.jpg) no-repeat center;background-size:100% 100%;}
+.active1-rule-5{height:6.70rem;background:url(../images/newyear/active-one-rule-5.jpg) no-repeat center;background-size:100% 100%;}
+.active1-rule-6{height:11.00rem;background:url(../images/newyear/active-one-rule-6.jpg?version=123) no-repeat center;background-size:100% 100%;}
+.active2-rule-1 {
+	height: 9.71rem;
+	background: url(../images/newyear/active-two-rule-1.jpg) no-repeat center;
+	background-size: 100% 100%;
+}
+.active2-rule-2 {
+	height: 9.75rem;
+	background: url(../images/newyear/active-two-rule-2.jpg) no-repeat center;
+	background-size: 100% 100%;
+}
+.active2-rule-3 {
+	height: 9.43rem;
+	background: url(../images/newyear/active-two-rule-3.jpg) no-repeat center;
+	background-size: 100% 100%;
+}
+.active-ending{
+	text-align: center;
+	letter-spacing: 1px;
+	position: absolute;
+    top: 2px;
+    background: rgba(0,0,0,0.8);
+    color: #FFF;
+    font-size: 0.65rem;
+    width: 9.61rem;
+    height: 11.96rem;
+    border-radius: 0.49rem;
+    left: 1.40rem;
+    z-index: 3333;
+    display: none;
+	}
+.active-ending p{padding-top:5.2rem}
+
+/*-----------------------------------------------活动一结束-----------------------------------------------*/
+/*-----------------------------------------------活动二开始-----------------------------------------------*/
+.hide{display:none;}
+.inline-block{display:inline-block;}
+.ny2017-rules-main{background:#620227;}
+.ny2017-rules-div{width:100%;background:url(../images/newyear/newyear2017-2-1.jpg) no-repeat;background-size:100% auto;color:white;font-size:12px;}
+.ny2017-rules-div p{padding:0 20px;}
+.ny2017-rules-yellow{color:#fffa7a;margin-top:5%;}
+.ny2017-rules-ajust{margin-top:5%;}
+.ny2017-1{height:6.94rem;width:100%;background:url(../images/newyear/newyear2017-2-1.jpg) no-repeat;background-size:100% 100%;color:#fff2bf;font-size:0.49rem;text-align:center;}
+.ny2017-1 h5{padding:2rem 0 0.2rem 0;}
+.ny2017-1 p{padding:0 1rem;}
+.ny2017-2{height:7.74rem;width:100%;background:url(../images/newyear/newyear2017-2-2.jpg) no-repeat;background-size:100% 100%;}
+.ny2017-3{width:100%;background:url(../images/newyear/newyear2017-line.png) no-repeat;background-size:100% 100%;text-align:center;position:relative;}
+.ny2017-3 div{text-align: left;-webkit-writing-mode:vertical-rl;writing-mode:tb-rl;font-size:0.42rem;color:#730d00;position:absolute;right:13%;height:100%;top:0;}
+.ny2017-3 img{width:3.94rem;margin:0 auto;}
+.ny2017-4{height:5.02rem;width:100%;background:url(../images/newyear/newyear2017-2-3.jpg) no-repeat;background-size:100% 100%;text-align:center;}
+.newYear-tab{overflow:hidden;}
+.ny2017-input{    display: inline-block;text-align:center;border-radius:18px;-moz-border-radius:18px;-webkit-border-radius:18px;height:1.46rem;width:7.26rem;font-size:0.68rem;border:0px;margin:2.12rem 0 0 0;　-webkit-appearance:none;/*去除input默认样式*/
+;font-weight:600;}
+.ny2017-input-new{text-align: left !important;text-indent: 10%;}
+.ny2017-input-ok-button{top: -1.46rem;;position: absolute;bottom: 0;left: 7rem;;position: relative;background: #ec5f44;color: white;font-size: 0.68rem;text-align: center;width: 3rem;height: 1.46rem;line-height: 1.46rem;border-top-right-radius: 18px;-webkit-border-top-right-radius: 18px;border-bottom-right-radius: 18px;-webkit-border-bottom-right-radius: 18px;}
+.ny2017-input-outcome{background:#812111;color:white;text-align:center;border-radius:18px;-moz-border-radius:18px;-webkit-border-radius:18px;height:1.46rem;width:7.26rem;font-size:0.68rem;border:0px;margin:2.12rem 0 0 0;　-webkit-appearance:none;/*去除input默认样式*/
+;font-weight:600;}
+.ny2017-input-before{color:#fff2bf;background:#ba3125;}
+.ny2017-input-after{color:#939393;background:#fffcf8;}
+.ny2017-time{border-radius:100%;-moz-border-radius:100%;-webkit-border-radius:100%;background:#da0000;color:#fff2bf;width:2.26rem;height:2.26rem;text-align:center;line-height:2.26rem;font-size:0.72rem;float:right;margin:1.31rem 1.28rem 0 0;}
+.ny2017-time-1{border-radius:100%;-moz-border-radius:100%;-webkit-border-radius:100%;background:#da0000;color:#fff2bf;border:1px solid #fff2bf;width:1.98rem;height:1.98rem;text-align:center;line-height:1.98rem;font-size:0.72rem;vertical-align:baseline;display:inline-block;}
+.ny2017-5{width:100%;}
+.ny2017-notes{margin-top:0.6rem}
+.ny2017-6{background:#930111;}
+.ny2017-6-main{width:11.20rem;background:#ffe0ba;margin:0 auto;overflow:hidden;border-bottom-left-radius:8px;border-bottom-right-radius:8px;}
+.ny2017-6-item{float:left;width:32.99%;;height:3.7rem;border-bottom:1px solid #7d5d36;border-right:1px solid #7d5d36;text-align:center;}
+.ny2017-6-item:last-child{width:99.4%;}
+.ny2017-6-item:last-child img{position:relative;top:-0.41rem;}
+.ny2017-6-item img{width:2.23rem;height:2.57rem;}
+.ny2017-6-item p{text-align:right;font-size:0.48rem;margin-right:0.24rem;font-weight:600;color:#565656;}
+.ny2017-rules{margin:0.6rem 0 0 0;padding-left:1.41rem;color:#fff2bf;font-size:0.48rem;letter-spacing:1px;line-height:1.0rem}
+.ny2017-rules-p a{color:white;text-decoration:underline;}
+.ny2017-notes{font-size:0.42rem;color:#fff2bf;padding:0 1.41rem 0.68rem 1.41rem;letter-spacing:1px;}
+.ny2017-notes p{line-height:0.65rem;}
+.ny2017-6-total{color:#e6c9a0;font-size:0.6rem;text-align:center;padding:0.5rem;}
+.ny2017-6-total span{color:white;font-size:0.72rem;}
+.ny2017-7{color:#999999;background:#47010c;text-align:center;font-size:0.40rem;padding:0.35rem 0;font-weight:600;letter-spacing:1px}
+.ny2017-7 p{line-height:0.6rem;}
+.ny2017-pop{position:fixed;width:100%;height:100%;z-index:11;}
+.ny2017-pop-bg{position:fixed;width:100%;height:100%;background:#000000;opacity:0.7;}
+.ny2017-pop-main{width:8.84rem;margin:40% auto;position:fixed;z-index:111;margin-left:50%;left:-4.42rem;}
+.ny2017-pop-main h5{color:#f1e09a;font-size:0.8rem;font-weight:100;height:0.84rem;line-height:0.84rem;width:7.96rem;margin:0 auto;background:url(../images/newyear/newyear2017-pop-title.png) no-repeat 0 50%;text-align:center;background-size:100% auto;}
+.ny2017-pop-main-content{margin:0.75rem 0 0.75rem 0;}
+.ny2017-pop-main-content>div{color:#966a2f;text-align:center;font-size:0.48rem;background:url(../images/newyear/newyear2017-pop-line.png) repeat-y;background-size:contain;padding:0 0.65rem;}
+.ny2017-pop-main-content>img{display:block;}
+.ny2017-pop-ok{background:url(../images/newyear/newyear2017-button-ok.png) no-repeat;background-size:100% auto;color:#b67630;text-align:center;font-size:0.52rem;height:1.27rem;line-height:1.27rem;width:6.89rem;margin:0 auto 0.45rem;}
+.ny2017-pop-cancle{background:url(../images/newyear/newyear2017-button-cancle.png) no-repeat;background-size:100% auto;color:#b67630;text-align:center;font-size:0.52rem;height:1.27rem;line-height:1.27rem;width:6.89rem;margin:0 auto 0.45rem;}
+/*-----------------------------------------------活动二结束-----------------------------------------------*/

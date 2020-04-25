@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.AdminRepayDelayCustomizeMapper">
+
+	<resultMap id="selectBorrowInfoResultMap" type="com.hyjf.mybatis.model.customize.admin.AdminRepayDelayCustomize">
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="user_id" property="userId" jdbcType="VARCHAR" />
+		<result column="username" property="borrowUserName" jdbcType="VARCHAR" />
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<result column="project_type" property="projectType" jdbcType="VARCHAR" />
+		<result column="project_type_name" property="projectTypeName" jdbcType="VARCHAR" />
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<result column="account" property="borrowAccount" jdbcType="VARCHAR" />
+		<result column="borrow_account_yes" property="borrowAccountYes" jdbcType="VARCHAR" />
+		<result column="repay_last_time" property="repayLastTime" jdbcType="VARCHAR" />
+		<result column="borrow_style_name" property="borrowStyleName" jdbcType="VARCHAR" />	
+		<result column="borrow_style" property="borrowStyle" jdbcType="VARCHAR" />		
+	</resultMap>
+	<select id="selectBorrowInfo" resultMap="selectBorrowInfoResultMap" parameterType="Map">
+		SELECT
+			b.borrow_nid,
+			b.user_id,
+			b.`name` AS borrow_name,
+			u.username,
+			FORMAT(b.account, 2) AS account,
+			b.borrow_style,
+			bs.`name` AS borrow_style_name,
+			b.project_type,
+			bpt.borrow_name AS project_type_name,
+			CASE WHEN borrow_style = 'endday' THEN CONCAT(b.borrow_period, '天') ELSE CONCAT(b.borrow_period, '个月') END borrow_period,
+			b.borrow_apr,
+			FORMAT(b.borrow_account_yes, 2) AS borrow_account_yes,
+            IF(b.repay_last_time IS NULL OR b.repay_last_time = '' OR b.repay_last_time='0' OR b.repay_last_time = 'null', '', FROM_UNIXTIME(b.repay_last_time, '%Y-%m-%d' )) AS repay_last_time
+		FROM
+		    huiyingdai_borrow b 
+			LEFT JOIN huiyingdai_users u ON b.user_id = u.user_id
+			LEFT JOIN huiyingdai_users_info ui ON u.user_id = ui.user_id
+			LEFT JOIN huiyingdai_borrow_style bs ON bs.nid = b.borrow_style
+			LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = CAST(b.project_type AS CHAR)
+		WHERE
+			b.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+	</select>
+</mapper>

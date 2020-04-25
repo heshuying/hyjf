@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:batch="http://www.springframework.org/schema/batch" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
+    http://www.springframework.org/schema/batch 
+    http://www.springframework.org/schema/batch/spring-batch-3.0.xsd  
+    http://www.springframework.org/schema/context 
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd  
+    http://www.springframework.org/schema/tx 
+    http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+	<!-- <bean id="transactionManager" class="org.springframework.batch.support.transaction.ResourcelessTransactionManager"/> -->
+	<!-- 每个Batch都会包含一个Job。Job就像一个容器，这个容器里装了若干Step，Batch中实际干活的也就是这些Step， 至于Step干什么活，无外乎读取数据，处理数据，然后将这些数据存储起来(ItemReader用来读取数据，ItemProcessor用来处理数据， 
+		ItemWriter用来写数据) 。JobLauncher用来启动Job，JobRepository是上述处理提供的一种持久化机制， 它为JobLauncher，Job，和Step实例提供CRUD操作。 -->
+	
+	<!-- jobLauncher 配置-->
+	<bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">  
+        <property name="jobRepository" ref="jobRepository"/>  
+    </bean>  
+    <bean id="jobRepository" class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean">
+   	    <property name="transactionManager" ref="transactionManager" />
+    </bean>  
+
+	<!--开户生成文件JOB 开始-->
+	<batch:job id="userAccountJob">
+		<batch:step id="step1">
+			<batch:tasklet transaction-manager="transactionManager">
+				<batch:chunk reader="userAccountJdbcReader" processor="userAccountProcessor"
+					writer="userAccountWriter" commit-interval="500" /> <!-- 500条进行一次commit -->
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+
+	<!-- 读处理（数据库表） -->
+	<bean id="userAccountJdbcReader" class="org.springframework.batch.item.database.JdbcCursorItemReader"> 
+		<property name="dataSource" ref="dataSourceRead1" /> 
+		<property name="sql" value="SELECT u.user_id as userId,ui.idcard as idCard,ui.truename as name,ui.sex,u.mobile,u.email FROM huiyingdai_users u INNER JOIN huiyingdai_users_info ui ON u.user_id = ui.user_id WHERE u.open_account = 1 AND u.user_type = 0 AND u.bank_open_account = 0" />
+		<property name="rowMapper" ref="userAccountReader" /> 
+	</bean>
+
+	<!-- 写CSV文件 -->  
+    <bean id="userAccountWriter" class="org.springframework.batch.item.file.FlatFileItemWriter" scope="step">  
+       <property name="resource" value="file:#{jobParameters['outputFilePath']}" />  
+       <property name="encoding" value="GBK" />  
+        <property name="lineAggregator">  
+            <bean  class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">  
+                <property name="delimiter" value="\r"></property>  
+                <property name="fieldExtractor">  
+                    <bean class="org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor">  
+                        <property name="names" value="message"></property>  
+                    </bean>  
+                </property>  
+            </bean>  
+        </property>  
+    </bean>  
+	<!--开户生成文件JOB 结束-->
+
+	<!--开户结果文件处理JOB 开始-->
+	<batch:job id="userAccountResultJob">
+		<batch:step id="step2">
+			<batch:tasklet transaction-manager="transactionManager">
+				<batch:chunk reader="userAccountResultFileReader" processor="userAccountResultProcessor" 
+					writer="userAccountResultWriter" commit-interval="500" /> <!-- 500条进行一次commit -->
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+
+	<!-- 读处理（单文件） -->
+<!-- 	<bean id="userAccountResultReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
+		<property name="linesToSkip" value="1" />
+		<property name="lineMapper" ref="lineMapper" />
+		<property name="resource" value="file:#{jobParameters['accountResultFileUrl']}" />
+	</bean> -->
+	<!-- 读处理（多文件） -->
+	<bean id="userAccountResultFileReader" class="org.springframework.batch.item.file.MultiResourceItemReader" scope="step">
+		<property name="resources" value="file:#{jobParameters['accountResultFileUrl']}" />
+		<property name="delegate" ref="accountFlatFileItemReader" />
+	</bean> 
+	
+	<!-- 单个文件的读取对象 -->
+    <bean id="accountFlatFileItemReader" class="org.springframework.batch.item.file.FlatFileItemReader">
+    	<property name="encoding" value="GBK" /> 
+		<property name="lineMapper" ref="accountLineMapper" />
+    </bean>
+	
+	<bean id="accountLineMapper" class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+		<property name="lineTokenizer" ref="lineTokenizer" />
+		<property name="fieldSetMapper" ref="accountFieldSetMapper" />
+	</bean>
+	<bean id="accountFieldSetMapper" class="com.hyjf.batch.result.account.UserAccountResultReader" />
+	<bean id="lineTokenizer" class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
+		<property name="names" value="message" />
+	</bean>
+	<!--开户结果文件处理JOB 结束-->
+	
+	
+	<!--标的迁移生成文件JOB 开始-->
+	<batch:job id="subjectTransferJob"> 
+		<batch:step id="step3">
+			<batch:tasklet transaction-manager="transactionManager">
+				<batch:chunk reader="subjectTransferJdbcReader" processor="subjectTransferProcessor" 
+					writer="subjectTransferFileWriter" commit-interval="500" /> <!-- 500条进行一次commit -->
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+
+	<!-- 读处理（数据库表） -->
+	<bean id="subjectTransferJdbcReader" class="org.springframework.batch.item.database.JdbcCursorItemReader"> 
+		<property name="dataSource" ref="dataSourceRead1" />  <!-- mybatis config-->
+		<property name="sql" value="SELECT borrow.id AS p2pProdId, borrow.borrow_nid AS borrowNid, borrow.NAME AS prodDesc, account.account AS borrowerElecAcc, borrow.account AS amount , borrow.borrow_style AS paymentStyle, borrow.borrow_period AS period, borrow.borrow_apr AS expectAnnualRate, borrow.verify_time AS raiseDate, borrow.borrow_valid_time AS raiseEndDate , acc.account AS orgAccountId FROM huiyingdai_borrow borrow INNER JOIN hyjf_bank_open_account account ON borrow.user_id = account.user_id LEFT JOIN hyjf_bank_open_account acc ON borrow.repay_org_user_id = acc.user_id WHERE borrow.STATUS = 4 AND borrow.regist_status != 2" />
+		<property name="rowMapper" ref="subjectTransferReader" /> 
+	</bean>
+	
+	<!-- 写CSV文件 -->  
+    <bean id="subjectTransferFileWriter" class="org.springframework.batch.item.file.FlatFileItemWriter" scope="step">  
+       <property name="resource" value="file:#{jobParameters['transferFileUrl']}" />  
+       <property name="encoding" value="GBK" /> 
+        <property name="lineAggregator">  
+            <bean  class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">  
+                <property name="delimiter" value="\r"></property>  
+                <property name="fieldExtractor">  
+                    <bean class="org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor">  
+                        <property name="names" value="message"></property>  
+                    </bean>  
+                </property>  
+            </bean>  
+        </property>  
+    </bean> 
+	<!--标的迁移生成文件JOB 结束-->
+	
+	
+	<!--标的迁移结果文件处理JOB 开始-->
+	<batch:job id="subjectTransferResultJob"> 
+		<batch:step id="step4">
+			<batch:tasklet transaction-manager="transactionManager">
+				<batch:chunk reader="subjectTransferResultReader" processor="subjectTransferResultProcessor" 
+					writer="subjectTransferResultWriter" commit-interval="500" /> <!-- 500条进行一次commit -->
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+
+	<!-- 读处理（文件） -->
+	<bean id="subjectTransferResultReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
+		<property name="encoding" value="GBK" />
+		<property name="lineMapper" ref="subjectLineMapper" />
+		<property name="resource" value="file:#{jobParameters['transferResultFileUrl']}" />
+	</bean>
+
+	<bean id="subjectLineMapper" class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+		<property name="lineTokenizer" ref="lineTokenizer" />
+		<property name="fieldSetMapper" ref="subjectFieldSetMapper" />
+	</bean>
+	
+	<bean id="subjectFieldSetMapper" class="com.hyjf.batch.result.subjectTransfer.SubjectTransferResultReader" />
+	
+	<!--标的迁移结果文件处理JOB 结束-->
+	
+	<!--债权转移请求生成文件JOB 开始-->
+	<batch:job id="debtTransferJob">
+		<batch:step id="step5">
+			<batch:tasklet transaction-manager="transactionManager">
+				<batch:chunk reader="debtTransferJdbcReader" processor="debtTransferProcessor"
+					writer="debtTransferWriter" commit-interval="500" /> <!-- 500条进行一次commit -->
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+
+	<!-- 读处理（数据库表） -->
+	<bean id="debtTransferJdbcReader" class="org.springframework.batch.item.database.JdbcCursorItemReader"> 
+		<property name="dataSource" ref="dataSourceRead1" /> 
+		<property name="sql" value="SELECT borrow.user_id AS borrow_user_id, ten.user_id AS ten_user_id, account.account, borrow.borrow_style, borrow.borrow_apr , borrow.repay_last_time, borrow.id AS product_id, borrow.recover_last_time AS interest_date, borrow.recover_last_time AS invest_date, borrow.borrow_nid , ten.nid AS order_id, rec.recover_capital_wait AS capital, ( SELECT IFNULL(SUM(ct.assign_capital - ct.assign_repay_capital), '0.00') FROM huiyingdai_credit_tender ct WHERE rec.nid = ct.credit_tender_nid AND ct.`status` = 0 ) AS capital_paid, rec.recover_interest_wait AS interest_wait, ( SELECT SUM(ct.assign_interest - ct.assign_repay_interest) FROM huiyingdai_credit_tender ct WHERE rec.nid = ct.credit_tender_nid AND ct.`status` = 0 ) AS interest_paid , 1 AS type FROM huiyingdai_borrow borrow INNER JOIN huiyingdai_borrow_tender ten ON borrow.borrow_nid = ten.borrow_nid INNER JOIN huiyingdai_borrow_recover rec ON ten.nid = rec.nid INNER JOIN hyjf_bank_open_account account ON ten.user_id = account.user_id WHERE borrow.`status` = 4 AND borrow.regist_status = 2 AND ten.`status` = 1 AND borrow.repay_full_status = 0 AND rec.credit_status != 2 AND rec.recover_status = 0 AND ten.auth_code IS NULL UNION ALL SELECT borrow.user_id AS borrow_user_id, ten.user_id AS ten_user_id, account.account, borrow.borrow_style, borrow.borrow_apr , borrow.repay_last_time, borrow.id AS product_id, borrow.recover_last_time AS interest_date, ten.add_time AS invest_date, borrow.borrow_nid , ten.assign_nid AS order_id, ten.assign_capital AS capital, IFNULL(ten.assign_repay_capital, '0.00') AS capital_paid, ten.assign_interest AS interest_wait, ten.assign_repay_interest AS interest_paid , 2 AS type FROM huiyingdai_borrow borrow INNER JOIN huiyingdai_credit_tender ten ON borrow.borrow_nid = ten.bid_nid INNER JOIN hyjf_bank_open_account account ON ten.user_id = account.user_id WHERE borrow.`status` = 4 AND borrow.regist_status = 2 AND ten.`status` = 0 AND ten.auth_code IS NULL" />
+		<property name="rowMapper" ref="debtTransferReader" /> 
+	</bean>
+
+	<!-- 写CSV文件 -->  
+    <bean id="debtTransferWriter" class="org.springframework.batch.item.file.FlatFileItemWriter" scope="step">  
+       <property name="resource" value="file:#{jobParameters['debtTransferFilePath']}" />  
+       <property name="encoding" value="GBK" /> 
+        <property name="lineAggregator">  
+            <bean  class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">  
+                <property name="delimiter" value="\r"></property>  
+                <property name="fieldExtractor">  
+                    <bean class="org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor">  
+                        <property name="names" value="message"></property>  
+                    </bean>  
+                </property>  
+            </bean>  
+        </property>  
+    </bean>  
+	<!--债权转移请求生成文件JOB 结束-->
+	
+	<!--债权转移结果生成文件JOB 开始-->
+	<batch:job id="debtTransferResultJob">
+		<batch:step id="step6">
+			<batch:tasklet transaction-manager="transactionManager">
+				<batch:chunk reader="debtTransferResultFileReader" processor="debtTransferResultProcessor" 
+					writer="debtTransferResultWriter" commit-interval="500" /> <!-- 500条进行一次commit -->
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+		<!-- 读处理（单文件） -->
+<!-- 	<bean id="userAccountResultReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
+		<property name="linesToSkip" value="1" />
+		<property name="lineMapper" ref="lineMapper" />
+		<property name="resource" value="file:#{jobParameters['debtTransferResultFileUrl']}" />
+	</bean> -->
+
+	<!-- 读处理（多文件） -->
+	<bean id="debtTransferResultFileReader" class="org.springframework.batch.item.file.MultiResourceItemReader" scope="step">
+		<property name="resources" value="file:#{jobParameters['debtTransferResultFileUrl']}" />
+		<property name="delegate" ref="flatFileItemReader" />
+	</bean> 
+	
+	<!-- 单个文件的读取对象 -->
+    <bean id="flatFileItemReader" class="org.springframework.batch.item.file.FlatFileItemReader">
+    	<property name="encoding" value="GBK" />
+		<property name="lineMapper" ref="lineMapper" />
+    </bean>
+	
+	<bean id="lineMapper" class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+		<property name="lineTokenizer" ref="lineTokenizer" />
+		<property name="fieldSetMapper" ref="fieldSetMapper" />
+	</bean>
+	<bean id="fieldSetMapper" class="com.hyjf.batch.result.debtTransfer.DebtTransferResultReader" />
+				                    
+	<!--债权转移结果生成文件JOB 结束-->
+	
+	
+	<!--签约关系迁移请求生成文件JOB 开始-->
+	<batch:job id="sigtranTransferJob">
+		<batch:step id="step7">
+			<batch:tasklet transaction-manager="transactionManager">
+				<batch:chunk reader="sigtranTransferJdbcReader" processor="sigtranTransferProcessor"
+					writer="sigtranTransferWriter" commit-interval="500" /> <!--500条进行一次commit-->
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+
+	<!--读处理（数据库表）-->
+	<bean id="sigtranTransferJdbcReader" class="org.springframework.batch.item.database.JdbcCursorItemReader"> 
+		<property name="dataSource" ref="dataSourceRead1" /> 
+		<property name="sql" value="select account.account AS account, users.user_id As user_id,users.auth_type AS type, users.auth_status AS status, users.auth_time AS time FROM huiyingdai_users users JOIN   hyjf_bank_open_account account ON users.user_id = account.user_id where users.auth_status = 1" />
+		<property name="rowMapper" ref="sigtranTransferReader" /> 
+	</bean>
+
+    <!-- 写CSV文件 -->  
+    <bean id="sigtranTransferWriter" class="org.springframework.batch.item.file.FlatFileItemWriter" scope="step">  
+       <property name="resource" value="file:#{jobParameters['sigtranTransferFileUrl']}"  />  
+       <property name="encoding" value="GBK" />  
+        <property name="lineAggregator">  
+            <bean  class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">  
+                <property name="delimiter" value="\r"></property>  
+                <property name="fieldExtractor">  
+                    <bean class="org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor">  
+                        <property name="names" value="message"></property>  
+                    </bean>  
+                </property>  
+            </bean>  
+        </property>  
+    </bean>   
+    
+	<!--签约关系迁移请求生成文件JOB 结束-->
+
+	<!--签约关系迁移结果生成文件JOB 开始-->
+	<batch:job id="sigtranTransferResultJob">
+		<batch:step id="step8">
+			<batch:tasklet transaction-manager="transactionManager">
+				<batch:chunk reader="sigtranTransferResultFileReader" processor="sigtranTransferResultProcessor" 
+					writer="sigtranTransferResultWriter" commit-interval="500" /> <!--500条进行一次commit-->
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>	
+
+	<!-- 读处理（多文件） -->
+	<bean id="sigtranTransferResultFileReader" class="org.springframework.batch.item.file.MultiResourceItemReader" scope="step">
+		<property name="resources" value="file:#{jobParameters['sigtranTransferResultFileUrl']}" />
+		<property name="delegate" ref="sigtranTransferFlatFileItemReader" />
+	</bean> 
+	
+	<!-- 单个文件的读取对象 -->
+    <bean id="sigtranTransferFlatFileItemReader" class="org.springframework.batch.item.file.FlatFileItemReader">
+    	<property name="encoding" value="GBK" />
+		<property name="lineMapper" ref="sigtranTransferLineMapper" />
+    </bean>
+	
+	<bean id="sigtranTransferLineMapper" class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+		<property name="lineTokenizer" ref="lineTokenizer" />
+		<property name="fieldSetMapper" ref="sigtranTransferFieldSetMapper" />
+	</bean>
+	<bean id="sigtranTransferFieldSetMapper" class="com.hyjf.batch.result.sigtranTransfer.SigtranTransferResultReader" />				                    
+
+	<!--签约关系迁移结果生成文件JOB 结束-->
+	
+	
+	<!-- Spring Batch Job同一个job instance，成功执行后是不允许重新执行的【失败后是否允许重跑，可通过配置Job的restartable参数来控制，默认是true】，如果需要重新执行，可以变通处理， 
+		添加一个JobParameters构建类,以当前时间作为参数，保证其他参数相同的情况下却是不同的job instance -->
+	<bean id="jobParameterBulider" class="org.springframework.batch.core.JobParametersBuilder" />
+
+</beans>   

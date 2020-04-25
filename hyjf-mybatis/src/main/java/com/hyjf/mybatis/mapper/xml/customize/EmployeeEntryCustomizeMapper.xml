@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.EmployeeEntryCustomizeMapper">
+	<resultMap id="selectAllStaff" type="com.hyjf.mybatis.model.customize.EmployeeEntryCustomize">
+		<result column="name" 			property="name" 	  	 jdbcType="VARCHAR" />
+		<result column="manager" 		property="manager" 	   	 jdbcType="VARCHAR" />
+		<result column="user_realname"  property="user_realname" jdbcType="VARCHAR" />
+		<result column="level" 			property="level" 	  	 jdbcType="INTEGER" />
+		<result column="positionid" 	property="positionid" 	 jdbcType="INTEGER" />
+		<result column="mobile" 		property="mobile" 	  	 jdbcType="CHAR" />
+		<result column="entrydate" 	 	property="entrydate"  	 jdbcType="DATE" />
+		<result column="temporary"  	property="temporary"  	 jdbcType="INTEGER" />
+		<result column="hyd_id" 		property="hyd_id" 	  	 jdbcType="INTEGER" />
+		<result column="id" 			property="id" 	  	 	 jdbcType="INTEGER" />
+	</resultMap>
+	<select id="selectEntry" resultMap="selectAllStaff" resultType="com.hyjf.mybatis.model.customize.EmployeeEntryCustomize">
+		SELECT ue.id AS id,d2.name AS seconddepart,	
+				(SELECT us.user_realname
+					FROM hyjf_crm.oa_department de LEFT JOIN hyjf_crm.oa_users us on  us.id = de.header 
+					WHERE (de.id=u.id))  AS cityManager,
+		 	    d3.name as thirddepart, u.user_realname, u.level, p.name as pname, u.mobile, u.entrydate, u.temporary, u.hyd_name, u.hyd_id ,ue.oprocess
+		FROM hyjf_crm.oa_user_entry ue LEFT JOIN hyjf_crm.oa_users u ON ue.userid=u.id
+				LEFT JOIN hyjf_crm.oa_department d3 ON u.departmentid = d3.id
+				LEFT JOIN hyjf_crm.oa_department d2 ON d2.id = d3.parentid 
+				LEFT JOIN hyjf_crm.oa_position p ON u.positionid = p.id
+		WHERE ue.id IS NOT NULL
+			<if test="id != null and id != ''">
+				AND u.id = #{ue.userid}
+			</if>
+			<if test="levelSrch != null and levelSrch != ''">
+				AND u.level = #{levelSrch}
+			</if>
+			<if test="truenameSrch != null and truenameSrch != ''">
+				AND u.user_realname like CONCAT('%', #{truenameSrch}, '%')
+			</if>
+			<if test="mobileSrch != null and mobileSrch != ''">
+				AND u.mobile like CONCAT('%', #{mobileSrch}, '%')
+			</if>
+			<if test="temporarySrch != null and temporarySrch != ''">
+				AND u.temporary = #{temporarySrch}
+			</if>	
+			<if test="oprocessSrch != null and oprocessSrch != ''">
+				AND ue.oprocess = #{oprocessSrch}
+			</if>		
+		<if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+
+	<select id="countEmployee" resultType="int">
+		SELECT count(*)
+		FROM hyjf_crm.oa_user_entry 
+	</select>
+	
+	<select id="selectEntryDetail" resultMap="selectAllStaff" resultType="com.hyjf.mybatis.model.customize.EmployeeEntryCustomize"  parameterType="int">
+		SELECT ue.id,d1.`name` AS firstdepart,d2.`name` AS seconddepart,
+				d3.name AS  thirddepart, u.level, p.name AS pname, u.payroll, u.hyd_name, u.user_realname, u.idcard, 
+				u.sex, u.age, u.mobile, u.acc_address, u.temporary, u.bank_address, u.bank_user, u.bank_num,
+				u.user_email, u.reference, d3.cityid, u.entrydate, u.education, u.specialty, u.create_time, u.hyd_id 
+		FROM hyjf_crm.oa_user_entry ue LEFT JOIN hyjf_crm.oa_users u ON ue.userid = u.id
+			LEFT JOIN hyjf_crm.oa_department d3 ON u.departmentid = d3.id
+			LEFT JOIN hyjf_crm.oa_department d2 ON d2.id = d3.parentid 
+			LEFT JOIN hyjf_crm.oa_department d1 ON d1.id = d2.parentid
+			LEFT JOIN hyjf_crm.oa_position p ON u.positionid = p.id
+			WHERE ue.id=#{ue.id}
+	</select>
+	
+	
+	<update id="approvalStaff">
+		UPDATE hyjf_crm.oa_user_entry
+		SET oprocess='E'
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

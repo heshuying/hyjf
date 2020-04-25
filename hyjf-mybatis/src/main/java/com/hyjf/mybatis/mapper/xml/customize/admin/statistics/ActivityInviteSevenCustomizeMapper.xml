@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.ActivityInviteSevenCustomizeMapper">
+	<resultMap id="selectInviteSevenListMap" type="com.hyjf.mybatis.model.customize.admin.InviteSevenCustomize">
+		<result column="userid_invited" property="useridInvited" />
+		<result column="username_invited" property="usernameInvited"/>
+		<result column="userid" property="userid"/>
+		<result column="username" property="username"/>
+		<result column="truename" property="truename"/>
+		<result column="mobile" property="mobile"/>
+		<result column="mobile_invited" property="mobileInvited"/>
+		<result column="investSum" property="investSum"/>
+		<result column="investTime" property="investTime"/>
+		<result column="credit_invest_time" property="creditInvestTime"/>
+		<result column="reg_time" property="regTime"/>
+	</resultMap>
+	
+	<select id="selectInviteSevenList" resultMap="selectInviteSevenListMap" parameterType="java.util.Map">
+		SELECT
+			hu.user_id AS userid_invited,
+			hu.username AS username_invited,
+			hu.referrer AS userid,
+			hu2.username,
+			hui2.truename,
+			hu2.mobile,
+			hu.mobile AS mobile_invited,
+			hu.reg_time,
+			IFNULL(
+				(
+					SELECT
+						t.account
+					FROM
+						huiyingdai_borrow_tender t
+					WHERE
+						t.user_id = hu.user_id
+					ORDER BY
+						t.addtime ASC
+					LIMIT 1
+				),
+				0
+			) AS investSum,
+			(
+				SELECT
+					t.addtime
+				FROM
+					huiyingdai_borrow_tender t
+				WHERE
+					t.user_id = hu.user_id
+				ORDER BY
+					t.addtime ASC
+				LIMIT 1
+			) AS investTime,
+			(
+				SELECT
+					t.add_time
+				FROM
+					huiyingdai_credit_tender t
+				WHERE
+					t.user_id = hu.user_id
+				AND t.assign_capital > 0
+				ORDER BY
+					t.add_time
+				LIMIT 1
+			) AS credit_invest_time
+		FROM
+			huiyingdai_users hu
+		LEFT JOIN huiyingdai_users hu2 ON hu.referrer = hu2.user_id
+		LEFT JOIN huiyingdai_users_info hui2 ON hui2.user_id = hu2.user_id
+		WHERE
+			hu.referrer IS NOT NULL
+		AND hu.reg_time >= #{actStart}
+		AND hu.reg_time <![CDATA[<=]]> #{actEnd}
+		AND (
+			hui2.attribute = 0
+			OR hui2.attribute = 1
+		)
+		AND NOT EXISTS (
+			SELECT
+				t1.userid
+			FROM
+				hyjf_activity_invite_seven t1
+			WHERE
+				t1.userid_invited = hu.user_id
+			AND t1.money_first > 0
+		)
+		order by hu.reg_time desc
+	</select>
+	
+	<select id="selectInviteSevenTenList" resultType="java.util.Map">
+		SELECT
+			ais.userid, ais.username, ais.mobile,ais.user_realname AS userRealname,
+			IFNULL(COUNT(ais.userid),0) validCount
+		FROM
+			hyjf_activity_invite_seven ais
+		WHERE
+			ais.money_first >= 5000
+		AND ais.reward_type = 2
+		GROUP BY
+			ais.userid
+		HAVING validCount >= 10
+	</select>
+	
+	
+</mapper>

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>hyjf</groupId>
+		<artifactId>hyjf</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<groupId>hyjf</groupId>
+	<artifactId>hyjf-mongo</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>hyjf-mongo</name>
+	<url>http://www.hyjf.com</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<spring.data.mongodb>1.7.0.RELEASE</spring.data.mongodb>
+		<mongodb.java.driver>3.4.3</mongodb.java.driver>
+	</properties>
+	<dependencies>
+
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-mongodb</artifactId>
+			<version>${spring.data.mongodb}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongo-java-driver</artifactId>
+			<version>${mongodb.java.driver}</version>
+		</dependency>
+
+	</dependencies>
+	<description>mongodb 服务支持</description>
+</project>

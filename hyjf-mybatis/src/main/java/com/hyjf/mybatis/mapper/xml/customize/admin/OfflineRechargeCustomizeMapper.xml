@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.hyjf.mybatis.mapper.customize.admin.OfflineRechargeCustomizeMapper">
+	<resultMap id="userAccount"
+		type="com.hyjf.mybatis.model.customize.admin.OfflineRechargeCustomize">
+		<id column="user_id" property="userId" />
+		<result column="username" property="username" />
+		<result column="truename" property="truename" />
+		<result column="mobile" property="mobile" />
+		<result column="account" property="account" />
+	</resultMap>
+	<select id="selectUserAccount" resultMap="userAccount" parameterType="Map">
+		SELECT
+			u.user_id,
+			u.username,
+			u.mobile,
+			i.truename,
+			t.account
+		FROM
+			hyjf_bank_open_account  t
+		INNER JOIN huiyingdai_users u ON u.user_id = t.user_id
+		<if test="username != null and username !='' ">
+			AND u.username = #{username}
+		</if>
+		<if test="mobile != null and mobile !='' ">
+			AND u.mobile = #{mobile}
+		</if>
+		<if test="bankOpenAccount != null and bankOpenAccount !='' ">
+			AND t.account = #{bankOpenAccount}
+		</if>
+		INNER JOIN huiyingdai_users_info i ON u.user_id = i.user_id
+	</select>
+	
+</mapper>

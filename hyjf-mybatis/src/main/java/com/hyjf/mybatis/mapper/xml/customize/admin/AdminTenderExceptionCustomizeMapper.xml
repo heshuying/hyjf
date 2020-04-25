@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.AdminTenderExceptionCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+			b.account <![CDATA[<]]> b.borrow_account_yes
+			<if test="borrowNidSrch != null and borrowNidSrch != ''">
+				AND b.borrow_nid LIKE CONCAT('%', #{borrowNidSrch}, '%')
+			</if>
+			<if test="nidSrch != null and nidSrch != ''">
+				AND bt.nid = #{nidSrch}
+			</if>
+			<if test="tenderUserNameSrch != null and tenderUserNameSrch != ''">
+				AND bt.tender_user_name LIKE CONCAT('%', #{tenderUserNameSrch}, '%')
+			</if>
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND FROM_UNIXTIME( bt.addtime, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch != ''">
+				AND FROM_UNIXTIME( bt.addtime, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+		</where>
+	</sql>
+	
+	<select id="countTenderException" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.admin.AdminTenderExceptionCustomize">
+		SELECT
+		  COUNT(1)
+		FROM
+		    huiyingdai_borrow_tender bt
+	    INNER JOIN huiyingdai_borrow b ON bt.borrow_nid = b.borrow_nid
+		AND b. STATUS = 2
+		LEFT JOIN huiyingdai_borrow_style bs ON bs.nid = b.borrow_style
+		LEFT JOIN huiyingdai_users_info hydui ON bt.user_id = hydui.user_id
+		LEFT JOIN huiyingdai_users u ON u.user_id = bt.user_id
+		LEFT JOIN huiyingdai_users u2 ON u.referrer = u2.user_id
+		<include refid="Where_Clause" />
+	</select>
+	
+	<select id="sumTenderExceptionAccount" resultType="java.lang.String" parameterType="com.hyjf.mybatis.model.customize.admin.AdminTenderExceptionCustomize">
+		SELECT
+		  FORMAT(SUM(bt.account), 2) AS account
+		FROM
+		    huiyingdai_borrow_tender bt
+		INNER JOIN huiyingdai_borrow b ON bt.borrow_nid = b.borrow_nid
+		AND b. STATUS = 2
+		LEFT JOIN huiyingdai_borrow_style bs ON bs.nid = b.borrow_style
+		LEFT JOIN huiyingdai_users_info hydui ON bt.user_id = hydui.user_id
+		LEFT JOIN huiyingdai_users u ON u.user_id = bt.user_id
+		LEFT JOIN huiyingdai_users u2 ON u.referrer = u2.user_id
+		<include refid="Where_Clause" />
+	</select>
+	
+	<resultMap id="selectTenderExceptionListMap" type="com.hyjf.mybatis.model.customize.admin.AdminTenderExceptionCustomize">
+		<result column="nid" property="nid" jdbcType="VARCHAR" />
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<result column="borrow_account" property="borrowAccount" jdbcType="VARCHAR" />
+		<result column="borrow_account_yes" property="borrowAccountYes" jdbcType="VARCHAR" />
+		<result column="referrer_name" property="referrerName" jdbcType="VARCHAR" />
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<result column="borrow_style_name" property="borrowStyleName" jdbcType="VARCHAR" />
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<result column="operating_deck" property="operatingDeck" jdbcType="VARCHAR" />
+		<result column="addtime" property="addtime" jdbcType="VARCHAR" />
+		<result column="attribute" property="attribute" jdbcType="VARCHAR" />
+		<result column="client" property="client" jdbcType="VARCHAR" />
+		<result column="invest_type" property="investType" jdbcType="VARCHAR" />
+		<result column="attribute" property="attribute" jdbcType="VARCHAR" />
+		<result column="referrer_name" property="referrerName" jdbcType="VARCHAR" />
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectTenderExceptionList" resultMap="selectTenderExceptionListMap" parameterType="com.hyjf.mybatis.model.customize.admin.AdminTenderExceptionCustomize">
+		SELECT
+			bt.nid,
+			b.`name` AS borrow_name,
+			bt.tender_user_name AS username,
+			b.borrow_apr,
+			b.borrow_style,
+			CASE WHEN borrow_style = 'endday' THEN CONCAT(b.borrow_period, '天') ELSE CONCAT(b.borrow_period, '个月') END borrow_period,
+			bs.`name` AS borrow_style_name,
+			FORMAT(b.account, 2) AS borrow_account,
+			FORMAT(b.borrow_account_yes, 2) AS borrow_account_yes,
+			bt.borrow_nid,
+			pna.`name` AS attribute,
+			u2.username AS 'referrer_name',
+			FORMAT(bt.account, 2) AS account,
+			FROM_UNIXTIME(bt.addtime,'%Y-%m-%d %H:%i:%s') AS addtime,
+			CASE WHEN bt.client = '0' THEN 'PC'
+			WHEN bt.client = '1' THEN '微官网'
+			WHEN bt.client = '2' THEN '安卓'
+			WHEN bt.client = '3' THEN 'iOS'
+			ELSE '其他' END AS client ,
+			CASE WHEN bt.invest_type = '0' THEN '手动投标'
+			WHEN bt.invest_type = '1' THEN  '预约投标'
+			WHEN bt.invest_type = '2' THEN '自动投标' END AS invest_type
+		FROM
+			huiyingdai_borrow_tender bt
+		INNER JOIN huiyingdai_borrow b ON bt.borrow_nid = b.borrow_nid
+		AND b. STATUS = 2
+		LEFT JOIN huiyingdai_borrow_style bs ON bs.nid = b.borrow_style
+		LEFT JOIN huiyingdai_users_info hydui ON bt.user_id = hydui.user_id
+		LEFT JOIN hyjf_param_name pna ON cast(hydui.attribute AS CHAR) = pna.name_cd AND pna.name_class = 'USER_PROPERTY'
+		LEFT JOIN huiyingdai_users u ON u.user_id = bt.user_id
+		LEFT JOIN huiyingdai_users u2 ON u.referrer = u2.user_id
+	    <include refid="Where_Clause" />
+		  ORDER BY
+		    bt.addtime DESC, bt.id DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+</mapper>

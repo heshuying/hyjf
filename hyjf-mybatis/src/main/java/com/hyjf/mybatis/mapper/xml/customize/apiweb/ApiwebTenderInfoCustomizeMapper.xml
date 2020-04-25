@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.apiweb.ApiwebTenderInfoCustomizeMapper">
+	<resultMap id="tenderInfoList" type="com.hyjf.mybatis.model.customize.apiweb.ApiwebTenderInfoCustomize">
+		<id column="oid" property="oid" jdbcType="VARCHAR" />
+		<result column="bid" property="bid" jdbcType="VARCHAR" />
+		<result column="title" property="title" jdbcType="VARCHAR" />
+		<result column="amount" property="amount" jdbcType="VARCHAR" />
+		<result column="investtime" property="investtime" jdbcType="VARCHAR" />
+		<result column="period" property="period" jdbcType="VARCHAR" />
+		<result column="unit" property="unit" jdbcType="VARCHAR" />
+		<result column="rate" property="rate" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="getTenderInfoList" resultMap="tenderInfoList" parameterType="java.util.Map">
+		SELECT
+			t.nid oid,
+			t.borrow_nid bid,
+			b.`name` title,
+			t.account amount,
+			t.addtime investtime,
+			b.borrow_period period,
+			CASE
+		WHEN s.nid = 'endday' THEN
+			'1'
+		ELSE
+			'0'
+		END unit,
+		 b.borrow_apr rate
+		FROM
+			huiyingdai_borrow_tender t
+		INNER JOIN huiyingdai_borrow b ON t.user_id = #{userid}
+		AND t.borrow_nid = b.borrow_nid
+		LEFT JOIN huiyingdai_borrow_style s ON b.borrow_style = s.nid
+		WHERE
+			t.addtime <![CDATA[>=]]> #{starttime}
+		AND t.addtime <![CDATA[<=]]> #{endtime}
+	</select>
+</mapper>

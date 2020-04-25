@@ -1,0 +1,54 @@
+<!doctype html>
+<!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
+<!--[if IE 7 ]>    <html lang="en" class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]>    <html lang="en" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>Lionite Image Manager</title>
+	<link rel="stylesheet" type="text/css" href="css/images.css">
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="js/jquery.fileupload.js"></script>
+	<script type="text/javascript" src="js/jquery.fileupload-process.js"></script>
+	<script type="text/javascript" src="js/jquery.fileupload-validate.js"></script>
+	<script type="text/javascript" src="js/jquery.iframe-transport.js"></script>
+	<script type="text/javascript" src="js/lioniteimages.js"></script>
+</head>
+<body>
+	<div id="lionite-gallery-manager">
+		
+		<input type="text" name="src" class="src" placeholder="请输入图片的链接..." />
+		<a class="button urlinsert">插入</a>
+		<hr />
+		<span class="label">从下面图片列表插入</span>
+		<ul id="lionite-gallery">
+
+		</ul>
+		<!-- The global progress bar -->
+		<div id="progress" class="progress">
+			<div class="progress-bar progress-bar-success"></div>
+		</div>
+
+		<!-- The container for the uploaded files -->
+		<div id="files" class="files"></div>
+
+		<div class="dropzone">
+			<strong>
+			<img src="img/camera.png" alt="" /><br />
+			拖拽图片到这里...</strong>
+			<small>或者</small>
+			<span class="fileinput-button button">
+
+				<span>上传</span>
+				<!-- The file input field used as target for the file upload widget -->
+				<input id="lionite-file-upload" type="file" name="files[]" multiple>
+			</span>
+		</div>
+
+	</div>
+
+</body>
+</html>

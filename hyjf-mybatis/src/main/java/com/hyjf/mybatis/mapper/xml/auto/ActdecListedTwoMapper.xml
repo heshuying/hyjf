@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.ActdecListedTwoMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.ActdecListedTwo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="truename" property="truename" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="mobile" property="mobile" jdbcType="CHAR" />
+    <result column="trade" property="trade" jdbcType="TINYINT" />
+    <result column="invested_amount" property="investedAmount" jdbcType="INTEGER" />
+    <result column="accept_prize" property="acceptPrize" jdbcType="INTEGER" />
+    <result column="accept_time" property="acceptTime" jdbcType="INTEGER" />
+    <result column="amount" property="amount" jdbcType="INTEGER" />
+    <result column="cumulative_charge" property="cumulativeCharge" jdbcType="INTEGER" />
+    <result column="cumulative_invest" property="cumulativeInvest" jdbcType="INTEGER" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="INTEGER" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+    <result column="del_flg" property="delFlg" jdbcType="TINYINT" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, username, truename, user_id, mobile, trade, invested_amount, accept_prize, accept_time, 
+    amount, cumulative_charge, cumulative_invest, create_user, create_time, update_user, 
+    update_time, del_flg
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.ActdecListedTwoExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_actdec_listed_two
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_actdec_listed_two
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_actdec_listed_two
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.ActdecListedTwoExample" >
+    delete from hyjf_actdec_listed_two
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.ActdecListedTwo" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_actdec_listed_two (username, truename, user_id, 
+      mobile, trade, invested_amount, 
+      accept_prize, accept_time, amount, 
+      cumulative_charge, cumulative_invest, create_user, 
+      create_time, update_user, update_time, 
+      del_flg)
+    values (#{username,jdbcType=VARCHAR}, #{truename,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER}, 
+      #{mobile,jdbcType=CHAR}, #{trade,jdbcType=TINYINT}, #{investedAmount,jdbcType=INTEGER}, 
+      #{acceptPrize,jdbcType=INTEGER}, #{acceptTime,jdbcType=INTEGER}, #{amount,jdbcType=INTEGER}, 
+      #{cumulativeCharge,jdbcType=INTEGER}, #{cumulativeInvest,jdbcType=INTEGER}, #{createUser,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=INTEGER}, #{updateUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=INTEGER}, 
+      #{delFlg,jdbcType=TINYINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.ActdecListedTwo" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_actdec_listed_two
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="username != null" >
+        username,
+      </if>
+      <if test="truename != null" >
+        truename,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="trade != null" >
+        trade,
+      </if>
+      <if test="investedAmount != null" >
+        invested_amount,
+      </if>
+      <if test="acceptPrize != null" >
+        accept_prize,
+      </if>
+      <if test="acceptTime != null" >
+        accept_time,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="cumulativeCharge != null" >
+        cumulative_charge,
+      </if>
+      <if test="cumulativeInvest != null" >
+        cumulative_invest,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="delFlg != null" >
+        del_flg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="truename != null" >
+        #{truename,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=CHAR},
+      </if>
+      <if test="trade != null" >
+        #{trade,jdbcType=TINYINT},
+      </if>
+      <if test="investedAmount != null" >
+        #{investedAmount,jdbcType=INTEGER},
+      </if>
+      <if test="acceptPrize != null" >
+        #{acceptPrize,jdbcType=INTEGER},
+      </if>
+      <if test="acceptTime != null" >
+        #{acceptTime,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=INTEGER},
+      </if>
+      <if test="cumulativeCharge != null" >
+        #{cumulativeCharge,jdbcType=INTEGER},
+      </if>
+      <if test="cumulativeInvest != null" >
+        #{cumulativeInvest,jdbcType=INTEGER},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="delFlg != null" >
+        #{delFlg,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.ActdecListedTwoExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_actdec_listed_two
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_actdec_listed_two
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.username != null" >
+        username = #{record.username,jdbcType=VARCHAR},
+      </if>
+      <if test="record.truename != null" >
+        truename = #{record.truename,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.mobile != null" >
+        mobile = #{record.mobile,jdbcType=CHAR},
+      </if>
+      <if test="record.trade != null" >
+        trade = #{record.trade,jdbcType=TINYINT},
+      </if>
+      <if test="record.investedAmount != null" >
+        invested_amount = #{record.investedAmount,jdbcType=INTEGER},
+      </if>
+      <if test="record.acceptPrize != null" >
+        accept_prize = #{record.acceptPrize,jdbcType=INTEGER},
+      </if>
+      <if test="record.acceptTime != null" >
+        accept_time = #{record.acceptTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.amount != null" >
+        amount = #{record.amount,jdbcType=INTEGER},
+      </if>
+      <if test="record.cumulativeCharge != null" >
+        cumulative_charge = #{record.cumulativeCharge,jdbcType=INTEGER},
+      </if>
+      <if test="record.cumulativeInvest != null" >
+        cumulative_invest = #{record.cumulativeInvest,jdbcType=INTEGER},
+      </if>
+      <if test="record.createUser != null" >
+        create_user = #{record.createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateUser != null" >
+        update_user = #{record.updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.delFlg != null" >
+        del_flg = #{record.delFlg,jdbcType=TINYINT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_actdec_listed_two
+    set id = #{record.id,jdbcType=INTEGER},
+      username = #{record.username,jdbcType=VARCHAR},
+      truename = #{record.truename,jdbcType=VARCHAR},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      mobile = #{record.mobile,jdbcType=CHAR},
+      trade = #{record.trade,jdbcType=TINYINT},
+      invested_amount = #{record.investedAmount,jdbcType=INTEGER},
+      accept_prize = #{record.acceptPrize,jdbcType=INTEGER},
+      accept_time = #{record.acceptTime,jdbcType=INTEGER},
+      amount = #{record.amount,jdbcType=INTEGER},
+      cumulative_charge = #{record.cumulativeCharge,jdbcType=INTEGER},
+      cumulative_invest = #{record.cumulativeInvest,jdbcType=INTEGER},
+      create_user = #{record.createUser,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=INTEGER},
+      update_user = #{record.updateUser,jdbcType=VARCHAR},
+      update_time = #{record.updateTime,jdbcType=INTEGER},
+      del_flg = #{record.delFlg,jdbcType=TINYINT}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.ActdecListedTwo" >
+    update hyjf_actdec_listed_two
+    <set >
+      <if test="username != null" >
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="truename != null" >
+        truename = #{truename,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=CHAR},
+      </if>
+      <if test="trade != null" >
+        trade = #{trade,jdbcType=TINYINT},
+      </if>
+      <if test="investedAmount != null" >
+        invested_amount = #{investedAmount,jdbcType=INTEGER},
+      </if>
+      <if test="acceptPrize != null" >
+        accept_prize = #{acceptPrize,jdbcType=INTEGER},
+      </if>
+      <if test="acceptTime != null" >
+        accept_time = #{acceptTime,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=INTEGER},
+      </if>
+      <if test="cumulativeCharge != null" >
+        cumulative_charge = #{cumulativeCharge,jdbcType=INTEGER},
+      </if>
+      <if test="cumulativeInvest != null" >
+        cumulative_invest = #{cumulativeInvest,jdbcType=INTEGER},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="delFlg != null" >
+        del_flg = #{delFlg,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.ActdecListedTwo" >
+    update hyjf_actdec_listed_two
+    set username = #{username,jdbcType=VARCHAR},
+      truename = #{truename,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=INTEGER},
+      mobile = #{mobile,jdbcType=CHAR},
+      trade = #{trade,jdbcType=TINYINT},
+      invested_amount = #{investedAmount,jdbcType=INTEGER},
+      accept_prize = #{acceptPrize,jdbcType=INTEGER},
+      accept_time = #{acceptTime,jdbcType=INTEGER},
+      amount = #{amount,jdbcType=INTEGER},
+      cumulative_charge = #{cumulativeCharge,jdbcType=INTEGER},
+      cumulative_invest = #{cumulativeInvest,jdbcType=INTEGER},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=INTEGER},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=INTEGER},
+      del_flg = #{delFlg,jdbcType=TINYINT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

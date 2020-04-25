@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.apiweb.plan.WeChatPlanAccountCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+			
+			<if test="userId != null and userId != ''">
+				AND dpa.user_id = #{userId}
+			</if>
+			<!-- 锁定中列表  -->
+			<if test="planStatus != null and planStatus == '1'.toString()">
+				AND dp.debt_plan_status in (5,6,7,8,9,10)
+			</if>
+			<!-- 申购中列表  -->
+			<if test="planStatus != null and planStatus == '2'.toString()">
+				AND dp.debt_plan_status = 4
+			</if>
+			<!-- 已退出列表  -->
+			<if test="planStatus != null and planStatus == '3'.toString()">
+				AND dp.debt_plan_status = 11
+			</if>
+		</where>
+	</sql>
+	
+	<select id="countPlanAccede" resultType="java.lang.Integer" parameterType="java.util.Map">
+		  SELECT
+		    COUNT(1)
+		  FROM
+			hyjf_debt_plan_accede dpa
+			left join hyjf_debt_plan dp on dpa.plan_nid=dp.debt_plan_nid
+		<include refid="Where_Clause" />
+	</select>
+
+	<resultMap id="selectPlanListMap" type="com.hyjf.mybatis.model.customize.apiweb.plan.WeChatPlanAccountCustomize">
+		<result column="liquidate_should_time" property="liquidateShouldTime" jdbcType="VARCHAR" />
+		<result column="repay_time" property="repayTime" jdbcType="VARCHAR" />
+		<result column="debt_plan_status" property="debtPlanStatus" jdbcType="VARCHAR" />
+		<result column="debt_lock_period" property="debtLockPeriod" jdbcType="VARCHAR" />
+		<result column="expect_apr" property="expectApr" jdbcType="VARCHAR" />
+		<result column="debt_plan_nid" property="debtPlanNid" jdbcType="VARCHAR" />
+		<result column="accede_account" property="accedeAccount" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="repay_account" property="repayAccount" jdbcType="VARCHAR" />
+		<result column="repay_account_wait" property="repayAccountWait" jdbcType="VARCHAR" />
+		<result column="repay_account_yes" property="repayAccountYes" jdbcType="VARCHAR" />
+		<result column="repay_time" property="repayTime" jdbcType="VARCHAR" />
+		<result column="repay_capital" property="repayCapital" jdbcType="VARCHAR" />
+		<result column="repay_capital_yes" property="repayCapitalYes" jdbcType="VARCHAR" />
+		<result column="repay_interest" property="repayInterest" jdbcType="VARCHAR" />
+		<result column="repay_interest_wait" property="repayInterestWait" jdbcType="VARCHAR" />
+		<result column="repay_interest_yes" property="repayInterestYes" jdbcType="VARCHAR" />
+		<result column="repay_account_fact" property="repayAccountFact" jdbcType="VARCHAR" />
+		<result column="repay_interest_fact" property="repayInterestFact" jdbcType="VARCHAR" />
+		<result column="liquidates_repay_frost" property="liquidatesRepayFrost" jdbcType="VARCHAR" />
+		<result column="last_repay_time" property="lastRepayTime" jdbcType="VARCHAR" />
+		<result column="debt_plan_account_scale" property="debtPlanAccountScale" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectPlanAccedeList" resultMap="selectPlanListMap" parameterType="java.util.Map">
+		SELECT
+			CASE WHEN dp.liquidate_fact_time = 0 THEN 0 ELSE 
+			FROM_UNIXTIME(dp.liquidate_fact_time,'%Y-%m-%d') END liquidate_fact_time,
+			CASE WHEN dp.liquidate_should_time = 0 THEN 0 ELSE 
+			FROM_UNIXTIME(dp.liquidate_should_time, '%Y-%m-%d') END liquidate_should_time,
+			FROM_UNIXTIME(dp.repay_time, '%Y-%m-%d') repay_time,
+			DATE_FORMAT(DATE_ADD(FROM_UNIXTIME(dp.liquidate_should_time,'%Y-%m-%d'),INTERVAL dp.debt_quit_period-1 DAY),'%Y-%m-%d') last_repay_time,
+			dp.debt_lock_period,
+			dp.expect_apr,
+			dp.debt_plan_status,
+			dp.debt_plan_account_scale,
+			dpa.plan_nid debt_plan_nid,
+			dpa.accede_account,
+			dpa.accede_balance,
+			dpa.accede_frost,
+			dpa.repay_account,
+			dpa.repay_account_yes repay_account_fact,
+			dpa.repay_account_wait,
+			dpa.repay_account_yes,
+			dpa.repay_capital,
+			dpa.repay_capital_yes,
+			dpa.repay_interest,
+			dpa.repay_interest_yes repay_interest_fact,
+			dpa.repay_interest_wait,
+			dpa.repay_interest_yes,
+			dpa.status,
+			FROM_UNIXTIME(dpa.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+			FROM_UNIXTIME(dpa.create_time,'%Y-%m-%d') create_time_day
+		FROM
+			hyjf_debt_plan_accede dpa
+		left join hyjf_debt_plan dp on dpa.plan_nid=dp.debt_plan_nid
+		<include refid="Where_Clause" />
+		ORDER BY
+		  dpa.create_time DESC
+		<if test="limitStart >= 0" >
+			LIMIT #{limitStart} , #{limitEnd}
+		</if>
+	</select>
+</mapper>

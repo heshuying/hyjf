@@ -1,0 +1,828 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.TenthOperationReportMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.TenthOperationReport" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="operation_report_id" property="operationReportId" jdbcType="INTEGER" />
+    <result column="operation_report_type" property="operationReportType" jdbcType="TINYINT" />
+    <result column="first_tender_username" property="firstTenderUsername" jdbcType="VARCHAR" />
+    <result column="first_tender_amount" property="firstTenderAmount" jdbcType="DECIMAL" />
+    <result column="second_tender_username" property="secondTenderUsername" jdbcType="VARCHAR" />
+    <result column="second_tender_amount" property="secondTenderAmount" jdbcType="DECIMAL" />
+    <result column="third_tender_username" property="thirdTenderUsername" jdbcType="VARCHAR" />
+    <result column="third_tender_amount" property="thirdTenderAmount" jdbcType="DECIMAL" />
+    <result column="fourth_tender_username" property="fourthTenderUsername" jdbcType="VARCHAR" />
+    <result column="fourth_tender_amount" property="fourthTenderAmount" jdbcType="DECIMAL" />
+    <result column="fifth_tender_username" property="fifthTenderUsername" jdbcType="VARCHAR" />
+    <result column="fifth_tender_amount" property="fifthTenderAmount" jdbcType="DECIMAL" />
+    <result column="sixth_tender_username" property="sixthTenderUsername" jdbcType="VARCHAR" />
+    <result column="sixth_tender_amount" property="sixthTenderAmount" jdbcType="DECIMAL" />
+    <result column="seventh_tender_username" property="seventhTenderUsername" jdbcType="VARCHAR" />
+    <result column="seventh_tender_amount" property="seventhTenderAmount" jdbcType="DECIMAL" />
+    <result column="eighth_tender_username" property="eighthTenderUsername" jdbcType="VARCHAR" />
+    <result column="eighth_tender_amount" property="eighthTenderAmount" jdbcType="DECIMAL" />
+    <result column="ninth_tender_username" property="ninthTenderUsername" jdbcType="VARCHAR" />
+    <result column="ninth_tender_amount" property="ninthTenderAmount" jdbcType="DECIMAL" />
+    <result column="tenth_tender_username" property="tenthTenderUsername" jdbcType="VARCHAR" />
+    <result column="tenth_tender_amount" property="tenthTenderAmount" jdbcType="DECIMAL" />
+    <result column="ten_tender_amount" property="tenTenderAmount" jdbcType="DECIMAL" />
+    <result column="ten_tender_proportion" property="tenTenderProportion" jdbcType="DECIMAL" />
+    <result column="other_tender_amount" property="otherTenderAmount" jdbcType="DECIMAL" />
+    <result column="other_tender_proportion" property="otherTenderProportion" jdbcType="DECIMAL" />
+    <result column="most_tender_username" property="mostTenderUsername" jdbcType="VARCHAR" />
+    <result column="most_tender_amount" property="mostTenderAmount" jdbcType="DECIMAL" />
+    <result column="most_tender_user_age" property="mostTenderUserAge" jdbcType="TINYINT" />
+    <result column="most_tender_user_area" property="mostTenderUserArea" jdbcType="VARCHAR" />
+    <result column="big_minner_username" property="bigMinnerUsername" jdbcType="VARCHAR" />
+    <result column="big_minner_profit" property="bigMinnerProfit" jdbcType="DECIMAL" />
+    <result column="big_minner_user_age" property="bigMinnerUserAge" jdbcType="TINYINT" />
+    <result column="big_minner_user_area" property="bigMinnerUserArea" jdbcType="VARCHAR" />
+    <result column="active_tender_username" property="activeTenderUsername" jdbcType="VARCHAR" />
+    <result column="active_tender_num" property="activeTenderNum" jdbcType="BIGINT" />
+    <result column="active_tender_user_age" property="activeTenderUserAge" jdbcType="TINYINT" />
+    <result column="active_tender_user_area" property="activeTenderUserArea" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+    <result column="update_user_id" property="updateUserId" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="INTEGER" />
+    <result column="create_user_id" property="createUserId" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, operation_report_id, operation_report_type, first_tender_username, first_tender_amount, 
+    second_tender_username, second_tender_amount, third_tender_username, third_tender_amount, 
+    fourth_tender_username, fourth_tender_amount, fifth_tender_username, fifth_tender_amount, 
+    sixth_tender_username, sixth_tender_amount, seventh_tender_username, seventh_tender_amount, 
+    eighth_tender_username, eighth_tender_amount, ninth_tender_username, ninth_tender_amount, 
+    tenth_tender_username, tenth_tender_amount, ten_tender_amount, ten_tender_proportion, 
+    other_tender_amount, other_tender_proportion, most_tender_username, most_tender_amount, 
+    most_tender_user_age, most_tender_user_area, big_minner_username, big_minner_profit, 
+    big_minner_user_age, big_minner_user_area, active_tender_username, active_tender_num, 
+    active_tender_user_age, active_tender_user_area, update_time, update_user_id, create_time, 
+    create_user_id
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.TenthOperationReportExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_tenth_operation_report
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_tenth_operation_report
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_tenth_operation_report
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.TenthOperationReportExample" >
+    delete from hyjf_tenth_operation_report
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.TenthOperationReport" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_tenth_operation_report (operation_report_id, operation_report_type, 
+      first_tender_username, first_tender_amount, 
+      second_tender_username, second_tender_amount, 
+      third_tender_username, third_tender_amount, 
+      fourth_tender_username, fourth_tender_amount, 
+      fifth_tender_username, fifth_tender_amount, 
+      sixth_tender_username, sixth_tender_amount, 
+      seventh_tender_username, seventh_tender_amount, 
+      eighth_tender_username, eighth_tender_amount, 
+      ninth_tender_username, ninth_tender_amount, 
+      tenth_tender_username, tenth_tender_amount, 
+      ten_tender_amount, ten_tender_proportion, other_tender_amount, 
+      other_tender_proportion, most_tender_username, 
+      most_tender_amount, most_tender_user_age, most_tender_user_area, 
+      big_minner_username, big_minner_profit, big_minner_user_age, 
+      big_minner_user_area, active_tender_username, 
+      active_tender_num, active_tender_user_age, active_tender_user_area, 
+      update_time, update_user_id, create_time, 
+      create_user_id)
+    values (#{operationReportId,jdbcType=INTEGER}, #{operationReportType,jdbcType=TINYINT}, 
+      #{firstTenderUsername,jdbcType=VARCHAR}, #{firstTenderAmount,jdbcType=DECIMAL}, 
+      #{secondTenderUsername,jdbcType=VARCHAR}, #{secondTenderAmount,jdbcType=DECIMAL}, 
+      #{thirdTenderUsername,jdbcType=VARCHAR}, #{thirdTenderAmount,jdbcType=DECIMAL}, 
+      #{fourthTenderUsername,jdbcType=VARCHAR}, #{fourthTenderAmount,jdbcType=DECIMAL}, 
+      #{fifthTenderUsername,jdbcType=VARCHAR}, #{fifthTenderAmount,jdbcType=DECIMAL}, 
+      #{sixthTenderUsername,jdbcType=VARCHAR}, #{sixthTenderAmount,jdbcType=DECIMAL}, 
+      #{seventhTenderUsername,jdbcType=VARCHAR}, #{seventhTenderAmount,jdbcType=DECIMAL}, 
+      #{eighthTenderUsername,jdbcType=VARCHAR}, #{eighthTenderAmount,jdbcType=DECIMAL}, 
+      #{ninthTenderUsername,jdbcType=VARCHAR}, #{ninthTenderAmount,jdbcType=DECIMAL}, 
+      #{tenthTenderUsername,jdbcType=VARCHAR}, #{tenthTenderAmount,jdbcType=DECIMAL}, 
+      #{tenTenderAmount,jdbcType=DECIMAL}, #{tenTenderProportion,jdbcType=DECIMAL}, #{otherTenderAmount,jdbcType=DECIMAL}, 
+      #{otherTenderProportion,jdbcType=DECIMAL}, #{mostTenderUsername,jdbcType=VARCHAR}, 
+      #{mostTenderAmount,jdbcType=DECIMAL}, #{mostTenderUserAge,jdbcType=TINYINT}, #{mostTenderUserArea,jdbcType=VARCHAR}, 
+      #{bigMinnerUsername,jdbcType=VARCHAR}, #{bigMinnerProfit,jdbcType=DECIMAL}, #{bigMinnerUserAge,jdbcType=TINYINT}, 
+      #{bigMinnerUserArea,jdbcType=VARCHAR}, #{activeTenderUsername,jdbcType=VARCHAR}, 
+      #{activeTenderNum,jdbcType=BIGINT}, #{activeTenderUserAge,jdbcType=TINYINT}, #{activeTenderUserArea,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=INTEGER}, #{updateUserId,jdbcType=INTEGER}, #{createTime,jdbcType=INTEGER}, 
+      #{createUserId,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.TenthOperationReport" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_tenth_operation_report
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="operationReportId != null" >
+        operation_report_id,
+      </if>
+      <if test="operationReportType != null" >
+        operation_report_type,
+      </if>
+      <if test="firstTenderUsername != null" >
+        first_tender_username,
+      </if>
+      <if test="firstTenderAmount != null" >
+        first_tender_amount,
+      </if>
+      <if test="secondTenderUsername != null" >
+        second_tender_username,
+      </if>
+      <if test="secondTenderAmount != null" >
+        second_tender_amount,
+      </if>
+      <if test="thirdTenderUsername != null" >
+        third_tender_username,
+      </if>
+      <if test="thirdTenderAmount != null" >
+        third_tender_amount,
+      </if>
+      <if test="fourthTenderUsername != null" >
+        fourth_tender_username,
+      </if>
+      <if test="fourthTenderAmount != null" >
+        fourth_tender_amount,
+      </if>
+      <if test="fifthTenderUsername != null" >
+        fifth_tender_username,
+      </if>
+      <if test="fifthTenderAmount != null" >
+        fifth_tender_amount,
+      </if>
+      <if test="sixthTenderUsername != null" >
+        sixth_tender_username,
+      </if>
+      <if test="sixthTenderAmount != null" >
+        sixth_tender_amount,
+      </if>
+      <if test="seventhTenderUsername != null" >
+        seventh_tender_username,
+      </if>
+      <if test="seventhTenderAmount != null" >
+        seventh_tender_amount,
+      </if>
+      <if test="eighthTenderUsername != null" >
+        eighth_tender_username,
+      </if>
+      <if test="eighthTenderAmount != null" >
+        eighth_tender_amount,
+      </if>
+      <if test="ninthTenderUsername != null" >
+        ninth_tender_username,
+      </if>
+      <if test="ninthTenderAmount != null" >
+        ninth_tender_amount,
+      </if>
+      <if test="tenthTenderUsername != null" >
+        tenth_tender_username,
+      </if>
+      <if test="tenthTenderAmount != null" >
+        tenth_tender_amount,
+      </if>
+      <if test="tenTenderAmount != null" >
+        ten_tender_amount,
+      </if>
+      <if test="tenTenderProportion != null" >
+        ten_tender_proportion,
+      </if>
+      <if test="otherTenderAmount != null" >
+        other_tender_amount,
+      </if>
+      <if test="otherTenderProportion != null" >
+        other_tender_proportion,
+      </if>
+      <if test="mostTenderUsername != null" >
+        most_tender_username,
+      </if>
+      <if test="mostTenderAmount != null" >
+        most_tender_amount,
+      </if>
+      <if test="mostTenderUserAge != null" >
+        most_tender_user_age,
+      </if>
+      <if test="mostTenderUserArea != null" >
+        most_tender_user_area,
+      </if>
+      <if test="bigMinnerUsername != null" >
+        big_minner_username,
+      </if>
+      <if test="bigMinnerProfit != null" >
+        big_minner_profit,
+      </if>
+      <if test="bigMinnerUserAge != null" >
+        big_minner_user_age,
+      </if>
+      <if test="bigMinnerUserArea != null" >
+        big_minner_user_area,
+      </if>
+      <if test="activeTenderUsername != null" >
+        active_tender_username,
+      </if>
+      <if test="activeTenderNum != null" >
+        active_tender_num,
+      </if>
+      <if test="activeTenderUserAge != null" >
+        active_tender_user_age,
+      </if>
+      <if test="activeTenderUserArea != null" >
+        active_tender_user_area,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="operationReportId != null" >
+        #{operationReportId,jdbcType=INTEGER},
+      </if>
+      <if test="operationReportType != null" >
+        #{operationReportType,jdbcType=TINYINT},
+      </if>
+      <if test="firstTenderUsername != null" >
+        #{firstTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="firstTenderAmount != null" >
+        #{firstTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="secondTenderUsername != null" >
+        #{secondTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="secondTenderAmount != null" >
+        #{secondTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="thirdTenderUsername != null" >
+        #{thirdTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdTenderAmount != null" >
+        #{thirdTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="fourthTenderUsername != null" >
+        #{fourthTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="fourthTenderAmount != null" >
+        #{fourthTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="fifthTenderUsername != null" >
+        #{fifthTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="fifthTenderAmount != null" >
+        #{fifthTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="sixthTenderUsername != null" >
+        #{sixthTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="sixthTenderAmount != null" >
+        #{sixthTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="seventhTenderUsername != null" >
+        #{seventhTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="seventhTenderAmount != null" >
+        #{seventhTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="eighthTenderUsername != null" >
+        #{eighthTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="eighthTenderAmount != null" >
+        #{eighthTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="ninthTenderUsername != null" >
+        #{ninthTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="ninthTenderAmount != null" >
+        #{ninthTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="tenthTenderUsername != null" >
+        #{tenthTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="tenthTenderAmount != null" >
+        #{tenthTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="tenTenderAmount != null" >
+        #{tenTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="tenTenderProportion != null" >
+        #{tenTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="otherTenderAmount != null" >
+        #{otherTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="otherTenderProportion != null" >
+        #{otherTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="mostTenderUsername != null" >
+        #{mostTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="mostTenderAmount != null" >
+        #{mostTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="mostTenderUserAge != null" >
+        #{mostTenderUserAge,jdbcType=TINYINT},
+      </if>
+      <if test="mostTenderUserArea != null" >
+        #{mostTenderUserArea,jdbcType=VARCHAR},
+      </if>
+      <if test="bigMinnerUsername != null" >
+        #{bigMinnerUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="bigMinnerProfit != null" >
+        #{bigMinnerProfit,jdbcType=DECIMAL},
+      </if>
+      <if test="bigMinnerUserAge != null" >
+        #{bigMinnerUserAge,jdbcType=TINYINT},
+      </if>
+      <if test="bigMinnerUserArea != null" >
+        #{bigMinnerUserArea,jdbcType=VARCHAR},
+      </if>
+      <if test="activeTenderUsername != null" >
+        #{activeTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="activeTenderNum != null" >
+        #{activeTenderNum,jdbcType=BIGINT},
+      </if>
+      <if test="activeTenderUserAge != null" >
+        #{activeTenderUserAge,jdbcType=TINYINT},
+      </if>
+      <if test="activeTenderUserArea != null" >
+        #{activeTenderUserArea,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.TenthOperationReportExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_tenth_operation_report
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_tenth_operation_report
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.operationReportId != null" >
+        operation_report_id = #{record.operationReportId,jdbcType=INTEGER},
+      </if>
+      <if test="record.operationReportType != null" >
+        operation_report_type = #{record.operationReportType,jdbcType=TINYINT},
+      </if>
+      <if test="record.firstTenderUsername != null" >
+        first_tender_username = #{record.firstTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="record.firstTenderAmount != null" >
+        first_tender_amount = #{record.firstTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.secondTenderUsername != null" >
+        second_tender_username = #{record.secondTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="record.secondTenderAmount != null" >
+        second_tender_amount = #{record.secondTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.thirdTenderUsername != null" >
+        third_tender_username = #{record.thirdTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="record.thirdTenderAmount != null" >
+        third_tender_amount = #{record.thirdTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.fourthTenderUsername != null" >
+        fourth_tender_username = #{record.fourthTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fourthTenderAmount != null" >
+        fourth_tender_amount = #{record.fourthTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.fifthTenderUsername != null" >
+        fifth_tender_username = #{record.fifthTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fifthTenderAmount != null" >
+        fifth_tender_amount = #{record.fifthTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.sixthTenderUsername != null" >
+        sixth_tender_username = #{record.sixthTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sixthTenderAmount != null" >
+        sixth_tender_amount = #{record.sixthTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.seventhTenderUsername != null" >
+        seventh_tender_username = #{record.seventhTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="record.seventhTenderAmount != null" >
+        seventh_tender_amount = #{record.seventhTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.eighthTenderUsername != null" >
+        eighth_tender_username = #{record.eighthTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="record.eighthTenderAmount != null" >
+        eighth_tender_amount = #{record.eighthTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.ninthTenderUsername != null" >
+        ninth_tender_username = #{record.ninthTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="record.ninthTenderAmount != null" >
+        ninth_tender_amount = #{record.ninthTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.tenthTenderUsername != null" >
+        tenth_tender_username = #{record.tenthTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tenthTenderAmount != null" >
+        tenth_tender_amount = #{record.tenthTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.tenTenderAmount != null" >
+        ten_tender_amount = #{record.tenTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.tenTenderProportion != null" >
+        ten_tender_proportion = #{record.tenTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.otherTenderAmount != null" >
+        other_tender_amount = #{record.otherTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.otherTenderProportion != null" >
+        other_tender_proportion = #{record.otherTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.mostTenderUsername != null" >
+        most_tender_username = #{record.mostTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mostTenderAmount != null" >
+        most_tender_amount = #{record.mostTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.mostTenderUserAge != null" >
+        most_tender_user_age = #{record.mostTenderUserAge,jdbcType=TINYINT},
+      </if>
+      <if test="record.mostTenderUserArea != null" >
+        most_tender_user_area = #{record.mostTenderUserArea,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bigMinnerUsername != null" >
+        big_minner_username = #{record.bigMinnerUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bigMinnerProfit != null" >
+        big_minner_profit = #{record.bigMinnerProfit,jdbcType=DECIMAL},
+      </if>
+      <if test="record.bigMinnerUserAge != null" >
+        big_minner_user_age = #{record.bigMinnerUserAge,jdbcType=TINYINT},
+      </if>
+      <if test="record.bigMinnerUserArea != null" >
+        big_minner_user_area = #{record.bigMinnerUserArea,jdbcType=VARCHAR},
+      </if>
+      <if test="record.activeTenderUsername != null" >
+        active_tender_username = #{record.activeTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="record.activeTenderNum != null" >
+        active_tender_num = #{record.activeTenderNum,jdbcType=BIGINT},
+      </if>
+      <if test="record.activeTenderUserAge != null" >
+        active_tender_user_age = #{record.activeTenderUserAge,jdbcType=TINYINT},
+      </if>
+      <if test="record.activeTenderUserArea != null" >
+        active_tender_user_area = #{record.activeTenderUserArea,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateUserId != null" >
+        update_user_id = #{record.updateUserId,jdbcType=INTEGER},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.createUserId != null" >
+        create_user_id = #{record.createUserId,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_tenth_operation_report
+    set id = #{record.id,jdbcType=INTEGER},
+      operation_report_id = #{record.operationReportId,jdbcType=INTEGER},
+      operation_report_type = #{record.operationReportType,jdbcType=TINYINT},
+      first_tender_username = #{record.firstTenderUsername,jdbcType=VARCHAR},
+      first_tender_amount = #{record.firstTenderAmount,jdbcType=DECIMAL},
+      second_tender_username = #{record.secondTenderUsername,jdbcType=VARCHAR},
+      second_tender_amount = #{record.secondTenderAmount,jdbcType=DECIMAL},
+      third_tender_username = #{record.thirdTenderUsername,jdbcType=VARCHAR},
+      third_tender_amount = #{record.thirdTenderAmount,jdbcType=DECIMAL},
+      fourth_tender_username = #{record.fourthTenderUsername,jdbcType=VARCHAR},
+      fourth_tender_amount = #{record.fourthTenderAmount,jdbcType=DECIMAL},
+      fifth_tender_username = #{record.fifthTenderUsername,jdbcType=VARCHAR},
+      fifth_tender_amount = #{record.fifthTenderAmount,jdbcType=DECIMAL},
+      sixth_tender_username = #{record.sixthTenderUsername,jdbcType=VARCHAR},
+      sixth_tender_amount = #{record.sixthTenderAmount,jdbcType=DECIMAL},
+      seventh_tender_username = #{record.seventhTenderUsername,jdbcType=VARCHAR},
+      seventh_tender_amount = #{record.seventhTenderAmount,jdbcType=DECIMAL},
+      eighth_tender_username = #{record.eighthTenderUsername,jdbcType=VARCHAR},
+      eighth_tender_amount = #{record.eighthTenderAmount,jdbcType=DECIMAL},
+      ninth_tender_username = #{record.ninthTenderUsername,jdbcType=VARCHAR},
+      ninth_tender_amount = #{record.ninthTenderAmount,jdbcType=DECIMAL},
+      tenth_tender_username = #{record.tenthTenderUsername,jdbcType=VARCHAR},
+      tenth_tender_amount = #{record.tenthTenderAmount,jdbcType=DECIMAL},
+      ten_tender_amount = #{record.tenTenderAmount,jdbcType=DECIMAL},
+      ten_tender_proportion = #{record.tenTenderProportion,jdbcType=DECIMAL},
+      other_tender_amount = #{record.otherTenderAmount,jdbcType=DECIMAL},
+      other_tender_proportion = #{record.otherTenderProportion,jdbcType=DECIMAL},
+      most_tender_username = #{record.mostTenderUsername,jdbcType=VARCHAR},
+      most_tender_amount = #{record.mostTenderAmount,jdbcType=DECIMAL},
+      most_tender_user_age = #{record.mostTenderUserAge,jdbcType=TINYINT},
+      most_tender_user_area = #{record.mostTenderUserArea,jdbcType=VARCHAR},
+      big_minner_username = #{record.bigMinnerUsername,jdbcType=VARCHAR},
+      big_minner_profit = #{record.bigMinnerProfit,jdbcType=DECIMAL},
+      big_minner_user_age = #{record.bigMinnerUserAge,jdbcType=TINYINT},
+      big_minner_user_area = #{record.bigMinnerUserArea,jdbcType=VARCHAR},
+      active_tender_username = #{record.activeTenderUsername,jdbcType=VARCHAR},
+      active_tender_num = #{record.activeTenderNum,jdbcType=BIGINT},
+      active_tender_user_age = #{record.activeTenderUserAge,jdbcType=TINYINT},
+      active_tender_user_area = #{record.activeTenderUserArea,jdbcType=VARCHAR},
+      update_time = #{record.updateTime,jdbcType=INTEGER},
+      update_user_id = #{record.updateUserId,jdbcType=INTEGER},
+      create_time = #{record.createTime,jdbcType=INTEGER},
+      create_user_id = #{record.createUserId,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.TenthOperationReport" >
+    update hyjf_tenth_operation_report
+    <set >
+      <if test="operationReportId != null" >
+        operation_report_id = #{operationReportId,jdbcType=INTEGER},
+      </if>
+      <if test="operationReportType != null" >
+        operation_report_type = #{operationReportType,jdbcType=TINYINT},
+      </if>
+      <if test="firstTenderUsername != null" >
+        first_tender_username = #{firstTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="firstTenderAmount != null" >
+        first_tender_amount = #{firstTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="secondTenderUsername != null" >
+        second_tender_username = #{secondTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="secondTenderAmount != null" >
+        second_tender_amount = #{secondTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="thirdTenderUsername != null" >
+        third_tender_username = #{thirdTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdTenderAmount != null" >
+        third_tender_amount = #{thirdTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="fourthTenderUsername != null" >
+        fourth_tender_username = #{fourthTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="fourthTenderAmount != null" >
+        fourth_tender_amount = #{fourthTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="fifthTenderUsername != null" >
+        fifth_tender_username = #{fifthTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="fifthTenderAmount != null" >
+        fifth_tender_amount = #{fifthTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="sixthTenderUsername != null" >
+        sixth_tender_username = #{sixthTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="sixthTenderAmount != null" >
+        sixth_tender_amount = #{sixthTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="seventhTenderUsername != null" >
+        seventh_tender_username = #{seventhTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="seventhTenderAmount != null" >
+        seventh_tender_amount = #{seventhTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="eighthTenderUsername != null" >
+        eighth_tender_username = #{eighthTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="eighthTenderAmount != null" >
+        eighth_tender_amount = #{eighthTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="ninthTenderUsername != null" >
+        ninth_tender_username = #{ninthTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="ninthTenderAmount != null" >
+        ninth_tender_amount = #{ninthTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="tenthTenderUsername != null" >
+        tenth_tender_username = #{tenthTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="tenthTenderAmount != null" >
+        tenth_tender_amount = #{tenthTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="tenTenderAmount != null" >
+        ten_tender_amount = #{tenTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="tenTenderProportion != null" >
+        ten_tender_proportion = #{tenTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="otherTenderAmount != null" >
+        other_tender_amount = #{otherTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="otherTenderProportion != null" >
+        other_tender_proportion = #{otherTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="mostTenderUsername != null" >
+        most_tender_username = #{mostTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="mostTenderAmount != null" >
+        most_tender_amount = #{mostTenderAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="mostTenderUserAge != null" >
+        most_tender_user_age = #{mostTenderUserAge,jdbcType=TINYINT},
+      </if>
+      <if test="mostTenderUserArea != null" >
+        most_tender_user_area = #{mostTenderUserArea,jdbcType=VARCHAR},
+      </if>
+      <if test="bigMinnerUsername != null" >
+        big_minner_username = #{bigMinnerUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="bigMinnerProfit != null" >
+        big_minner_profit = #{bigMinnerProfit,jdbcType=DECIMAL},
+      </if>
+      <if test="bigMinnerUserAge != null" >
+        big_minner_user_age = #{bigMinnerUserAge,jdbcType=TINYINT},
+      </if>
+      <if test="bigMinnerUserArea != null" >
+        big_minner_user_area = #{bigMinnerUserArea,jdbcType=VARCHAR},
+      </if>
+      <if test="activeTenderUsername != null" >
+        active_tender_username = #{activeTenderUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="activeTenderNum != null" >
+        active_tender_num = #{activeTenderNum,jdbcType=BIGINT},
+      </if>
+      <if test="activeTenderUserAge != null" >
+        active_tender_user_age = #{activeTenderUserAge,jdbcType=TINYINT},
+      </if>
+      <if test="activeTenderUserArea != null" >
+        active_tender_user_area = #{activeTenderUserArea,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.TenthOperationReport" >
+    update hyjf_tenth_operation_report
+    set operation_report_id = #{operationReportId,jdbcType=INTEGER},
+      operation_report_type = #{operationReportType,jdbcType=TINYINT},
+      first_tender_username = #{firstTenderUsername,jdbcType=VARCHAR},
+      first_tender_amount = #{firstTenderAmount,jdbcType=DECIMAL},
+      second_tender_username = #{secondTenderUsername,jdbcType=VARCHAR},
+      second_tender_amount = #{secondTenderAmount,jdbcType=DECIMAL},
+      third_tender_username = #{thirdTenderUsername,jdbcType=VARCHAR},
+      third_tender_amount = #{thirdTenderAmount,jdbcType=DECIMAL},
+      fourth_tender_username = #{fourthTenderUsername,jdbcType=VARCHAR},
+      fourth_tender_amount = #{fourthTenderAmount,jdbcType=DECIMAL},
+      fifth_tender_username = #{fifthTenderUsername,jdbcType=VARCHAR},
+      fifth_tender_amount = #{fifthTenderAmount,jdbcType=DECIMAL},
+      sixth_tender_username = #{sixthTenderUsername,jdbcType=VARCHAR},
+      sixth_tender_amount = #{sixthTenderAmount,jdbcType=DECIMAL},
+      seventh_tender_username = #{seventhTenderUsername,jdbcType=VARCHAR},
+      seventh_tender_amount = #{seventhTenderAmount,jdbcType=DECIMAL},
+      eighth_tender_username = #{eighthTenderUsername,jdbcType=VARCHAR},
+      eighth_tender_amount = #{eighthTenderAmount,jdbcType=DECIMAL},
+      ninth_tender_username = #{ninthTenderUsername,jdbcType=VARCHAR},
+      ninth_tender_amount = #{ninthTenderAmount,jdbcType=DECIMAL},
+      tenth_tender_username = #{tenthTenderUsername,jdbcType=VARCHAR},
+      tenth_tender_amount = #{tenthTenderAmount,jdbcType=DECIMAL},
+      ten_tender_amount = #{tenTenderAmount,jdbcType=DECIMAL},
+      ten_tender_proportion = #{tenTenderProportion,jdbcType=DECIMAL},
+      other_tender_amount = #{otherTenderAmount,jdbcType=DECIMAL},
+      other_tender_proportion = #{otherTenderProportion,jdbcType=DECIMAL},
+      most_tender_username = #{mostTenderUsername,jdbcType=VARCHAR},
+      most_tender_amount = #{mostTenderAmount,jdbcType=DECIMAL},
+      most_tender_user_age = #{mostTenderUserAge,jdbcType=TINYINT},
+      most_tender_user_area = #{mostTenderUserArea,jdbcType=VARCHAR},
+      big_minner_username = #{bigMinnerUsername,jdbcType=VARCHAR},
+      big_minner_profit = #{bigMinnerProfit,jdbcType=DECIMAL},
+      big_minner_user_age = #{bigMinnerUserAge,jdbcType=TINYINT},
+      big_minner_user_area = #{bigMinnerUserArea,jdbcType=VARCHAR},
+      active_tender_username = #{activeTenderUsername,jdbcType=VARCHAR},
+      active_tender_num = #{activeTenderNum,jdbcType=BIGINT},
+      active_tender_user_age = #{activeTenderUserAge,jdbcType=TINYINT},
+      active_tender_user_area = #{activeTenderUserArea,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=INTEGER},
+      update_user_id = #{updateUserId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=INTEGER},
+      create_user_id = #{createUserId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

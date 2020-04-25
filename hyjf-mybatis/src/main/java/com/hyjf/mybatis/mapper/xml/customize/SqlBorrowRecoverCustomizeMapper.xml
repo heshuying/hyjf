@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.hyjf.mybatis.mapper.customize.SqlBorrowRecoverCustomizeMapper">
+	<resultMap id="selectBorrowRecover"
+		type="com.hyjf.mybatis.model.customize.SqlBorrowRecoverCustomize">
+		<result column="spreads_userid" property="spreads_userid" jdbcType="INTEGER" />
+		<result column="fgs" property="seconddepartname"
+			jdbcType="VARCHAR" />		
+		<result column="daqu" property="firstdepartname"
+			jdbcType="VARCHAR" />	
+		<result column="recover_account" property="recover_account" jdbcType="DECIMAL" />
+		<result column="recover_account_yes" property="recover_account_yes" jdbcType="DECIMAL" />
+		<result column="部门/分公司" property="fgs" 	jdbcType="VARCHAR" />
+		<result column="大区" 	  property="daqu" 	jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectBorrowRecoverByRecovertime" resultMap="selectBorrowRecover"
+		parameterType="int">
+		SELECT daqu as "大区", fgs as "部门/分公司", SUM(dhje) AS sum
+		FROM (
+		SELECT u.spreads_userid, d2.`name` as fgs, d3.`name` as daqu ,
+		r.recover_account-r.recover_account_yes as dhje
+		FROM huiyingdai_borrow_recover r
+		INNER JOIN huiyingdai_users_info ui ON r.user_id= ui.user_id AND
+		ui.attribute>0 AND ui.role_id=1
+		INNER JOIN huiyingdai_spreads_users u on u.user_id= r.user_id
+		INNER JOIN hyjf_crm.oa_users ui ON u.spreads_userid= ui.hyd_id AND
+		ui.user_status in('E','Q1','Q2')
+		LEFT JOIN hyjf_crm.oa_department d ON ui.departmentid= d.id
+		LEFT JOIN hyjf_crm.oa_department d2 ON d.parentid = d2.id
+		LEFT JOIN hyjf_crm.oa_department d3 ON d2.parentid = d3.id
+		WHERE d2.`name` is not null AND d3.`name` not like '%勿动%'
+		and FROM_UNIXTIME(r.recover_time, '%Y%m%d') = #{r.recover_time}
+		) z
+		GROUP BY z.daqu ,z.fgs
+
+		UNION
+		SELECT '' as daqu, '无主单' as "部门/分公司",
+		SUM(r.recover_account-r.recover_account_yes) AS sum
+		FROM huiyingdai_borrow_recover r
+		INNER JOIN huiyingdai_users_info ui ON r.user_id= ui.user_id AND
+		ui.attribute=0 AND ui.role_id=1
+		WHERE FROM_UNIXTIME(r.recover_time, '%Y%m%d') = #{r.recover_time}
+	</select>
+
+</mapper>

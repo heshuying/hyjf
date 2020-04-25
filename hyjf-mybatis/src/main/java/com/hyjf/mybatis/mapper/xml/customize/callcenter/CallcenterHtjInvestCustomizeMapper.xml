@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.hyjf.mybatis.mapper.customize.callcenter.CallcenterHtjInvestCustomizeMapper">
+	<resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.customize.callcenter.CallcenterHtjInvestCustomize">
+		<!-- 推荐人 -->
+		<result column="referee_name" property="refereeUserName" jdbcType="VARCHAR" />
+		<!-- 计划编号 -->
+		<result column="plan_nid" property="debtPlanNid" jdbcType="VARCHAR" />
+		<!-- 预期年化 -->
+		<result column="expect_apr" property="expectApr" jdbcType="VARCHAR" />
+		<!-- 期限 -->
+		<result column="debt_lock_period" property="debtLockPeriod" jdbcType="VARCHAR" />
+		<!-- 加入金额 -->
+		<result column="accede_account" property="accedeAccount" jdbcType="VARCHAR" />
+		<!-- 还款方式 -->
+		<result column="repayment_method" property="repaymentMethod" jdbcType="VARCHAR" />
+		<!-- 用户属性 -->
+		<result column="user_attribute" property="userAttribute" jdbcType="VARCHAR" />
+		<!-- 平台 -->
+		<result column="client" property="platform" jdbcType="VARCHAR" />
+		<!-- 加入时间 -->
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+	</resultMap>
+
+	
+	<select id="selectBorrowInvestList" resultMap="BaseResultMap" parameterType="Map">
+		SELECT
+			hydui.username referee_name,
+			hdpa.plan_nid,
+			CONCAT(hdp.expect_apr,'%') expect_apr,
+			CONCAT(hdp.debt_lock_period,'个月') debt_lock_period,
+			hdpa.accede_account,
+			'到期一次性还本付息' repayment_method,
+			
+			CASE hdpa.user_attribute
+			WHEN 0 THEN
+				'无主单'
+			WHEN 1 THEN
+				'有主单'
+			WHEN 2 THEN
+				'线下员工'
+			WHEN 3 THEN
+				'线上员工'
+			ELSE
+				''
+			END AS user_attribute,
+			pa.`name` client,
+			CASE
+				WHEN hcc.coupon_type = '1' THEN '体验金'
+				WHEN hcc.coupon_type = '2' THEN '加息券'
+				WHEN hcc.coupon_type = '3' THEN '代金券'
+			ELSE
+				'现金'
+			END AS tender_type,
+			FROM_UNIXTIME(hdpa.create_time,'%Y-%m-%d %H:%i') AS create_time,
+			hdpa.create_time AS add_time_long
+		FROM
+			hyjf_debt_plan_accede hdpa
+		LEFT JOIN 
+			hyjf_debt_plan hdp ON hdpa.plan_nid = hdp.debt_plan_nid
+		LEFT JOIN huiyingdai_spreads_users hydsu ON  hdpa.user_id = hydsu.user_id
+		LEFT JOIN huiyingdai_users hydui ON hydsu.spreads_userid = hydui.user_id
+		LEFT JOIN hyjf_coupon_real_tender hcrt ON hcrt.real_tender_id = hdpa.accede_order_id
+		LEFT JOIN hyjf_coupon_tender hct ON hct.order_id = hcrt.coupon_tender_id
+		LEFT JOIN hyjf_coupon_user hcu ON hcu.id = hct.coupon_grant_id
+    	LEFT JOIN hyjf_coupon_config hcc ON hcc.coupon_code = hcu.coupon_code
+		LEFT JOIN hyjf_param_name pa ON pa.name_class = 'CLIENT' AND pa.name_cd = hdpa.client
+		WHERE hdpa.user_id=#{userId}
+		ORDER BY add_time_long DESC
+			<if test="limitStart != null and limitStart >= 0" >
+				limit #{limitStart} , #{limitEnd}
+			</if>
+	</select>
+	
+</mapper>

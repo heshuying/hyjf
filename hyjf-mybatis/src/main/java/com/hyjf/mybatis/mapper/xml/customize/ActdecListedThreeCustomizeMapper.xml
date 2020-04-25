@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.ActdecListedThreeCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+			<!-- 用户名 -->
+			<if test="userNameSrch != null and userNameSrch != ''">
+				AND halt.user_name = #{userNameSrch }
+			</if>
+			<!-- 姓名 -->
+			<if test="userTureNameSrch != null and userTureNameSrch != ''">
+				AND halt.user_ture_name = #{userTureNameSrch }
+			</if>
+			<!-- 手机 -->
+			<if test="userMobileSrch != null and userMobileSrch != ''">
+				AND halt.user_mobile = #{userMobileSrch }
+			</if>
+		</where>
+	</sql>
+
+	<select id="countActdecListedThree" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.ActdecListedThreeCustomize">
+		SELECT
+		  COUNT(1)
+		FROM
+		    hyjf_actdec_listed_three halt
+		<include refid="Where_Clause" />
+	</select>
+
+	<resultMap id="selectActdecListedThreeListMap" type="com.hyjf.mybatis.model.customize.ActdecListedThreeCustomize">
+		<result column="user_name" property="userName" />
+		<result column="user_ture_name" property="userTureName" />
+		<result column="user_id" property="userId" />
+		<result column="user_mobile" property="userMobile" />
+		<result column="single" property="single" />
+		<result column="cumulative" property="cumulative" />
+		<result column="registration_time" property="registrationTime" />
+		<result column="create_user" property="createUser" />
+		<result column="create_time" property="createTime" />
+		<result column="update_user" property="updateUser" />
+		<result column="update_time" property="updateTime" />
+		<result column="del_flg" property="delFlg" />
+	</resultMap>
+	<select id="selectActdecListedThreeList" resultMap="selectActdecListedThreeListMap" parameterType="com.hyjf.mybatis.model.customize.ActdecListedThreeCustomize">
+		SELECT
+		   user_name,
+		   user_ture_name,
+		   user_id,
+		   user_mobile,
+		   single,
+		   cumulative,
+		   registration_time,
+		   create_user,
+		   create_time,
+		   update_user,
+		   update_time,
+		   del_flg
+		from hyjf_actdec_listed_three halt
+	   <include refid="Where_Clause" />
+		ORDER BY
+		  halt.update_time DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<resultMap id="exportActdecListedThreeListMap" type="com.hyjf.mybatis.model.customize.ActdecListedThreeCustomize">
+		<result column="user_name" property="userName" />
+		<result column="user_ture_name" property="userTureName" />
+		<result column="user_id" property="userId" />
+		<result column="user_mobile" property="userMobile" />
+		<result column="single" property="single" />
+		<result column="cumulative" property="cumulative" />
+		<result column="registration_time" property="registrationTime" />
+		<result column="create_user" property="createUser" />
+		<result column="create_time" property="createTime" />
+		<result column="update_user" property="updateUser" />
+		<result column="update_time" property="updateTime" />
+		<result column="del_flg" property="delFlg" />
+	</resultMap>
+	<select id="exportActdecListedThreeList" resultMap="exportActdecListedThreeListMap" parameterType="com.hyjf.mybatis.model.customize.ActdecListedThreeCustomize">
+		SELECT
+		   user_name,
+		   user_ture_name,
+		   user_id,
+		   user_mobile,
+		   single,
+		   cumulative,
+		   registration_time,
+		   create_user,
+		   create_time,
+		   update_user,
+		   update_time,
+		   del_flg
+		from hyjf_actdec_listed_three halt
+	   <include refid="Where_Clause" />
+		ORDER BY
+		  halt.update_time DESC
+	</select>
+</mapper>

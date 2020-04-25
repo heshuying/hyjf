@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.AdminPlanPushMoneyDetailCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+			<if test="debtPlanNidSrch != null and debtPlanNidSrch !='' ">
+				AND hdac.plan_nid LIKE CONCAT('%', #{debtPlanNidSrch}, '%')
+			</if>
+			<if test="accedeOrderIdSrch != null and accedeOrderIdSrch !='' ">
+				AND hdac.accede_order_id LIKE CONCAT('%', #{accedeOrderIdSrch}, '%')
+			</if>
+			<if test="userNameSrch != null and userNameSrch !='' ">
+				AND hdac.user_name LIKE CONCAT('%', #{userNameSrch}, '%')
+			</if>
+			<if test="accedeUserNameSrch != null and accedeUserNameSrch !='' ">
+				AND hdac.accede_user_name LIKE CONCAT('%', #{accedeUserNameSrch}, '%')
+			</if>
+			<if test="status != null and status !='' ">
+				AND hdac.status = #{status}
+			</if>
+			<if test="accedeStartTimeSearch != null and accedeStartTimeSearch !='' ">
+				AND FROM_UNIXTIME( hdac.accede_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{accedeStartTimeSearch}
+			</if>
+			<if test="accedeEndTimeSearch != null and accedeEndTimeSearch !='' ">
+				AND FROM_UNIXTIME( hdac.accede_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{accedeEndTimeSearch}
+			</if>
+			<if test="returnStartTimeSearch != null and returnStartTimeSearch !='' ">
+				AND FROM_UNIXTIME( hdac.return_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{returnStartTimeSearch}
+			</if>
+			<if test="returnEndTimeSearch != null and returnEndTimeSearch !='' ">
+				AND FROM_UNIXTIME( hdac.return_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{returnEndTimeSearch}
+			</if>
+			<if test="combotreeListSrch != null and combotreeListSrch != ''">
+				AND od.id in
+				<foreach collection="combotreeListSrch" open="(" close=")" separator="," item="dep">
+					#{dep}
+				</foreach>
+			</if>
+		</where>
+	</sql>
+
+	<resultMap id="selectCommissionListMap" type="com.hyjf.mybatis.model.customize.admin.AdminPlanPushMoneyDetailCustomize">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="userName" property="userName" jdbcType="VARCHAR" />
+		<result column="commission" property="commission" jdbcType="DECIMAL" />
+		<result column="orderId" property="orderId" jdbcType="VARCHAR" />
+		<result column="returnTime" property="returnTime" jdbcType="INTEGER" />
+		<result column="regionName" property="regionName" jdbcType="VARCHAR" />
+		<result column="branchName" property="branchName" jdbcType="VARCHAR" />
+		<result column="departmentName" property="departmentName" jdbcType="VARCHAR" />
+		<result column="attribute" property="attribute" jdbcType="VARCHAR" />
+		<result column="accedeOrderId" property="accedeOrderId" jdbcType="VARCHAR" />
+		<result column="is51" property="is51" jdbcType="VARCHAR" />
+		<result column="accedeUserName" property="accedeUserName" jdbcType="VARCHAR" />
+		<result column="accedeAccount" property="accedeAccount" jdbcType="DECIMAL" />
+		<result column="accedeTime" property="accedeTime" jdbcType="INTEGER" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectCommissionList" resultMap="selectCommissionListMap" parameterType="Map">
+		SELECT 
+			hdac.id AS id,
+			hdac.plan_nid AS debtPlanNid,
+			hdac.user_id AS usreId,
+			hdac.user_name AS userName,
+			hdac.plan_lock_period AS debtLockPeriod,
+			hdac.order_id AS OrderId,
+			'线上员工' AS attribute,
+			hdac.accede_order_id AS accedeOrderId,
+			hdac.is51 AS is51,
+			hdac.region_name AS regionName,
+			hdac.branch_name AS branchName,
+			hdac.department_name AS departmentName,
+			hdac.accede_user_name AS accedeUserName,
+			hdac.accede_account AS accedeAccount,
+			hdac.accede_time AS accedeTime,
+			hdac.commission AS commission,
+			hdac.status AS status,
+			hdac.return_time AS returnTime
+		FROM hyjf_debt_accede_commission hdac
+		LEFT JOIN `hyjf_crm`.`oa_users` `ou` ON `ou`.hyd_id = hdac.user_id AND ou.user_status IN ('E','Q1','Q11','Q2','Q21')
+		LEFT JOIN `hyjf_crm`.`oa_department` `od` ON `od`.`id` = `ou`.`departmentid` AND `od`.id IS NOT NULL
+		LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+		LEFT JOIN `hyjf_crm`.`oa_department` `od3` ON `od3`.`id` = `od2`.`parentid`
+		<include refid="Where_Clause" />
+		ORDER BY  hdac.accede_time DESC
+		<if test="limitStart != null and limitEnd !=null" >
+			LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+		</if>
+		
+	</select>
+	<select id="countRecordTotal" resultType="java.lang.Integer" parameterType="Map">
+		SELECT 
+			count(*)
+		FROM hyjf_debt_accede_commission hdac
+		LEFT JOIN `hyjf_crm`.`oa_users` `ou` ON `ou`.hyd_id = hdac.user_id AND ou.user_status IN ('E','Q1','Q11','Q2','Q21')
+		LEFT JOIN `hyjf_crm`.`oa_department` `od` ON `od`.`id` = `ou`.`departmentid` AND `od`.id IS NOT NULL
+		LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+		LEFT JOIN `hyjf_crm`.`oa_department` `od3` ON `od3`.`id` = `od2`.`parentid`
+		<include refid="Where_Clause" />
+	</select>
+</mapper>

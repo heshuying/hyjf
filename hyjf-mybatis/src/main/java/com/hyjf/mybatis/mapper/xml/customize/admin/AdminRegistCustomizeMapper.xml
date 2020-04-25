@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.AdminRegistCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+			<if test="recommendName != null and recommendName !='' ">
+				AND hydur.username LIKE CONCAT('%', #{recommendName}, '%')
+			</if>
+			<if test="userName != null and userName !='' ">
+				AND hydu.username LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="regTimeStart != null and regTimeStart !='' ">
+				AND FROM_UNIXTIME( hydu.reg_time, '%Y-%m-%d' ) <![CDATA[>=]]> #{regTimeStart}
+			</if>
+			<if test="regTimeEnd != null and regTimeEnd !='' ">
+				AND FROM_UNIXTIME( hydu.reg_time, '%Y-%m-%d' ) <![CDATA[<=]]> #{regTimeEnd}
+			</if>
+			<!-- <if test="sourceId != null and sourceId !='' ">
+				AND hydutm.source_id = #{sourceId,jdbcType=INTEGER}
+			</if> -->
+			<if test="registPlat != null and registPlat !='' ">
+				AND hydu.reg_esb = #{registPlat}
+			</if>
+			<if test="mobile != null and mobile !='' ">
+				AND hydu.mobile LIKE CONCAT('%', #{mobile}, '%')
+			</if>
+		</where>
+	</sql>
+
+	<resultMap id="RegistListPOMap" type="com.hyjf.mybatis.model.customize.admin.AdminRegistListCustomize">
+		<result column="username" property="userName" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="user_property" property="userProperty" jdbcType="VARCHAR" />
+		<result column="recommend_name" property="recommendName" jdbcType="VARCHAR" />
+		<result column="utm_source" property="sourceName" jdbcType="VARCHAR" />
+		<result column="regist_plat" property="registPlat" jdbcType="VARCHAR" />
+		<result column="reg_time" property="regTime" jdbcType="TIMESTAMP" />
+		<result column="reg_ip" property="regIP" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectRegistList" resultMap="RegistListPOMap" parameterType="Map">
+		SELECT
+			hydu.username,
+			hydu.mobile,
+			pna.`name` AS user_property,
+			hydur.username AS recommend_name,
+			hydutm.utm_source AS utm_source,
+			pnrp.`name` AS regist_plat,
+			from_unixtime( hydu.reg_time, '%Y/%m/%d %H:%i:%s' ) AS reg_time,
+			hydu.reg_ip
+		FROM
+			huiyingdai_users hydu
+		LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id = hydui.user_id
+		LEFT JOIN hyjf_param_name pnrp ON cast(hydu.reg_esb AS CHAR) = pnrp.name_cd AND pnrp.name_class = 'CLIENT'
+		LEFT JOIN huiyingdai_spreads_users hydsu ON hydsu.user_id = hydu.user_id 
+		LEFT JOIN hyjf_param_name pna ON cast(hydui.attribute AS CHAR) = pna.name_cd AND pna.name_class = 'USER_PROPERTY'
+		LEFT JOIN huiyingdai_users hydur ON hydur.user_id=hydsu.spreads_userid
+		LEFT JOIN huiyingdai_utm_reg hydur1 ON hydur1.user_id = hydu.user_id
+		LEFT JOIN huiyingdai_utm hydutm ON hydur1.utm_id = hydutm.utm_id
+		<include refid="Where_Clause" />
+		ORDER BY hydu.reg_time DESC
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	<select id="countRecordTotal" resultType="java.lang.Integer" parameterType="Map">
+		SELECT COUNT(hydu.user_id)
+		FROM
+			huiyingdai_users hydu
+		LEFT JOIN hyjf_param_name pnrp ON cast(hydu.reg_esb AS CHAR) = pnrp.name_cd AND pnrp.name_class = 'CLIENT'
+		<!-- LEFT JOIN huiyingdai_utm_reg hydur ON hydur.user_id = hydu.user_id
+		LEFT JOIN huiyingdai_utm hydutm ON hydur.utm_id = hydutm.utm_id -->
+		LEFT JOIN huiyingdai_spreads_users hydsu ON hydsu.user_id = hydu.user_id 
+		LEFT JOIN huiyingdai_users hydur ON hydur.user_id=hydsu.spreads_userid
+		<include refid="Where_Clause" />
+	</select>
+</mapper>

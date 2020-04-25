@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.ActivityMidauInfoCustomizeMapper">
+	<resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.ActivityMidauInfo" >
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="reward_name" property="rewardName" jdbcType="VARCHAR" />
+		<result column="reward_id" property="rewardId" jdbcType="VARCHAR" />
+		<result column="reward_type" property="rewardType" jdbcType="VARCHAR" />
+		<result column="invest_money" property="investMoney" jdbcType="DECIMAL" />
+		<result column="product_type" property="productType" jdbcType="VARCHAR" />
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="product_style" property="productStyle" jdbcType="VARCHAR" />
+		<result column="order_id" property="orderId" jdbcType="VARCHAR" />
+		<result column="distribution_status" property="distributionStatus" jdbcType="TINYINT" />
+		<result column="reward_status" property="rewardStatus" jdbcType="TINYINT" />
+		<result column="invest_time" property="investTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<select id="queryTenderList" resultMap="BaseResultMap"
+			parameterType="com.hyjf.mybatis.model.customize.ActivityListCustomize">
+		SELECT
+		te.account AS investMoney,
+		te.borrow_nid AS borrowNid,
+		FROM_UNIXTIME(te.addtime) AS investTime,
+		te.user_id as userId,
+		te.nid as orderId,
+		CASE
+		WHEN bn.borrow_style = 'endday' THEN
+		CONCAT(bn.borrow_period, '天')
+		ELSE
+		CONCAT(bn.borrow_period, '个月')
+		END AS productStyle
+		FROM
+		huiyingdai_borrow_tender te
+		LEFT JOIN huiyingdai_borrow bn ON te.borrow_nid = bn.borrow_nid
+		WHERE
+		te.nid = #{orderid,jdbcType=VARCHAR} and te.user_id = #{userid,jdbcType=INTEGER};
+	</select>
+
+
+	<select id="queryTenderRecoverList" resultMap="BaseResultMap"
+			parameterType="com.hyjf.mybatis.model.customize.ActivityListCustomize">
+		SELECT
+		te.account AS investMoney,
+		te.borrow_nid AS borrowNid,
+		FROM_UNIXTIME(br.addtime) AS investTime,
+		te.user_id as userId,
+		te.nid as orderId,
+		CASE
+		WHEN bn.borrow_style = 'endday' THEN
+		CONCAT(bn.borrow_period, '天')
+		ELSE
+		CONCAT(bn.borrow_period, '个月')
+		END AS productStyle
+		FROM
+		huiyingdai_borrow_tender te
+		LEFT JOIN huiyingdai_borrow_recover br ON br.borrow_nid = te.borrow_nid AND br.nid = te.nid
+		LEFT JOIN huiyingdai_borrow bn ON te.borrow_nid = bn.borrow_nid
+		WHERE
+		te.nid = #{orderid,jdbcType=VARCHAR} and te.user_id = #{userid,jdbcType=INTEGER};
+	</select>
+	<select id="queryPlanList" resultMap="BaseResultMap"
+			parameterType="com.hyjf.mybatis.model.customize.ActivityListCustomize">
+		SELECT
+			hdpa.accede_account AS investMoney,
+		hdpa.plan_nid as borrowNid,
+		hdpa.user_id as userId,
+		hdpa.accede_order_id as orderId,
+			CASE
+		WHEN hdp.is_month = '0' THEN
+			CONCAT(hdpa.lock_period, '天')
+		WHEN hdp.is_month = '1' THEN
+			CONCAT(hdpa.lock_period, '个月')
+		END AS productStyle,
+		 FROM_UNIXTIME(hdpa.add_time) AS investTime
+		FROM
+			hyjf_hjh_accede hdpa
+		LEFT JOIN hyjf_hjh_plan hdp ON hdpa.plan_nid = hdp.plan_nid
+		WHERE
+			hdpa.user_id = #{userid,jdbcType=INTEGER}
+		AND hdpa.accede_order_id = #{orderid,jdbcType=VARCHAR};
+	</select>
+
+    <select id="selectDouSectionActivityCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+
+        SELECT COUNT(1)
+        FROM hyjf_activity_midau_info t1
+        LEFT JOIN huiyingdai_users t2 ON t1.user_id = t2.user_id
+        LEFT JOIN huiyingdai_users_info t3 ON t1.user_id = t3.user_id
+        where 1=1
+        <include refid="Where_Clause"/>
+    </select>
+
+	<select id="selectDouSectionActivityList" resultType="com.hyjf.mybatis.model.customize.admin.DoubleSectionActivityCustomize"
+			parameterType="java.util.HashMap">
+        SELECT t2.username AS userName,t3.truename trueName,t2.mobile mobile,t1.order_id orderId, t1.invest_money investMoney,
+        t1.product_type productType,t1.borrow_nid borrowNid,t1.product_style productStyle,t1.reward_name rewardName,t1.invest_time investTime
+        FROM hyjf_activity_midau_info t1
+        LEFT JOIN huiyingdai_users t2 ON t1.user_id = t2.user_id
+        LEFT JOIN huiyingdai_users_info t3 ON t1.user_id = t3.user_id
+		where 1=1
+		<include refid="Where_Clause"/>
+           order by t1.invest_time ${sort}
+		<if test="limitStart >= 0" >
+			LIMIT #{limitStart} , #{limitEnd}
+		</if>
+	</select>
+
+    <select id="selectSectionActivityAwardCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+
+        SELECT COUNT(1)
+        FROM hyjf_activity_midau_info t1
+        LEFT JOIN huiyingdai_users t2 ON t1.user_id = t2.user_id
+        LEFT JOIN huiyingdai_users_info t3 ON t1.user_id = t3.user_id
+        where 1=1
+        <include refid="Where_Clause"/>
+    </select>
+
+	<select id="selectSectionActivityAwardList" resultType="com.hyjf.mybatis.model.customize.admin.DoubleSectionActivityCustomize"
+			parameterType="java.util.HashMap">
+        SELECT t1.id id,t1.reward_name rewardName,t1.reward_type rewardType,t1.reward_id rewardId,
+        t1.distribution_status distributionStatus,
+        t1.reward_status rewardStatus,
+        t2.username AS userName,t3.truename trueName,t2.mobile mobile,
+        t1.update_time updateTime,t1.create_time createTime
+        FROM hyjf_activity_midau_info t1
+        LEFT JOIN huiyingdai_users t2 ON t1.user_id = t2.user_id
+        LEFT JOIN huiyingdai_users_info t3 ON t1.user_id = t3.user_id
+		where 1=1
+		<include refid="Where_Clause"/>
+        <if test="sort != null and sort != '' ">
+            order by t1.create_time ${sort}
+        </if>
+        <if test="sortTwo != null and sortTwo != '' ">
+            order by t1.update_time ${sortTwo}
+        </if>
+		<if test="limitStart >= 0" >
+			LIMIT #{limitStart} , #{limitEnd}
+		</if>
+	</select>
+
+    <sql id="Where_Clause">
+        <if test="username != null and username != ''">
+            AND t2.username = #{username}
+        </if>
+        <if test="truename != null and truename != ''">
+            AND t3.truename  = #{truename}
+        </if>
+        <if test="mobile != null and mobile != '' ">
+            AND t2.mobile =#{ mobile}
+        </if>
+        <if test="projectType != null and projectType != '' ">
+            AND t1.product_type = #{projectType}
+        </if>
+
+        <if test="rewardStatus != null and rewardStatus != ''">
+            AND t1.reward_status = #{rewardStatus}
+        </if>
+        <if test="distributionStatus != null and distributionStatus != ''">
+            AND t1.distribution_status = #{distributionStatus}
+        </if>
+        <if test="rewardType != null ">
+            AND t1.reward_type = #{rewardType}
+        </if>
+        <if test="rewardId != null">
+            AND t1.reward_id = #{rewardId}
+        </if>
+    </sql>
+
+
+</mapper>

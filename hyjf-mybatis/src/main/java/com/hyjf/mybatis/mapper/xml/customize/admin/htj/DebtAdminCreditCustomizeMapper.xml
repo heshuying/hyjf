@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.htj.DebtAdminCreditCustomizeMapper">
+	<!-- 检索汇添金转让类产品件数 -->
+	<select id="countCreditProject" resultType="java.lang.Integer" parameterType="Map">
+		SELECT COUNT(1)
+		FROM hyjf_debt_credit hdc
+		LEFT JOIN 
+			hyjf_debt_borrow hdb ON hdb.borrow_nid = hdc.borrow_nid 
+		LEFT JOIN 
+			huiyingdai_borrow_style bs ON hdb.borrow_style = bs.nid
+		LEFT JOIN 
+			huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = CAST(hdb.project_type AS CHAR)
+		WHERE hdc.credit_status = '0'
+		AND hdc.repay_status = '0'
+		<if test="borrowStyleSrch != null and borrowStyleSrch != ''">
+			AND hdb.borrow_style = #{borrowStyleSrch}
+		</if>
+		<if test="creditNidSrch != null and creditNidSrch != ''">
+			AND hdc.credit_nid = #{creditNidSrch}
+		</if>
+	</select>
+	
+	<!-- 汇添金转让类产品 -->
+	<resultMap id="selectDebtCreditProjectMap" type="com.hyjf.mybatis.model.customize.admin.htj.DebtAdminCreditCustomize">
+		<result column="credit_nid" property="creditNid" jdbcType="VARCHAR"/><!-- 债转编号 -->
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR"/><!-- 项目编号 -->
+		<result column="borrow_apr" property="borrowApr" jdbcType="DECIMAL"/><!-- 标的预期年化收益 -->
+		<result column="actual_apr" property="actualApr" jdbcType="DECIMAL"/><!-- 实际年化收益 -->
+		<result column="project_type" property="projectType" jdbcType="VARCHAR"/><!-- 项目类型-->
+		<result column="project_type_name" property="projectTypeName" jdbcType="VARCHAR"/><!-- 项目类型名称-->
+		<result column="hold_days" property="holdDays" jdbcType="INTEGER"/><!-- 持有期限 -->
+		<result column="remain_days" property="remainDays" jdbcType="INTEGER"/> <!-- 持有期限 -->
+		<result column="borrowStyle" property="borrowStyle" jdbcType="VARCHAR"/> <!-- 还款方式 -->
+		<result column="credit_capital" property="creditCapital" jdbcType="DECIMAL"/><!-- 债转本金 -->
+		<result column="credit_capital_wait" property="creditCapitalWait" jdbcType="DECIMAL"/><!-- 剩余本金 -->
+		<result column="credit_interest_advance_wait" property="creditInterestAdvanceWait" jdbcType="DECIMAL"/><!-- 剩余待垫付利息 -->
+		<result column="creditType" property="creditType" jdbcType="VARCHAR"/><!-- 债转发起类型:0:系统清算 1:用户发起 -->
+	</resultMap>
+	<select id="selectDebtCreditProject" resultMap="selectDebtCreditProjectMap" parameterType="Map">
+		SELECT
+			hdc.credit_nid,
+			hdc.borrow_nid,
+			hdb.borrow_apr,
+			hdc.actual_apr,
+			hdc.hold_days,
+			hdb.project_type,
+			bpt.borrow_name AS project_type_name,
+			hdc.remain_days,
+			bs.name AS borrowStyle,
+			hdc.credit_capital,
+			hdc.credit_capital_wait,
+			hdc.credit_interest_advance_wait,
+			'0' AS creditType
+		FROM
+			hyjf_debt_credit hdc
+		LEFT JOIN 
+			hyjf_debt_borrow hdb ON hdb.borrow_nid = hdc.borrow_nid 
+		LEFT JOIN 
+			huiyingdai_borrow_style bs ON hdb.borrow_style = bs.nid
+		LEFT JOIN 
+			huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = CAST(hdb.project_type AS CHAR)
+		WHERE
+			hdc.credit_status = '0'
+		AND hdc.repay_status = '0'
+		<if test="borrowStyleSrch != null and borrowStyleSrch != ''">
+			AND hdb.borrow_style = #{borrowStyleSrch}
+		</if>
+		<if test="creditNidSrch != null and creditNidSrch != ''">
+			AND hdc.credit_nid = #{creditNidSrch}
+		</if>
+		<if test="col != null and col != '' and sort != null and sort != ''">
+			ORDER BY
+				${col} ${sort}
+		</if>
+		<if test="limitStart != null and limitEnd != null" >
+			LIMIT #{limitStart} , #{limitEnd}
+		</if>
+	</select>
+</mapper>

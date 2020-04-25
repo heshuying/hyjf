@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.OntimeTenderCustomizeMapper">
+	<resultMap id="TenderMapResult" type="com.hyjf.mybatis.model.auto.Borrow">
+		<result column="id" property="id" />
+		<!-- 用户ID -->
+		<result column="user_id" property="userId" /> 
+		<result column="name" property="name" />
+		<!-- 发生时间 -->
+		<result column="ontime" property="ontime" /> 
+		<result column="borrow_valid_time" property="borrowValidTime" />
+		<result column="borrow_nid" property="borrowNid" />
+		<result column="account" property="account" />
+		<result column="inst_code" property="instCode" />
+	</resultMap>
+	
+	<resultMap id="unrecheckTenderMapResult" type="com.hyjf.mybatis.model.auto.Borrow">
+		<result column="borrow_pre_nid" property="borrowPreNid" />
+		<result column="borrow_nid" property="borrowNid" />
+		<result column="account" property="account" />
+		<result column="borrow_account_yes" property="borrowAccountYes" />
+		<result column="borrow_account_scale" property="borrowAccountScale" /> <!-- 借款进度  -->
+		<result column="borrow_full_time" property="borrowFullTime" />
+		<result column="ontime" property="ontime" /> <!-- 发生时间 -->
+	</resultMap>
+
+	<select id="queryOntimeTenderCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		SELECT
+			COUNT(1)
+		FROM
+			huiyingdai_borrow b
+		WHERE
+			b.`status`= 1
+		AND b.verify_status = 1
+		AND b.ontime > 0 
+		AND b.ontime <![CDATA[<=]]> #{ontime}
+	</select>
+	<!-- 查询所有到达定时发标时间的标  -->
+	<select id="queryOntimeTenderList" resultMap="TenderMapResult" parameterType="java.lang.Integer">
+		SELECT
+			b.id,
+			b.user_id,
+			b.`name` AS name,
+			b.ontime,
+			b.borrow_valid_time,
+			b.borrow_nid,
+			b.account,
+			b.borrow_account_wait
+		FROM
+			huiyingdai_borrow b
+		WHERE
+			b.`status` = 1
+		AND b.verify_status = 3
+		AND b.is_engine_used = 0
+		AND b.ontime > 0
+		AND b.ontime <![CDATA[<=]]> #{ontime}
+	</select>
+	
+	<select id="queryHjhOntimeTenderList" resultMap="TenderMapResult" parameterType="java.lang.Integer">
+		SELECT
+			b.id,
+			b.user_id,
+			b.`name` AS name,
+			b.ontime,
+			b.borrow_valid_time,
+			b.borrow_nid,
+			b.account,
+			b.borrow_account_wait,
+			b.inst_code
+		FROM
+			huiyingdai_borrow b
+		WHERE
+			b.`status` = 1
+		AND b.verify_status = 3
+		AND b.is_engine_used = 1
+		AND b.ontime > 0
+		AND b.ontime <![CDATA[<=]]> #{ontime}
+	</select>
+	
+	<!-- 查询所有未复审的标  -->
+	<select id="queryAllunrecheckTenders" resultMap="unrecheckTenderMapResult">
+		SELECT
+			b.borrow_pre_nid,
+			b.borrow_nid,
+			b.account,
+			b.borrow_account_yes,
+			b.borrow_account_scale,
+			b.borrow_full_time,
+			b.ontime
+		FROM
+			huiyingdai_borrow b
+		WHERE
+			b.`status` = 2
+		AND b.borrow_full_status = 1
+		AND EXISTS (
+			SELECT
+				w.id
+			FROM
+				huiyingdai_borrow w,
+				huiyingdai_borrow_bail bail
+			WHERE
+				b.borrow_nid <![CDATA[<>]]> w.borrow_nid
+			AND b.borrow_pre_nid = w.borrow_pre_nid
+      		AND b.borrow_nid = bail.borrow_nid
+      		AND w.verify_status = 2
+			AND w.`status` = 1
+		)
+		ORDER BY
+			b.id ASC
+	</select>
+
+	<!-- 查询分期发标的标的拆分总期数  -->
+	<select id="querySplitTenderCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		SELECT 
+		  COUNT(1) 
+		FROM 
+		  huiyingdai_borrow b 
+		WHERE 
+		  b.borrow_pre_nid= #{borrowPreNid}
+	</select>
+	
+	<!-- 查询接收短信的手机号（多个用逗号分隔）   -->
+	<select id="queryMobiles" resultType="java.lang.String" parameterType="java.lang.String">
+		SELECT 
+		  value
+		FROM 
+		  huiyingdai_sms_notice_config  
+		WHERE 
+		  name = #{tplname}
+	</select>
+	<!-- 查询相应的定时预约开始标的-->
+	<select id="selectBorrowAppointStart" resultMap="TenderMapResult" parameterType="java.lang.Integer">
+		SELECT
+			b.id,
+			b.user_id,
+			b.`name` AS name,
+			b.ontime,
+			b.borrow_valid_time,
+			b.borrow_nid,
+			b.account
+		FROM
+			huiyingdai_borrow b
+		WHERE
+			b.`status` = 0
+		AND b.verify_status = 1
+		AND b.booking_status = 0
+		AND b.booking_begin_time > 0
+		AND b.booking_begin_time <![CDATA[<=]]> #{ontime}
+	</select>
+	<!-- 查询相应的定时预约开始标的-->
+	<select id="selectBorrowAppointEnd" resultMap="TenderMapResult" parameterType="java.lang.Integer">
+		SELECT
+			b.id,
+			b.user_id,
+			b.`name` AS name,
+			b.ontime,
+			b.borrow_valid_time,
+			b.borrow_nid,
+			b.account
+		FROM
+			huiyingdai_borrow b
+		WHERE
+			b.`status` = 0
+		AND b.verify_status = 1
+		AND b.booking_status = 1
+		AND b.booking_end_time > 0
+		AND b.booking_end_time <![CDATA[<=]]> #{ontime}
+	</select>
+	
+	
+	
+	
+	
+	<!-- 查询标的是否达定时发标时间  -->
+	<select id="queryOntimeIdByNid" resultType="java.lang.Integer">
+		SELECT
+			b.id
+		FROM
+			huiyingdai_borrow b
+		WHERE
+		    b.borrow_nid = #{borrowNid}
+		AND b.`status` = 1
+		AND b.verify_status = 3
+		AND b.ontime > 0
+		AND b.ontime <![CDATA[<=]]> #{ontime}
+	</select>
+</mapper>
+

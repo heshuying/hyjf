@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.poundageledger.PoundageExceptionCustomizeMapper">
+    <resultMap id="PoundageExceptionResultMap" type="com.hyjf.mybatis.model.customize.poundageledger.PoundageExceptionCustomize">
+        <result property="id" column="id"/>
+        <result property="payDate" column="pay_date"/>
+        <result property="ledgerAmount" column="ledger_amount"/>
+        <result property="poundageId" column="poundage_id"/>
+        <result property="ledgerId" column="ledger_id"/>
+        <result property="payeeName" column="payee_name"/>
+        <result property="ledgerStatus" column="ledger_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updater" column="updater"/>
+    </resultMap>
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="PoundageExceptionColumns">
+        <![CDATA[
+		id,pay_date,ledger_amount,poundage_id,ledger_id,payee_name,ledger_status,create_time,update_time,updater
+	    ]]>
+    </sql>
+    <!-- mysql 分页尾 -->
+    <sql id="paginationTail">
+        <if test="limitStart >= 0" >
+            LIMIT #{limitStart} , #{limitEnd}
+        </if>
+    </sql>
+    <insert id="insertPoundageException" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+        INSERT INTO huiyingdai_poundage_exception (
+         id, ledger_amount, poundage_id, ledger_id, payee_name, ledger_status, create_time, update_time, updater
+        ) VALUES (
+         #{id}, #{ledgerAmount}, #{poundageId}, #{ledgerId}, #{payeeName}, #{ledgerStatus}, #{createTime}, #{updateTime}, #{updater}
+        )
+    ]]>
+    </insert>
+    <update id="updatePoundageException" >
+        <![CDATA[
+        UPDATE huiyingdai_poundage_exception SET
+	        update_time = #{updateTime} , updater = #{updater}
+        WHERE
+        	id = #{id}
+    ]]>
+    </update>
+    <update id="updatePoundageExceptionStatus" >
+        <![CDATA[
+        UPDATE huiyingdai_poundage_exception SET
+	        ledger_status = #{ledgerStatus} , update_time = #{updateTime} , updater = #{updater}
+        WHERE
+        	id = #{id}
+    ]]>
+    </update>
+    <delete id="deletePoundageException">
+        <![CDATA[
+        DELETE FROM huiyingdai_poundage_exception WHERE
+        id = #{id}
+    ]]>
+    </delete>
+
+    <select id="getPoundageExceptionById" resultMap="PoundageExceptionResultMap">
+        SELECT hpe.*,
+        hpl.user_id AS userId,
+        hpl.username AS userName,
+        hpl.truename AS realName,
+        hpl.type AS ledgerType,
+        hpl.source AS ledgerSource,
+        hpl.account AS account,
+        hpl.investor_company AS investorCompany,
+        hp.status AS poundageStatus,
+        hp.poundage_time AS poundageTime,
+        hp.nid,
+        hp.seq_no AS seqNo,
+        hp.tx_date AS txDate,
+        hp.tx_time AS txTime
+        FROM huiyingdai_poundage_exception hpe
+        left JOIN huiyingdai_poundage hp on hp.id = hpe.poundage_id
+        left JOIN huiyingdai_poundage_ledger hpl on hpl.id = hpe.ledger_id
+	    WHERE
+		    hpe.id = #{id}
+    </select>
+
+    <sql id="PoundageExceptionFindPageWhere">
+        <where>
+            <if test="idSer != null and idSer != ''">
+                AND hpe.id = #{idSer}
+            </if>
+            <if test="nidSer != null and nidSer != ''">
+                AND hp.nid LIKE CONCAT('%', #{nidSer}, '%')
+            </if>
+            <if test="seqNoSer != null and seqNoSer != ''">
+                AND hp.seq_no LIKE CONCAT('%', #{seqNoSer}, '%')
+            </if>
+            <if test="bankSeqNoSer != null and bankSeqNoSer != ''">
+                AND concat(cast(hp.tx_date*1000000 +hp.tx_time as char),hp.seq_no) LIKE CONCAT('%', #{bankSeqNoSer}, '%')
+            </if>
+            <if test="ledgerAmountSer != null and ledgerAmountSer != ''">
+                AND hpe.ledger_amount = #{ledgerAmountSer}
+            </if>
+            <if test="ledgerIdSer != null and ledgerIdSer != ''">
+                AND hpe.ledger_id = #{ledgerIdSer}
+            </if>
+            <if test="payeeNameSer != null and payeeNameSer != ''">
+                AND hpe.payee_name = #{payeeNameSer}
+            </if>
+            <if test="ledgerStatusSer != null">
+                AND hpe.ledger_status = #{ledgerStatusSer}
+            </if>
+            <if test="createTimeSer != null and createTimeSer != ''">
+                AND hpe.create_time = #{createTimeSer}
+            </if>
+            <if test="updateTimeSer != null and updateTimeSer != ''">
+                AND hpe.update_time = #{updateTimeSer}
+            </if>
+            <if test="updaterSer != null and updaterSer != ''">
+                AND hpe.updater = #{updaterSer}
+            </if>
+            <if test="userNameSer != null and userNameSer != ''">
+                AND hpl.username LIKE CONCAT('%', #{userNameSer}, '%')
+            </if>
+            <if test="ledgerTypeSer != null and ledgerTypeSer != ''">
+                AND hpl.type = #{ledgerTypeSer}
+            </if>
+            <if test="ledgerSourceSer != null and ledgerSourceSer != ''">
+                AND hpl.source = #{ledgerSourceSer}
+            </if>
+            <if test="investorCompanySer != null and investorCompanySer != ''">
+                AND hpl.investor_company LIKE CONCAT('%', #{investorCompanySer}, '%')
+            </if>
+            <if test="poundageStatusSer != null and poundageStatusSer != ''">
+                AND hp.status = #{poundageStatusSer}
+            </if>
+            <if test="poundageTimeStart != null and poundageTimeStart != ''">
+                AND FROM_UNIXTIME(hp.poundage_time, '%Y-%m-%d %H:%i:%S') <![CDATA[>=]]> STR_TO_DATE(CONCAT(#{poundageTimeStart},'00:00:00'
+                ),'%Y-%m-%d %H:%i:%s')
+            </if>
+            <if test="poundageTimeEnd != null and poundageTimeEnd != ''">
+                AND FROM_UNIXTIME(hp.poundage_time, '%Y-%m-%d %H:%i:%S') <![CDATA[<=]]> STR_TO_DATE(CONCAT(#{poundageTimeEnd},'23:59:59'
+                ),'%Y-%m-%d %H:%i:%s')
+            </if>
+        </where>
+    </sql>
+
+    <select id="getPoundageExceptionCount" resultType="java.lang.Integer">
+        SELECT count(*) FROM huiyingdai_poundage_exception hpe
+        left JOIN huiyingdai_poundage hp on hp.id = hpe.poundage_id
+        left JOIN huiyingdai_poundage_ledger hpl on hpl.id = hpe.ledger_id
+        <include refid="PoundageExceptionFindPageWhere"/>
+    </select>
+
+    <select id="getPoundageExceptionList" resultMap="PoundageExceptionResultMap">
+        SELECT hpe.*,
+        hpl.user_id AS userId,
+        hpl.username AS userName,
+        hpl.truename AS realName,
+        hpl.type AS ledgerType,
+        hpl.source AS ledgerSource,
+        hpl.account AS account,
+        hpl.investor_company AS investorCompany,
+        hp.status AS poundageStatus,
+        hp.poundage_time AS poundageTime,
+        hp.nid,
+        hp.seq_no AS seqNo,
+        hp.tx_date AS txDate,
+        hp.tx_time AS txTime
+        FROM huiyingdai_poundage_exception hpe
+        left JOIN huiyingdai_poundage hp on hp.id = hpe.poundage_id
+        left JOIN huiyingdai_poundage_ledger hpl on hpl.id = hpe.ledger_id
+        <include refid="PoundageExceptionFindPageWhere"/>
+        ORDER BY hpe.create_time DESC
+        <include refid="paginationTail"/>
+    </select>
+
+</mapper>

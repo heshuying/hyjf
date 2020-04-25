@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.StatisticsTzjUtmCustomizeMapper">
+
+	<resultMap id="selectListMap" type="com.hyjf.mybatis.model.customize.admin.StatisticsTzjUtmCustomize">
+		<result column="channel_name" property="channelName" jdbcType="VARCHAR" />
+		<result column="regist_count" property="registCount" jdbcType="INTEGER" />
+		<result column="open_count" property="openCount" jdbcType="INTEGER" />
+		<result column="open_rate" property="openRate" jdbcType="DECIMAL" />
+		<result column="cardbind_count" property="cardbindCount" jdbcType="INTEGER" />
+		<result column="cardbind_rate" property="cardbindRate" jdbcType="DECIMAL" />
+		<result column="rechargenew_count" property="rechargenewCount" jdbcType="INTEGER" />
+		<result column="recharge_count" property="rechargeCount" jdbcType="INTEGER" />
+		<result column="tendernew_count" property="tendernewCount" jdbcType="INTEGER" />
+		<result column="tenderfirst_count" property="tenderfirstCount" jdbcType="INTEGER" />
+		<result column="tenderfirst_money" property="tenderfirstMoney" jdbcType="DECIMAL" />
+		<result column="tendernew_rate" property="tendernewRate" jdbcType="VARCHAR" />
+		<result column="tender_count" property="tenderCount" jdbcType="INTEGER" />
+		<result column="tender_money" property="tenderMoney" jdbcType="DECIMAL" />
+		<result column="tender_again_count" property="tenderAgainCount" jdbcType="INTEGER" />
+		<result column="tender_again_rate" property="tenderAgainRate" jdbcType="DECIMAL" />
+		<result column="add_time" property="addTime" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<select id="exportList" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.admin.StatisticsTzjUtmCustomize">
+		SELECT
+			t.channel_name,
+			SUM(t.regist_count) AS regist_count,
+			SUM(t.open_count) AS open_count,
+			CASE SUM(t.regist_count)
+	            WHEN 0 THEN 0.00
+	            ELSE FORMAT(SUM(t.open_count)/SUM(t.regist_count)*100, 2)
+			END open_rate,
+			SUM(t.cardbind_count) AS cardbind_count,
+			CASE SUM(t.regist_count)
+	            WHEN 0 THEN 0.00
+	            ELSE FORMAT(SUM(t.cardbind_count)/SUM(t.regist_count)*100, 2)
+			END cardbind_rate,
+			SUM(t.rechargenew_count) AS rechargenew_count,
+			SUM(t.recharge_count) AS recharge_count,
+			SUM(t.tendernew_count) AS tendernew_count,
+			SUM(t.tenderfirst_count) AS tenderfirst_count,
+			SUM(t.tenderfirst_money) AS tenderfirst_money,
+			CASE SUM(t.regist_count)
+	            WHEN 0 THEN 0.00
+	            ELSE FORMAT(SUM(t.tendernew_count)/SUM(t.regist_count)*100, 2)
+			END tendernew_rate,
+			SUM(t.tender_count) AS tender_count,
+			SUM(t.tender_money) AS tender_money,
+			SUM(t.tender_again_count) AS tender_again_count,
+			CASE SUM(t.tender_count)
+	            WHEN 0 THEN 0.00
+	            ELSE FORMAT(SUM(t.tender_again_count)/SUM(t.tender_count)*100, 2)
+			END tender_again_rate,
+			t.add_time
+		FROM
+			hyjf_statistics_tzj_utm t
+		<where>
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND t.day <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch != ''">
+				AND t.day <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+		</where>
+		GROUP BY
+			t.channel_name
+		ORDER BY t.channel_name 
+	</select>
+	
+	<!-- 后台展示列表 -->
+	<select id="selectSumList" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.admin.StatisticsTzjUtmCustomize">
+		SELECT
+			t.channel_name,
+			SUM(t.regist_count) AS regist_count,
+			SUM(t.open_count) AS open_count,
+			CASE SUM(t.regist_count)
+	            WHEN 0 THEN 0.00
+	            ELSE FORMAT(SUM(t.open_count)/SUM(t.regist_count)*100, 2)
+			END open_rate,
+			SUM(t.cardbind_count) AS cardbind_count,
+			CASE SUM(t.regist_count)
+	            WHEN 0 THEN 0.00
+	            ELSE FORMAT(SUM(t.cardbind_count)/SUM(t.regist_count)*100, 2)
+			END cardbind_rate,
+			SUM(t.rechargenew_count) AS rechargenew_count,
+			SUM(t.recharge_count) AS recharge_count,
+			SUM(t.tendernew_count) AS tendernew_count,
+			SUM(t.tenderfirst_count) AS tenderfirst_count,
+			SUM(t.tenderfirst_money) AS tenderfirst_money,
+			CASE SUM(t.regist_count)
+	            WHEN 0 THEN 0.00
+	            ELSE FORMAT(SUM(t.tendernew_count)/SUM(t.regist_count)*100, 2)
+			END tendernew_rate,
+			SUM(t.tender_count) AS tender_count,
+			SUM(t.tender_money) AS tender_money,
+			SUM(t.tender_again_count) AS tender_again_count,
+			CASE SUM(t.tender_count)
+	            WHEN 0 THEN 0.00
+	            ELSE FORMAT(SUM(t.tender_again_count)/SUM(t.tender_count)*100, 2)
+			END tender_again_rate,
+			t.add_time
+		FROM
+			hyjf_statistics_tzj_utm t
+		<where>
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND t.day <![CDATA[>=]]>  #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch != ''">
+				AND t.day <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+		</where>
+		GROUP BY
+			t.channel_name
+		ORDER BY t.channel_name 
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<select id="countSumList" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.admin.StatisticsTzjUtmCustomize">
+		select count(1) from (SELECT id FROM hyjf_statistics_tzj_utm p
+		<where>
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND p.day <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch != ''">
+				AND p.day <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+		</where>
+	 		GROUP BY p.channel_name) as t
+	</select>
+	
+</mapper>

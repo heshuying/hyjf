@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.PcChannelStatisticsMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.PcChannelStatistics" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="source_id" property="sourceId" jdbcType="INTEGER" />
+    <result column="source_name" property="sourceName" jdbcType="VARCHAR" />
+    <result column="access_number" property="accessNumber" jdbcType="INTEGER" />
+    <result column="regist_number" property="registNumber" jdbcType="INTEGER" />
+    <result column="open_account_number" property="openAccountNumber" jdbcType="INTEGER" />
+    <result column="tender_number" property="tenderNumber" jdbcType="INTEGER" />
+    <result column="cumulative_recharge" property="cumulativeRecharge" jdbcType="DECIMAL" />
+    <result column="cumulative_investment" property="cumulativeInvestment" jdbcType="DECIMAL" />
+    <result column="hzt_tender_price" property="hztTenderPrice" jdbcType="DECIMAL" />
+    <result column="hxf_tender_price" property="hxfTenderPrice" jdbcType="DECIMAL" />
+    <result column="htl_tender_price" property="htlTenderPrice" jdbcType="DECIMAL" />
+    <result column="htj_tender_price" property="htjTenderPrice" jdbcType="DECIMAL" />
+    <result column="rtb_tender_price" property="rtbTenderPrice" jdbcType="DECIMAL" />
+    <result column="hzr_tender_price" property="hzrTenderPrice" jdbcType="DECIMAL" />
+    <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, source_id, source_name, access_number, regist_number, open_account_number, tender_number, 
+    cumulative_recharge, cumulative_investment, hzt_tender_price, hxf_tender_price, htl_tender_price, 
+    htj_tender_price, rtb_tender_price, hzr_tender_price, add_time
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.PcChannelStatisticsExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_pc_channel_statistics
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_pc_channel_statistics
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_pc_channel_statistics
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.PcChannelStatisticsExample" >
+    delete from hyjf_pc_channel_statistics
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.PcChannelStatistics" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_pc_channel_statistics (source_id, source_name, access_number, 
+      regist_number, open_account_number, tender_number, 
+      cumulative_recharge, cumulative_investment, 
+      hzt_tender_price, hxf_tender_price, htl_tender_price, 
+      htj_tender_price, rtb_tender_price, hzr_tender_price, 
+      add_time)
+    values (#{sourceId,jdbcType=INTEGER}, #{sourceName,jdbcType=VARCHAR}, #{accessNumber,jdbcType=INTEGER}, 
+      #{registNumber,jdbcType=INTEGER}, #{openAccountNumber,jdbcType=INTEGER}, #{tenderNumber,jdbcType=INTEGER}, 
+      #{cumulativeRecharge,jdbcType=DECIMAL}, #{cumulativeInvestment,jdbcType=DECIMAL}, 
+      #{hztTenderPrice,jdbcType=DECIMAL}, #{hxfTenderPrice,jdbcType=DECIMAL}, #{htlTenderPrice,jdbcType=DECIMAL}, 
+      #{htjTenderPrice,jdbcType=DECIMAL}, #{rtbTenderPrice,jdbcType=DECIMAL}, #{hzrTenderPrice,jdbcType=DECIMAL}, 
+      #{addTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.PcChannelStatistics" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_pc_channel_statistics
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="sourceId != null" >
+        source_id,
+      </if>
+      <if test="sourceName != null" >
+        source_name,
+      </if>
+      <if test="accessNumber != null" >
+        access_number,
+      </if>
+      <if test="registNumber != null" >
+        regist_number,
+      </if>
+      <if test="openAccountNumber != null" >
+        open_account_number,
+      </if>
+      <if test="tenderNumber != null" >
+        tender_number,
+      </if>
+      <if test="cumulativeRecharge != null" >
+        cumulative_recharge,
+      </if>
+      <if test="cumulativeInvestment != null" >
+        cumulative_investment,
+      </if>
+      <if test="hztTenderPrice != null" >
+        hzt_tender_price,
+      </if>
+      <if test="hxfTenderPrice != null" >
+        hxf_tender_price,
+      </if>
+      <if test="htlTenderPrice != null" >
+        htl_tender_price,
+      </if>
+      <if test="htjTenderPrice != null" >
+        htj_tender_price,
+      </if>
+      <if test="rtbTenderPrice != null" >
+        rtb_tender_price,
+      </if>
+      <if test="hzrTenderPrice != null" >
+        hzr_tender_price,
+      </if>
+      <if test="addTime != null" >
+        add_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="sourceId != null" >
+        #{sourceId,jdbcType=INTEGER},
+      </if>
+      <if test="sourceName != null" >
+        #{sourceName,jdbcType=VARCHAR},
+      </if>
+      <if test="accessNumber != null" >
+        #{accessNumber,jdbcType=INTEGER},
+      </if>
+      <if test="registNumber != null" >
+        #{registNumber,jdbcType=INTEGER},
+      </if>
+      <if test="openAccountNumber != null" >
+        #{openAccountNumber,jdbcType=INTEGER},
+      </if>
+      <if test="tenderNumber != null" >
+        #{tenderNumber,jdbcType=INTEGER},
+      </if>
+      <if test="cumulativeRecharge != null" >
+        #{cumulativeRecharge,jdbcType=DECIMAL},
+      </if>
+      <if test="cumulativeInvestment != null" >
+        #{cumulativeInvestment,jdbcType=DECIMAL},
+      </if>
+      <if test="hztTenderPrice != null" >
+        #{hztTenderPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="hxfTenderPrice != null" >
+        #{hxfTenderPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="htlTenderPrice != null" >
+        #{htlTenderPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="htjTenderPrice != null" >
+        #{htjTenderPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="rtbTenderPrice != null" >
+        #{rtbTenderPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="hzrTenderPrice != null" >
+        #{hzrTenderPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="addTime != null" >
+        #{addTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.PcChannelStatisticsExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_pc_channel_statistics
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_pc_channel_statistics
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.sourceId != null" >
+        source_id = #{record.sourceId,jdbcType=INTEGER},
+      </if>
+      <if test="record.sourceName != null" >
+        source_name = #{record.sourceName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.accessNumber != null" >
+        access_number = #{record.accessNumber,jdbcType=INTEGER},
+      </if>
+      <if test="record.registNumber != null" >
+        regist_number = #{record.registNumber,jdbcType=INTEGER},
+      </if>
+      <if test="record.openAccountNumber != null" >
+        open_account_number = #{record.openAccountNumber,jdbcType=INTEGER},
+      </if>
+      <if test="record.tenderNumber != null" >
+        tender_number = #{record.tenderNumber,jdbcType=INTEGER},
+      </if>
+      <if test="record.cumulativeRecharge != null" >
+        cumulative_recharge = #{record.cumulativeRecharge,jdbcType=DECIMAL},
+      </if>
+      <if test="record.cumulativeInvestment != null" >
+        cumulative_investment = #{record.cumulativeInvestment,jdbcType=DECIMAL},
+      </if>
+      <if test="record.hztTenderPrice != null" >
+        hzt_tender_price = #{record.hztTenderPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="record.hxfTenderPrice != null" >
+        hxf_tender_price = #{record.hxfTenderPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="record.htlTenderPrice != null" >
+        htl_tender_price = #{record.htlTenderPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="record.htjTenderPrice != null" >
+        htj_tender_price = #{record.htjTenderPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="record.rtbTenderPrice != null" >
+        rtb_tender_price = #{record.rtbTenderPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="record.hzrTenderPrice != null" >
+        hzr_tender_price = #{record.hzrTenderPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="record.addTime != null" >
+        add_time = #{record.addTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_pc_channel_statistics
+    set id = #{record.id,jdbcType=INTEGER},
+      source_id = #{record.sourceId,jdbcType=INTEGER},
+      source_name = #{record.sourceName,jdbcType=VARCHAR},
+      access_number = #{record.accessNumber,jdbcType=INTEGER},
+      regist_number = #{record.registNumber,jdbcType=INTEGER},
+      open_account_number = #{record.openAccountNumber,jdbcType=INTEGER},
+      tender_number = #{record.tenderNumber,jdbcType=INTEGER},
+      cumulative_recharge = #{record.cumulativeRecharge,jdbcType=DECIMAL},
+      cumulative_investment = #{record.cumulativeInvestment,jdbcType=DECIMAL},
+      hzt_tender_price = #{record.hztTenderPrice,jdbcType=DECIMAL},
+      hxf_tender_price = #{record.hxfTenderPrice,jdbcType=DECIMAL},
+      htl_tender_price = #{record.htlTenderPrice,jdbcType=DECIMAL},
+      htj_tender_price = #{record.htjTenderPrice,jdbcType=DECIMAL},
+      rtb_tender_price = #{record.rtbTenderPrice,jdbcType=DECIMAL},
+      hzr_tender_price = #{record.hzrTenderPrice,jdbcType=DECIMAL},
+      add_time = #{record.addTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.PcChannelStatistics" >
+    update hyjf_pc_channel_statistics
+    <set >
+      <if test="sourceId != null" >
+        source_id = #{sourceId,jdbcType=INTEGER},
+      </if>
+      <if test="sourceName != null" >
+        source_name = #{sourceName,jdbcType=VARCHAR},
+      </if>
+      <if test="accessNumber != null" >
+        access_number = #{accessNumber,jdbcType=INTEGER},
+      </if>
+      <if test="registNumber != null" >
+        regist_number = #{registNumber,jdbcType=INTEGER},
+      </if>
+      <if test="openAccountNumber != null" >
+        open_account_number = #{openAccountNumber,jdbcType=INTEGER},
+      </if>
+      <if test="tenderNumber != null" >
+        tender_number = #{tenderNumber,jdbcType=INTEGER},
+      </if>
+      <if test="cumulativeRecharge != null" >
+        cumulative_recharge = #{cumulativeRecharge,jdbcType=DECIMAL},
+      </if>
+      <if test="cumulativeInvestment != null" >
+        cumulative_investment = #{cumulativeInvestment,jdbcType=DECIMAL},
+      </if>
+      <if test="hztTenderPrice != null" >
+        hzt_tender_price = #{hztTenderPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="hxfTenderPrice != null" >
+        hxf_tender_price = #{hxfTenderPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="htlTenderPrice != null" >
+        htl_tender_price = #{htlTenderPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="htjTenderPrice != null" >
+        htj_tender_price = #{htjTenderPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="rtbTenderPrice != null" >
+        rtb_tender_price = #{rtbTenderPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="hzrTenderPrice != null" >
+        hzr_tender_price = #{hzrTenderPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="addTime != null" >
+        add_time = #{addTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.PcChannelStatistics" >
+    update hyjf_pc_channel_statistics
+    set source_id = #{sourceId,jdbcType=INTEGER},
+      source_name = #{sourceName,jdbcType=VARCHAR},
+      access_number = #{accessNumber,jdbcType=INTEGER},
+      regist_number = #{registNumber,jdbcType=INTEGER},
+      open_account_number = #{openAccountNumber,jdbcType=INTEGER},
+      tender_number = #{tenderNumber,jdbcType=INTEGER},
+      cumulative_recharge = #{cumulativeRecharge,jdbcType=DECIMAL},
+      cumulative_investment = #{cumulativeInvestment,jdbcType=DECIMAL},
+      hzt_tender_price = #{hztTenderPrice,jdbcType=DECIMAL},
+      hxf_tender_price = #{hxfTenderPrice,jdbcType=DECIMAL},
+      htl_tender_price = #{htlTenderPrice,jdbcType=DECIMAL},
+      htj_tender_price = #{htjTenderPrice,jdbcType=DECIMAL},
+      rtb_tender_price = #{rtbTenderPrice,jdbcType=DECIMAL},
+      hzr_tender_price = #{hzrTenderPrice,jdbcType=DECIMAL},
+      add_time = #{addTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

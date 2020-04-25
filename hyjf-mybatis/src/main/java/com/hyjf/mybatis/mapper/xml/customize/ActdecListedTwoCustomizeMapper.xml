@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.ActdecListedTwoCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+			<!-- 用户名 -->
+			<if test="userNameSrch != null and userNameSrch != ''">
+				AND hap.username = #{userNameSrch }
+			</if>
+			<!-- 姓名 -->
+			<if test="trueNameSrch != null and trueNameSrch != ''">
+				AND hap.truename = #{trueNameSrch }
+			</if>
+			<!-- 手机 -->
+			<if test="mobileSrch != null and mobileSrch != ''">
+				AND hap.mobile = #{mobileSrch }
+			</if>
+			<!-- 操作 -->
+			<if test="tradeSrch != null and tradeSrch != ''">
+				AND hap.trade = #{tradeSrch }
+			</if>
+			<!-- 领取奖励 -->
+			<if test="acceptPrizeSrch != null and acceptPrizeSrch != ''">
+				AND hap.accept_prize = #{acceptPrizeSrch }
+			</if>
+			<!-- 领取时间 -->
+			<if test="acceptTimeStartSrch != null and acceptTimeStartSrch != ''">
+				AND FROM_UNIXTIME(hap.create_time, '%Y-%m-%d') <![CDATA[>=]]> DATE_FORMAT(#{acceptTimeStartSrch },'%Y-%m-%d')
+			</if>
+			<if test="acceptTimeEndSrch != null and acceptTimeEndSrch != ''">
+				AND FROM_UNIXTIME(hap.create_time, '%Y-%m-%d') <![CDATA[<=]]> DATE_FORMAT(#{acceptTimeEndSrch },'%Y-%m-%d')
+			</if>
+		</where>
+	</sql>
+
+	<select id="countActdecListedTwo" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.ActdecListedTwoCustomize">
+		SELECT
+		  COUNT(1)
+		FROM
+		    hyjf_actdec_listed_two hap
+		<include refid="Where_Clause" />
+	</select>
+
+	<resultMap id="selectActdecListedTwoListMap" type="com.hyjf.mybatis.model.customize.ActdecListedTwoCustomize">
+		<result column="username" property="userName" />
+		<result column="truename" property="trueName" />
+		<result column="user_id" property="userId" />
+		<result column="mobile" property="mobile" />
+		<result column="trade" property="trade" />
+		<result column="invested_amount" property="investedAmount" />
+		<result column="accept_prize" property="acceptPrize" />
+		<result column="accept_time" property="acceptTime" />
+		<result column="amount" property="amount" />
+		<result column="cumulative_charge" property="cumulativeCharge" />
+		<result column="cumulative_invest" property="cumulativeInvest" />
+		<result column="create_user" property="createUser" />
+		<result column="create_time" property="createTime" />
+		<result column="update_user" property="updateUser" />
+		<result column="update_time" property="updateTime" />
+		<result column="del_flg" property="delFlg" />
+	</resultMap>
+	<select id="selectActdecListedTwoList" resultMap="selectActdecListedTwoListMap" parameterType="com.hyjf.mybatis.model.customize.ActdecListedTwoCustomize">
+		SELECT
+		   username,
+		   truename,
+		   user_id,
+		   mobile,
+		   trade,
+		   invested_amount,
+		   accept_prize,
+		   accept_time,
+		   amount,
+		   cumulative_charge,
+		   cumulative_invest,
+		   create_user,
+		   create_time,
+		   update_user,
+		   update_time,
+		   del_flg
+		from hyjf_actdec_listed_two hap
+	   <include refid="Where_Clause" />
+		ORDER BY
+		  hap.create_time DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<resultMap id="exportActdecListedTwoListMap" type="com.hyjf.mybatis.model.customize.ActdecListedTwoCustomize">
+		<result column="username" property="userName" />
+		<result column="truename" property="trueName" />
+		<result column="user_id" property="userId" />
+		<result column="mobile" property="mobile" />
+		<result column="trade" property="trade" />
+		<result column="invested_amount" property="investedAmount" />
+		<result column="accept_prize" property="acceptPrize" />
+		<result column="accept_time" property="acceptTime" />
+		<result column="amount" property="amount" />
+		<result column="cumulative_charge" property="cumulativeCharge" />
+		<result column="cumulative_invest" property="cumulativeInvest" />
+		<result column="create_user" property="createUser" />
+		<result column="create_time" property="createTime" />
+		<result column="update_user" property="updateUser" />
+		<result column="update_time" property="updateTime" />
+		<result column="del_flg" property="delFlg" />
+	</resultMap>
+	<select id="exportActdecListedTwoList" resultMap="exportActdecListedTwoListMap" parameterType="com.hyjf.mybatis.model.customize.ActdecListedTwoCustomize">
+		SELECT
+		   username,
+		   truename,
+		   user_id,
+		   mobile,
+		   trade,
+		   invested_amount,
+		   accept_prize,
+		   accept_time,
+		   amount,
+		   cumulative_charge,
+		   cumulative_invest,
+		   create_user,
+		   create_time,
+		   update_user,
+		   update_time,
+		   del_flg
+		from hyjf_actdec_listed_two hap
+	   <include refid="Where_Clause" />
+		ORDER BY
+		  hap.accept_time DESC
+	</select>
+</mapper>

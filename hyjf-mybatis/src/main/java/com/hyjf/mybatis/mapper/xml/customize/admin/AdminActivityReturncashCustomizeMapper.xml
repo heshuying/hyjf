@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.AdminActivityReturncashCustomizeMapper">
+	<resultMap id="selectReturncashListMap" type="com.hyjf.mybatis.model.customize.admin.AdminActivityReturncashCustomize">
+	    <result column="user_id" property="userId" />
+	    <result column="username" property="username" />
+	    <result column="truename" property="truename" />
+	    <result column="mobile" property="mobile" />
+	    <result column="referrer_user_name" property="referrerUserName" />
+	    <result column="attribute" property="attribute" />
+	    <result column="invest_total_activity" property="investTotalActivity" />
+	    <result column="has_lostreward" property="hasLostreward" />
+	    <result column="order_id" property="orderId" />
+	    <result column="reward_total" property="rewardTotal" />
+	    <result column="user_type" property="userType" />
+	</resultMap>
+
+	<sql id="Where_Clause">
+	    AND hu.username <![CDATA[<>]]> 'yinduoziben2014' 
+	    AND hu.username <![CDATA[<>]]> 'tzjtztian' 
+		<if test="userId != null and userId != ''">
+		  AND hu.user_id = #{userId}
+		</if>
+		<if test="username != null and username != ''">
+		  AND hu.username LIKE CONCAT('%', #{username}, '%') 
+		</if>
+		<if test="attribute != null and attribute != ''">
+		  AND hui.attribute = #{attribute}
+		</if>
+	</sql>
+	<select id="selectReturncashCount" resultType="java.lang.Integer" parameterType="Map">
+		SELECT
+			COUNT(t.user_id)
+		FROM
+			(
+				(
+					SELECT
+						hu.user_id
+					FROM
+						`huiyingdai_borrow_tender` hbt
+					JOIN huiyingdai_users hu ON hbt.user_id = hu.user_id
+					JOIN huiyingdai_users_info hui ON hui.user_id = hu.user_id
+					LEFT JOIN hyjf_crm.oa_users ou ON hu.referrer = ou.hyd_id
+					AND hu.referrer IS NOT NULL
+					AND hu.referrer <![CDATA[<>]]> 0
+					LEFT JOIN hyjf_crm.oa_department od ON ou.departmentid = od.id
+					LEFT JOIN hyjf_crm.oa_users ou2 ON hu.user_id = ou2.hyd_id
+					LEFT JOIN hyjf_crm.oa_department od2 ON ou2.departmentid = od2.id
+					WHERE
+					hbt.addtime <![CDATA[>=]]> 1464710400
+			        AND hbt.addtime <![CDATA[<=]]> 1467302400
+					AND (
+						hui.attribute = 0
+						OR od.id IN (
+							11,
+							27,
+							29,
+							30,
+							31,
+							32,
+							33,
+							34,
+							239,
+							28
+						)
+						OR od2.id = 11
+					)
+					AND NOT EXISTS (
+						SELECT
+							har.user_id
+						FROM
+							hyjf_activity_returncash har
+						WHERE
+							(
+								har.islost = 1
+								OR har.`status` = 1
+							)
+						AND har.user_id = hu.user_id
+					)
+					<include refid="Where_Clause" />
+					GROUP BY
+						hu.user_id
+				)
+				UNION ALL
+					(
+						SELECT
+							hu.user_id
+						FROM
+							hyjf_activity_returncash har
+						LEFT JOIN huiyingdai_users hu ON hu.user_id = har.user_id
+						LEFT JOIN huiyingdai_users_info hui ON hu.user_id = hui.user_id
+						LEFT JOIN huiyingdai_borrow_tender hbt ON har.user_id = hbt.user_id
+						WHERE
+							har.islost = 1
+						AND har.`status` = 0
+						AND hbt.addtime <![CDATA[>=]]> 1464710400
+			            AND hbt.addtime <![CDATA[<=]]> 1467302400
+						<include refid="Where_Clause" />
+						GROUP BY
+							hu.user_id
+					)
+			) t
+	</select>
+	<select id="selectReturncashList" resultMap="selectReturncashListMap" parameterType="Map">
+	  select t.* from 
+		((
+			SELECT
+				hu.user_id,
+				hu.username,
+				hui.truename,
+				hu.mobile,
+				hu.referrer_user_name,
+				CASE
+				WHEN hui.attribute = 0 THEN
+					'无主单'
+				WHEN hui.attribute = 1 THEN
+					'有主单'
+				WHEN hui.attribute = 2 THEN
+					'线下员工'
+				WHEN hui.attribute = 3 THEN
+					'线上员工'
+				ELSE
+					''
+				END AS attribute,
+				SUM(IFNULL(hbt.account, 0)) AS invest_total_activity,
+				'0' AS user_type
+			FROM
+				`huiyingdai_borrow_tender` hbt
+			JOIN huiyingdai_users hu ON hbt.user_id = hu.user_id
+			JOIN huiyingdai_users_info hui ON hui.user_id = hu.user_id
+			LEFT JOIN hyjf_crm.oa_users ou ON hu.referrer = ou.hyd_id
+			AND hu.referrer IS NOT NULL
+			AND hu.referrer <![CDATA[<>]]> 0
+			LEFT JOIN hyjf_crm.oa_department od ON ou.departmentid = od.id
+			LEFT JOIN hyjf_crm.oa_users ou2 ON hu.user_id = ou2.hyd_id
+			LEFT JOIN hyjf_crm.oa_department od2 ON ou2.departmentid = od2.id
+			WHERE
+		    hbt.addtime <![CDATA[>=]]> 1464710400
+			AND hbt.addtime <![CDATA[<=]]> 1467302400
+			AND (
+				hui.attribute = 0
+				OR od.id IN (
+					11,
+					27,
+					29,
+					30,
+					31,
+					32,
+					33,
+					34,
+					239,
+					28
+				)
+				OR od2.id = 11
+			)
+			AND NOT EXISTS (
+				SELECT
+					har.user_id
+				FROM
+					hyjf_activity_returncash har
+				WHERE
+					(
+						har.islost = 1
+						OR har.`status` = 1
+					)
+				AND har.user_id = hu.user_id
+			)
+			<include refid="Where_Clause" />
+			GROUP BY
+				hu.user_id
+		)
+		UNION ALL
+			(
+				SELECT
+					hu.user_id,
+					hu.username,
+					hui.truename,
+					hu.mobile,
+					hu.referrer_user_name,
+					CASE
+					WHEN hui.attribute = 0 THEN
+						'无主单'
+					WHEN hui.attribute = 1 THEN
+						'有主单'
+					WHEN hui.attribute = 2 THEN
+						'线下员工'
+					WHEN hui.attribute = 3 THEN
+						'线上员工'
+					ELSE
+						''
+					END AS attribute,
+					SUM(IFNULL(hbt.account,0)) AS invest_total_activity,
+					'1' AS user_type
+				FROM
+					hyjf_activity_returncash har
+				LEFT JOIN huiyingdai_users hu ON hu.user_id = har.user_id
+				LEFT JOIN huiyingdai_users_info hui ON hu.user_id = hui.user_id
+				LEFT JOIN huiyingdai_borrow_tender hbt ON har.user_id = hbt.user_id
+				WHERE
+					har.islost = 1
+				AND har.`status` = 0
+				AND hbt.addtime <![CDATA[>=]]> 1464710400
+			    AND hbt.addtime <![CDATA[<=]]> 1467302400
+				<include refid="Where_Clause" />
+				GROUP BY
+					hu.user_id
+			)) t
+		  ORDER BY t.invest_total_activity DESC, t.user_id DESC
+		<if test="limitStart != null and limitStart >= 0" >
+	      limit #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<select id="selectReturnedcashCount" resultType="java.lang.Integer" parameterType="Map">
+		SELECT
+			count(hu.user_id)
+		FROM
+			hyjf_activity_returncash har
+		LEFT JOIN huiyingdai_users hu ON har.user_id = hu.user_id
+		LEFT JOIN huiyingdai_users_info hui ON hu.user_id = hui.user_id
+		WHERE har.`status` = 1 
+		<include refid="Where_Clause" />
+	</select>
+	<select id="selectReturnedcashList" resultMap="selectReturncashListMap" parameterType="Map">
+		SELECT
+			hu.user_id,
+			hu.username,
+			hui.truename,
+		    hu.mobile,
+			hu.referrer_user_name,
+			CASE
+			WHEN hui.attribute = 0 THEN
+				'无主单'
+			WHEN hui.attribute = 1 THEN
+				'有主单'
+			WHEN hui.attribute = 2 THEN
+				'线下员工'
+			WHEN hui.attribute = 3 THEN
+				'线上员工'
+			ELSE
+				''
+			END AS attribute,
+		  IFNULL(har.invest_total,0) AS invest_total_activity,
+		  har.has_lostreward,
+		  har.order_id,
+		  IFNULL(har.reward_total,0) AS reward_total
+		
+		FROM
+			hyjf_activity_returncash har
+		LEFT JOIN huiyingdai_users hu ON har.user_id = hu.user_id
+		LEFT JOIN huiyingdai_users_info hui ON hu.user_id = hui.user_id
+		WHERE har.`status` = 1 
+		<include refid="Where_Clause" />
+		ORDER BY
+			har.update_time DESC
+		<if test="limitStart != null and limitStart >= 0" >
+	      limit #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+
+</mapper>

@@ -1,0 +1,11 @@
+else if (BaseDefine.METHOD_HJH_SEARCH_PLAN_DETAIL.equals(methodName)) {
+        	// 查询汇计划详情
+        	HjhPlanBean bean = (HjhPlanBean) paramBean;
+			sign = StringUtils.lowerCase(MD5.toMD5Code(accessKey + bean.getPlanNid() + bean.getTimestamp() + accessKey));
+		}else if (BaseDefine.METHOD_HJH_SEARCH_PLAN_ACCEDE.equals(methodName)) {
+			HjhPlanBean bean = (HjhPlanBean) paramBean;
+			sign = StringUtils.lowerCase(MD5.toMD5Code(accessKey + bean.getPlanNid() + bean.getTimestamp() + accessKey));
+		}else if (BaseDefine.METHOD_HJH_SEARCH_PLAN_BORROW.equals(methodName)) {
+			HjhPlanBean bean = (HjhPlanBean) paramBean;
+			sign = StringUtils.lowerCase(MD5.toMD5Code(accessKey + bean.getPlanNid() + bean.getTimestamp() + accessKey));
+		}

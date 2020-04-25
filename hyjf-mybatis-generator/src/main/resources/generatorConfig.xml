@@ -1,0 +1,2038 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+
+	<classPathEntry location="src\main\resources\mysql-connector-java-5.1.30.jar" />
+
+	<context id="doyumDB" targetRuntime="MyBatis3">
+		<property name="autoDelimitKeywords" value="true" />
+		<property name="beginningDelimiter" value="`" />
+		<property name="endingDelimiter" value="`" />
+		<plugin type="org.hyjf.mybatis.generator.plugins.MysqlPagingPlugin" />
+		<plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+		<commentGenerator>
+			<property name="suppressAllComments" value="true" />
+			<property name="suppressDate" value="true" />
+		</commentGenerator>
+
+		<jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://47.94.171.28:13303/hyjf_developer?characterEncoding=utf-8" userId="hyjf_developer"
+			password="QD@hyjfdev2000"></jdbcConnection>
+		<!-- <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://123.57.92.127:8246/hyjf_java?characterEncoding=utf-8" userId="hyjf_developer" password="QD@hyjfdev2000"></jdbcConnection> -->
+		<javaTypeResolver>
+			<property name="forceBigDecimals" value="false" />
+		</javaTypeResolver>
+
+		<javaModelGenerator targetPackage="com.hyjf.mybatis.model.auto" targetProject="../hyjf-mybatis/src/main/java">
+			<property name="enableSubPackages" value="false" />
+			<property name="trimStrings" value="true" />
+		</javaModelGenerator>
+
+		<sqlMapGenerator targetPackage="com.hyjf.mybatis.mapper.xml.auto" targetProject="../hyjf-mybatis/src/main/java">
+			<property name="enableSubPackages" value="true" />
+		</sqlMapGenerator>
+
+		<javaClientGenerator type="XMLMAPPER" targetPackage="com.hyjf.mybatis.mapper.auto" targetProject="../hyjf-mybatis/src/main/java">
+			<property name="enableSubPackages" value="true" />
+		</javaClientGenerator>
+		<!-- 管理人员信息表 -->
+		<table tableName="hyjf_admin" domainObjectName="Admin">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 人员与角色关联表 -->
+		<table tableName="hyjf_admin_role" domainObjectName="AdminRole">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 人员与角色关联表 -->
+		<table tableName="hyjf_admin_and_role" domainObjectName="AdminAndRole"></table>
+		<!-- 角色菜单权限关联表 -->
+		<table tableName="hyjf_admin_role_menu_permissions" domainObjectName="AdminRoleMenuPermissions"></table>
+		<!-- 菜单维护表 -->
+		<table tableName="hyjf_admin_menu" domainObjectName="AdminMenu"></table>
+		<!-- 权限菜单表 -->
+		<table tableName="hyjf_admin_menu_permssions" domainObjectName="AdminMenuPermissions"></table>
+		<!-- 权限维护表 -->
+		<table tableName="hyjf_admin_permissions" domainObjectName="AdminPermissions"></table>
+		<!-- 用户账户表 -->
+		<table tableName="huiyingdai_account" domainObjectName="Account">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="isok" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 用户银行卡信息表 -->
+		<table tableName="huiyingdai_account_bank" domainObjectName="AccountBank">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<ignoreColumn column="default" delimitedColumnName="true" />
+		</table>
+		<!-- 充值返手续费表 -->
+		<table tableName="huiyingdai_account_funds" domainObjectName="AccountFunds">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 用户汇付开户记录表 -->
+		<table tableName="huiyingdai_account_chinapnr" domainObjectName="AccountChinapnr">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="isok" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="eggs_isok" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 资金明细表 -->
+		<table tableName="huiyingdai_account_list" domainObjectName="AccountList">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="is_show" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_update" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="base_update" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="web" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_bank" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 资金日志表 -->
+		<table tableName="huiyingdai_account_log" domainObjectName="AccountLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 用户充值记录表 -->
+		<table tableName="huiyingdai_account_recharge" domainObjectName="AccountRecharge">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="isok" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="client" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="nok" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="isok11" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="activity_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_bank" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 用户提现记录表 -->
+		<table tableName="huiyingdai_account_withdraw" domainObjectName="Accountwithdraw">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="isok" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="client" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="activity_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="bank_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="withdraw_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 银行充值限额 -->
+		<table tableName="hyjf_bank_recharge_limit_config" domainObjectName="BankRechargeLimitConfig">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="access_code" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="bank_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 用户提现记录表 -->
+		<table tableName="huiyingdai_account_web_list" domainObjectName="AccountWebList">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 用户交易单表 -->
+		<table tableName="huiyingdai_account_trade" domainObjectName="AccountTrade">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="SMALLINT" />
+		</table>
+		<!-- 借款满标日志表 -->
+		<table tableName="huiyingdai_account_borrow" domainObjectName="AccountBorrow">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 活动列表 -->
+		<table tableName="huiyingdai_activity_list" domainObjectName="ActivityList">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 广告表 -->
+		<table tableName="huiyingdai_ads" domainObjectName="Ads">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="typeid" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="client_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_end" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="newuser_show" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 广告类型表 -->
+		<table tableName="huiyingdai_ads_type" domainObjectName="AdsType">
+			<generatedKey column="typeid" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="client_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 地域管理表 -->
+		<table tableName="huiyingdai_areas" domainObjectName="Areas">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 银行配置 -->
+		<table tableName="huiyingdai_bank_config" domainObjectName="BankConfig">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 标的详情 -->
+		<table tableName="huiyingdai_borrow" domainObjectName="Borrow">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="guarantee_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="project_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="borrow_interest_coupon" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="borrow_taste_money" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="bank_input_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="booking_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_repay_org_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_show" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<ignoreColumn column="order" delimitedColumnName="true" />
+			<columnOverride column="regist_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="repay_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_new" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="reverify_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="verify_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="asset_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="late_free_days" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="entrusted_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="asset_attributes" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_engine_used" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="repay_capital_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="increase_interest_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 保证金 -->
+		<table tableName="huiyingdai_borrow_bail" domainObjectName="BorrowBail">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 借款人车辆抵押信息（房子、、、） -->
+		<table tableName="huiyingdai_borrow_carinfo" domainObjectName="BorrowCarinfo">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 借款认证信息 -->
+		<table tableName="huiyingdai_borrow_company_authen" domainObjectName="BorrowCompanyAuthen">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 达飞金融基础数据 -->
+		<table tableName="hyjf_borrow_consume" domainObjectName="BorrowConsume">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 汇消费管理费 -->
+		<table tableName="huiyingdai_borrow_finhxfman_charge" domainObjectName="BorrowFinhxfmanCharge"></table>
+		<!-- 借款认证信息 -->
+		<table tableName="huiyingdai_borrow_houses" domainObjectName="BorrowHouses">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 借款人行业、职业信息 -->
+		<table tableName="huiyingdai_borrow_maninfo" domainObjectName="BorrowManinfo">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="is_card" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_income" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_credit" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_asset" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_vehicle" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_driving_license" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_vehicle_registration" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_merry" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_work" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_account_book" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 借款人信息 -->
+		<table tableName="huiyingdai_borrow_users" domainObjectName="BorrowUsers">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="is_certificate" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_operation" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_finance" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_enterprise_creidt" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_legal_person" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_asset" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_purchase_contract" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_supply_contract" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 还款明细 -->
+		<table tableName="huiyingdai_borrow_recover" domainObjectName="BorrowRecover">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="sendmail" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="web" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="credit_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="debt_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_autorepay" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 每个标的总的还款信息（一个标一条信息） -->
+		<table tableName="huiyingdai_borrow_repay" domainObjectName="BorrowRepay">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="auto_repay" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 总的还款计划（放款时生成数据） -->
+		<table tableName="huiyingdai_borrow_repay_plan" domainObjectName="BorrowRepayPlan">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="auto_repay" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 投资详情 -->
+		<table tableName="huiyingdai_borrow_tender" domainObjectName="BorrowTender">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="api_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="period_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="isok" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_report" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="activity_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="client" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="web" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="invest_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="tender_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 投资日志 -->
+		<table tableName="huiyingdai_borrow_tender_tmp" domainObjectName="BorrowTenderTmp">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="api_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="period_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="isok" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_report" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="activity_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="client" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="web" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 投资日志 信息 -->
+		<table tableName="huiyingdai_borrow_tender_tmpinfo" domainObjectName="BorrowTenderTmpInfo">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 汇直投项目类型设置 -->
+		<table tableName="huiyingdai_borrow_project_type" domainObjectName="BorrowProjectType">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="interest_coupon" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="taste_money" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇直投项目还款设置 -->
+		<table tableName="huiyingdai_borrow_project_repay" domainObjectName="BorrowProjectRepay">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 汇直投发标设置 -->
+		<table tableName="huiyingdai_borrow_send_type" domainObjectName="BorrowSendType">
+		</table>
+		<!-- 汇直投融资服务费设置 -->
+		<table tableName="huiyingdai_borrow_finser_charge" domainObjectName="BorrowFinserCharge">
+			<columnOverride column="project_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇直投融资管理费设置 -->
+		<table tableName="huiyingdai_borrow_finman_charge" domainObjectName="BorrowFinmanCharge">
+		</table>
+		<!-- 分期还款计划 -->
+		<table tableName="huiyingdai_borrow_recover_plan" domainObjectName="BorrowRecoverPlan">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="sendmail" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="credit_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="debt_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 放款任务表 -->
+		<table tableName="huiyingdai_borrow_apicron" domainObjectName="BorrowApicron">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="web_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="api_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="extra_yield_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="extra_yield_repay_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_repay_org_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="agreement_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 还款方式 -->
+		<table tableName="huiyingdai_borrow_style" domainObjectName="BorrowStyle">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 借款配置 -->
+		<table tableName="hyjf_borrow_config" domainObjectName="BorrowConfig"></table>
+		<!-- 达飞数据接口数据汇总表 -->
+		<table tableName="huiyingdai_consume" domainObjectName="Consume">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 达飞数据接口数据详表 -->
+		<table tableName="huiyingdai_consume_list" domainObjectName="ConsumeList">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 资质荣誉 -->
+		<table tableName="huiyingdai_content_qualify" domainObjectName="ContentQualify">
+		</table>
+		<!-- 文章管理 -->
+		<table tableName="huiyingdai_content_article" domainObjectName="ContentArticle">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 工作环境表 -->
+		<table tableName="huiyingdai_content_environment" domainObjectName="ContentEnvironment">
+		</table>
+		<!-- 问题列表 -->
+		<table tableName="huiyingdai_content_help" domainObjectName="ContentHelp">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 配置表 -->
+		<table tableName="huiyingdai_config" domainObjectName="Config">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇付天下接口记录 -->
+		<table tableName="huiyingdai_chinapnr_log" domainObjectName="ChinapnrLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="isbg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇付天下接口发送记录 -->
+		<table tableName="huiyingdai_chinapnr_send_log" domainObjectName="ChinapnrSendlog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="client" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇付天下接口调用记录 -->
+		<table tableName="hyjf_chinapnr_exclusive_log" domainObjectName="ChinapnrExclusiveLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 帮助中心问题分类 -->
+		<table tableName="huiyingdai_category" domainObjectName="Category">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="hide" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 部门管理表 -->
+		<table tableName="huiyingdai_department" domainObjectName="Department">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 公司记事 -->
+		<table tableName="huiyingdai_events" domainObjectName="Events">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 手续费配置 -->
+		<table tableName="huiyingdai_fee_config" domainObjectName="FeeConfig">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 资金冻结记录 -->
+		<table tableName="huiyingdai_freeze_list" domainObjectName="FreezeList">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="xfrom" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="unfreeze_manual" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇转让配置 -->
+		<table tableName="huiyingdai_hzr_config" domainObjectName="HzrConfig">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 招贤纳士 -->
+		<table tableName="huiyingdai_jobs" domainObjectName="Jobs">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 借款申请 -->
+		<table tableName="huiyingdai_loan" domainObjectName="Loan">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 友情链接表 -->
+		<table tableName="huiyingdai_links" domainObjectName="Links">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="partner_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="isindex" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇天利每日报表 -->
+		<table tableName="huiyingdai_product_info" domainObjectName="ProductInfo">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 汇天利产品购买明细表 -->
+		<table tableName="huiyingdai_product_list" domainObjectName="ProductList">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="client" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_new" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="invest_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇天利赎回表 -->
+		<table tableName="huiyingdai_product_redeem" domainObjectName="ProductRedeem">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="client" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇天利利息表 -->
+		<table tableName="huiyingdai_product_interest" domainObjectName="ProductInterest">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 汇天利汇付返回日志表 -->
+		<table tableName="huiyingdai_product_chinapnr_log" domainObjectName="ProductChinapnrLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="isbg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="client" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇天利汇付发送日志表 -->
+		<table tableName="huiyingdai_product_chinapnr_send_log" domainObjectName="ProductChinapnrSendLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="client" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇天利错误日志表 -->
+		<table tableName="huiyingdai_product_error_log" domainObjectName="ProductErrorLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 汇天利购买日志表 -->
+		<table tableName="huiyingdai_product_list_log" domainObjectName="ProductListLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="client" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_new" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇天利赎回失败日志表 -->
+		<table tableName="huiyingdai_product_redeem_fail" domainObjectName="ProductRedeemFail">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 汇天利赎回明细表 -->
+		<table tableName="huiyingdai_product_redeem_list" domainObjectName="ProductRedeemList">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="client" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇天利产品表 -->
+		<table tableName="huiyingdai_product" domainObjectName="Product">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 提成配置 -->
+		<table tableName="huiyingdai_push_money" domainObjectName="PushMoney">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="project_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="reward_send" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 数据字典表 -->
+		<table tableName="hyjf_param_name" domainObjectName="ParamName">
+		</table>
+		<!-- 网站设置 -->
+		<table tableName="huiyingdai_site_settings" domainObjectName="SiteSetting">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="site_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="smtp_verify" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="smtp_ssl" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 短信发送配置 -->
+		<table tableName="huiyingdai_sms_config" domainObjectName="SmsConfig">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 短信通知配置 -->
+		<table tableName="huiyingdai_sms_notice_config" domainObjectName="SmsNoticeConfig">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 短信发送记录 -->
+		<table tableName="huiyingdai_sms_log" domainObjectName="SmsLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="backend" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_display" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 短信发送 -->
+		<table tableName="huiyingdai_smscode" domainObjectName="SmsCode">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 短信发送模版 -->
+		<table tableName="huiyingdai_sms_template" domainObjectName="SmsTemplate">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 邮件模版 -->
+		<table tableName="huiyingdai_sms_mail_template" domainObjectName="SmsMailTemplate">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 推荐人关联表 -->
+		<table tableName="huiyingdai_spreads_users" domainObjectName="SpreadsUsers">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 推荐人修改日志表 -->
+		<table tableName="huiyingdai_spreads_users_log" domainObjectName="SpreadsUsersLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 推广提成发送日志 -->
+		<table tableName="huiyingdai_spreads_log" domainObjectName="SpreadsLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="pay_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_valid" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 友情链接表 -->
+		<table tableName="huiyingdai_team" domainObjectName="Team">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 提成发放表 -->
+		<table tableName="huiyingdai_tender_commission" domainObjectName="TenderCommission">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="tender_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 推广链接平台表 -->
+		<table tableName="huiyingdai_utm_plat" domainObjectName="UtmPlat">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="source_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="attorn_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 推广链接表 -->
+		<table tableName="huiyingdai_utm" domainObjectName="Utm">
+			<generatedKey column="utm_id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 推广链接表 -->
+		<table tableName="huiyingdai_utm_visit" domainObjectName="UtmVisit">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="login" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 推广链接注册表 -->
+		<table tableName="huiyingdai_utm_reg" domainObjectName="UtmReg">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="open_account" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="bind_card" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 用戶表 -->
+		<table tableName="huiyingdai_users" domainObjectName="Users">
+			<generatedKey column="user_id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="open_account" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="send_sms" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="ptype" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="invest_sms" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="recieve_sms" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="invest_sms" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="recharge_sms" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="withdraw_sms" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="reg_esb" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="account_esb" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="investFlag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="user_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_set_password" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="bank_open_account" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_smtp" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="bank_account_esb" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_data_update" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_inst_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_evaluation_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_ca_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="payment_auth_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 用戶详情表 -->
+		<table tableName="huiyingdai_users_info" domainObjectName="UsersInfo">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="role_id" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="department_id" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_staff" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is51" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="sex" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="truename_isApprove" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="mobile_isApprove" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="email_isApprove" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="borrower_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 用户紧急联络人表 -->
+		<table tableName="huiyingdai_users_contact" domainObjectName="UsersContract">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 用户log日志表 -->
+		<table tableName="huiyingdai_users_log" domainObjectName="UsersLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 用户信息操作履历表 -->
+		<table tableName="huiyingdai_users_modify_log" domainObjectName="UsersModifyLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+
+		<!-- 员工表 -->
+		<!-- <table tableName="oa_users" domainObjectName="OAUsers"> <generatedKey column="id" sqlStatement="MySql" type="post" identity="true" /> <columnOverride column="sex" javaType="java.lang.Integer"
+			jdbcType="SMALLINT" /> <columnOverride column="level" javaType="java.lang.Integer" jdbcType="SMALLINT" /> <columnOverride column="education" javaType="java.lang.Integer" jdbcType="TINYINT"
+			/> <columnOverride column="user_type" javaType="java.lang.Integer" jdbcType="TINYINT" /> </table> -->
+		<!-- 入职表 -->
+		<!-- <table tableName="oa_user_entry" domainObjectName="OAUserEntry"> <generatedKey column="id" sqlStatement="MySql" type="post" identity="true" /> </table> -->
+		<!-- 离职 -->
+		<!-- <table tableName="oa_user_leave" domainObjectName="OAUserLeave"> <generatedKey column="id" sqlStatement="MySql" type="post" identity="true" /> </table> -->
+		<!-- 部门表 -->
+		<!-- <table tableName="oa_department" domainObjectName="OADepartment"> <generatedKey column="id" sqlStatement="MySql" type="post" identity="true" /> <columnOverride column="ishead"
+			javaType="java.lang.Integer" jdbcType="TINYINT" /> <columnOverride column="ishr" javaType="java.lang.Integer" jdbcType="TINYINT" /> <columnOverride column="isfinance" javaType="java.lang.Integer"
+			jdbcType="TINYINT" /> <columnOverride column="cuttype" javaType="java.lang.Integer" jdbcType="TINYINT" /> <columnOverride column="listorder" javaType="java.lang.Integer" jdbcType="TINYINT"
+			/> </table> -->
+		<!-- 部门表 -->
+		<!-- <table tableName="oa_logs" domainObjectName="OALogs"> <generatedKey column="id" sqlStatement="MySql" type="post" identity="true" /> </table> -->
+
+		<!-- 解冻历史记录 -->
+		<table tableName="hyjf_freeze_history" domainObjectName="FreezeHistory">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+
+		<!-- 投资撤销历史记录 -->
+		<table tableName="hyjf_tender_back_history" domainObjectName="TenderBackHistory">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- app 手机端项目配置图片 -->
+		<table tableName="hyjf_app_borrow_image" domainObjectName="AppBorrowImage">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- app 存储设备唯一标识码 -->
+		<table tableName="hyjf_mobile_code" domainObjectName="MobileCode">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+
+		</table>
+		<!-- app 存储用户角标数 -->
+		<table tableName="hyjf_user_corner" domainObjectName="UserCorner">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- app 存储版本号信息 -->
+		<table tableName="hyjf_version" domainObjectName="Version">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="isupdate" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 意见反馈表 -->
+		<table tableName="huiyingdai_submissions" domainObjectName="Submissions">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 邀请好友配置表 -->
+		<table tableName="huiyingdai_invite" domainObjectName="Invite">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 银行支持的提现方式配置表 -->
+		<table tableName="huiyingdai_bank_withdraw_type" domainObjectName="BankWithdrawType">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- APP用户访问记录表 -->
+		<table tableName="hyjf_app_access_statistics" domainObjectName="AppAccessStatistics">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- APP渠道统计表 -->
+		<table tableName="hyjf_app_channel_statistics" domainObjectName="AppChannelStatistics">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- APP渠道统计详情表 -->
+		<table tableName="hyjf_app_channel_statistics_detail" domainObjectName="AppChannelStatisticsDetail">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- APP渠道统计详情表 -->
+		<table tableName="hyjf_extension_temp" domainObjectName="ExtensionTemp">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="platform" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 测评结果表 -->
+		<table tableName="huiyingdai_evalation" domainObjectName="Evalation">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 问卷问题表 -->
+		<table tableName="huiyingdai_question" domainObjectName="Question">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 问卷答案表 -->
+		<table tableName="huiyingdai_answer" domainObjectName="Answer">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 用户测评总结表 -->
+		<table tableName="huiyingdai_user_evalation_result" domainObjectName="UserEvalationResult">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 用户测评问卷结果表 -->
+		<table tableName="huiyingdai_user_evalation" domainObjectName="UserEvalation">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 用户测试行为表 -->
+		<table tableName="huiyingdai_user_evalation_behavior" domainObjectName="UserEvalationBehavior">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 债转标记录 -->
+		<table tableName="huiyingdai_borrow_credit" domainObjectName="BorrowCredit">
+			<generatedKey column="credit_id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="credit_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="repay_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 债转投资记录日志（所有承接请求） -->
+		<table tableName="huiyingdai_credit_tender_log" domainObjectName="CreditTenderLog">
+			<generatedKey column="assign_id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 债转投资记录（只包含成功部分） -->
+		<table tableName="huiyingdai_credit_tender" domainObjectName="CreditTender">
+			<generatedKey column="assign_id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="web" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 债转还款信息 -->
+		<table tableName="huiyingdai_credit_repay" domainObjectName="CreditRepay">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="debt_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<table tableName="hyjf_config_applicant" domainObjectName="ConfigApplicant">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 债转还款日志信息 -->
+		<table tableName="huiyingdai_credit_repay_log" domainObjectName="CreditRepayLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- <table tableName="hyjf_coupon_tender" domainObjectName="CouponTender"> <generatedKey column="id" sqlStatement="MySql" type="post" identity="true" /> </table> <table tableName="hyjf_coupon_recover"
+			domainObjectName="CouponRecover"> <generatedKey column="id" sqlStatement="MySql" type="post" identity="true" /> </table> <table tableName="hyjf_coupon_user" domainObjectName="CouponUser">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" /> </table> <table tableName="hyjf_coupon_config" domainObjectName="CouponConfig"> <generatedKey column="id"
+			sqlStatement="MySql" type="post" identity="true" /> </table> -->
+		<table tableName="huiyingdai_holidays_config" domainObjectName="HolidaysConfig">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<table tableName="huiyingdai_withdrawals_time_config" domainObjectName="WithdrawalsTimeConfig">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 用户email绑定log表 -->
+		<table tableName="hyjf_user_bind_email_log" domainObjectName="UserBindEmailLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 用户账户准确信息表 -->
+		<table tableName="huiyingdai_account_accurate" domainObjectName="AccountAccurate">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<table tableName="hyjf_users_change_log" domainObjectName="UsersChangeLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="role" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="attribute" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is51" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="change_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="borrower_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 五月份活动 -->
+		<table tableName="huiyingdai_activity_f1" domainObjectName="ActivityF1">
+		</table>
+		<!-- 用户转账表 -->
+		<table tableName="hyjf_user_transfer" domainObjectName="UserTransfer">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<table tableName="hyjf_coupon_tender" domainObjectName="CouponTender">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<table tableName="hyjf_coupon_real_tender" domainObjectName="CouponRealTender">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<table tableName="hyjf_coupon_recover" domainObjectName="CouponRecover">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<table tableName="hyjf_coupon_user" domainObjectName="CouponUser">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<table tableName="hyjf_coupon_config" domainObjectName="CouponConfig">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<table tableName="hyjf_coupon_operation_history" domainObjectName="CouponOperationHistory">
+		</table>
+		<table tableName="hyjf_transfer_exception_log" domainObjectName="TransferExceptionLog">
+		</table>
+		<table tableName="hyjf_site_msg_config" domainObjectName="SiteMsgConfig">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<table tableName="hyjf_site_msg_log" domainObjectName="SiteMsgLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<table tableName="hyjf_borrow_tender_cpn" domainObjectName="BorrowTenderCpn">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="api_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="period_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="isok" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_report" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="activity_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="client" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="web" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- vip相关表 -->
+		<!-- vip权限 -->
+		<table tableName="hyjf_vip_auth" domainObjectName="VipAuth">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- vip信息 -->
+		<table tableName="hyjf_vip_info" domainObjectName="VipInfo">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- vip用户投资 -->
+		<table tableName="hyjf_vip_user_tender" domainObjectName="VipUserTender">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- vip用户成长 -->
+		<table tableName="hyjf_vip_user_upgrade" domainObjectName="VipUserUpgrade">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- vip转账日志 -->
+		<table tableName="hyjf_vip_transfer_log" domainObjectName="VipTransferLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="trans_amt" javaType="java.math.BigDecimal" jdbcType="DECIMAL" />
+		</table>
+		<!-- 加息券还款检测表 -->
+		<table tableName="hyjf_coupon_repay_monitor" domainObjectName="CouponRepayMonitor">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="interest_wait_total" javaType="java.math.BigDecimal" jdbcType="DECIMAL" />
+			<columnOverride column="interest_yes_total" javaType="java.math.BigDecimal" jdbcType="DECIMAL" />
+		</table>
+
+		<!-- 用户定向转账表 -->
+		<table tableName="hyjf_account_directional_transfer" domainObjectName="AccountDirectionalTransfer">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="transfer_accounts_state" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 企业用户关系绑定表 -->
+		<table tableName="hyjf_directional_transfer_associated_records" domainObjectName="DirectionalTransferAssociatedRecords">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="associated_state" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 企业用户关系绑定日志表 -->
+		<table tableName="hyjf_directional_transfer_associated_log" domainObjectName="DirectionalTransferAssociatedLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="associated_state" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 企业用户开户表 -->
+		<table tableName="hyjf_corp_open_account_record" domainObjectName="CorpOpenAccountRecord">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_bank" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 用户预注册表 -->
+		<table tableName="hyjf_pre_regist" domainObjectName="PreRegist">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="regist_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 预注册渠道专属活动 -->
+		<table tableName="hyjf_pre_regist_channel_exclusive_activity" domainObjectName="PreRegistChannelExclusiveActivity">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 客户端IDFA(广告标识码) -->
+		<table tableName="hyjf_idfa" domainObjectName="Idfa">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 用户管理费配置新表 -->
+		<table tableName="huiyingdai_borrow_finman_new_charge" domainObjectName="BorrowFinmanNewCharge">
+			<columnOverride column="asset_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="repayer_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="auto_repay" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="charge_mode" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 充值手续费对账 -->
+		<table tableName="hyjf_recharge_fee_reconciliation" domainObjectName="RechargeFeeReconciliation">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_mail" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 活动用户返现 -->
+		<table tableName="hyjf_activity_returncash" domainObjectName="ActivityReturncash">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="withdraw_money" javaType="java.math.BigDecimal" jdbcType="DECIMAL" />
+			<columnOverride column="total" javaType="java.math.BigDecimal" jdbcType="DECIMAL" />
+			<columnOverride column="invest_total" javaType="java.math.BigDecimal" jdbcType="DECIMAL" />
+			<columnOverride column="reward_total" javaType="java.math.BigDecimal" jdbcType="DECIMAL" />
+		</table>
+		<!-- 用户兑奖号 -->
+		<table tableName="hyjf_user_prize_code" domainObjectName="UserPrizeCode">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 奖品列表 -->
+		<table tableName="hyjf_prize_list" domainObjectName="PrizeList">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 平台数据统计表 -->
+		<table tableName="hyjf_calculate_invest_interest" domainObjectName="CalculateInvestInterest">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 平台数据统计表(月度) -->
+		<table tableName="hyjf_tender_monthinfo" domainObjectName="TenderMonthInfo">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 爱思数据存储 -->
+		<table tableName="hyjf_i4" domainObjectName="I4">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table><!-- 商户子账户配置表 -->
+		<table tableName="hyjf_merchant_account" domainObjectName="MerchantAccount">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="transfer_into_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="transfer_out_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="auto_transfer_out" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="auto_transfer_into" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 用户授权记录 -->
+		<table tableName="hyjf_appointment_auth_log" domainObjectName="AppointmentAuthLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 用户预约记录 -->
+		<table tableName="hyjf_borrow_appoint" domainObjectName="BorrowAppoint">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="appoint_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="tender_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 用户违约记录 -->
+		<table tableName="hyjf_appointment_recod_log" domainObjectName="AppointmentRecodLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 着落页管理 -->
+		<table tableName="hyjf_landing_page" domainObjectName="LandingPage">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 用户推送标签 -->
+		<table tableName="hyjf_message_push_tag" domainObjectName="MessagePushTag">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="is_login" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 用户推送模板 -->
+		<table tableName="hyjf_message_push_template" domainObjectName="MessagePushTemplate">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="template_action" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 消息发送 -->
+		<table tableName="hyjf_message_push_msg" domainObjectName="MessagePushMsg">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="msg_action" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="msg_destination_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="msg_send_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="msg_send_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 用户信息接收记录 -->
+		<table tableName="hyjf_message_push_msg_history" domainObjectName="MessagePushMsgHistory">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="msg_action" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="msg_firstread_plat" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="msg_destination_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="msg_send_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 计划表 -->
+		<table tableName="hyjf_debt_plan" domainObjectName="DebtPlan">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="show_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 计划类型表 -->
+		<table tableName="hyjf_debt_plan_config" domainObjectName="DebtPlanConfig">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 投资范围计划关联表 -->
+		<table tableName="hyjf_debt_plan_borrow" domainObjectName="DebtPlanBorrow">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="add_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇添金交易明细表（中间） -->
+		<table tableName="hyjf_debt_account_list" domainObjectName="DebtAccountList">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="web" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇添金债权清算结果表 -->
+		<table tableName="hyjf_debt_credit" domainObjectName="DebtCredit">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="del_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_liquidates" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="source_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇添金债权还款表 -->
+		<table tableName="hyjf_debt_credit_repay" domainObjectName="DebtCreditRepay">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="del_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇添金债权投资表 -->
+		<table tableName="hyjf_debt_credit_tender" domainObjectName="DebtCreditTender">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="web" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="assign_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇添金债权投资log表 -->
+		<table tableName="hyjf_debt_credit_tender_log" domainObjectName="DebtCreditTenderLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="assign_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇添金专属项目投资表 -->
+		<table tableName="hyjf_debt_invest" domainObjectName="DebtInvest">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="invest_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="client" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="web" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇添金专属项目投资临时表 -->
+		<table tableName="hyjf_debt_invest_log" domainObjectName="DebtInvestLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="invest_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="client" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇添金冻结log表 -->
+		<table tableName="hyjf_debt_freeze_log" domainObjectName="DebtFreezeLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="freeze_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇添金冻结记录 -->
+		<table tableName="hyjf_debt_freeze" domainObjectName="DebtFreeze">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="freeze_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇添金专属项目放款总表 -->
+		<table tableName="hyjf_debt_loan" domainObjectName="DebtLoan">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="sendmail" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="web" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="credit_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇添金专属项目放款详情表 -->
+		<table tableName="hyjf_debt_loan_detail" domainObjectName="DebtLoanDetail">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="sendmail" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="web" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇添金计划加入表 -->
+		<table tableName="hyjf_debt_plan_accede" domainObjectName="DebtPlanAccede">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="client" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="send_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="reinvest_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="calculation_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="repay_running_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇添金计划还款总表 -->
+		<table tableName="hyjf_debt_repay" domainObjectName="DebtRepay">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 汇添金计划还款详情表 -->
+		<table tableName="hyjf_debt_repay_detail" domainObjectName="DebtRepayDetail">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 放款任务表 -->
+		<table tableName="hyjf_debt_apicron" domainObjectName="DebtApicron">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="web_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="api_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="repay_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="credit_repay_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 标的详情 -->
+		<table tableName="hyjf_debt_borrow" domainObjectName="DebtBorrow">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="guarantee_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="project_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="borrow_interest_coupon" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="borrow_taste_money" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="bank_input_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="booking_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="borrow_plan_selected" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_repay_org_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<ignoreColumn column="order" delimitedColumnName="true" />
+		</table>
+		<!-- 保证金 -->
+		<table tableName="hyjf_debt_bail" domainObjectName="DebtBail">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 借款人车辆抵押信息 -->
+		<table tableName="hyjf_debt_car_info" domainObjectName="DebtCarInfo">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 借款认证信息 -->
+		<table tableName="hyjf_debt_company_authen" domainObjectName="DebtCompanyAuthen">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 借款认证信息 -->
+		<table tableName="hyjf_debt_house_info" domainObjectName="DebtHouseInfo">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 借款满标日志表 -->
+		<table tableName="hyjf_debt_loan_log" domainObjectName="DebtLoanLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 借款人信息 -->
+		<table tableName="hyjf_debt_users_info" domainObjectName="DebtUsersInfo">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 债权明细 -->
+		<table tableName="hyjf_debt_detail" domainObjectName="DebtDetail">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="repay_period" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="repay_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="advance_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="client" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="order_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="source_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 借款人行业、职业信息 -->
+		<table tableName="hyjf_debt_company_info" domainObjectName="DebtCompanyInfo">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 汇添金提成表 -->
+		<table tableName="hyjf_debt_accede_commission" domainObjectName="DebtAccedeCommission">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="is51" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 着落页配置表 -->
+		<table tableName="hyjf_whereabouts_page_config" domainObjectName="WhereaboutsPageConfig">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status_on" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 着落页配置图片表 -->
+		<table tableName="hyjf_whereabouts_page_picture" domainObjectName="WhereaboutsPagePicture">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 异常账户表 -->
+		<table tableName="huiyingdai_account_exception" domainObjectName="ExceptionAccount">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 邀请推荐信息表 -->
+		<table tableName="hyjf_invite_info" domainObjectName="InviteInfo">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 邀请用户推荐星数量表 -->
+		<table tableName="hyjf_invite_recommend" domainObjectName="InviteRecommend">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 推荐星兑奖表 -->
+		<table tableName="hyjf_invite_recommend_prize" domainObjectName="InviteRecommendPrize">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 推荐星兑换配置表 -->
+		<table tableName="hyjf_invite_prize_conf" domainObjectName="InvitePrizeConf">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 用户银行卡操作记录表 -->
+		<table tableName="hyjf_bank_account_log" domainObjectName="BankAccountLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="card_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="operation_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇添金提成配置 -->
+		<table tableName="hyjf_debt_commission_config" domainObjectName="DebtCommissionConfig">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 新增定时发送短信任务表 -->
+		<table tableName="hyjf_sms_ontime" domainObjectName="SmsOntime">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 用户江西银行开户日志表 -->
+		<table tableName="hyjf_bank_open_account_log" domainObjectName="BankOpenAccountLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="client" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 用户江西银行开户表 -->
+		<table tableName="hyjf_bank_open_account" domainObjectName="BankOpenAccount">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 用户江西银行银行卡表 -->
+		<table tableName="hyjf_bank_card" domainObjectName="BankCard">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 用户江西银行短信验证码授权表 -->
+		<table tableName="hyjf_bank_sms_auth_code" domainObjectName="BankSmsAuthCode">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 商户江西银行子账户表 -->
+		<table tableName="hyjf_bank_merchant_account" domainObjectName="BankMerchantAccount">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 新年奖品配置表 -->
+		<table tableName="hyjf_newyear_prize_config" domainObjectName="NewyearPrizeConfig">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 新年活动中奖记录表 -->
+		<table tableName="hyjf_newyear_prize_user" domainObjectName="NewyearPrizeUser">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 新年活动中奖记录表 -->
+		<table tableName="hyjf_newyear_caishen_card_user" domainObjectName="NewyearCaisheCardUser">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 用户财神卡数量表 -->
+		<table tableName="hyjf_newyear_caishen_card_quantity" domainObjectName="NewyearCaishenCardQuantity">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 猜灯谜 问题配置表 -->
+		<table tableName="hyjf_newyear_question_config" domainObjectName="NewyearQuestionConfig">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 用户猜灯谜记录表 -->
+		<table tableName="hyjf_newyear_question_user" domainObjectName="NewyearQuestionUser">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 新年活动奖品发放表 -->
+		<table tableName="hyjf_newyear_send_prize" domainObjectName="NewyearSendPrize">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 新年活动获取财神卡 -->
+		<table tableName="hyjf_newyear_get_card" domainObjectName="NewyearGetCard">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 渠道账号管理表 -->
+		<table tableName="hyjf_admin_utm_read_permissions" domainObjectName="AdminUtmReadPermissions">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 投之家渠道日统计报表 -->
+		<table tableName="hyjf_statistics_tzj" domainObjectName="StatisticsTzj">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 投之家渠道按小时统计报表 -->
+		<table tableName="hyjf_statistics_tzj_hour" domainObjectName="StatisticsTzjHour">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+
+		<!-- 投之家子渠道统计报表 -->
+		<table tableName="hyjf_statistics_tzj_utm" domainObjectName="StatisticsTzjUtm">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 数据迁移-批量开户异常表 -->
+		<table tableName="hyjf_data_error_account" domainObjectName="DataErrorAccount">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="error_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 数据迁移-标的迁移结果异常表 -->
+		<table tableName="hyjf_data_error_subject" domainObjectName="DataErrorSubject">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="payment_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 数据迁移-债权迁移数据表 -->
+		<table tableName="hyjf_data_error_debt" domainObjectName="DataErrorDebt">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="int_pay_style" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="tender_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 标的删除日志表 -->
+		<table tableName="huiyingdai_borrow_delete_log" domainObjectName="BorrowDeleteLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="project_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="operater_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 商户江西银行子账户表交易明细表 -->
+		<table tableName="hyjf_bank_merchant_account_list" domainObjectName="BankMerchantAccountList">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 江西银行返回码配置 -->
+		<table tableName="hyjf_bank_return_code_config" domainObjectName="BankReturnCodeConfig">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 用户设备唯一码表 -->
+		<table tableName="hyjf_userdevice_uniquecode" domainObjectName="UserDeviceUniqueCode">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+
+		<!-- 身份证号对应地区码表 -->
+		<table tableName="hyjf_idcard_area" domainObjectName="IdCardToArea">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 江西银行用的银行卡配置表 -->
+		<table tableName="hyjf_banks_config" domainObjectName="BanksConfig">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="quick_payment" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 卡BIN配置表 -->
+		<table tableName="hyjf_card_bin" domainObjectName="CardBin">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<table tableName="hyjf_merchant_transfer" domainObjectName="MerchantTransfer">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<table tableName="hyjf_recharge_fee_statistics" domainObjectName="RechargeFeeStatistics">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<table tableName="hyjf_recharge_fee_balance_statistics" domainObjectName="RechargeFeeBalanceStatistics">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<table tableName="hyjf_activity_billion_one" domainObjectName="ActivityBillionOne">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<table tableName="hyjf_activity_billion_second" domainObjectName="ActivityBillionSecond">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="is_send" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<table tableName="hyjf_activity_billion_second_time" domainObjectName="ActivityBillionSecondTime">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<table tableName="hyjf_activity_billion_third" domainObjectName="ActivityBillionThird">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<table tableName="hyjf_activity_billion_third_config" domainObjectName="ActivityBillionThirdConfig">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="kill_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<table tableName="hyjf_increase_interest_invest" domainObjectName="IncreaseInterestInvest">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="invest_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="web" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="client" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<table tableName="hyjf_increase_interest_repay" domainObjectName="IncreaseInterestRepay">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="web" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<table tableName="hyjf_increase_interest_repay_detail" domainObjectName="IncreaseInterestRepayDetail">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="web" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<table tableName="hyjf_message_push_plat_statics" domainObjectName="MessagePushPlatStatics">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<table tableName="hyjf_message_push_template_statics" domainObjectName="MessagePushTemplateStatics">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<table tableName="hyjf_message_push_user_read" domainObjectName="MessagePushUserRead">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<table tableName="hyjf_stock_info" domainObjectName="StockInfo">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<table tableName="hyjf_debt_plan_info_static" domainObjectName="DebtPlanInfoStatic">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<table tableName="hyjf_increase_interest_loan" domainObjectName="IncreaseInterestLoan">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="web" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<table tableName="hyjf_increase_interest_loan_detail" domainObjectName="IncreaseInterestLoanDetail">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="web" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<table tableName="hyjf_server_application" domainObjectName="ServerApplication">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<table tableName="huiyingdai_wkcd_borrow" domainObjectName="WkcdBorrow">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="sync" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<table tableName="hyjf_pc_channel_statistics" domainObjectName="PcChannelStatistics">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 还款冻结日志表 -->
+		<table tableName="hyjf_bank_repay_freeze_log" domainObjectName="BankRepayFreezeLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="del_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 机构垫付还款冻结日志表 -->
+		<table tableName="hyjf_bank_repay_org_freeze_log" domainObjectName="BankRepayOrgFreezeLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="all_repay_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 平台子账户信息表 -->
+		<table tableName="hyjf_bank_merchant_account_info" domainObjectName="BankMerchantAccountInfo">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+
+		<!-- 七月份活动表-->
+		<table tableName="hyjf_activity_invite_seven" domainObjectName="ActivityInviteSeven">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 汇计划表结构相关 start -->
+		<!-- 汇计划资产表 -->
+		<table tableName="hyjf_plan_asset" domainObjectName="PlanAsset">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="age" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="marriage" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇计划表 -->
+		<table tableName="hyjf_hjh_plan" domainObjectName="HjhPlan">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="lock_period" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="plan_invest_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_month" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="plan_display_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="min_invest_counts" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇计划加入明细表 -->
+		<table tableName="hyjf_hjh_accede" domainObjectName="HjhAccede">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="client" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="order_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="send_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="commission_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="credit_complete_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="match_dates" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 计划还款表 -->
+		<table tableName="hyjf_hjh_repay" domainObjectName="HjhRepay">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="repay_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="order_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 用户自动投标签约表 -->
+		<table tableName="hyjf_hjh_user_auth" domainObjectName="HjhUserAuth">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="auto_inves_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="auto_credit_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="auto_withdraw_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="auto_consume_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="auto_payment_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="auto_repay_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 用户授权日志表 -->
+		<table tableName="hyjf_hjh_user_auth_log" domainObjectName="HjhUserAuthLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="order_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="auth_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="operate_esb" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 资产与标的类型映射表 -->
+		<table tableName="hyjf_hjh_inst_config" domainObjectName="HjhInstConfig">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="inst_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="repay_capital_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇计划资产表 -->
+		<table tableName="hyjf_hjh_plan_asset" domainObjectName="HjhPlanAsset">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="asset_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="verify_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="sex" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="age" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="marriage" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="entrusted_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_month" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 资产与标的类型映射表 -->
+		<table tableName="hyjf_hjh_asset_borrowtype" domainObjectName="HjhAssetBorrowType">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="asset_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="borrow_cd" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_open" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="auto_add" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="auto_record" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="auto_bail" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="auto_audit" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="auto_review" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_associate_plan" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 自动投资临时表 -->
+		<table tableName="hyjf_hjh_plan_borrow_tmp" domainObjectName="HjhPlanBorrowTmp">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="asset_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_month" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="borrow_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 资产来源的产品（资产）类型配置表 -->
+		<table tableName="hyjf_hjh_asset_type" domainObjectName="HjhAssetType">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="asset_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 费率配置变更日志表  -->
+		<table tableName="hyjf_feerate_modify_log" domainObjectName="FeerateModifyLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="asset_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="late_free_days" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="modify_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇计划表结构相关 end -->
+		<!-- 账户分佣记录表 -->
+		<table tableName="hjyf_sub_commission" domainObjectName="SubCommission">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="trade_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 十月份活动表结构 start -->
+		<!-- 十月份活动奖励列表 -->
+		<table tableName="hyjf_act_rewardlist" domainObjectName="ActRewardList">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="act_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="act1_reward_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="send_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 十月份活动签到表 -->
+		<table tableName="hyjf_act_signin" domainObjectName="ActSignin">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="current_sign_num" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 十月份活动题目表 -->
+		<table tableName="hyjf_act_questions" domainObjectName="ActQuestions">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 十月份活动答题列表 -->
+		<table tableName="hyjf_act_questions_answerlist" domainObjectName="ActQuestionsAnswerlist">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="is_correct" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 十月份活动表结构 end -->
+		<!-- 第三方平台用户绑定表-->
+		<table tableName="hyjf_bind_users" domainObjectName="BindUsers">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="bind_unique_id" javaType="java.lang.Long" jdbcType="INTEGER" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<table tableName="hyjf_msp_apply" domainObjectName="MspApply">
+			<generatedKey column="id" sqlStatement="MySql" type="post"
+				identity="true" />
+		</table>
+		<!-- 安融反欺诈借款人查询表 -->
+		<table tableName="hyjf_msp_fqz" domainObjectName="MspFqz">
+			<generatedKey column="id" sqlStatement="MySql" type="post"
+				identity="true" />
+		</table>
+		<!-- 安融反欺诈借款人查询表 -->
+		<table tableName="hyjf_msp_DegreeResult" domainObjectName="MspDegreeResult">
+			<generatedKey column="id" sqlStatement="MySql" type="post"
+				identity="true" />
+		</table>
+		<!-- 安融反欺诈借款人查询表 -->
+		<table tableName="hyjf_msp_anliInfos" domainObjectName="MspAnliInfos">
+			<generatedKey column="id" sqlStatement="MySql" type="post"
+				identity="true" />
+		</table>
+		<!-- 安融反欺诈借款人查询表 -->
+		<table tableName="hyjf_msp_shixinInfos" domainObjectName="MspShixinInfos">
+			<generatedKey column="id" sqlStatement="MySql" type="post"
+				identity="true" />
+		</table>
+		<!-- 安融反欺诈借款人查询表 -->
+		<table tableName="hyjf_msp_zhixingInfos" domainObjectName="MspZhixingInfos">
+			<generatedKey column="id" sqlStatement="MySql" type="post"
+				identity="true" />
+		</table>
+		<!-- 安融反欺诈借款人查询表 -->
+		<table tableName="hyjf_msp_title" domainObjectName="MspTitle">
+			<generatedKey column="id" sqlStatement="MySql" type="post"
+				identity="true" />
+		</table>
+		<!-- 安融反欺诈借款人查询表 -->
+		<table tableName="hyjf_msp_NormalCreditDetail" domainObjectName="MspNormalCreditDetail">
+			<generatedKey column="id" sqlStatement="MySql" type="post"
+				identity="true" />
+		</table>
+		<!-- 安融反欺诈借款人查询表 -->
+		<table tableName="hyjf_msp_applyDetails" domainObjectName="MspApplyDetails">
+			<generatedKey column="id" sqlStatement="MySql" type="post"
+				identity="true" />
+		</table>
+		<!-- 安融反欺诈借款人查询表 -->
+		<table tableName="hyjf_msp_QueryDetail" domainObjectName="MspQueryDetail">
+			<generatedKey column="id" sqlStatement="MySql" type="post"
+				identity="true" />
+		</table>
+		<!-- 安融反欺诈借款人查询表 -->
+		<table tableName="hyjf_msp_BlackData" domainObjectName="MspBlackData">
+			<generatedKey column="id" sqlStatement="MySql" type="post"
+				identity="true" />
+		</table>
+		<!-- 安融反欺诈借款人查询表 -->
+		<table tableName="hyjf_msp_AbnormalCredit" domainObjectName="MspAbnormalCredit">
+
+		</table>
+		<!-- 安融反欺诈借款人查询表 -->
+		<table tableName="hyjf_msp_AbnormalCreditDetail" domainObjectName="MspAbnormalCreditDetail">
+			<generatedKey column="id" sqlStatement="MySql" type="post"
+				identity="true" />
+		</table>
+		<table tableName="hyjf_msp_region" domainObjectName="MspRegion">
+			<generatedKey column="region_id" sqlStatement="MySql"
+				type="post" identity="true" />
+		</table>
+		<table tableName="hyjf_msp_configure" domainObjectName="MspConfigure">
+			<generatedKey column="id" sqlStatement="MySql" type="post"
+				identity="true" />
+		</table>
+		<!-- 安融接口发送日志表 -->
+		<table tableName="hyjf_anrong_send_log" domainObjectName="AnrongSendLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 双十一活动题目表 -->
+		<table tableName="hyjf_act_jan_questions" domainObjectName="ActJanQuestions">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 双十一活动题目答题记录表 -->
+		<table tableName="hyjf_act_jan_answerlist" domainObjectName="ActJanAnswerList">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="is_correct" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 双十一砍价活动奖品表 -->
+		<table tableName="hyjf_act_jan_prize" domainObjectName="ActJanPrize">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 双十一砍价活动中奖表 -->
+		<table tableName="hyjf_act_jan_prizewin_list" domainObjectName="ActJanPrizewinList">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 双十一砍价活动砍价记录表 -->
+		<table tableName="hyjf_act_jan_bargain" domainObjectName="ActJanBargain">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+
+		<!-- 受托支付白名单表-->
+		<table tableName="hyjf_stzh_white_list" domainObjectName="STZHWhiteList">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="bind_unique_id" javaType="java.lang.Long" jdbcType="INTEGER" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 周报 -->
+		<table tableName="hyjf_weeklyreport" domainObjectName="WeeklyReport">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 汇计划债转表 -->
+		<table tableName="hyjf_hjh_debt_credit" domainObjectName="HjhDebtCredit">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="credit_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="repay_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_liquidates" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="client" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="source_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_late_credit" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="project_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="asset_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="borrow_period" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇计划债转承接表-->
+		<table tableName="hyjf_hjh_debt_credit_tender" domainObjectName="HjhDebtCreditTender">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="del_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="assign_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="tender_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇计划债还款表-->
+		<table tableName="hyjf_hjh_debt_credit_repay" domainObjectName="HjhDebtCreditRepay">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="del_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="debt_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+
+		<!-- 标的分配引擎表-->
+		<table tableName="hyjf_hjh_allocation_engine" domainObjectName="HjhAllocationEngine">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="config_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="label_sort" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="transfer_time_sort" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="transfer_time_sort_priority" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="apr_sort" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="apr_sort_priority" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="actul_pay_sort" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="actul_pay_sort_priority" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="invest_progress_sort" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="invest_progress_sort_priority" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="label_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇计划标签表 -->
+		<table tableName="hyjf_hjh_label" domainObjectName="HjhLabel">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="asset_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="project_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_credit" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_late" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="label_state" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<table tableName="hyjf_hjh_region" domainObjectName="HjhRegion">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="config_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇计划债权明细 -->
+		<table tableName="hyjf_hjh_debt_detail" domainObjectName="HjhDebtDetail">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="repay_period" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="repay_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="advance_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="client" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="order_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="source_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 汇计划债权投资log表 -->
+		<table tableName="hyjf_hjh_debt_credit_tender_log" domainObjectName="HjhDebtCreditTenderLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="assign_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 标的修改操作日志 -->
+		<table tableName="hyjf_borrow_log" domainObjectName="BorrowLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 周报 -->
+		<table tableName="hyjf_sub_commission_list_config" domainObjectName="SubCommissionListConfig">
+			<generatedKey column="id" sqlStatement="MySql" type="post"
+				identity="true" />
+		</table>
+		<!-- 双十二活动投资获得气球表 -->
+		<table tableName="hyjf_actdec_tender_balloon" domainObjectName="ActdecTenderBalloon">
+			<generatedKey column="id" sqlStatement="MySql" type="post"
+				identity="true" />
+			<columnOverride column="is_first_tender" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="tender_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="send_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="balloon_count" javaType="java.lang.Integer" jdbcType="SMALLINT" />
+			<columnOverride column="ballon_can_receive" javaType="java.lang.Integer" jdbcType="SMALLINT" />
+			<columnOverride column="ballon_received" javaType="java.lang.Integer" jdbcType="SMALLINT" />
+		</table>
+		<table tableName="hyjf_actdec_corps" domainObjectName="ActdecCorps">
+			<generatedKey column="id" sqlStatement="MySql" type="post"
+				identity="true" />
+		</table>
+		<table tableName="hyjf_actdec_winning" domainObjectName="ActdecWinning">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- eve导入错误日志 -->
+		<table tableName="hyjf_aleve_error_log" domainObjectName="AleveErrowLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post"
+				identity="true" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!--上市活动一-->
+		<table tableName="hyjf_actdec_listed_one" domainObjectName="ActdecListedOne">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="whether" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!--上市活动二-->
+		<table tableName="hyjf_actdec_listed_two" domainObjectName="ActdecListedTwo">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="trade" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!--上市活动三-->
+		<table tableName="hyjf_actdec_listed_three" domainObjectName="ActdecListedThree">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!--上市活动四-->
+		<table tableName="hyjf_actdec_listed_four" domainObjectName="ActdecListedFour">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="whether" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+
+		<!--用户CA认证记录表-->
+		<table tableName="hyjf_certificate_authority" domainObjectName="CertificateAuthority">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="id_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!--用户投资协议记录表-->
+		<table tableName="hyjf_tender_agreement" domainObjectName="TenderAgreement">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="tender_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!--法大大模板管理表-->
+		<table tableName="hyjf_fdd_templet" domainObjectName="FddTemplet">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="protocol_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_active" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="ca_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+
+		<!--汇计划资本按天统计及预估表-->
+		<table tableName="hyjf_hjh_plan_capital" domainObjectName="HjhPlanCapital">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="lock_period" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_month" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 存管系统-手续费-交易明细全流水文件 -->
+		<table tableName="hyjf_aleve_log" domainObjectName="AleveLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="upd_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+
+
+		<!--汇计划按日对账统计表-->
+		<table tableName="hyjf_hjh_account_balance" domainObjectName="HjhAccountBalance">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+
+		<!--汇计划第三方推送资产风控信息表-->
+		<table tableName="hyjf_hjh_asset_risk_info" domainObjectName="HjhAssetRiskInfo">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+
+		<!--518理财节活动策划-->
+		<table tableName="hyjf_actdec_financing" domainObjectName="ActdecFinancing">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+
+        <!-- 银行接口配置表 -->
+        <table tableName="hyjf_bank_interface" domainObjectName="BankInterface">
+            <generatedKey column="id" sqlStatement="MySql" type="post" identity="true"/>
+            <columnOverride column="is_usable" javaType="java.lang.Integer" jdbcType="TINYINT"/>
+            <columnOverride column="is_delete" javaType="java.lang.Integer" jdbcType="TINYINT"/>
+        </table>
+
+        <!-- App推送管理表 -->
+        <table tableName="hyjf_app_push_manage" domainObjectName="AppPushManage">
+            <generatedKey column="id" sqlStatement="MySql" type="post" identity="true"/>
+            <columnOverride column="jump_type" javaType="java.lang.Integer" jdbcType="TINYINT"/>
+            <columnOverride column="jump_content" javaType="java.lang.Integer" jdbcType="TINYINT"/>
+            <columnOverride column="order" javaType="java.lang.Integer" jdbcType="TINYINT"/>
+            <columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT"/>
+        </table>
+
+		<!-- 合同要素信息 -->
+		<table tableName="hyjf_nifa_contract_essence" domainObjectName="NifaContractEssence">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="borrower_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="investor_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+
+		<!-- 借款人项目还款记录 -->
+		<table tableName="hyjf_nifa_repay_info" domainObjectName="NifaRepayInfo">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+
+		<!-- 合同状态变更 -->
+		<table tableName="hyjf_nifa_contract_status" domainObjectName="NifaContractStatus">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="contract_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+
+		<!-- 出借人回款记录 -->
+		<table tableName="hyjf_nifa_received_payments" domainObjectName="NifaReceivedPayments">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="return_situation" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+
+		<!-- 合同模版约定条款表 -->
+		<table tableName="hjyf_nifa_contract_template" domainObjectName="NifaContractTemplate">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+
+		<!-- 互金字段定义表 -->
+		<table tableName="hjyf_nifa_field_definition" domainObjectName="NifaFieldDefinition">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+
+		<!-- 互金协会报送日志表 -->
+		<table tableName="hjyf_nifa_report_log" domainObjectName="NifaReportLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="file_upload_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="feedback_result" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+
+		<!-- hyjf_sell_daily -->
+		<table tableName="hyjf_sell_daily" domainObjectName="SellDaily">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+
+		<table tableName="hyjf_holidays_config_new" domainObjectName="HolidaysConfigNew">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="holiday_flag" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<table tableName="hyjf_sell_daily_distribution" domainObjectName="SellDailyDistribution">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="time_point" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 授权配置表 -->
+		<table tableName="hyjf_hjh_user_auth_config" domainObjectName="HjhUserAuthConfig">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 授权配置表操作记录 -->
+		<table tableName="hyjf_hjh_user_auth_config_log" domainObjectName="HjhUserAuthConfigLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+
+		<!-- 现金贷资产方保证金信息配置 -->
+		<table tableName="hyjf_hjh_bail_config" domainObjectName="HjhBailConfig">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="is_accumulate" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+
+		<!-- 现金贷资产方保证金回滚方式 -->
+		<table tableName="hyjf_hjh_bail_config_info" domainObjectName="HjhBailConfigInfo">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="repay_capital_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_new_credit" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="is_loan_credit" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="del_flg" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+
+		<!-- 现金贷资产方保证金信息配置日志表 -->
+		<table tableName="hyjf_hjh_bail_config_log" domainObjectName="HjhBailConfigLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+
+		<!-- 异常标的删除 -->
+		<table tableName="hyjf_borrow_delete" domainObjectName="BorrowDelete">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="exception_type" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 纳觅用户 -->
+		<table tableName="hyjf_nm_user" domainObjectName="NmUser">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 业绩返现详情 -->
+		<table tableName="hyjf_performance_return_detail" domainObjectName="PerformanceReturnDetail">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="return_performance" javaType="java.math.BigDecimal" jdbcType="DECIMAL" />
+			<columnOverride column="return_amount" javaType="java.math.BigDecimal" jdbcType="DECIMAL" />
+		</table>
+		<!-- 邀请人返现明细 -->
+		<table tableName="hyjf_inviter_return_detail" domainObjectName="InviterReturnDetail">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="return_performance" javaType="java.math.BigDecimal" jdbcType="DECIMAL" />
+			<columnOverride column="return_amount" javaType="java.math.BigDecimal" jdbcType="DECIMAL" />
+			<columnOverride column="tender_amount" javaType="java.math.BigDecimal" jdbcType="DECIMAL" />
+		</table>
+		<!--风险测评配置表-->
+		<table tableName="hyjf_evaluation_config" domainObjectName="EvaluationConfig">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="debt_evaluation_type_check" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="intellectual_eveluation_type_check" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="dept_evaluation_money_check" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="intellectual_evaluation_money_check" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="dept_collection_evaluation_check" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="intellectual_collection_evaluation_check" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="investment_evaluation_check" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+
+		<!--风险测评配置修改日志表-->
+		<table tableName="hyjf_evaluation_config_log" domainObjectName="EvaluationConfigLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="debt_evaluation_type_check" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="intellectual_eveluation_type_check" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="dept_evaluation_money_check" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="intellectual_evaluation_money_check" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="dept_collection_evaluation_check" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="investment_evaluation_check" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="intellectual_collection_evaluation_check" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+
+		<!-- 国家互联网应急中心错误日志表 -->
+		<table tableName="ht_cert_err_log" domainObjectName="CertErrLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="send_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="send_count" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="query_result" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+
+		<!-- 国家互联网应急中心已上送用户表 -->
+		<table tableName="ht_cert_user" domainObjectName="CertUser">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+
+		<!-- 国家互联网应急中心初始化标的表 -->
+		<table tableName="ht_cert_borrow" domainObjectName="CertBorrow">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 国家互联网应急中心初始化标的表 -->
+		<table tableName="ht_cert_log" domainObjectName="CertLog">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+			<columnOverride column="send_status" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="send_count" javaType="java.lang.Integer" jdbcType="TINYINT" />
+			<columnOverride column="query_result" javaType="java.lang.Integer" jdbcType="TINYINT" />
+		</table>
+		<!-- 国家互联网应急中心初始化标的表 -->
+		<table tableName="ht_cert_user_transact" domainObjectName="CertUserTransact">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+		<!-- 国家互联网应急中心初始化标的表 -->
+		<table tableName="ht_cert_mobile_hash" domainObjectName="CertMobileHash">
+			<generatedKey column="id" sqlStatement="MySql" type="post" identity="true" />
+		</table>
+	</context>
+</generatorConfiguration>
+<!-- CMD下执行 -->
+<!-- mvn install:install-file -Dfile=D:/IDEA工作空间/platformOptimization-S-T-plantform-20180509/hyjf-mybatis-generator/target/hyjf-mybatis-generator-0.0.1-SNAPSHOT.jar -DgroupId=hyjf -DartifactId=hyjf-mybatis-generator
+	-Dversion=0.0.1-SNAPSHOT -Dpackaging=jar -->
+<!-- hyjf-mybatis-generator 工程上右键->Run As->Maven Build打开窗口后在Goals栏填写： mybatis-generator:generate -->
+<!-- 然后run可生成代码 -->

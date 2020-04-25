@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.StatisticsTzjUtmMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.StatisticsTzjUtm" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="day" property="day" jdbcType="VARCHAR" />
+    <result column="regist_count" property="registCount" jdbcType="INTEGER" />
+    <result column="open_count" property="openCount" jdbcType="INTEGER" />
+    <result column="open_rate" property="openRate" jdbcType="DECIMAL" />
+    <result column="cardbind_count" property="cardbindCount" jdbcType="INTEGER" />
+    <result column="cardbind_rate" property="cardbindRate" jdbcType="DECIMAL" />
+    <result column="rechargenew_count" property="rechargenewCount" jdbcType="INTEGER" />
+    <result column="recharge_count" property="rechargeCount" jdbcType="INTEGER" />
+    <result column="tendernew_count" property="tendernewCount" jdbcType="INTEGER" />
+    <result column="tenderfirst_count" property="tenderfirstCount" jdbcType="INTEGER" />
+    <result column="tenderfirst_money" property="tenderfirstMoney" jdbcType="DECIMAL" />
+    <result column="tendernew_rate" property="tendernewRate" jdbcType="DECIMAL" />
+    <result column="tender_count" property="tenderCount" jdbcType="INTEGER" />
+    <result column="tender_money" property="tenderMoney" jdbcType="DECIMAL" />
+    <result column="tender_again_count" property="tenderAgainCount" jdbcType="INTEGER" />
+    <result column="tender_again_rate" property="tenderAgainRate" jdbcType="DECIMAL" />
+    <result column="channel_name" property="channelName" jdbcType="VARCHAR" />
+    <result column="channel_flg" property="channelFlg" jdbcType="INTEGER" />
+    <result column="add_time" property="addTime" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, `day`, regist_count, open_count, open_rate, cardbind_count, cardbind_rate, rechargenew_count, 
+    recharge_count, tendernew_count, tenderfirst_count, tenderfirst_money, tendernew_rate, 
+    tender_count, tender_money, tender_again_count, tender_again_rate, channel_name, 
+    channel_flg, add_time, update_time
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.StatisticsTzjUtmExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_statistics_tzj_utm
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_statistics_tzj_utm
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_statistics_tzj_utm
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.StatisticsTzjUtmExample" >
+    delete from hyjf_statistics_tzj_utm
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.StatisticsTzjUtm" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_statistics_tzj_utm (`day`, regist_count, open_count, 
+      open_rate, cardbind_count, cardbind_rate, 
+      rechargenew_count, recharge_count, tendernew_count, 
+      tenderfirst_count, tenderfirst_money, tendernew_rate, 
+      tender_count, tender_money, tender_again_count, 
+      tender_again_rate, channel_name, channel_flg, 
+      add_time, update_time)
+    values (#{day,jdbcType=VARCHAR}, #{registCount,jdbcType=INTEGER}, #{openCount,jdbcType=INTEGER}, 
+      #{openRate,jdbcType=DECIMAL}, #{cardbindCount,jdbcType=INTEGER}, #{cardbindRate,jdbcType=DECIMAL}, 
+      #{rechargenewCount,jdbcType=INTEGER}, #{rechargeCount,jdbcType=INTEGER}, #{tendernewCount,jdbcType=INTEGER}, 
+      #{tenderfirstCount,jdbcType=INTEGER}, #{tenderfirstMoney,jdbcType=DECIMAL}, #{tendernewRate,jdbcType=DECIMAL}, 
+      #{tenderCount,jdbcType=INTEGER}, #{tenderMoney,jdbcType=DECIMAL}, #{tenderAgainCount,jdbcType=INTEGER}, 
+      #{tenderAgainRate,jdbcType=DECIMAL}, #{channelName,jdbcType=VARCHAR}, #{channelFlg,jdbcType=INTEGER}, 
+      #{addTime,jdbcType=INTEGER}, #{updateTime,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.StatisticsTzjUtm" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_statistics_tzj_utm
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="day != null" >
+        `day`,
+      </if>
+      <if test="registCount != null" >
+        regist_count,
+      </if>
+      <if test="openCount != null" >
+        open_count,
+      </if>
+      <if test="openRate != null" >
+        open_rate,
+      </if>
+      <if test="cardbindCount != null" >
+        cardbind_count,
+      </if>
+      <if test="cardbindRate != null" >
+        cardbind_rate,
+      </if>
+      <if test="rechargenewCount != null" >
+        rechargenew_count,
+      </if>
+      <if test="rechargeCount != null" >
+        recharge_count,
+      </if>
+      <if test="tendernewCount != null" >
+        tendernew_count,
+      </if>
+      <if test="tenderfirstCount != null" >
+        tenderfirst_count,
+      </if>
+      <if test="tenderfirstMoney != null" >
+        tenderfirst_money,
+      </if>
+      <if test="tendernewRate != null" >
+        tendernew_rate,
+      </if>
+      <if test="tenderCount != null" >
+        tender_count,
+      </if>
+      <if test="tenderMoney != null" >
+        tender_money,
+      </if>
+      <if test="tenderAgainCount != null" >
+        tender_again_count,
+      </if>
+      <if test="tenderAgainRate != null" >
+        tender_again_rate,
+      </if>
+      <if test="channelName != null" >
+        channel_name,
+      </if>
+      <if test="channelFlg != null" >
+        channel_flg,
+      </if>
+      <if test="addTime != null" >
+        add_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="day != null" >
+        #{day,jdbcType=VARCHAR},
+      </if>
+      <if test="registCount != null" >
+        #{registCount,jdbcType=INTEGER},
+      </if>
+      <if test="openCount != null" >
+        #{openCount,jdbcType=INTEGER},
+      </if>
+      <if test="openRate != null" >
+        #{openRate,jdbcType=DECIMAL},
+      </if>
+      <if test="cardbindCount != null" >
+        #{cardbindCount,jdbcType=INTEGER},
+      </if>
+      <if test="cardbindRate != null" >
+        #{cardbindRate,jdbcType=DECIMAL},
+      </if>
+      <if test="rechargenewCount != null" >
+        #{rechargenewCount,jdbcType=INTEGER},
+      </if>
+      <if test="rechargeCount != null" >
+        #{rechargeCount,jdbcType=INTEGER},
+      </if>
+      <if test="tendernewCount != null" >
+        #{tendernewCount,jdbcType=INTEGER},
+      </if>
+      <if test="tenderfirstCount != null" >
+        #{tenderfirstCount,jdbcType=INTEGER},
+      </if>
+      <if test="tenderfirstMoney != null" >
+        #{tenderfirstMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="tendernewRate != null" >
+        #{tendernewRate,jdbcType=DECIMAL},
+      </if>
+      <if test="tenderCount != null" >
+        #{tenderCount,jdbcType=INTEGER},
+      </if>
+      <if test="tenderMoney != null" >
+        #{tenderMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="tenderAgainCount != null" >
+        #{tenderAgainCount,jdbcType=INTEGER},
+      </if>
+      <if test="tenderAgainRate != null" >
+        #{tenderAgainRate,jdbcType=DECIMAL},
+      </if>
+      <if test="channelName != null" >
+        #{channelName,jdbcType=VARCHAR},
+      </if>
+      <if test="channelFlg != null" >
+        #{channelFlg,jdbcType=INTEGER},
+      </if>
+      <if test="addTime != null" >
+        #{addTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.StatisticsTzjUtmExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_statistics_tzj_utm
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_statistics_tzj_utm
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.day != null" >
+        `day` = #{record.day,jdbcType=VARCHAR},
+      </if>
+      <if test="record.registCount != null" >
+        regist_count = #{record.registCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.openCount != null" >
+        open_count = #{record.openCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.openRate != null" >
+        open_rate = #{record.openRate,jdbcType=DECIMAL},
+      </if>
+      <if test="record.cardbindCount != null" >
+        cardbind_count = #{record.cardbindCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.cardbindRate != null" >
+        cardbind_rate = #{record.cardbindRate,jdbcType=DECIMAL},
+      </if>
+      <if test="record.rechargenewCount != null" >
+        rechargenew_count = #{record.rechargenewCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.rechargeCount != null" >
+        recharge_count = #{record.rechargeCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.tendernewCount != null" >
+        tendernew_count = #{record.tendernewCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.tenderfirstCount != null" >
+        tenderfirst_count = #{record.tenderfirstCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.tenderfirstMoney != null" >
+        tenderfirst_money = #{record.tenderfirstMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="record.tendernewRate != null" >
+        tendernew_rate = #{record.tendernewRate,jdbcType=DECIMAL},
+      </if>
+      <if test="record.tenderCount != null" >
+        tender_count = #{record.tenderCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.tenderMoney != null" >
+        tender_money = #{record.tenderMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="record.tenderAgainCount != null" >
+        tender_again_count = #{record.tenderAgainCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.tenderAgainRate != null" >
+        tender_again_rate = #{record.tenderAgainRate,jdbcType=DECIMAL},
+      </if>
+      <if test="record.channelName != null" >
+        channel_name = #{record.channelName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.channelFlg != null" >
+        channel_flg = #{record.channelFlg,jdbcType=INTEGER},
+      </if>
+      <if test="record.addTime != null" >
+        add_time = #{record.addTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_statistics_tzj_utm
+    set id = #{record.id,jdbcType=INTEGER},
+      `day` = #{record.day,jdbcType=VARCHAR},
+      regist_count = #{record.registCount,jdbcType=INTEGER},
+      open_count = #{record.openCount,jdbcType=INTEGER},
+      open_rate = #{record.openRate,jdbcType=DECIMAL},
+      cardbind_count = #{record.cardbindCount,jdbcType=INTEGER},
+      cardbind_rate = #{record.cardbindRate,jdbcType=DECIMAL},
+      rechargenew_count = #{record.rechargenewCount,jdbcType=INTEGER},
+      recharge_count = #{record.rechargeCount,jdbcType=INTEGER},
+      tendernew_count = #{record.tendernewCount,jdbcType=INTEGER},
+      tenderfirst_count = #{record.tenderfirstCount,jdbcType=INTEGER},
+      tenderfirst_money = #{record.tenderfirstMoney,jdbcType=DECIMAL},
+      tendernew_rate = #{record.tendernewRate,jdbcType=DECIMAL},
+      tender_count = #{record.tenderCount,jdbcType=INTEGER},
+      tender_money = #{record.tenderMoney,jdbcType=DECIMAL},
+      tender_again_count = #{record.tenderAgainCount,jdbcType=INTEGER},
+      tender_again_rate = #{record.tenderAgainRate,jdbcType=DECIMAL},
+      channel_name = #{record.channelName,jdbcType=VARCHAR},
+      channel_flg = #{record.channelFlg,jdbcType=INTEGER},
+      add_time = #{record.addTime,jdbcType=INTEGER},
+      update_time = #{record.updateTime,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.StatisticsTzjUtm" >
+    update hyjf_statistics_tzj_utm
+    <set >
+      <if test="day != null" >
+        `day` = #{day,jdbcType=VARCHAR},
+      </if>
+      <if test="registCount != null" >
+        regist_count = #{registCount,jdbcType=INTEGER},
+      </if>
+      <if test="openCount != null" >
+        open_count = #{openCount,jdbcType=INTEGER},
+      </if>
+      <if test="openRate != null" >
+        open_rate = #{openRate,jdbcType=DECIMAL},
+      </if>
+      <if test="cardbindCount != null" >
+        cardbind_count = #{cardbindCount,jdbcType=INTEGER},
+      </if>
+      <if test="cardbindRate != null" >
+        cardbind_rate = #{cardbindRate,jdbcType=DECIMAL},
+      </if>
+      <if test="rechargenewCount != null" >
+        rechargenew_count = #{rechargenewCount,jdbcType=INTEGER},
+      </if>
+      <if test="rechargeCount != null" >
+        recharge_count = #{rechargeCount,jdbcType=INTEGER},
+      </if>
+      <if test="tendernewCount != null" >
+        tendernew_count = #{tendernewCount,jdbcType=INTEGER},
+      </if>
+      <if test="tenderfirstCount != null" >
+        tenderfirst_count = #{tenderfirstCount,jdbcType=INTEGER},
+      </if>
+      <if test="tenderfirstMoney != null" >
+        tenderfirst_money = #{tenderfirstMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="tendernewRate != null" >
+        tendernew_rate = #{tendernewRate,jdbcType=DECIMAL},
+      </if>
+      <if test="tenderCount != null" >
+        tender_count = #{tenderCount,jdbcType=INTEGER},
+      </if>
+      <if test="tenderMoney != null" >
+        tender_money = #{tenderMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="tenderAgainCount != null" >
+        tender_again_count = #{tenderAgainCount,jdbcType=INTEGER},
+      </if>
+      <if test="tenderAgainRate != null" >
+        tender_again_rate = #{tenderAgainRate,jdbcType=DECIMAL},
+      </if>
+      <if test="channelName != null" >
+        channel_name = #{channelName,jdbcType=VARCHAR},
+      </if>
+      <if test="channelFlg != null" >
+        channel_flg = #{channelFlg,jdbcType=INTEGER},
+      </if>
+      <if test="addTime != null" >
+        add_time = #{addTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.StatisticsTzjUtm" >
+    update hyjf_statistics_tzj_utm
+    set `day` = #{day,jdbcType=VARCHAR},
+      regist_count = #{registCount,jdbcType=INTEGER},
+      open_count = #{openCount,jdbcType=INTEGER},
+      open_rate = #{openRate,jdbcType=DECIMAL},
+      cardbind_count = #{cardbindCount,jdbcType=INTEGER},
+      cardbind_rate = #{cardbindRate,jdbcType=DECIMAL},
+      rechargenew_count = #{rechargenewCount,jdbcType=INTEGER},
+      recharge_count = #{rechargeCount,jdbcType=INTEGER},
+      tendernew_count = #{tendernewCount,jdbcType=INTEGER},
+      tenderfirst_count = #{tenderfirstCount,jdbcType=INTEGER},
+      tenderfirst_money = #{tenderfirstMoney,jdbcType=DECIMAL},
+      tendernew_rate = #{tendernewRate,jdbcType=DECIMAL},
+      tender_count = #{tenderCount,jdbcType=INTEGER},
+      tender_money = #{tenderMoney,jdbcType=DECIMAL},
+      tender_again_count = #{tenderAgainCount,jdbcType=INTEGER},
+      tender_again_rate = #{tenderAgainRate,jdbcType=DECIMAL},
+      channel_name = #{channelName,jdbcType=VARCHAR},
+      channel_flg = #{channelFlg,jdbcType=INTEGER},
+      add_time = #{addTime,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

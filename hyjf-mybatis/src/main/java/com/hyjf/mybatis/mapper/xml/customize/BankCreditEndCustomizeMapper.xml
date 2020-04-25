@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.BankCreditEndCustomizeMapper" >
+
+   <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_bank_credit_end
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.batchNo != null" >
+        batch_no = #{record.batchNo,jdbcType=CHAR},
+      </if>
+      <if test="record.txDate != null" >
+        tx_date = #{record.txDate,jdbcType=CHAR},
+      </if>
+      <if test="record.txTime != null" >
+        tx_time = #{record.txTime,jdbcType=CHAR},
+      </if>
+      <if test="record.seqNo != null" >
+        seq_no = #{record.seqNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.txCounts != null" >
+        tx_counts = #{record.txCounts,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.username != null" >
+        username = #{record.username,jdbcType=CHAR},
+      </if>
+      <if test="record.tenderUserId != null" >
+        tender_user_id = #{record.tenderUserId,jdbcType=INTEGER},
+      </if>
+      <if test="record.tenderUsername != null" >
+        tender_username = #{record.tenderUsername,jdbcType=CHAR},
+      </if>
+      <if test="record.accountId != null" >
+        account_id = #{record.accountId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tenderAccountId != null" >
+        tender_account_id = #{record.tenderAccountId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.orderId != null" >
+        order_id = #{record.orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.orgOrderId != null" >
+        org_order_id = #{record.orgOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.borrowNid != null" >
+        borrow_nid = #{record.borrowNid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.authCode != null" >
+        auth_code = #{record.authCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.creditEndType != null" >
+        credit_end_type = #{record.creditEndType,jdbcType=TINYINT},
+      </if>
+      <if test="record.received != null" >
+        received = #{record.received,jdbcType=TINYINT},
+      </if>
+      <if test="record.checkRetcode != null" >
+        check_retcode = #{record.checkRetcode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.checkRetmsg != null" >
+        check_retmsg = #{record.checkRetmsg,jdbcType=VARCHAR},
+      </if>
+      <if test="record.retcode != null" >
+        retcode = #{record.retcode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.retmsg != null" >
+        retmsg = #{record.retmsg,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sucCounts != null" >
+        suc_counts = #{record.sucCounts,jdbcType=INTEGER},
+      </if>
+      <if test="record.failCounts != null" >
+        fail_counts = #{record.failCounts,jdbcType=INTEGER},
+      </if>
+      <if test="record.state != null" >
+        `state` = #{record.state,jdbcType=CHAR},
+      </if>
+      <if test="record.status != null" >
+        `status` = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.failmsg != null" >
+        failmsg = #{record.failmsg,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createUser != null" >
+        create_user = #{record.createUser,jdbcType=INTEGER},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateUser != null" >
+        update_user = #{record.updateUser,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+    <if test="example.orderByClause != null" >
+      order by ${example.orderByClause}
+    </if>
+    <if test="example.limitEnd >= 0" >
+      limit #{example.limitEnd}
+    </if>
+  </update>
+</mapper>

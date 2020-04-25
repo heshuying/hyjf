@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.ExceptionAccountCustomizeMapper">
+	<resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.ExceptionAccount">
+		<result column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="balance" property="balancePlat" />
+		<result column="frost" property="frostPlat" />
+		<result column="role_id" property="role"/>
+		<result column="chinapnr_usrcustid" property="customId"/>
+	</resultMap>
+
+	<!-- 根据分页信息查询用户账户列表 -->
+	<select id="selectUserAccounts" resultMap="BaseResultMap">
+		SELECT
+			u.user_id,
+			u.username,
+			u.mobile,
+			(
+				IFNULL(a.balance, 0) + IFNULL(a.plan_balance, 0)
+			) AS balance,
+			(
+				IFNULL(a.frost, 0) + IFNULL(a.plan_frost, 0)
+			) AS frost,
+			pa.`name` AS role_id,
+			c.chinapnr_usrcustid
+		FROM
+			huiyingdai_users u
+		INNER JOIN huiyingdai_account a ON a.user_id = u.user_id
+		INNER JOIN huiyingdai_account_chinapnr c ON c.user_id = u.user_id
+		AND c.chinapnr_usrcustid <![CDATA[<>]]> 6000060000253728
+		INNER JOIN huiyingdai_users_info ui ON u.user_id = ui.user_id
+		LEFT JOIN hyjf_param_name pa ON pa.name_cd = ui.role_id AND pa.name_class = 'USER_ROLE'
+		ORDER BY u.user_id ASC
+		<if test="limitStart != null and limit !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limit,jdbcType=INTEGER}
+	    </if>
+	</select>
+	<!-- 根据分页信息查询用户账户列表 -->
+	<select id="countAllUserAccount" resultType="java.lang.Long">
+		SELECT
+			COUNT(*)
+		FROM
+			huiyingdai_users u
+		INNER JOIN huiyingdai_account a ON a.user_id = u.user_id
+		INNER JOIN huiyingdai_account_chinapnr c ON c.user_id = u.user_id
+		AND c.chinapnr_usrcustid <![CDATA[<>]]> 6000060000253728
+		INNER JOIN huiyingdai_users_info ui ON u.user_id = ui.user_id
+		LEFT JOIN hyjf_param_name pa ON pa.name_cd = ui.role_id AND pa.name_class = 'USER_ROLE'
+		ORDER BY u.user_id ASC
+	</select>
+</mapper>

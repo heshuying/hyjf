@@ -1,0 +1,647 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.LoanMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.Loan" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="INTEGER" />
+    <result column="age" property="age" jdbcType="INTEGER" />
+    <result column="money" property="money" jdbcType="VARCHAR" />
+    <result column="day" property="day" jdbcType="VARCHAR" />
+    <result column="use" property="use" jdbcType="VARCHAR" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="area" property="area" jdbcType="VARCHAR" />
+    <result column="mortgage" property="mortgage" jdbcType="VARCHAR" />
+    <result column="mortgage_state" property="mortgageState" jdbcType="INTEGER" />
+    <result column="state" property="state" jdbcType="INTEGER" />
+    <result column="addtime" property="addtime" jdbcType="INTEGER" />
+    <result column="addip" property="addip" jdbcType="VARCHAR" />
+    <result column="info" property="info" jdbcType="VARCHAR" />
+    <result column="gname" property="gname" jdbcType="VARCHAR" />
+    <result column="gyear" property="gyear" jdbcType="VARCHAR" />
+    <result column="gdress" property="gdress" jdbcType="VARCHAR" />
+    <result column="gplay" property="gplay" jdbcType="VARCHAR" />
+    <result column="gpro" property="gpro" jdbcType="VARCHAR" />
+    <result column="gmoney" property="gmoney" jdbcType="VARCHAR" />
+    <result column="gget" property="gget" jdbcType="VARCHAR" />
+    <result column="gpay" property="gpay" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.hyjf.mybatis.model.auto.Loan" extends="BaseResultMap" >
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, `name`, tel, sex, age, money, `day`, `use`, province, city, area, mortgage, mortgage_state, 
+    `state`, addtime, addip, info, gname, gyear, gdress, gplay, gpro, gmoney, gget, gpay, 
+    remark
+  </sql>
+  <sql id="Blob_Column_List" >
+    content
+  </sql>
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.hyjf.mybatis.model.auto.LoanExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from huiyingdai_loan
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.LoanExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from huiyingdai_loan
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from huiyingdai_loan
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from huiyingdai_loan
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.LoanExample" >
+    delete from huiyingdai_loan
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.Loan" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into huiyingdai_loan (`name`, tel, sex, 
+      age, money, `day`, `use`, 
+      province, city, area, 
+      mortgage, mortgage_state, `state`, 
+      addtime, addip, info, 
+      gname, gyear, gdress, 
+      gplay, gpro, gmoney, 
+      gget, gpay, remark, 
+      content)
+    values (#{name,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, #{sex,jdbcType=INTEGER}, 
+      #{age,jdbcType=INTEGER}, #{money,jdbcType=VARCHAR}, #{day,jdbcType=VARCHAR}, #{use,jdbcType=VARCHAR}, 
+      #{province,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, #{area,jdbcType=VARCHAR}, 
+      #{mortgage,jdbcType=VARCHAR}, #{mortgageState,jdbcType=INTEGER}, #{state,jdbcType=INTEGER}, 
+      #{addtime,jdbcType=INTEGER}, #{addip,jdbcType=VARCHAR}, #{info,jdbcType=VARCHAR}, 
+      #{gname,jdbcType=VARCHAR}, #{gyear,jdbcType=VARCHAR}, #{gdress,jdbcType=VARCHAR}, 
+      #{gplay,jdbcType=VARCHAR}, #{gpro,jdbcType=VARCHAR}, #{gmoney,jdbcType=VARCHAR}, 
+      #{gget,jdbcType=VARCHAR}, #{gpay,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
+      #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.Loan" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into huiyingdai_loan
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="name != null" >
+        `name`,
+      </if>
+      <if test="tel != null" >
+        tel,
+      </if>
+      <if test="sex != null" >
+        sex,
+      </if>
+      <if test="age != null" >
+        age,
+      </if>
+      <if test="money != null" >
+        money,
+      </if>
+      <if test="day != null" >
+        `day`,
+      </if>
+      <if test="use != null" >
+        `use`,
+      </if>
+      <if test="province != null" >
+        province,
+      </if>
+      <if test="city != null" >
+        city,
+      </if>
+      <if test="area != null" >
+        area,
+      </if>
+      <if test="mortgage != null" >
+        mortgage,
+      </if>
+      <if test="mortgageState != null" >
+        mortgage_state,
+      </if>
+      <if test="state != null" >
+        `state`,
+      </if>
+      <if test="addtime != null" >
+        addtime,
+      </if>
+      <if test="addip != null" >
+        addip,
+      </if>
+      <if test="info != null" >
+        info,
+      </if>
+      <if test="gname != null" >
+        gname,
+      </if>
+      <if test="gyear != null" >
+        gyear,
+      </if>
+      <if test="gdress != null" >
+        gdress,
+      </if>
+      <if test="gplay != null" >
+        gplay,
+      </if>
+      <if test="gpro != null" >
+        gpro,
+      </if>
+      <if test="gmoney != null" >
+        gmoney,
+      </if>
+      <if test="gget != null" >
+        gget,
+      </if>
+      <if test="gpay != null" >
+        gpay,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="age != null" >
+        #{age,jdbcType=INTEGER},
+      </if>
+      <if test="money != null" >
+        #{money,jdbcType=VARCHAR},
+      </if>
+      <if test="day != null" >
+        #{day,jdbcType=VARCHAR},
+      </if>
+      <if test="use != null" >
+        #{use,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null" >
+        #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="area != null" >
+        #{area,jdbcType=VARCHAR},
+      </if>
+      <if test="mortgage != null" >
+        #{mortgage,jdbcType=VARCHAR},
+      </if>
+      <if test="mortgageState != null" >
+        #{mortgageState,jdbcType=INTEGER},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="addtime != null" >
+        #{addtime,jdbcType=INTEGER},
+      </if>
+      <if test="addip != null" >
+        #{addip,jdbcType=VARCHAR},
+      </if>
+      <if test="info != null" >
+        #{info,jdbcType=VARCHAR},
+      </if>
+      <if test="gname != null" >
+        #{gname,jdbcType=VARCHAR},
+      </if>
+      <if test="gyear != null" >
+        #{gyear,jdbcType=VARCHAR},
+      </if>
+      <if test="gdress != null" >
+        #{gdress,jdbcType=VARCHAR},
+      </if>
+      <if test="gplay != null" >
+        #{gplay,jdbcType=VARCHAR},
+      </if>
+      <if test="gpro != null" >
+        #{gpro,jdbcType=VARCHAR},
+      </if>
+      <if test="gmoney != null" >
+        #{gmoney,jdbcType=VARCHAR},
+      </if>
+      <if test="gget != null" >
+        #{gget,jdbcType=VARCHAR},
+      </if>
+      <if test="gpay != null" >
+        #{gpay,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.LoanExample" resultType="java.lang.Integer" >
+    select count(*) from huiyingdai_loan
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update huiyingdai_loan
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.name != null" >
+        `name` = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tel != null" >
+        tel = #{record.tel,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sex != null" >
+        sex = #{record.sex,jdbcType=INTEGER},
+      </if>
+      <if test="record.age != null" >
+        age = #{record.age,jdbcType=INTEGER},
+      </if>
+      <if test="record.money != null" >
+        money = #{record.money,jdbcType=VARCHAR},
+      </if>
+      <if test="record.day != null" >
+        `day` = #{record.day,jdbcType=VARCHAR},
+      </if>
+      <if test="record.use != null" >
+        `use` = #{record.use,jdbcType=VARCHAR},
+      </if>
+      <if test="record.province != null" >
+        province = #{record.province,jdbcType=VARCHAR},
+      </if>
+      <if test="record.city != null" >
+        city = #{record.city,jdbcType=VARCHAR},
+      </if>
+      <if test="record.area != null" >
+        area = #{record.area,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mortgage != null" >
+        mortgage = #{record.mortgage,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mortgageState != null" >
+        mortgage_state = #{record.mortgageState,jdbcType=INTEGER},
+      </if>
+      <if test="record.state != null" >
+        `state` = #{record.state,jdbcType=INTEGER},
+      </if>
+      <if test="record.addtime != null" >
+        addtime = #{record.addtime,jdbcType=INTEGER},
+      </if>
+      <if test="record.addip != null" >
+        addip = #{record.addip,jdbcType=VARCHAR},
+      </if>
+      <if test="record.info != null" >
+        info = #{record.info,jdbcType=VARCHAR},
+      </if>
+      <if test="record.gname != null" >
+        gname = #{record.gname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.gyear != null" >
+        gyear = #{record.gyear,jdbcType=VARCHAR},
+      </if>
+      <if test="record.gdress != null" >
+        gdress = #{record.gdress,jdbcType=VARCHAR},
+      </if>
+      <if test="record.gplay != null" >
+        gplay = #{record.gplay,jdbcType=VARCHAR},
+      </if>
+      <if test="record.gpro != null" >
+        gpro = #{record.gpro,jdbcType=VARCHAR},
+      </if>
+      <if test="record.gmoney != null" >
+        gmoney = #{record.gmoney,jdbcType=VARCHAR},
+      </if>
+      <if test="record.gget != null" >
+        gget = #{record.gget,jdbcType=VARCHAR},
+      </if>
+      <if test="record.gpay != null" >
+        gpay = #{record.gpay,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remark != null" >
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.content != null" >
+        content = #{record.content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map" >
+    update huiyingdai_loan
+    set id = #{record.id,jdbcType=INTEGER},
+      `name` = #{record.name,jdbcType=VARCHAR},
+      tel = #{record.tel,jdbcType=VARCHAR},
+      sex = #{record.sex,jdbcType=INTEGER},
+      age = #{record.age,jdbcType=INTEGER},
+      money = #{record.money,jdbcType=VARCHAR},
+      `day` = #{record.day,jdbcType=VARCHAR},
+      `use` = #{record.use,jdbcType=VARCHAR},
+      province = #{record.province,jdbcType=VARCHAR},
+      city = #{record.city,jdbcType=VARCHAR},
+      area = #{record.area,jdbcType=VARCHAR},
+      mortgage = #{record.mortgage,jdbcType=VARCHAR},
+      mortgage_state = #{record.mortgageState,jdbcType=INTEGER},
+      `state` = #{record.state,jdbcType=INTEGER},
+      addtime = #{record.addtime,jdbcType=INTEGER},
+      addip = #{record.addip,jdbcType=VARCHAR},
+      info = #{record.info,jdbcType=VARCHAR},
+      gname = #{record.gname,jdbcType=VARCHAR},
+      gyear = #{record.gyear,jdbcType=VARCHAR},
+      gdress = #{record.gdress,jdbcType=VARCHAR},
+      gplay = #{record.gplay,jdbcType=VARCHAR},
+      gpro = #{record.gpro,jdbcType=VARCHAR},
+      gmoney = #{record.gmoney,jdbcType=VARCHAR},
+      gget = #{record.gget,jdbcType=VARCHAR},
+      gpay = #{record.gpay,jdbcType=VARCHAR},
+      remark = #{record.remark,jdbcType=VARCHAR},
+      content = #{record.content,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update huiyingdai_loan
+    set id = #{record.id,jdbcType=INTEGER},
+      `name` = #{record.name,jdbcType=VARCHAR},
+      tel = #{record.tel,jdbcType=VARCHAR},
+      sex = #{record.sex,jdbcType=INTEGER},
+      age = #{record.age,jdbcType=INTEGER},
+      money = #{record.money,jdbcType=VARCHAR},
+      `day` = #{record.day,jdbcType=VARCHAR},
+      `use` = #{record.use,jdbcType=VARCHAR},
+      province = #{record.province,jdbcType=VARCHAR},
+      city = #{record.city,jdbcType=VARCHAR},
+      area = #{record.area,jdbcType=VARCHAR},
+      mortgage = #{record.mortgage,jdbcType=VARCHAR},
+      mortgage_state = #{record.mortgageState,jdbcType=INTEGER},
+      `state` = #{record.state,jdbcType=INTEGER},
+      addtime = #{record.addtime,jdbcType=INTEGER},
+      addip = #{record.addip,jdbcType=VARCHAR},
+      info = #{record.info,jdbcType=VARCHAR},
+      gname = #{record.gname,jdbcType=VARCHAR},
+      gyear = #{record.gyear,jdbcType=VARCHAR},
+      gdress = #{record.gdress,jdbcType=VARCHAR},
+      gplay = #{record.gplay,jdbcType=VARCHAR},
+      gpro = #{record.gpro,jdbcType=VARCHAR},
+      gmoney = #{record.gmoney,jdbcType=VARCHAR},
+      gget = #{record.gget,jdbcType=VARCHAR},
+      gpay = #{record.gpay,jdbcType=VARCHAR},
+      remark = #{record.remark,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.Loan" >
+    update huiyingdai_loan
+    <set >
+      <if test="name != null" >
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null" >
+        tel = #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="age != null" >
+        age = #{age,jdbcType=INTEGER},
+      </if>
+      <if test="money != null" >
+        money = #{money,jdbcType=VARCHAR},
+      </if>
+      <if test="day != null" >
+        `day` = #{day,jdbcType=VARCHAR},
+      </if>
+      <if test="use != null" >
+        `use` = #{use,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null" >
+        province = #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        city = #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="area != null" >
+        area = #{area,jdbcType=VARCHAR},
+      </if>
+      <if test="mortgage != null" >
+        mortgage = #{mortgage,jdbcType=VARCHAR},
+      </if>
+      <if test="mortgageState != null" >
+        mortgage_state = #{mortgageState,jdbcType=INTEGER},
+      </if>
+      <if test="state != null" >
+        `state` = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="addtime != null" >
+        addtime = #{addtime,jdbcType=INTEGER},
+      </if>
+      <if test="addip != null" >
+        addip = #{addip,jdbcType=VARCHAR},
+      </if>
+      <if test="info != null" >
+        info = #{info,jdbcType=VARCHAR},
+      </if>
+      <if test="gname != null" >
+        gname = #{gname,jdbcType=VARCHAR},
+      </if>
+      <if test="gyear != null" >
+        gyear = #{gyear,jdbcType=VARCHAR},
+      </if>
+      <if test="gdress != null" >
+        gdress = #{gdress,jdbcType=VARCHAR},
+      </if>
+      <if test="gplay != null" >
+        gplay = #{gplay,jdbcType=VARCHAR},
+      </if>
+      <if test="gpro != null" >
+        gpro = #{gpro,jdbcType=VARCHAR},
+      </if>
+      <if test="gmoney != null" >
+        gmoney = #{gmoney,jdbcType=VARCHAR},
+      </if>
+      <if test="gget != null" >
+        gget = #{gget,jdbcType=VARCHAR},
+      </if>
+      <if test="gpay != null" >
+        gpay = #{gpay,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.hyjf.mybatis.model.auto.Loan" >
+    update huiyingdai_loan
+    set `name` = #{name,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=INTEGER},
+      age = #{age,jdbcType=INTEGER},
+      money = #{money,jdbcType=VARCHAR},
+      `day` = #{day,jdbcType=VARCHAR},
+      `use` = #{use,jdbcType=VARCHAR},
+      province = #{province,jdbcType=VARCHAR},
+      city = #{city,jdbcType=VARCHAR},
+      area = #{area,jdbcType=VARCHAR},
+      mortgage = #{mortgage,jdbcType=VARCHAR},
+      mortgage_state = #{mortgageState,jdbcType=INTEGER},
+      `state` = #{state,jdbcType=INTEGER},
+      addtime = #{addtime,jdbcType=INTEGER},
+      addip = #{addip,jdbcType=VARCHAR},
+      info = #{info,jdbcType=VARCHAR},
+      gname = #{gname,jdbcType=VARCHAR},
+      gyear = #{gyear,jdbcType=VARCHAR},
+      gdress = #{gdress,jdbcType=VARCHAR},
+      gplay = #{gplay,jdbcType=VARCHAR},
+      gpro = #{gpro,jdbcType=VARCHAR},
+      gmoney = #{gmoney,jdbcType=VARCHAR},
+      gget = #{gget,jdbcType=VARCHAR},
+      gpay = #{gpay,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.Loan" >
+    update huiyingdai_loan
+    set `name` = #{name,jdbcType=VARCHAR},
+      tel = #{tel,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=INTEGER},
+      age = #{age,jdbcType=INTEGER},
+      money = #{money,jdbcType=VARCHAR},
+      `day` = #{day,jdbcType=VARCHAR},
+      `use` = #{use,jdbcType=VARCHAR},
+      province = #{province,jdbcType=VARCHAR},
+      city = #{city,jdbcType=VARCHAR},
+      area = #{area,jdbcType=VARCHAR},
+      mortgage = #{mortgage,jdbcType=VARCHAR},
+      mortgage_state = #{mortgageState,jdbcType=INTEGER},
+      `state` = #{state,jdbcType=INTEGER},
+      addtime = #{addtime,jdbcType=INTEGER},
+      addip = #{addip,jdbcType=VARCHAR},
+      info = #{info,jdbcType=VARCHAR},
+      gname = #{gname,jdbcType=VARCHAR},
+      gyear = #{gyear,jdbcType=VARCHAR},
+      gdress = #{gdress,jdbcType=VARCHAR},
+      gplay = #{gplay,jdbcType=VARCHAR},
+      gpro = #{gpro,jdbcType=VARCHAR},
+      gmoney = #{gmoney,jdbcType=VARCHAR},
+      gget = #{gget,jdbcType=VARCHAR},
+      gpay = #{gpay,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

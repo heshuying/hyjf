@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.AppChannelStatisticsMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.AppChannelStatistics" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="source_id" property="sourceId" jdbcType="INTEGER" />
+    <result column="channel_name" property="channelName" jdbcType="VARCHAR" />
+    <result column="visit_count" property="visitCount" jdbcType="DECIMAL" />
+    <result column="register_count" property="registerCount" jdbcType="DECIMAL" />
+    <result column="open_account_count" property="openAccountCount" jdbcType="DECIMAL" />
+    <result column="invest_number" property="investNumber" jdbcType="DECIMAL" />
+    <result column="cumulative_charge" property="cumulativeCharge" jdbcType="DECIMAL" />
+    <result column="cumulative_invest" property="cumulativeInvest" jdbcType="DECIMAL" />
+    <result column="hzt_invest_sum" property="hztInvestSum" jdbcType="DECIMAL" />
+    <result column="hxf_invest_sum" property="hxfInvestSum" jdbcType="DECIMAL" />
+    <result column="htl_invest_sum" property="htlInvestSum" jdbcType="DECIMAL" />
+    <result column="htj_invest_sum" property="htjInvestSum" jdbcType="DECIMAL" />
+    <result column="rtb_invest_sum" property="rtbInvestSum" jdbcType="DECIMAL" />
+    <result column="hzr_invest_sum" property="hzrInvestSum" jdbcType="DECIMAL" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="register_attr_count" property="registerAttrCount" jdbcType="DECIMAL" />
+    <result column="account_number_ios" property="accountNumberIos" jdbcType="INTEGER" />
+    <result column="account_number_pc" property="accountNumberPc" jdbcType="INTEGER" />
+    <result column="account_number_android" property="accountNumberAndroid" jdbcType="INTEGER" />
+    <result column="account_number_wechat" property="accountNumberWechat" jdbcType="INTEGER" />
+    <result column="tender_number_android" property="tenderNumberAndroid" jdbcType="INTEGER" />
+    <result column="tender_number_ios" property="tenderNumberIos" jdbcType="INTEGER" />
+    <result column="tender_number_pc" property="tenderNumberPc" jdbcType="INTEGER" />
+    <result column="tender_number_wechat" property="tenderNumberWechat" jdbcType="INTEGER" />
+    <result column="cumulative_attr_charge" property="cumulativeAttrCharge" jdbcType="DECIMAL" />
+    <result column="open_account_attr_count" property="openAccountAttrCount" jdbcType="INTEGER" />
+    <result column="invest_attr_number" property="investAttrNumber" jdbcType="INTEGER" />
+    <result column="cumulative_attr_invest" property="cumulativeAttrInvest" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, source_id, channel_name, visit_count, register_count, open_account_count, invest_number, 
+    cumulative_charge, cumulative_invest, hzt_invest_sum, hxf_invest_sum, htl_invest_sum, 
+    htj_invest_sum, rtb_invest_sum, hzr_invest_sum, update_time, register_attr_count, 
+    account_number_ios, account_number_pc, account_number_android, account_number_wechat, 
+    tender_number_android, tender_number_ios, tender_number_pc, tender_number_wechat, 
+    cumulative_attr_charge, open_account_attr_count, invest_attr_number, cumulative_attr_invest
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.AppChannelStatisticsExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_app_channel_statistics
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_app_channel_statistics
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_app_channel_statistics
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.AppChannelStatisticsExample" >
+    delete from hyjf_app_channel_statistics
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.AppChannelStatistics" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_app_channel_statistics (source_id, channel_name, visit_count, 
+      register_count, open_account_count, invest_number, 
+      cumulative_charge, cumulative_invest, hzt_invest_sum, 
+      hxf_invest_sum, htl_invest_sum, htj_invest_sum, 
+      rtb_invest_sum, hzr_invest_sum, update_time, 
+      register_attr_count, account_number_ios, account_number_pc, 
+      account_number_android, account_number_wechat, 
+      tender_number_android, tender_number_ios, tender_number_pc, 
+      tender_number_wechat, cumulative_attr_charge, 
+      open_account_attr_count, invest_attr_number, 
+      cumulative_attr_invest)
+    values (#{sourceId,jdbcType=INTEGER}, #{channelName,jdbcType=VARCHAR}, #{visitCount,jdbcType=DECIMAL}, 
+      #{registerCount,jdbcType=DECIMAL}, #{openAccountCount,jdbcType=DECIMAL}, #{investNumber,jdbcType=DECIMAL}, 
+      #{cumulativeCharge,jdbcType=DECIMAL}, #{cumulativeInvest,jdbcType=DECIMAL}, #{hztInvestSum,jdbcType=DECIMAL}, 
+      #{hxfInvestSum,jdbcType=DECIMAL}, #{htlInvestSum,jdbcType=DECIMAL}, #{htjInvestSum,jdbcType=DECIMAL}, 
+      #{rtbInvestSum,jdbcType=DECIMAL}, #{hzrInvestSum,jdbcType=DECIMAL}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{registerAttrCount,jdbcType=DECIMAL}, #{accountNumberIos,jdbcType=INTEGER}, #{accountNumberPc,jdbcType=INTEGER}, 
+      #{accountNumberAndroid,jdbcType=INTEGER}, #{accountNumberWechat,jdbcType=INTEGER}, 
+      #{tenderNumberAndroid,jdbcType=INTEGER}, #{tenderNumberIos,jdbcType=INTEGER}, #{tenderNumberPc,jdbcType=INTEGER}, 
+      #{tenderNumberWechat,jdbcType=INTEGER}, #{cumulativeAttrCharge,jdbcType=DECIMAL}, 
+      #{openAccountAttrCount,jdbcType=INTEGER}, #{investAttrNumber,jdbcType=INTEGER}, 
+      #{cumulativeAttrInvest,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.AppChannelStatistics" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_app_channel_statistics
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="sourceId != null" >
+        source_id,
+      </if>
+      <if test="channelName != null" >
+        channel_name,
+      </if>
+      <if test="visitCount != null" >
+        visit_count,
+      </if>
+      <if test="registerCount != null" >
+        register_count,
+      </if>
+      <if test="openAccountCount != null" >
+        open_account_count,
+      </if>
+      <if test="investNumber != null" >
+        invest_number,
+      </if>
+      <if test="cumulativeCharge != null" >
+        cumulative_charge,
+      </if>
+      <if test="cumulativeInvest != null" >
+        cumulative_invest,
+      </if>
+      <if test="hztInvestSum != null" >
+        hzt_invest_sum,
+      </if>
+      <if test="hxfInvestSum != null" >
+        hxf_invest_sum,
+      </if>
+      <if test="htlInvestSum != null" >
+        htl_invest_sum,
+      </if>
+      <if test="htjInvestSum != null" >
+        htj_invest_sum,
+      </if>
+      <if test="rtbInvestSum != null" >
+        rtb_invest_sum,
+      </if>
+      <if test="hzrInvestSum != null" >
+        hzr_invest_sum,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="registerAttrCount != null" >
+        register_attr_count,
+      </if>
+      <if test="accountNumberIos != null" >
+        account_number_ios,
+      </if>
+      <if test="accountNumberPc != null" >
+        account_number_pc,
+      </if>
+      <if test="accountNumberAndroid != null" >
+        account_number_android,
+      </if>
+      <if test="accountNumberWechat != null" >
+        account_number_wechat,
+      </if>
+      <if test="tenderNumberAndroid != null" >
+        tender_number_android,
+      </if>
+      <if test="tenderNumberIos != null" >
+        tender_number_ios,
+      </if>
+      <if test="tenderNumberPc != null" >
+        tender_number_pc,
+      </if>
+      <if test="tenderNumberWechat != null" >
+        tender_number_wechat,
+      </if>
+      <if test="cumulativeAttrCharge != null" >
+        cumulative_attr_charge,
+      </if>
+      <if test="openAccountAttrCount != null" >
+        open_account_attr_count,
+      </if>
+      <if test="investAttrNumber != null" >
+        invest_attr_number,
+      </if>
+      <if test="cumulativeAttrInvest != null" >
+        cumulative_attr_invest,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="sourceId != null" >
+        #{sourceId,jdbcType=INTEGER},
+      </if>
+      <if test="channelName != null" >
+        #{channelName,jdbcType=VARCHAR},
+      </if>
+      <if test="visitCount != null" >
+        #{visitCount,jdbcType=DECIMAL},
+      </if>
+      <if test="registerCount != null" >
+        #{registerCount,jdbcType=DECIMAL},
+      </if>
+      <if test="openAccountCount != null" >
+        #{openAccountCount,jdbcType=DECIMAL},
+      </if>
+      <if test="investNumber != null" >
+        #{investNumber,jdbcType=DECIMAL},
+      </if>
+      <if test="cumulativeCharge != null" >
+        #{cumulativeCharge,jdbcType=DECIMAL},
+      </if>
+      <if test="cumulativeInvest != null" >
+        #{cumulativeInvest,jdbcType=DECIMAL},
+      </if>
+      <if test="hztInvestSum != null" >
+        #{hztInvestSum,jdbcType=DECIMAL},
+      </if>
+      <if test="hxfInvestSum != null" >
+        #{hxfInvestSum,jdbcType=DECIMAL},
+      </if>
+      <if test="htlInvestSum != null" >
+        #{htlInvestSum,jdbcType=DECIMAL},
+      </if>
+      <if test="htjInvestSum != null" >
+        #{htjInvestSum,jdbcType=DECIMAL},
+      </if>
+      <if test="rtbInvestSum != null" >
+        #{rtbInvestSum,jdbcType=DECIMAL},
+      </if>
+      <if test="hzrInvestSum != null" >
+        #{hzrInvestSum,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="registerAttrCount != null" >
+        #{registerAttrCount,jdbcType=DECIMAL},
+      </if>
+      <if test="accountNumberIos != null" >
+        #{accountNumberIos,jdbcType=INTEGER},
+      </if>
+      <if test="accountNumberPc != null" >
+        #{accountNumberPc,jdbcType=INTEGER},
+      </if>
+      <if test="accountNumberAndroid != null" >
+        #{accountNumberAndroid,jdbcType=INTEGER},
+      </if>
+      <if test="accountNumberWechat != null" >
+        #{accountNumberWechat,jdbcType=INTEGER},
+      </if>
+      <if test="tenderNumberAndroid != null" >
+        #{tenderNumberAndroid,jdbcType=INTEGER},
+      </if>
+      <if test="tenderNumberIos != null" >
+        #{tenderNumberIos,jdbcType=INTEGER},
+      </if>
+      <if test="tenderNumberPc != null" >
+        #{tenderNumberPc,jdbcType=INTEGER},
+      </if>
+      <if test="tenderNumberWechat != null" >
+        #{tenderNumberWechat,jdbcType=INTEGER},
+      </if>
+      <if test="cumulativeAttrCharge != null" >
+        #{cumulativeAttrCharge,jdbcType=DECIMAL},
+      </if>
+      <if test="openAccountAttrCount != null" >
+        #{openAccountAttrCount,jdbcType=INTEGER},
+      </if>
+      <if test="investAttrNumber != null" >
+        #{investAttrNumber,jdbcType=INTEGER},
+      </if>
+      <if test="cumulativeAttrInvest != null" >
+        #{cumulativeAttrInvest,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.AppChannelStatisticsExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_app_channel_statistics
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_app_channel_statistics
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.sourceId != null" >
+        source_id = #{record.sourceId,jdbcType=INTEGER},
+      </if>
+      <if test="record.channelName != null" >
+        channel_name = #{record.channelName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.visitCount != null" >
+        visit_count = #{record.visitCount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.registerCount != null" >
+        register_count = #{record.registerCount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.openAccountCount != null" >
+        open_account_count = #{record.openAccountCount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.investNumber != null" >
+        invest_number = #{record.investNumber,jdbcType=DECIMAL},
+      </if>
+      <if test="record.cumulativeCharge != null" >
+        cumulative_charge = #{record.cumulativeCharge,jdbcType=DECIMAL},
+      </if>
+      <if test="record.cumulativeInvest != null" >
+        cumulative_invest = #{record.cumulativeInvest,jdbcType=DECIMAL},
+      </if>
+      <if test="record.hztInvestSum != null" >
+        hzt_invest_sum = #{record.hztInvestSum,jdbcType=DECIMAL},
+      </if>
+      <if test="record.hxfInvestSum != null" >
+        hxf_invest_sum = #{record.hxfInvestSum,jdbcType=DECIMAL},
+      </if>
+      <if test="record.htlInvestSum != null" >
+        htl_invest_sum = #{record.htlInvestSum,jdbcType=DECIMAL},
+      </if>
+      <if test="record.htjInvestSum != null" >
+        htj_invest_sum = #{record.htjInvestSum,jdbcType=DECIMAL},
+      </if>
+      <if test="record.rtbInvestSum != null" >
+        rtb_invest_sum = #{record.rtbInvestSum,jdbcType=DECIMAL},
+      </if>
+      <if test="record.hzrInvestSum != null" >
+        hzr_invest_sum = #{record.hzrInvestSum,jdbcType=DECIMAL},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.registerAttrCount != null" >
+        register_attr_count = #{record.registerAttrCount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.accountNumberIos != null" >
+        account_number_ios = #{record.accountNumberIos,jdbcType=INTEGER},
+      </if>
+      <if test="record.accountNumberPc != null" >
+        account_number_pc = #{record.accountNumberPc,jdbcType=INTEGER},
+      </if>
+      <if test="record.accountNumberAndroid != null" >
+        account_number_android = #{record.accountNumberAndroid,jdbcType=INTEGER},
+      </if>
+      <if test="record.accountNumberWechat != null" >
+        account_number_wechat = #{record.accountNumberWechat,jdbcType=INTEGER},
+      </if>
+      <if test="record.tenderNumberAndroid != null" >
+        tender_number_android = #{record.tenderNumberAndroid,jdbcType=INTEGER},
+      </if>
+      <if test="record.tenderNumberIos != null" >
+        tender_number_ios = #{record.tenderNumberIos,jdbcType=INTEGER},
+      </if>
+      <if test="record.tenderNumberPc != null" >
+        tender_number_pc = #{record.tenderNumberPc,jdbcType=INTEGER},
+      </if>
+      <if test="record.tenderNumberWechat != null" >
+        tender_number_wechat = #{record.tenderNumberWechat,jdbcType=INTEGER},
+      </if>
+      <if test="record.cumulativeAttrCharge != null" >
+        cumulative_attr_charge = #{record.cumulativeAttrCharge,jdbcType=DECIMAL},
+      </if>
+      <if test="record.openAccountAttrCount != null" >
+        open_account_attr_count = #{record.openAccountAttrCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.investAttrNumber != null" >
+        invest_attr_number = #{record.investAttrNumber,jdbcType=INTEGER},
+      </if>
+      <if test="record.cumulativeAttrInvest != null" >
+        cumulative_attr_invest = #{record.cumulativeAttrInvest,jdbcType=DECIMAL},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_app_channel_statistics
+    set id = #{record.id,jdbcType=INTEGER},
+      source_id = #{record.sourceId,jdbcType=INTEGER},
+      channel_name = #{record.channelName,jdbcType=VARCHAR},
+      visit_count = #{record.visitCount,jdbcType=DECIMAL},
+      register_count = #{record.registerCount,jdbcType=DECIMAL},
+      open_account_count = #{record.openAccountCount,jdbcType=DECIMAL},
+      invest_number = #{record.investNumber,jdbcType=DECIMAL},
+      cumulative_charge = #{record.cumulativeCharge,jdbcType=DECIMAL},
+      cumulative_invest = #{record.cumulativeInvest,jdbcType=DECIMAL},
+      hzt_invest_sum = #{record.hztInvestSum,jdbcType=DECIMAL},
+      hxf_invest_sum = #{record.hxfInvestSum,jdbcType=DECIMAL},
+      htl_invest_sum = #{record.htlInvestSum,jdbcType=DECIMAL},
+      htj_invest_sum = #{record.htjInvestSum,jdbcType=DECIMAL},
+      rtb_invest_sum = #{record.rtbInvestSum,jdbcType=DECIMAL},
+      hzr_invest_sum = #{record.hzrInvestSum,jdbcType=DECIMAL},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      register_attr_count = #{record.registerAttrCount,jdbcType=DECIMAL},
+      account_number_ios = #{record.accountNumberIos,jdbcType=INTEGER},
+      account_number_pc = #{record.accountNumberPc,jdbcType=INTEGER},
+      account_number_android = #{record.accountNumberAndroid,jdbcType=INTEGER},
+      account_number_wechat = #{record.accountNumberWechat,jdbcType=INTEGER},
+      tender_number_android = #{record.tenderNumberAndroid,jdbcType=INTEGER},
+      tender_number_ios = #{record.tenderNumberIos,jdbcType=INTEGER},
+      tender_number_pc = #{record.tenderNumberPc,jdbcType=INTEGER},
+      tender_number_wechat = #{record.tenderNumberWechat,jdbcType=INTEGER},
+      cumulative_attr_charge = #{record.cumulativeAttrCharge,jdbcType=DECIMAL},
+      open_account_attr_count = #{record.openAccountAttrCount,jdbcType=INTEGER},
+      invest_attr_number = #{record.investAttrNumber,jdbcType=INTEGER},
+      cumulative_attr_invest = #{record.cumulativeAttrInvest,jdbcType=DECIMAL}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.AppChannelStatistics" >
+    update hyjf_app_channel_statistics
+    <set >
+      <if test="sourceId != null" >
+        source_id = #{sourceId,jdbcType=INTEGER},
+      </if>
+      <if test="channelName != null" >
+        channel_name = #{channelName,jdbcType=VARCHAR},
+      </if>
+      <if test="visitCount != null" >
+        visit_count = #{visitCount,jdbcType=DECIMAL},
+      </if>
+      <if test="registerCount != null" >
+        register_count = #{registerCount,jdbcType=DECIMAL},
+      </if>
+      <if test="openAccountCount != null" >
+        open_account_count = #{openAccountCount,jdbcType=DECIMAL},
+      </if>
+      <if test="investNumber != null" >
+        invest_number = #{investNumber,jdbcType=DECIMAL},
+      </if>
+      <if test="cumulativeCharge != null" >
+        cumulative_charge = #{cumulativeCharge,jdbcType=DECIMAL},
+      </if>
+      <if test="cumulativeInvest != null" >
+        cumulative_invest = #{cumulativeInvest,jdbcType=DECIMAL},
+      </if>
+      <if test="hztInvestSum != null" >
+        hzt_invest_sum = #{hztInvestSum,jdbcType=DECIMAL},
+      </if>
+      <if test="hxfInvestSum != null" >
+        hxf_invest_sum = #{hxfInvestSum,jdbcType=DECIMAL},
+      </if>
+      <if test="htlInvestSum != null" >
+        htl_invest_sum = #{htlInvestSum,jdbcType=DECIMAL},
+      </if>
+      <if test="htjInvestSum != null" >
+        htj_invest_sum = #{htjInvestSum,jdbcType=DECIMAL},
+      </if>
+      <if test="rtbInvestSum != null" >
+        rtb_invest_sum = #{rtbInvestSum,jdbcType=DECIMAL},
+      </if>
+      <if test="hzrInvestSum != null" >
+        hzr_invest_sum = #{hzrInvestSum,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="registerAttrCount != null" >
+        register_attr_count = #{registerAttrCount,jdbcType=DECIMAL},
+      </if>
+      <if test="accountNumberIos != null" >
+        account_number_ios = #{accountNumberIos,jdbcType=INTEGER},
+      </if>
+      <if test="accountNumberPc != null" >
+        account_number_pc = #{accountNumberPc,jdbcType=INTEGER},
+      </if>
+      <if test="accountNumberAndroid != null" >
+        account_number_android = #{accountNumberAndroid,jdbcType=INTEGER},
+      </if>
+      <if test="accountNumberWechat != null" >
+        account_number_wechat = #{accountNumberWechat,jdbcType=INTEGER},
+      </if>
+      <if test="tenderNumberAndroid != null" >
+        tender_number_android = #{tenderNumberAndroid,jdbcType=INTEGER},
+      </if>
+      <if test="tenderNumberIos != null" >
+        tender_number_ios = #{tenderNumberIos,jdbcType=INTEGER},
+      </if>
+      <if test="tenderNumberPc != null" >
+        tender_number_pc = #{tenderNumberPc,jdbcType=INTEGER},
+      </if>
+      <if test="tenderNumberWechat != null" >
+        tender_number_wechat = #{tenderNumberWechat,jdbcType=INTEGER},
+      </if>
+      <if test="cumulativeAttrCharge != null" >
+        cumulative_attr_charge = #{cumulativeAttrCharge,jdbcType=DECIMAL},
+      </if>
+      <if test="openAccountAttrCount != null" >
+        open_account_attr_count = #{openAccountAttrCount,jdbcType=INTEGER},
+      </if>
+      <if test="investAttrNumber != null" >
+        invest_attr_number = #{investAttrNumber,jdbcType=INTEGER},
+      </if>
+      <if test="cumulativeAttrInvest != null" >
+        cumulative_attr_invest = #{cumulativeAttrInvest,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.AppChannelStatistics" >
+    update hyjf_app_channel_statistics
+    set source_id = #{sourceId,jdbcType=INTEGER},
+      channel_name = #{channelName,jdbcType=VARCHAR},
+      visit_count = #{visitCount,jdbcType=DECIMAL},
+      register_count = #{registerCount,jdbcType=DECIMAL},
+      open_account_count = #{openAccountCount,jdbcType=DECIMAL},
+      invest_number = #{investNumber,jdbcType=DECIMAL},
+      cumulative_charge = #{cumulativeCharge,jdbcType=DECIMAL},
+      cumulative_invest = #{cumulativeInvest,jdbcType=DECIMAL},
+      hzt_invest_sum = #{hztInvestSum,jdbcType=DECIMAL},
+      hxf_invest_sum = #{hxfInvestSum,jdbcType=DECIMAL},
+      htl_invest_sum = #{htlInvestSum,jdbcType=DECIMAL},
+      htj_invest_sum = #{htjInvestSum,jdbcType=DECIMAL},
+      rtb_invest_sum = #{rtbInvestSum,jdbcType=DECIMAL},
+      hzr_invest_sum = #{hzrInvestSum,jdbcType=DECIMAL},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      register_attr_count = #{registerAttrCount,jdbcType=DECIMAL},
+      account_number_ios = #{accountNumberIos,jdbcType=INTEGER},
+      account_number_pc = #{accountNumberPc,jdbcType=INTEGER},
+      account_number_android = #{accountNumberAndroid,jdbcType=INTEGER},
+      account_number_wechat = #{accountNumberWechat,jdbcType=INTEGER},
+      tender_number_android = #{tenderNumberAndroid,jdbcType=INTEGER},
+      tender_number_ios = #{tenderNumberIos,jdbcType=INTEGER},
+      tender_number_pc = #{tenderNumberPc,jdbcType=INTEGER},
+      tender_number_wechat = #{tenderNumberWechat,jdbcType=INTEGER},
+      cumulative_attr_charge = #{cumulativeAttrCharge,jdbcType=DECIMAL},
+      open_account_attr_count = #{openAccountAttrCount,jdbcType=INTEGER},
+      invest_attr_number = #{investAttrNumber,jdbcType=INTEGER},
+      cumulative_attr_invest = #{cumulativeAttrInvest,jdbcType=DECIMAL}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

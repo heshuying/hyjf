@@ -1,0 +1,30 @@
+package com.hyjf.mybatis.mapper.auto;
+
+import com.hyjf.mybatis.model.auto.ConsumeList;
+import com.hyjf.mybatis.model.auto.ConsumeListExample;
+import java.util.List;
+import org.apache.ibatis.annotations.Param;
+
+public interface ConsumeListMapper {
+    int countByExample(ConsumeListExample example);
+
+    int deleteByExample(ConsumeListExample example);
+
+    int deleteByPrimaryKey(Integer id);
+
+    int insert(ConsumeList record);
+
+    int insertSelective(ConsumeList record);
+
+    List<ConsumeList> selectByExample(ConsumeListExample example);
+
+    ConsumeList selectByPrimaryKey(Integer id);
+
+    int updateByExampleSelective(@Param("record") ConsumeList record, @Param("example") ConsumeListExample example);
+
+    int updateByExample(@Param("record") ConsumeList record, @Param("example") ConsumeListExample example);
+
+    int updateByPrimaryKeySelective(ConsumeList record);
+
+    int updateByPrimaryKey(ConsumeList record);
+}

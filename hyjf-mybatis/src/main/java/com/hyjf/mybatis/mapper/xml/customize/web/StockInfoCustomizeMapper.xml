@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.web.StockInfoCustomizeMapper">
+	<sql id="Where_Clause">
+	    <if test="timeBegin != null and timeBegin != ''">
+			AND f.date &gt;= #{timeBegin}
+		</if>
+		<if test="timeEnd != null and timeEnd != ''">
+			AND f.date &lt;= #{timeEnd}
+		</if>
+		<if test="timeBetween != null and timeBetween == '10'">
+			AND  (f.id% #{timeBetween}= 0 or f.id=(select max(id) from hyjf_stock_info) )
+		</if>
+	</sql>
+	<resultMap id="selectStockInfoMap" type="com.hyjf.mybatis.model.customize.web.StockInfoCustomize">
+		<result column="id" property="id" />
+		<result column="now_price" property="nowPrice" />
+	    <result column="increase" property="increase" />
+	    <result column="decline" property="decline" />
+	    <result column="volume" property="volume" />
+	    <result column="date" property="date" />
+	    <result column="previous_close_price" property="previousClosePrice" />
+	    <result column="day_low" property="dayLow" />
+	    <result column="day_high" property="dayHigh" />
+	    <result column="open_price" property="openPrice" />
+	    <result column="market_cap" property="marketCap" />
+	    <result column="pe_ratio" property="peRatio" />
+	    <result column="eps" property="eps" />
+	</resultMap>
+
+	<select id="queryStockInfos" resultMap="selectStockInfoMap" parameterType="com.hyjf.mybatis.model.customize.web.StockInfoCustomize">
+		select id, now_price, increase, decline, volume, 
+			date, previous_close_price, day_low, day_high, open_price,
+			market_cap, pe_ratio, eps
+		from hyjf_stock_info f
+		where 1=1 
+		<include refid="Where_Clause"/>	
+		order by f.id 
+	</select>
+	
+	<resultMap id="selectStockInfoMap2" type="com.hyjf.mybatis.model.customize.web.StockInfo2Customize">
+		<result column="now_price" property="nowPrice" />
+	    <result column="date" property="date" />
+	    <result column="time" property="time" />
+	</resultMap>
+	<select id="queryStockInfos2" resultMap="selectStockInfoMap2" parameterType="com.hyjf.mybatis.model.customize.web.StockInfoCustomize">
+		select  now_price, FROM_UNIXTIME(date,'%Y/%m/%d %H:%i') as date ,date as time
+		from hyjf_stock_info f
+		where 1=1 
+		<include refid="Where_Clause"/>	
+		order by f.id 
+	</select>
+   	<select id="queryStockInfosForMonthYear" resultMap="selectStockInfoMap2" parameterType="com.hyjf.mybatis.model.customize.web.StockInfoCustomize">
+		SELECT MAX(previous_close_price) as now_price, FROM_UNIXTIME(date,'%Y/%m/%d %H:%i') as date ,date as time
+		from hyjf_stock_info f 
+		where 1=1 
+		<include refid="Where_Clause"/>	
+		GROUP BY FROM_UNIXTIME(f.date,'%Y%m%d')
+		ORDER BY f.id 
+	</select>
+   
+   
+   
+</mapper>

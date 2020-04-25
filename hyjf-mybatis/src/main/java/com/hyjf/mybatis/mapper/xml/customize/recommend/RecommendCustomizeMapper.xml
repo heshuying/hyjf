@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.recommend.RecommendCustomizeMapper">
+	<resultMap id="inviteInfoCustomizeMap" type="com.hyjf.mybatis.model.customize.recommend.InviteInfoCustomize">
+		<result column="recommend_source" property="recommendSource" jdbcType="VARCHAR" />
+		<result column="group_code" property="groupCode" jdbcType="VARCHAR" />
+		<result column="invite_by_user" property="inviteByUser" jdbcType="INTEGER" />
+		<result column="recommend_count" property="recommendCount" jdbcType="INTEGER" />
+		<result column="send_time" property="sendTime" jdbcType="VARCHAR" />
+		<result column="source" property="source" jdbcType="INTEGER" />
+	</resultMap>
+	
+	
+	<select id="getUserRecommendStarPrizeList" resultMap="inviteInfoCustomizeMap" parameterType="java.util.Map">
+	    SELECT
+			hu.username invite_by_user,
+			hii.recommend_count recommend_count,
+			CASE hii.recommend_source
+		WHEN 1 THEN
+			'注册开户'
+		WHEN 2 THEN
+			'有效邀请'
+		WHEN 3 THEN
+			'三次有效邀请赠送'
+		END AS recommend_source,
+		hii.group_code group_code,
+		hii.recommend_source source,
+		 FROM_UNIXTIME(hii.send_time,'%Y/%m/%d %H:%i') send_time
+		FROM
+			hyjf_invite_info hii
+		LEFT JOIN huiyingdai_users hu ON hii.invite_by_user = hu.user_id
+		where
+			hii.send_flag = 1
+			AND hii.del_flg = 0
+		    AND invite_user = #{userId}
+		ORDER BY hii.send_time DESC
+	</select>
+	
+	<resultMap id="inviteRecommendPrizeMap" type="com.hyjf.mybatis.model.customize.recommend.InviteRecommendPrizeCustomize">
+		<result column="prize_count" property="prizeCount" jdbcType="VARCHAR" />
+		<result column="prize_name" property="prizeName" jdbcType="VARCHAR" />
+		<result column="add_time" property="addTime" jdbcType="VARCHAR" />
+		<result column="prize_kind" property="prizeKind" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="getUserRecommendStarUsedPrizeList" resultMap="inviteRecommendPrizeMap" parameterType="java.util.Map">
+		SELECT
+			hirp.used_recommend_count prize_count,
+			hipc.prize_name prize_name,
+			FROM_UNIXTIME(
+				hirp.add_time,
+				'%Y/%m/%d %H:%i'
+			) add_time,
+			CASE hirp.prize_kind
+		WHEN 1 THEN
+			'奖品兑换'
+		WHEN 2 THEN
+			'幸运抽奖'
+		END AS prize_kind
+		FROM
+			hyjf_invite_recommend_prize hirp
+		LEFT JOIN (
+			SELECT
+				conf.prize_group_code prize_group_code,
+				conf.prize_name prize_name
+			FROM
+				hyjf_invite_prize_conf conf
+			GROUP BY
+				prize_group_code
+		) hipc ON hirp.prize_group = hipc.prize_group_code
+		WHERE
+			hirp.user_id = #{userId}
+		ORDER BY
+			hirp.add_time DESC
+	</select>
+	
+	<select id="getInviteUserName" resultType="java.lang.String" parameterType="java.util.Map">
+	    SELECT
+			hu.username
+		FROM
+			hyjf_invite_info hii
+		INNER JOIN huiyingdai_users hu ON hii.invite_by_user = hu.user_id
+		WHERE
+			invite_user = #{userId}
+		AND group_code = #{groupCode}
+	</select>
+	
+	
+	
+</mapper>

@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.StockInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.StockInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="now_price" property="nowPrice" jdbcType="DECIMAL" />
+    <result column="increase" property="increase" jdbcType="DECIMAL" />
+    <result column="decline" property="decline" jdbcType="DECIMAL" />
+    <result column="volume" property="volume" jdbcType="DECIMAL" />
+    <result column="date" property="date" jdbcType="INTEGER" />
+    <result column="previous_close_price" property="previousClosePrice" jdbcType="DECIMAL" />
+    <result column="day_low" property="dayLow" jdbcType="DECIMAL" />
+    <result column="day_high" property="dayHigh" jdbcType="DECIMAL" />
+    <result column="open_price" property="openPrice" jdbcType="DECIMAL" />
+    <result column="market_cap" property="marketCap" jdbcType="DECIMAL" />
+    <result column="pe_ratio" property="peRatio" jdbcType="DECIMAL" />
+    <result column="eps" property="eps" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, now_price, increase, decline, volume, `date`, previous_close_price, day_low, 
+    day_high, open_price, market_cap, pe_ratio, eps
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.StockInfoExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_stock_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_stock_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_stock_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.StockInfoExample" >
+    delete from hyjf_stock_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.StockInfo" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_stock_info (now_price, increase, decline, 
+      volume, `date`, previous_close_price, 
+      day_low, day_high, open_price, 
+      market_cap, pe_ratio, eps
+      )
+    values (#{nowPrice,jdbcType=DECIMAL}, #{increase,jdbcType=DECIMAL}, #{decline,jdbcType=DECIMAL}, 
+      #{volume,jdbcType=DECIMAL}, #{date,jdbcType=INTEGER}, #{previousClosePrice,jdbcType=DECIMAL}, 
+      #{dayLow,jdbcType=DECIMAL}, #{dayHigh,jdbcType=DECIMAL}, #{openPrice,jdbcType=DECIMAL}, 
+      #{marketCap,jdbcType=DECIMAL}, #{peRatio,jdbcType=DECIMAL}, #{eps,jdbcType=DECIMAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.StockInfo" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_stock_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="nowPrice != null" >
+        now_price,
+      </if>
+      <if test="increase != null" >
+        increase,
+      </if>
+      <if test="decline != null" >
+        decline,
+      </if>
+      <if test="volume != null" >
+        volume,
+      </if>
+      <if test="date != null" >
+        `date`,
+      </if>
+      <if test="previousClosePrice != null" >
+        previous_close_price,
+      </if>
+      <if test="dayLow != null" >
+        day_low,
+      </if>
+      <if test="dayHigh != null" >
+        day_high,
+      </if>
+      <if test="openPrice != null" >
+        open_price,
+      </if>
+      <if test="marketCap != null" >
+        market_cap,
+      </if>
+      <if test="peRatio != null" >
+        pe_ratio,
+      </if>
+      <if test="eps != null" >
+        eps,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="nowPrice != null" >
+        #{nowPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="increase != null" >
+        #{increase,jdbcType=DECIMAL},
+      </if>
+      <if test="decline != null" >
+        #{decline,jdbcType=DECIMAL},
+      </if>
+      <if test="volume != null" >
+        #{volume,jdbcType=DECIMAL},
+      </if>
+      <if test="date != null" >
+        #{date,jdbcType=INTEGER},
+      </if>
+      <if test="previousClosePrice != null" >
+        #{previousClosePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="dayLow != null" >
+        #{dayLow,jdbcType=DECIMAL},
+      </if>
+      <if test="dayHigh != null" >
+        #{dayHigh,jdbcType=DECIMAL},
+      </if>
+      <if test="openPrice != null" >
+        #{openPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="marketCap != null" >
+        #{marketCap,jdbcType=DECIMAL},
+      </if>
+      <if test="peRatio != null" >
+        #{peRatio,jdbcType=DECIMAL},
+      </if>
+      <if test="eps != null" >
+        #{eps,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.StockInfoExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_stock_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_stock_info
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.nowPrice != null" >
+        now_price = #{record.nowPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="record.increase != null" >
+        increase = #{record.increase,jdbcType=DECIMAL},
+      </if>
+      <if test="record.decline != null" >
+        decline = #{record.decline,jdbcType=DECIMAL},
+      </if>
+      <if test="record.volume != null" >
+        volume = #{record.volume,jdbcType=DECIMAL},
+      </if>
+      <if test="record.date != null" >
+        `date` = #{record.date,jdbcType=INTEGER},
+      </if>
+      <if test="record.previousClosePrice != null" >
+        previous_close_price = #{record.previousClosePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="record.dayLow != null" >
+        day_low = #{record.dayLow,jdbcType=DECIMAL},
+      </if>
+      <if test="record.dayHigh != null" >
+        day_high = #{record.dayHigh,jdbcType=DECIMAL},
+      </if>
+      <if test="record.openPrice != null" >
+        open_price = #{record.openPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="record.marketCap != null" >
+        market_cap = #{record.marketCap,jdbcType=DECIMAL},
+      </if>
+      <if test="record.peRatio != null" >
+        pe_ratio = #{record.peRatio,jdbcType=DECIMAL},
+      </if>
+      <if test="record.eps != null" >
+        eps = #{record.eps,jdbcType=DECIMAL},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_stock_info
+    set id = #{record.id,jdbcType=INTEGER},
+      now_price = #{record.nowPrice,jdbcType=DECIMAL},
+      increase = #{record.increase,jdbcType=DECIMAL},
+      decline = #{record.decline,jdbcType=DECIMAL},
+      volume = #{record.volume,jdbcType=DECIMAL},
+      `date` = #{record.date,jdbcType=INTEGER},
+      previous_close_price = #{record.previousClosePrice,jdbcType=DECIMAL},
+      day_low = #{record.dayLow,jdbcType=DECIMAL},
+      day_high = #{record.dayHigh,jdbcType=DECIMAL},
+      open_price = #{record.openPrice,jdbcType=DECIMAL},
+      market_cap = #{record.marketCap,jdbcType=DECIMAL},
+      pe_ratio = #{record.peRatio,jdbcType=DECIMAL},
+      eps = #{record.eps,jdbcType=DECIMAL}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.StockInfo" >
+    update hyjf_stock_info
+    <set >
+      <if test="nowPrice != null" >
+        now_price = #{nowPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="increase != null" >
+        increase = #{increase,jdbcType=DECIMAL},
+      </if>
+      <if test="decline != null" >
+        decline = #{decline,jdbcType=DECIMAL},
+      </if>
+      <if test="volume != null" >
+        volume = #{volume,jdbcType=DECIMAL},
+      </if>
+      <if test="date != null" >
+        `date` = #{date,jdbcType=INTEGER},
+      </if>
+      <if test="previousClosePrice != null" >
+        previous_close_price = #{previousClosePrice,jdbcType=DECIMAL},
+      </if>
+      <if test="dayLow != null" >
+        day_low = #{dayLow,jdbcType=DECIMAL},
+      </if>
+      <if test="dayHigh != null" >
+        day_high = #{dayHigh,jdbcType=DECIMAL},
+      </if>
+      <if test="openPrice != null" >
+        open_price = #{openPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="marketCap != null" >
+        market_cap = #{marketCap,jdbcType=DECIMAL},
+      </if>
+      <if test="peRatio != null" >
+        pe_ratio = #{peRatio,jdbcType=DECIMAL},
+      </if>
+      <if test="eps != null" >
+        eps = #{eps,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.StockInfo" >
+    update hyjf_stock_info
+    set now_price = #{nowPrice,jdbcType=DECIMAL},
+      increase = #{increase,jdbcType=DECIMAL},
+      decline = #{decline,jdbcType=DECIMAL},
+      volume = #{volume,jdbcType=DECIMAL},
+      `date` = #{date,jdbcType=INTEGER},
+      previous_close_price = #{previousClosePrice,jdbcType=DECIMAL},
+      day_low = #{dayLow,jdbcType=DECIMAL},
+      day_high = #{dayHigh,jdbcType=DECIMAL},
+      open_price = #{openPrice,jdbcType=DECIMAL},
+      market_cap = #{marketCap,jdbcType=DECIMAL},
+      pe_ratio = #{peRatio,jdbcType=DECIMAL},
+      eps = #{eps,jdbcType=DECIMAL}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,37 @@
+*{margin:0;padding: 0;}
+
+.spring .bg1{background: url(../images/spring_01.png);height:366px;}
+.spring .bg2{background: url(../images/spring_02.png);height:338px;}
+.spring .bg3{background: url(../images/spring_03.png);height:182px;}
+.spring .bg4{background: url(../images/spring_04.png);height:424px;}
+.spring .bg5{background: url(../images/spring_05.png);height:216px;}
+.spring .bg6{background: url(../images/spring_06.png);height:330px;}
+.spring .bg7{background: url(../images/spring_07.png);height:378px;}
+.spring .bg8{background: url(../images/spring_08.png);height:1115px;}
+.spring .bg9{background: url(../images/spring_09.png);height:169px;}
+.spring .bg10{background: url(../images/spring_10.png);height:246px;}
+.spring .bg11{background: url(../images/spring_11.png);height:141px;}
+.spring .bg1,.spring .bg2,.spring .bg3,.spring .bg4,.spring .bg5,.spring .bg6,.spring .bg7,.spring .bg8,.spring .bg9,.spring .bg10,.spring .bg11{min-width: 1300px;background-position: center;}
+.spring .bg8 .content{width:1100px;margin:0px auto;padding:25px 0;}
+.spring .bg10 img{margin:0px auto;display: block;cursor: pointer;}
+.spring .bg10 img:hover{width:500px;}
+
+body{font-family: "微软雅黑";}
+.travel-active>img{display: block;width:100%}
+.travel-active-annonce{color: #541a08;}
+.travel-active-annonce dl dd table{width:100%;text-align: center;}
+.travel-active-annonce dl dd table{border-width:1px 0px 0px 1px;border-color:#541a08;border-style: solid;}
+.travel-active-annonce dl dd table td{border-width:0px 1px 1px 0px;border-color:#541a08;border-style: solid;}
+.travel-go-invest img{margin:0 auto;display: block;}
+.travel-go-invest {background:#edd79e ;width:100%;}
+.bottom-message{width:100%;color:#ddb35a;text-align: center;background: #160703;}
+.travel-active-annonce dl{padding:5px 0}
+
+.travel-active-annonce dl dd table{margin-top:10px}
+.travel-active-annonce dl dt{font-size: 20px;line-height: 50px;font-weight: 800;letter-spacing: 1px;}
+.travel-active-annonce dl dd{font-size: 18px;line-height: 28px;word-break: break-word;}
+.travel-table-title{font-size:16px;font-weight:600;padding:10px 0}
+.travel-phone{font-size: 24px;font-weight:800}
+.bottom-message{height:65px;line-height:65px;font-size: 20px;}
+.travel-go-invest{padding-bottom: 50px;}
+.travel-go-invest img{width:280px}

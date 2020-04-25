@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.TenderMonthInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.TenderMonthInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="tender_money" property="tenderMoney" jdbcType="DECIMAL" />
+    <result column="tender_type" property="tenderType" jdbcType="INTEGER" />
+    <result column="tender_time" property="tenderTime" jdbcType="VARCHAR" />
+    <result column="addtime" property="addtime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, tender_money, tender_type, tender_time, addtime
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.TenderMonthInfoExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_tender_monthinfo
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_tender_monthinfo
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_tender_monthinfo
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.TenderMonthInfoExample" >
+    delete from hyjf_tender_monthinfo
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.TenderMonthInfo" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_tender_monthinfo (tender_money, tender_type, tender_time, 
+      addtime)
+    values (#{tenderMoney,jdbcType=DECIMAL}, #{tenderType,jdbcType=INTEGER}, #{tenderTime,jdbcType=VARCHAR}, 
+      #{addtime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.TenderMonthInfo" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_tender_monthinfo
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="tenderMoney != null" >
+        tender_money,
+      </if>
+      <if test="tenderType != null" >
+        tender_type,
+      </if>
+      <if test="tenderTime != null" >
+        tender_time,
+      </if>
+      <if test="addtime != null" >
+        addtime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="tenderMoney != null" >
+        #{tenderMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="tenderType != null" >
+        #{tenderType,jdbcType=INTEGER},
+      </if>
+      <if test="tenderTime != null" >
+        #{tenderTime,jdbcType=VARCHAR},
+      </if>
+      <if test="addtime != null" >
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.TenderMonthInfoExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_tender_monthinfo
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_tender_monthinfo
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.tenderMoney != null" >
+        tender_money = #{record.tenderMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="record.tenderType != null" >
+        tender_type = #{record.tenderType,jdbcType=INTEGER},
+      </if>
+      <if test="record.tenderTime != null" >
+        tender_time = #{record.tenderTime,jdbcType=VARCHAR},
+      </if>
+      <if test="record.addtime != null" >
+        addtime = #{record.addtime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_tender_monthinfo
+    set id = #{record.id,jdbcType=INTEGER},
+      tender_money = #{record.tenderMoney,jdbcType=DECIMAL},
+      tender_type = #{record.tenderType,jdbcType=INTEGER},
+      tender_time = #{record.tenderTime,jdbcType=VARCHAR},
+      addtime = #{record.addtime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.TenderMonthInfo" >
+    update hyjf_tender_monthinfo
+    <set >
+      <if test="tenderMoney != null" >
+        tender_money = #{tenderMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="tenderType != null" >
+        tender_type = #{tenderType,jdbcType=INTEGER},
+      </if>
+      <if test="tenderTime != null" >
+        tender_time = #{tenderTime,jdbcType=VARCHAR},
+      </if>
+      <if test="addtime != null" >
+        addtime = #{addtime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.TenderMonthInfo" >
+    update hyjf_tender_monthinfo
+    set tender_money = #{tenderMoney,jdbcType=DECIMAL},
+      tender_type = #{tenderType,jdbcType=INTEGER},
+      tender_time = #{tenderTime,jdbcType=VARCHAR},
+      addtime = #{addtime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

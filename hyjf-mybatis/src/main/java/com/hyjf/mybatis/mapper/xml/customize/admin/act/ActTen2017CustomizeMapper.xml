@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.act.ActTen2017CustomizeMapper">
+	<resultMap id="tenderReturnMap" type="com.hyjf.mybatis.model.customize.admin.act.ActTen2017Customize">
+		<id column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="username" property="userName" jdbcType="VARCHAR" />
+		<result column="truename" property="trueName" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="tender_account" property="tenderAccount"/>
+		<result column="tender_time" property="tenderTime" />
+		<result column="reward_name" property="rewardName" />
+	</resultMap>
+	<select id="selectTenderReturnList" resultMap="tenderReturnMap" parameterType="map">
+	SELECT * FROM(
+		SELECT
+			t.user_id,
+			t.username,
+			t.truename,
+			t.mobile,
+			FORMAT(MAX(t.tender_account), 2) AS tender_account,
+			FROM_UNIXTIME(
+				MAX(t.tender_time),
+				'%Y-%m-%d %H:%i:%s'
+			) AS tender_time,
+			CASE
+		WHEN MAX(t.tender_account) >= 1000
+		AND MAX(t.tender_account) <![CDATA[<]]> 2000 THEN
+			'10元代金券'
+		WHEN MAX(t.tender_account) >= 2000
+		AND MAX(t.tender_account) <![CDATA[<]]> 4000 THEN
+			'20元代金券'
+		WHEN MAX(t.tender_account) >= 4000
+		AND MAX(t.tender_account) <![CDATA[<]]> 6000 THEN
+			'40元代金券'
+		WHEN MAX(t.tender_account) >= 6000
+		AND MAX(t.tender_account) <![CDATA[<]]> 8000 THEN
+			'60元代金券'
+		WHEN MAX(t.tender_account) >= 8000
+		AND MAX(t.tender_account) <![CDATA[<]]> 10000 THEN
+			'80元代金券'
+		WHEN MAX(t.tender_account) >= 10000 THEN
+			'100元代金券'
+		ELSE
+			''
+		END AS reward_name
+		FROM
+			(
+				SELECT
+					hu.user_id,
+					hu.username,
+					hui.truename,
+					hu.mobile,
+					hydb.borrow_period,
+					hydb.borrow_style,
+					hbt.account AS tender_account_org,
+					hbt.account * hydb.borrow_period /
+				IF (
+					hydb.borrow_style = 'endday',
+					365,
+					12
+				) AS tender_account,
+				hbt.addtime AS tender_time
+			FROM
+				huiyingdai_borrow_tender hbt
+			JOIN huiyingdai_borrow hydb ON hydb.borrow_nid = hbt.borrow_nid
+			JOIN huiyingdai_users hu ON hbt.user_id = hu.user_id
+			JOIN huiyingdai_users_info hui ON hui.user_id = hbt.user_id
+				WHERE hbt.addtime >= #{startTime} AND  hbt.addtime <![CDATA[<=]]> #{endTime}
+				<if test="usernameSrch != null and usernameSrch !=''" >
+		    		AND hu.username = #{usernameSrch}
+		    	</if>	
+		    	<if test="mobileSrch != null and mobileSrch !=''" >
+		    		AND hu.mobile = #{mobileSrch}
+		    	</if>
+		    	AND hydb.project_type != 4
+			) t
+			GROUP BY t.user_id 
+			ORDER BY MAX(t.tender_time) DESC
+		) tt
+		<if test="couponNameSrch != null and couponNameSrch !=''" >
+    		WHERE tt.reward_name = #{couponNameSrch}
+    		ORDER BY tt.tender_time DESC
+    	</if>
+		<if test="limitStart != null and limitStart >= 0 and limitEnd !=null and limitEnd >= 0" >
+    		LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+    	</if>	
+	</select>
+	
+	<select id="selectTenderReturnListCount" resultType="java.lang.Integer" parameterType="Map">
+		SELECT
+			count(tt.user_id)
+		FROM
+			(
+				SELECT
+					t.user_id,
+					t.username,
+					t.truename,
+					t.mobile,
+					FORMAT(MAX(t.tender_account), 2) AS tender_account,
+					FROM_UNIXTIME(
+						MAX(t.tender_time),
+						'%Y-%m-%d %H:%i:%s'
+					) AS tender_time,
+					CASE
+				WHEN MAX(t.tender_account) >= 1000
+				AND MAX(t.tender_account) <![CDATA[<]]> 2000 THEN
+					'10元代金券'
+				WHEN MAX(t.tender_account) >= 2000
+				AND MAX(t.tender_account) <![CDATA[<]]> 4000 THEN
+					'20元代金券'
+				WHEN MAX(t.tender_account) >= 4000
+				AND MAX(t.tender_account) <![CDATA[<]]> 6000 THEN
+					'40元代金券'
+				WHEN MAX(t.tender_account) >= 6000
+				AND MAX(t.tender_account) <![CDATA[<]]> 8000 THEN
+					'60元代金券'
+				WHEN MAX(t.tender_account) >= 8000
+				AND MAX(t.tender_account) <![CDATA[<]]> 10000 THEN
+					'80元代金券'
+				WHEN MAX(t.tender_account) >= 10000 THEN
+					'100元代金券'
+				ELSE
+					''
+				END AS reward_name
+				FROM
+					(
+						SELECT
+							hu.user_id,
+							hu.username,
+							hui.truename,
+							hu.mobile,
+							hydb.borrow_period,
+							hydb.borrow_style,
+							hbt.account AS tender_account_org,
+							hbt.account * hydb.borrow_period /
+						IF (
+							hydb.borrow_style = 'endday',
+							365,
+							12
+						) AS tender_account,
+						hbt.addtime AS tender_time
+					FROM
+						huiyingdai_borrow_tender hbt
+					JOIN huiyingdai_borrow hydb ON hydb.borrow_nid = hbt.borrow_nid
+					JOIN huiyingdai_users hu ON hbt.user_id = hu.user_id
+					JOIN huiyingdai_users_info hui ON hui.user_id = hbt.user_id
+						WHERE hbt.addtime >= #{startTime} AND  hbt.addtime <![CDATA[<=]]> #{endTime}
+						<if test="usernameSrch != null and usernameSrch !=''" >
+				    		AND hu.username = #{usernameSrch}
+				    	</if>	
+				    	<if test="mobileSrch != null and mobileSrch !=''" >
+				    		AND hu.mobile = #{mobileSrch}
+				    	</if>
+				    	AND hydb.project_type != 4
+					) t
+					GROUP BY t.user_id
+			) tt
+			<if test="couponNameSrch != null and couponNameSrch !=''" >
+	    		WHERE tt.reward_name = #{couponNameSrch}
+	    	</if>
+	</select>
+	
+	<select id="selectTenderReturnDetail" resultMap="tenderReturnMap" parameterType="map">
+		SELECT
+			hu.user_id,
+			hu.username,
+			hui.truename,
+			hu.mobile,
+			FORMAT(hbt.account*hydb.borrow_period/IF(hydb.borrow_style='endday',365,12),2) AS tender_account,
+			FROM_UNIXTIME(
+				hbt.addtime,
+				'%Y-%m-%d %H:%i:%s'
+			) AS tender_time
+		FROM
+			huiyingdai_borrow_tender hbt
+		JOIN huiyingdai_borrow hydb ON hydb.borrow_nid = hbt.borrow_nid
+		JOIN huiyingdai_users hu ON hbt.user_id = hu.user_id
+		JOIN huiyingdai_users_info hui ON hui.user_id = hbt.user_id	
+		WHERE hbt.user_id = #{userId} AND hbt.addtime >= #{startTime} AND  hbt.addtime <![CDATA[<=]]> #{endTime}
+		AND hydb.project_type != 4
+		ORDER BY hbt.id DESC
+		<if test="limitStart != null and limitStart >= 0 and limitEnd !=null and limitEnd >= 0" >
+    		LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+    	</if>
+	</select>
+	
+	<select id="selectTenderReturnDetailCount" resultType="java.lang.Integer" parameterType="Map">
+		SELECT
+			count(hbt.id)
+		FROM
+			huiyingdai_borrow_tender hbt
+		JOIN huiyingdai_borrow hydb ON hydb.borrow_nid = hbt.borrow_nid
+		JOIN huiyingdai_users hu ON hbt.user_id = hu.user_id
+		JOIN huiyingdai_users_info hui ON hui.user_id = hbt.user_id	
+		WHERE hbt.user_id = #{userId} AND hbt.addtime >= #{startTime} AND  hbt.addtime <![CDATA[<=]]> #{endTime}
+		AND hydb.project_type != 4
+	</select>
+	
+</mapper>

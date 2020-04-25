@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-4.1.xsd      
+    http://www.springframework.org/schema/util 
+    http://www.springframework.org/schema/util/spring-util-4.1.xsd
+	http://www.springframework.org/schema/cache 
+	http://www.springframework.org/schema/cache/spring-cache-4.1.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
+	
+	<!-- service切面查询方法拦截 -->
+	<aop:config>
+		<aop:pointcut
+			expression="execution(* com.hyjf..*Service.query*(..))"
+			id="readBeforeQuery" />
+		<aop:advisor advice-ref="beforeRead" pointcut-ref="readBeforeQuery" order="0"/>
+	</aop:config>
+	<aop:config>
+		<aop:pointcut
+			expression="execution(* com.hyjf..*Service.query*(..))"
+			id="readAfterQuery" />
+		<aop:advisor advice-ref="afterRead" pointcut-ref="readAfterQuery" order="2"/>
+		<aop:aspect order="3" ref="incidentThrowsAdvice">
+			<aop:after-throwing pointcut-ref="readAfterQuery"
+				method="afterThrowing" throwing="e" />
+		</aop:aspect>
+	</aop:config>
+	
+	<aop:config>
+		<aop:pointcut
+			expression="execution(* com.hyjf..*Service.get*(..))"
+			id="readBeforeGet" />
+		<aop:advisor advice-ref="beforeRead" pointcut-ref="readBeforeGet" order="0"/>
+	</aop:config>
+	<aop:config>
+		<aop:pointcut
+			expression="execution(* com.hyjf..*Service.get*(..))"
+			id="readAfterGet" />
+		<aop:advisor advice-ref="afterRead" pointcut-ref="readAfterGet" order="2"/>
+		<aop:aspect order="3" ref="incidentThrowsAdvice">
+			<aop:after-throwing pointcut-ref="readAfterGet"
+				method="afterThrowing" throwing="e" />
+		</aop:aspect>
+	</aop:config>
+	
+	<aop:config>
+		<aop:pointcut
+			expression="execution(* com.hyjf..*Service.select*(..))"
+			id="readBeforeSelect" />
+		<aop:advisor advice-ref="beforeRead" pointcut-ref="readBeforeSelect" order="0"/>
+	</aop:config>
+	<aop:config>
+		<aop:pointcut
+			expression="execution(* com.hyjf..*Service.select*(..))"
+			id="readAfterSelect" />
+		<aop:advisor advice-ref="afterRead" pointcut-ref="readAfterSelect" order="2"/>
+		<aop:aspect order="3" ref="incidentThrowsAdvice">
+			<aop:after-throwing pointcut-ref="readAfterSelect"
+				method="afterThrowing" throwing="e" />
+		</aop:aspect>
+	</aop:config>
+	
+	<aop:config>
+		<aop:pointcut
+			expression="execution(* com.hyjf..*Service.count*(..))"
+			id="readBeforeCount" />
+		<aop:advisor advice-ref="beforeRead" pointcut-ref="readBeforeCount" order="0"/>
+	</aop:config>
+	<aop:config>
+		<aop:pointcut
+			expression="execution(* com.hyjf..*Service.count*(..))"
+			id="readAfterCount" />
+		<aop:advisor advice-ref="afterRead" pointcut-ref="readAfterCount" order="2"/>
+		<aop:aspect order="3" ref="incidentThrowsAdvice">
+			<aop:after-throwing pointcut-ref="readAfterCount"
+				method="afterThrowing" throwing="e" />
+		</aop:aspect>
+	</aop:config>
+	
+	<aop:config>
+		<aop:pointcut
+			expression="execution(* com.hyjf..*Service.search*(..))"
+			id="readBeforeCountSearch" />
+		<aop:advisor advice-ref="beforeRead" pointcut-ref="readBeforeCountSearch" order="0"/>
+	</aop:config>
+	<aop:config>
+		<aop:pointcut
+			expression="execution(* com.hyjf..*Service.search*(..))"
+			id="readAfterCountSearch" />
+		<aop:advisor advice-ref="afterRead" pointcut-ref="readAfterCountSearch" order="2"/>
+		<aop:aspect order="3" ref="incidentThrowsAdvice">
+			<aop:after-throwing pointcut-ref="readAfterCountSearch"
+				method="afterThrowing" throwing="e" />
+		</aop:aspect>
+	</aop:config>
+	
+</beans>

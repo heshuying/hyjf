@@ -1,0 +1,1096 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.HalfYearOperationReportMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.HalfYearOperationReport" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="operation_report_id" property="operationReportId" jdbcType="INTEGER" />
+    <result column="cn_name" property="cnName" jdbcType="VARCHAR" />
+    <result column="en_name" property="enName" jdbcType="VARCHAR" />
+    <result column="first_month_amount" property="firstMonthAmount" jdbcType="DECIMAL" />
+    <result column="second_month_amount" property="secondMonthAmount" jdbcType="DECIMAL" />
+    <result column="third_month_amount" property="thirdMonthAmount" jdbcType="DECIMAL" />
+    <result column="fourth_month_amount" property="fourthMonthAmount" jdbcType="DECIMAL" />
+    <result column="fifth_month_amount" property="fifthMonthAmount" jdbcType="DECIMAL" />
+    <result column="sixth_month_amount" property="sixthMonthAmount" jdbcType="DECIMAL" />
+    <result column="half_year_amount" property="halfYearAmount" jdbcType="DECIMAL" />
+    <result column="half_year_profit" property="halfYearProfit" jdbcType="DECIMAL" />
+    <result column="half_year_success_deal" property="halfYearSuccessDeal" jdbcType="INTEGER" />
+    <result column="half_year_recharge_deal" property="halfYearRechargeDeal" jdbcType="INTEGER" />
+    <result column="half_year_recharge_amount" property="halfYearRechargeAmount" jdbcType="DECIMAL" />
+    <result column="half_year_success_month" property="halfYearSuccessMonth" jdbcType="TINYINT" />
+    <result column="half_year_success_month_amount" property="halfYearSuccessMonthAmount" jdbcType="DECIMAL" />
+    <result column="half_year_avg_profit" property="halfYearAvgProfit" jdbcType="DECIMAL" />
+    <result column="half_year_app_deal_num" property="halfYearAppDealNum" jdbcType="INTEGER" />
+    <result column="half_year_app_deal_proportion" property="halfYearAppDealProportion" jdbcType="DECIMAL" />
+    <result column="half_year_wechat_deal_num" property="halfYearWechatDealNum" jdbcType="INTEGER" />
+    <result column="half_year_wechat_deal_proportion" property="halfYearWechatDealProportion" jdbcType="DECIMAL" />
+    <result column="half_year_pc_deal_num" property="halfYearPcDealNum" jdbcType="INTEGER" />
+    <result column="half_year_pc_deal_proportion" property="halfYearPcDealProportion" jdbcType="DECIMAL" />
+    <result column="less_thirty_day_num" property="lessThirtyDayNum" jdbcType="INTEGER" />
+    <result column="less_thirty_day_proportion" property="lessThirtyDayProportion" jdbcType="DECIMAL" />
+    <result column="thirty_day_num" property="thirtyDayNum" jdbcType="INTEGER" />
+    <result column="thirty_day_proportion" property="thirtyDayProportion" jdbcType="DECIMAL" />
+    <result column="one_month_num" property="oneMonthNum" jdbcType="INTEGER" />
+    <result column="one_month_proportion" property="oneMonthProportion" jdbcType="DECIMAL" />
+    <result column="two_month_num" property="twoMonthNum" jdbcType="INTEGER" />
+    <result column="two_month_proportion" property="twoMonthProportion" jdbcType="DECIMAL" />
+    <result column="three_month_num" property="threeMonthNum" jdbcType="INTEGER" />
+    <result column="three_month_proportion" property="threeMonthProportion" jdbcType="DECIMAL" />
+    <result column="four_month_num" property="fourMonthNum" jdbcType="INTEGER" />
+    <result column="four_month_proportion" property="fourMonthProportion" jdbcType="DECIMAL" />
+    <result column="five_month_num" property="fiveMonthNum" jdbcType="INTEGER" />
+    <result column="five_month_proportion" property="fiveMonthProportion" jdbcType="DECIMAL" />
+    <result column="six_month_num" property="sixMonthNum" jdbcType="INTEGER" />
+    <result column="six_month_proportion" property="sixMonthProportion" jdbcType="DECIMAL" />
+    <result column="nine_month_num" property="nineMonthNum" jdbcType="INTEGER" />
+    <result column="nine_month_proportion" property="nineMonthProportion" jdbcType="DECIMAL" />
+    <result column="ten_month_num" property="tenMonthNum" jdbcType="INTEGER" />
+    <result column="ten_month_proportion" property="tenMonthProportion" jdbcType="DECIMAL" />
+    <result column="twelve_month_num" property="twelveMonthNum" jdbcType="INTEGER" />
+    <result column="twelve_month_proportion" property="twelveMonthProportion" jdbcType="DECIMAL" />
+    <result column="fifteen_month_num" property="fifteenMonthNum" jdbcType="INTEGER" />
+    <result column="fifteen_month_proportion" property="fifteenMonthProportion" jdbcType="DECIMAL" />
+    <result column="eighteen_month_num" property="eighteenMonthNum" jdbcType="INTEGER" />
+    <result column="eighteen_month_proportion" property="eighteenMonthProportion" jdbcType="DECIMAL" />
+    <result column="twenty_four_month_num" property="twentyFourMonthNum" jdbcType="INTEGER" />
+    <result column="twenty_four_month_proportion" property="twentyFourMonthProportion" jdbcType="DECIMAL" />
+    <result column="phone_num" property="phoneNum" jdbcType="BIGINT" />
+    <result column="qq_customer_service_num" property="qqCustomerServiceNum" jdbcType="BIGINT" />
+    <result column="wechat_customer_service_num" property="wechatCustomerServiceNum" jdbcType="BIGINT" />
+    <result column="deal_question_num" property="dealQuestionNum" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+    <result column="update_user_id" property="updateUserId" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="INTEGER" />
+    <result column="create_user_id" property="createUserId" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, operation_report_id, cn_name, en_name, first_month_amount, second_month_amount, 
+    third_month_amount, fourth_month_amount, fifth_month_amount, sixth_month_amount, 
+    half_year_amount, half_year_profit, half_year_success_deal, half_year_recharge_deal, 
+    half_year_recharge_amount, half_year_success_month, half_year_success_month_amount, 
+    half_year_avg_profit, half_year_app_deal_num, half_year_app_deal_proportion, half_year_wechat_deal_num, 
+    half_year_wechat_deal_proportion, half_year_pc_deal_num, half_year_pc_deal_proportion, 
+    less_thirty_day_num, less_thirty_day_proportion, thirty_day_num, thirty_day_proportion, 
+    one_month_num, one_month_proportion, two_month_num, two_month_proportion, three_month_num, 
+    three_month_proportion, four_month_num, four_month_proportion, five_month_num, five_month_proportion, 
+    six_month_num, six_month_proportion, nine_month_num, nine_month_proportion, ten_month_num, 
+    ten_month_proportion, twelve_month_num, twelve_month_proportion, fifteen_month_num, 
+    fifteen_month_proportion, eighteen_month_num, eighteen_month_proportion, twenty_four_month_num, 
+    twenty_four_month_proportion, phone_num, qq_customer_service_num, wechat_customer_service_num, 
+    deal_question_num, update_time, update_user_id, create_time, create_user_id
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.HalfYearOperationReportExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_half_year_operation_report
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_half_year_operation_report
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_half_year_operation_report
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.HalfYearOperationReportExample" >
+    delete from hyjf_half_year_operation_report
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.HalfYearOperationReport" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_half_year_operation_report (operation_report_id, cn_name, en_name, 
+      first_month_amount, second_month_amount, third_month_amount, 
+      fourth_month_amount, fifth_month_amount, sixth_month_amount, 
+      half_year_amount, half_year_profit, half_year_success_deal, 
+      half_year_recharge_deal, half_year_recharge_amount, 
+      half_year_success_month, half_year_success_month_amount, 
+      half_year_avg_profit, half_year_app_deal_num, 
+      half_year_app_deal_proportion, half_year_wechat_deal_num, 
+      half_year_wechat_deal_proportion, half_year_pc_deal_num, 
+      half_year_pc_deal_proportion, less_thirty_day_num, 
+      less_thirty_day_proportion, thirty_day_num, 
+      thirty_day_proportion, one_month_num, one_month_proportion, 
+      two_month_num, two_month_proportion, three_month_num, 
+      three_month_proportion, four_month_num, four_month_proportion, 
+      five_month_num, five_month_proportion, six_month_num, 
+      six_month_proportion, nine_month_num, nine_month_proportion, 
+      ten_month_num, ten_month_proportion, twelve_month_num, 
+      twelve_month_proportion, fifteen_month_num, 
+      fifteen_month_proportion, eighteen_month_num, 
+      eighteen_month_proportion, twenty_four_month_num, 
+      twenty_four_month_proportion, phone_num, qq_customer_service_num, 
+      wechat_customer_service_num, deal_question_num, 
+      update_time, update_user_id, create_time, 
+      create_user_id)
+    values (#{operationReportId,jdbcType=INTEGER}, #{cnName,jdbcType=VARCHAR}, #{enName,jdbcType=VARCHAR}, 
+      #{firstMonthAmount,jdbcType=DECIMAL}, #{secondMonthAmount,jdbcType=DECIMAL}, #{thirdMonthAmount,jdbcType=DECIMAL}, 
+      #{fourthMonthAmount,jdbcType=DECIMAL}, #{fifthMonthAmount,jdbcType=DECIMAL}, #{sixthMonthAmount,jdbcType=DECIMAL}, 
+      #{halfYearAmount,jdbcType=DECIMAL}, #{halfYearProfit,jdbcType=DECIMAL}, #{halfYearSuccessDeal,jdbcType=INTEGER}, 
+      #{halfYearRechargeDeal,jdbcType=INTEGER}, #{halfYearRechargeAmount,jdbcType=DECIMAL}, 
+      #{halfYearSuccessMonth,jdbcType=TINYINT}, #{halfYearSuccessMonthAmount,jdbcType=DECIMAL}, 
+      #{halfYearAvgProfit,jdbcType=DECIMAL}, #{halfYearAppDealNum,jdbcType=INTEGER}, 
+      #{halfYearAppDealProportion,jdbcType=DECIMAL}, #{halfYearWechatDealNum,jdbcType=INTEGER}, 
+      #{halfYearWechatDealProportion,jdbcType=DECIMAL}, #{halfYearPcDealNum,jdbcType=INTEGER}, 
+      #{halfYearPcDealProportion,jdbcType=DECIMAL}, #{lessThirtyDayNum,jdbcType=INTEGER}, 
+      #{lessThirtyDayProportion,jdbcType=DECIMAL}, #{thirtyDayNum,jdbcType=INTEGER}, 
+      #{thirtyDayProportion,jdbcType=DECIMAL}, #{oneMonthNum,jdbcType=INTEGER}, #{oneMonthProportion,jdbcType=DECIMAL}, 
+      #{twoMonthNum,jdbcType=INTEGER}, #{twoMonthProportion,jdbcType=DECIMAL}, #{threeMonthNum,jdbcType=INTEGER}, 
+      #{threeMonthProportion,jdbcType=DECIMAL}, #{fourMonthNum,jdbcType=INTEGER}, #{fourMonthProportion,jdbcType=DECIMAL}, 
+      #{fiveMonthNum,jdbcType=INTEGER}, #{fiveMonthProportion,jdbcType=DECIMAL}, #{sixMonthNum,jdbcType=INTEGER}, 
+      #{sixMonthProportion,jdbcType=DECIMAL}, #{nineMonthNum,jdbcType=INTEGER}, #{nineMonthProportion,jdbcType=DECIMAL}, 
+      #{tenMonthNum,jdbcType=INTEGER}, #{tenMonthProportion,jdbcType=DECIMAL}, #{twelveMonthNum,jdbcType=INTEGER}, 
+      #{twelveMonthProportion,jdbcType=DECIMAL}, #{fifteenMonthNum,jdbcType=INTEGER}, 
+      #{fifteenMonthProportion,jdbcType=DECIMAL}, #{eighteenMonthNum,jdbcType=INTEGER}, 
+      #{eighteenMonthProportion,jdbcType=DECIMAL}, #{twentyFourMonthNum,jdbcType=INTEGER}, 
+      #{twentyFourMonthProportion,jdbcType=DECIMAL}, #{phoneNum,jdbcType=BIGINT}, #{qqCustomerServiceNum,jdbcType=BIGINT}, 
+      #{wechatCustomerServiceNum,jdbcType=BIGINT}, #{dealQuestionNum,jdbcType=INTEGER}, 
+      #{updateTime,jdbcType=INTEGER}, #{updateUserId,jdbcType=INTEGER}, #{createTime,jdbcType=INTEGER}, 
+      #{createUserId,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.HalfYearOperationReport" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_half_year_operation_report
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="operationReportId != null" >
+        operation_report_id,
+      </if>
+      <if test="cnName != null" >
+        cn_name,
+      </if>
+      <if test="enName != null" >
+        en_name,
+      </if>
+      <if test="firstMonthAmount != null" >
+        first_month_amount,
+      </if>
+      <if test="secondMonthAmount != null" >
+        second_month_amount,
+      </if>
+      <if test="thirdMonthAmount != null" >
+        third_month_amount,
+      </if>
+      <if test="fourthMonthAmount != null" >
+        fourth_month_amount,
+      </if>
+      <if test="fifthMonthAmount != null" >
+        fifth_month_amount,
+      </if>
+      <if test="sixthMonthAmount != null" >
+        sixth_month_amount,
+      </if>
+      <if test="halfYearAmount != null" >
+        half_year_amount,
+      </if>
+      <if test="halfYearProfit != null" >
+        half_year_profit,
+      </if>
+      <if test="halfYearSuccessDeal != null" >
+        half_year_success_deal,
+      </if>
+      <if test="halfYearRechargeDeal != null" >
+        half_year_recharge_deal,
+      </if>
+      <if test="halfYearRechargeAmount != null" >
+        half_year_recharge_amount,
+      </if>
+      <if test="halfYearSuccessMonth != null" >
+        half_year_success_month,
+      </if>
+      <if test="halfYearSuccessMonthAmount != null" >
+        half_year_success_month_amount,
+      </if>
+      <if test="halfYearAvgProfit != null" >
+        half_year_avg_profit,
+      </if>
+      <if test="halfYearAppDealNum != null" >
+        half_year_app_deal_num,
+      </if>
+      <if test="halfYearAppDealProportion != null" >
+        half_year_app_deal_proportion,
+      </if>
+      <if test="halfYearWechatDealNum != null" >
+        half_year_wechat_deal_num,
+      </if>
+      <if test="halfYearWechatDealProportion != null" >
+        half_year_wechat_deal_proportion,
+      </if>
+      <if test="halfYearPcDealNum != null" >
+        half_year_pc_deal_num,
+      </if>
+      <if test="halfYearPcDealProportion != null" >
+        half_year_pc_deal_proportion,
+      </if>
+      <if test="lessThirtyDayNum != null" >
+        less_thirty_day_num,
+      </if>
+      <if test="lessThirtyDayProportion != null" >
+        less_thirty_day_proportion,
+      </if>
+      <if test="thirtyDayNum != null" >
+        thirty_day_num,
+      </if>
+      <if test="thirtyDayProportion != null" >
+        thirty_day_proportion,
+      </if>
+      <if test="oneMonthNum != null" >
+        one_month_num,
+      </if>
+      <if test="oneMonthProportion != null" >
+        one_month_proportion,
+      </if>
+      <if test="twoMonthNum != null" >
+        two_month_num,
+      </if>
+      <if test="twoMonthProportion != null" >
+        two_month_proportion,
+      </if>
+      <if test="threeMonthNum != null" >
+        three_month_num,
+      </if>
+      <if test="threeMonthProportion != null" >
+        three_month_proportion,
+      </if>
+      <if test="fourMonthNum != null" >
+        four_month_num,
+      </if>
+      <if test="fourMonthProportion != null" >
+        four_month_proportion,
+      </if>
+      <if test="fiveMonthNum != null" >
+        five_month_num,
+      </if>
+      <if test="fiveMonthProportion != null" >
+        five_month_proportion,
+      </if>
+      <if test="sixMonthNum != null" >
+        six_month_num,
+      </if>
+      <if test="sixMonthProportion != null" >
+        six_month_proportion,
+      </if>
+      <if test="nineMonthNum != null" >
+        nine_month_num,
+      </if>
+      <if test="nineMonthProportion != null" >
+        nine_month_proportion,
+      </if>
+      <if test="tenMonthNum != null" >
+        ten_month_num,
+      </if>
+      <if test="tenMonthProportion != null" >
+        ten_month_proportion,
+      </if>
+      <if test="twelveMonthNum != null" >
+        twelve_month_num,
+      </if>
+      <if test="twelveMonthProportion != null" >
+        twelve_month_proportion,
+      </if>
+      <if test="fifteenMonthNum != null" >
+        fifteen_month_num,
+      </if>
+      <if test="fifteenMonthProportion != null" >
+        fifteen_month_proportion,
+      </if>
+      <if test="eighteenMonthNum != null" >
+        eighteen_month_num,
+      </if>
+      <if test="eighteenMonthProportion != null" >
+        eighteen_month_proportion,
+      </if>
+      <if test="twentyFourMonthNum != null" >
+        twenty_four_month_num,
+      </if>
+      <if test="twentyFourMonthProportion != null" >
+        twenty_four_month_proportion,
+      </if>
+      <if test="phoneNum != null" >
+        phone_num,
+      </if>
+      <if test="qqCustomerServiceNum != null" >
+        qq_customer_service_num,
+      </if>
+      <if test="wechatCustomerServiceNum != null" >
+        wechat_customer_service_num,
+      </if>
+      <if test="dealQuestionNum != null" >
+        deal_question_num,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="operationReportId != null" >
+        #{operationReportId,jdbcType=INTEGER},
+      </if>
+      <if test="cnName != null" >
+        #{cnName,jdbcType=VARCHAR},
+      </if>
+      <if test="enName != null" >
+        #{enName,jdbcType=VARCHAR},
+      </if>
+      <if test="firstMonthAmount != null" >
+        #{firstMonthAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="secondMonthAmount != null" >
+        #{secondMonthAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="thirdMonthAmount != null" >
+        #{thirdMonthAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="fourthMonthAmount != null" >
+        #{fourthMonthAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="fifthMonthAmount != null" >
+        #{fifthMonthAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="sixthMonthAmount != null" >
+        #{sixthMonthAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="halfYearAmount != null" >
+        #{halfYearAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="halfYearProfit != null" >
+        #{halfYearProfit,jdbcType=DECIMAL},
+      </if>
+      <if test="halfYearSuccessDeal != null" >
+        #{halfYearSuccessDeal,jdbcType=INTEGER},
+      </if>
+      <if test="halfYearRechargeDeal != null" >
+        #{halfYearRechargeDeal,jdbcType=INTEGER},
+      </if>
+      <if test="halfYearRechargeAmount != null" >
+        #{halfYearRechargeAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="halfYearSuccessMonth != null" >
+        #{halfYearSuccessMonth,jdbcType=TINYINT},
+      </if>
+      <if test="halfYearSuccessMonthAmount != null" >
+        #{halfYearSuccessMonthAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="halfYearAvgProfit != null" >
+        #{halfYearAvgProfit,jdbcType=DECIMAL},
+      </if>
+      <if test="halfYearAppDealNum != null" >
+        #{halfYearAppDealNum,jdbcType=INTEGER},
+      </if>
+      <if test="halfYearAppDealProportion != null" >
+        #{halfYearAppDealProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="halfYearWechatDealNum != null" >
+        #{halfYearWechatDealNum,jdbcType=INTEGER},
+      </if>
+      <if test="halfYearWechatDealProportion != null" >
+        #{halfYearWechatDealProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="halfYearPcDealNum != null" >
+        #{halfYearPcDealNum,jdbcType=INTEGER},
+      </if>
+      <if test="halfYearPcDealProportion != null" >
+        #{halfYearPcDealProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="lessThirtyDayNum != null" >
+        #{lessThirtyDayNum,jdbcType=INTEGER},
+      </if>
+      <if test="lessThirtyDayProportion != null" >
+        #{lessThirtyDayProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="thirtyDayNum != null" >
+        #{thirtyDayNum,jdbcType=INTEGER},
+      </if>
+      <if test="thirtyDayProportion != null" >
+        #{thirtyDayProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="oneMonthNum != null" >
+        #{oneMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="oneMonthProportion != null" >
+        #{oneMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="twoMonthNum != null" >
+        #{twoMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="twoMonthProportion != null" >
+        #{twoMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="threeMonthNum != null" >
+        #{threeMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="threeMonthProportion != null" >
+        #{threeMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="fourMonthNum != null" >
+        #{fourMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="fourMonthProportion != null" >
+        #{fourMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="fiveMonthNum != null" >
+        #{fiveMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="fiveMonthProportion != null" >
+        #{fiveMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="sixMonthNum != null" >
+        #{sixMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="sixMonthProportion != null" >
+        #{sixMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="nineMonthNum != null" >
+        #{nineMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="nineMonthProportion != null" >
+        #{nineMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="tenMonthNum != null" >
+        #{tenMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="tenMonthProportion != null" >
+        #{tenMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="twelveMonthNum != null" >
+        #{twelveMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="twelveMonthProportion != null" >
+        #{twelveMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="fifteenMonthNum != null" >
+        #{fifteenMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="fifteenMonthProportion != null" >
+        #{fifteenMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="eighteenMonthNum != null" >
+        #{eighteenMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="eighteenMonthProportion != null" >
+        #{eighteenMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="twentyFourMonthNum != null" >
+        #{twentyFourMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="twentyFourMonthProportion != null" >
+        #{twentyFourMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="phoneNum != null" >
+        #{phoneNum,jdbcType=BIGINT},
+      </if>
+      <if test="qqCustomerServiceNum != null" >
+        #{qqCustomerServiceNum,jdbcType=BIGINT},
+      </if>
+      <if test="wechatCustomerServiceNum != null" >
+        #{wechatCustomerServiceNum,jdbcType=BIGINT},
+      </if>
+      <if test="dealQuestionNum != null" >
+        #{dealQuestionNum,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.HalfYearOperationReportExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_half_year_operation_report
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_half_year_operation_report
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.operationReportId != null" >
+        operation_report_id = #{record.operationReportId,jdbcType=INTEGER},
+      </if>
+      <if test="record.cnName != null" >
+        cn_name = #{record.cnName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.enName != null" >
+        en_name = #{record.enName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.firstMonthAmount != null" >
+        first_month_amount = #{record.firstMonthAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.secondMonthAmount != null" >
+        second_month_amount = #{record.secondMonthAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.thirdMonthAmount != null" >
+        third_month_amount = #{record.thirdMonthAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.fourthMonthAmount != null" >
+        fourth_month_amount = #{record.fourthMonthAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.fifthMonthAmount != null" >
+        fifth_month_amount = #{record.fifthMonthAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.sixthMonthAmount != null" >
+        sixth_month_amount = #{record.sixthMonthAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.halfYearAmount != null" >
+        half_year_amount = #{record.halfYearAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.halfYearProfit != null" >
+        half_year_profit = #{record.halfYearProfit,jdbcType=DECIMAL},
+      </if>
+      <if test="record.halfYearSuccessDeal != null" >
+        half_year_success_deal = #{record.halfYearSuccessDeal,jdbcType=INTEGER},
+      </if>
+      <if test="record.halfYearRechargeDeal != null" >
+        half_year_recharge_deal = #{record.halfYearRechargeDeal,jdbcType=INTEGER},
+      </if>
+      <if test="record.halfYearRechargeAmount != null" >
+        half_year_recharge_amount = #{record.halfYearRechargeAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.halfYearSuccessMonth != null" >
+        half_year_success_month = #{record.halfYearSuccessMonth,jdbcType=TINYINT},
+      </if>
+      <if test="record.halfYearSuccessMonthAmount != null" >
+        half_year_success_month_amount = #{record.halfYearSuccessMonthAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.halfYearAvgProfit != null" >
+        half_year_avg_profit = #{record.halfYearAvgProfit,jdbcType=DECIMAL},
+      </if>
+      <if test="record.halfYearAppDealNum != null" >
+        half_year_app_deal_num = #{record.halfYearAppDealNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.halfYearAppDealProportion != null" >
+        half_year_app_deal_proportion = #{record.halfYearAppDealProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.halfYearWechatDealNum != null" >
+        half_year_wechat_deal_num = #{record.halfYearWechatDealNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.halfYearWechatDealProportion != null" >
+        half_year_wechat_deal_proportion = #{record.halfYearWechatDealProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.halfYearPcDealNum != null" >
+        half_year_pc_deal_num = #{record.halfYearPcDealNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.halfYearPcDealProportion != null" >
+        half_year_pc_deal_proportion = #{record.halfYearPcDealProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.lessThirtyDayNum != null" >
+        less_thirty_day_num = #{record.lessThirtyDayNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.lessThirtyDayProportion != null" >
+        less_thirty_day_proportion = #{record.lessThirtyDayProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.thirtyDayNum != null" >
+        thirty_day_num = #{record.thirtyDayNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.thirtyDayProportion != null" >
+        thirty_day_proportion = #{record.thirtyDayProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.oneMonthNum != null" >
+        one_month_num = #{record.oneMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.oneMonthProportion != null" >
+        one_month_proportion = #{record.oneMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.twoMonthNum != null" >
+        two_month_num = #{record.twoMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.twoMonthProportion != null" >
+        two_month_proportion = #{record.twoMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.threeMonthNum != null" >
+        three_month_num = #{record.threeMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.threeMonthProportion != null" >
+        three_month_proportion = #{record.threeMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.fourMonthNum != null" >
+        four_month_num = #{record.fourMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.fourMonthProportion != null" >
+        four_month_proportion = #{record.fourMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.fiveMonthNum != null" >
+        five_month_num = #{record.fiveMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.fiveMonthProportion != null" >
+        five_month_proportion = #{record.fiveMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.sixMonthNum != null" >
+        six_month_num = #{record.sixMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.sixMonthProportion != null" >
+        six_month_proportion = #{record.sixMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.nineMonthNum != null" >
+        nine_month_num = #{record.nineMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.nineMonthProportion != null" >
+        nine_month_proportion = #{record.nineMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.tenMonthNum != null" >
+        ten_month_num = #{record.tenMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.tenMonthProportion != null" >
+        ten_month_proportion = #{record.tenMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.twelveMonthNum != null" >
+        twelve_month_num = #{record.twelveMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.twelveMonthProportion != null" >
+        twelve_month_proportion = #{record.twelveMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.fifteenMonthNum != null" >
+        fifteen_month_num = #{record.fifteenMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.fifteenMonthProportion != null" >
+        fifteen_month_proportion = #{record.fifteenMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.eighteenMonthNum != null" >
+        eighteen_month_num = #{record.eighteenMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.eighteenMonthProportion != null" >
+        eighteen_month_proportion = #{record.eighteenMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.twentyFourMonthNum != null" >
+        twenty_four_month_num = #{record.twentyFourMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.twentyFourMonthProportion != null" >
+        twenty_four_month_proportion = #{record.twentyFourMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.phoneNum != null" >
+        phone_num = #{record.phoneNum,jdbcType=BIGINT},
+      </if>
+      <if test="record.qqCustomerServiceNum != null" >
+        qq_customer_service_num = #{record.qqCustomerServiceNum,jdbcType=BIGINT},
+      </if>
+      <if test="record.wechatCustomerServiceNum != null" >
+        wechat_customer_service_num = #{record.wechatCustomerServiceNum,jdbcType=BIGINT},
+      </if>
+      <if test="record.dealQuestionNum != null" >
+        deal_question_num = #{record.dealQuestionNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateUserId != null" >
+        update_user_id = #{record.updateUserId,jdbcType=INTEGER},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.createUserId != null" >
+        create_user_id = #{record.createUserId,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_half_year_operation_report
+    set id = #{record.id,jdbcType=INTEGER},
+      operation_report_id = #{record.operationReportId,jdbcType=INTEGER},
+      cn_name = #{record.cnName,jdbcType=VARCHAR},
+      en_name = #{record.enName,jdbcType=VARCHAR},
+      first_month_amount = #{record.firstMonthAmount,jdbcType=DECIMAL},
+      second_month_amount = #{record.secondMonthAmount,jdbcType=DECIMAL},
+      third_month_amount = #{record.thirdMonthAmount,jdbcType=DECIMAL},
+      fourth_month_amount = #{record.fourthMonthAmount,jdbcType=DECIMAL},
+      fifth_month_amount = #{record.fifthMonthAmount,jdbcType=DECIMAL},
+      sixth_month_amount = #{record.sixthMonthAmount,jdbcType=DECIMAL},
+      half_year_amount = #{record.halfYearAmount,jdbcType=DECIMAL},
+      half_year_profit = #{record.halfYearProfit,jdbcType=DECIMAL},
+      half_year_success_deal = #{record.halfYearSuccessDeal,jdbcType=INTEGER},
+      half_year_recharge_deal = #{record.halfYearRechargeDeal,jdbcType=INTEGER},
+      half_year_recharge_amount = #{record.halfYearRechargeAmount,jdbcType=DECIMAL},
+      half_year_success_month = #{record.halfYearSuccessMonth,jdbcType=TINYINT},
+      half_year_success_month_amount = #{record.halfYearSuccessMonthAmount,jdbcType=DECIMAL},
+      half_year_avg_profit = #{record.halfYearAvgProfit,jdbcType=DECIMAL},
+      half_year_app_deal_num = #{record.halfYearAppDealNum,jdbcType=INTEGER},
+      half_year_app_deal_proportion = #{record.halfYearAppDealProportion,jdbcType=DECIMAL},
+      half_year_wechat_deal_num = #{record.halfYearWechatDealNum,jdbcType=INTEGER},
+      half_year_wechat_deal_proportion = #{record.halfYearWechatDealProportion,jdbcType=DECIMAL},
+      half_year_pc_deal_num = #{record.halfYearPcDealNum,jdbcType=INTEGER},
+      half_year_pc_deal_proportion = #{record.halfYearPcDealProportion,jdbcType=DECIMAL},
+      less_thirty_day_num = #{record.lessThirtyDayNum,jdbcType=INTEGER},
+      less_thirty_day_proportion = #{record.lessThirtyDayProportion,jdbcType=DECIMAL},
+      thirty_day_num = #{record.thirtyDayNum,jdbcType=INTEGER},
+      thirty_day_proportion = #{record.thirtyDayProportion,jdbcType=DECIMAL},
+      one_month_num = #{record.oneMonthNum,jdbcType=INTEGER},
+      one_month_proportion = #{record.oneMonthProportion,jdbcType=DECIMAL},
+      two_month_num = #{record.twoMonthNum,jdbcType=INTEGER},
+      two_month_proportion = #{record.twoMonthProportion,jdbcType=DECIMAL},
+      three_month_num = #{record.threeMonthNum,jdbcType=INTEGER},
+      three_month_proportion = #{record.threeMonthProportion,jdbcType=DECIMAL},
+      four_month_num = #{record.fourMonthNum,jdbcType=INTEGER},
+      four_month_proportion = #{record.fourMonthProportion,jdbcType=DECIMAL},
+      five_month_num = #{record.fiveMonthNum,jdbcType=INTEGER},
+      five_month_proportion = #{record.fiveMonthProportion,jdbcType=DECIMAL},
+      six_month_num = #{record.sixMonthNum,jdbcType=INTEGER},
+      six_month_proportion = #{record.sixMonthProportion,jdbcType=DECIMAL},
+      nine_month_num = #{record.nineMonthNum,jdbcType=INTEGER},
+      nine_month_proportion = #{record.nineMonthProportion,jdbcType=DECIMAL},
+      ten_month_num = #{record.tenMonthNum,jdbcType=INTEGER},
+      ten_month_proportion = #{record.tenMonthProportion,jdbcType=DECIMAL},
+      twelve_month_num = #{record.twelveMonthNum,jdbcType=INTEGER},
+      twelve_month_proportion = #{record.twelveMonthProportion,jdbcType=DECIMAL},
+      fifteen_month_num = #{record.fifteenMonthNum,jdbcType=INTEGER},
+      fifteen_month_proportion = #{record.fifteenMonthProportion,jdbcType=DECIMAL},
+      eighteen_month_num = #{record.eighteenMonthNum,jdbcType=INTEGER},
+      eighteen_month_proportion = #{record.eighteenMonthProportion,jdbcType=DECIMAL},
+      twenty_four_month_num = #{record.twentyFourMonthNum,jdbcType=INTEGER},
+      twenty_four_month_proportion = #{record.twentyFourMonthProportion,jdbcType=DECIMAL},
+      phone_num = #{record.phoneNum,jdbcType=BIGINT},
+      qq_customer_service_num = #{record.qqCustomerServiceNum,jdbcType=BIGINT},
+      wechat_customer_service_num = #{record.wechatCustomerServiceNum,jdbcType=BIGINT},
+      deal_question_num = #{record.dealQuestionNum,jdbcType=INTEGER},
+      update_time = #{record.updateTime,jdbcType=INTEGER},
+      update_user_id = #{record.updateUserId,jdbcType=INTEGER},
+      create_time = #{record.createTime,jdbcType=INTEGER},
+      create_user_id = #{record.createUserId,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.HalfYearOperationReport" >
+    update hyjf_half_year_operation_report
+    <set >
+      <if test="operationReportId != null" >
+        operation_report_id = #{operationReportId,jdbcType=INTEGER},
+      </if>
+      <if test="cnName != null" >
+        cn_name = #{cnName,jdbcType=VARCHAR},
+      </if>
+      <if test="enName != null" >
+        en_name = #{enName,jdbcType=VARCHAR},
+      </if>
+      <if test="firstMonthAmount != null" >
+        first_month_amount = #{firstMonthAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="secondMonthAmount != null" >
+        second_month_amount = #{secondMonthAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="thirdMonthAmount != null" >
+        third_month_amount = #{thirdMonthAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="fourthMonthAmount != null" >
+        fourth_month_amount = #{fourthMonthAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="fifthMonthAmount != null" >
+        fifth_month_amount = #{fifthMonthAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="sixthMonthAmount != null" >
+        sixth_month_amount = #{sixthMonthAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="halfYearAmount != null" >
+        half_year_amount = #{halfYearAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="halfYearProfit != null" >
+        half_year_profit = #{halfYearProfit,jdbcType=DECIMAL},
+      </if>
+      <if test="halfYearSuccessDeal != null" >
+        half_year_success_deal = #{halfYearSuccessDeal,jdbcType=INTEGER},
+      </if>
+      <if test="halfYearRechargeDeal != null" >
+        half_year_recharge_deal = #{halfYearRechargeDeal,jdbcType=INTEGER},
+      </if>
+      <if test="halfYearRechargeAmount != null" >
+        half_year_recharge_amount = #{halfYearRechargeAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="halfYearSuccessMonth != null" >
+        half_year_success_month = #{halfYearSuccessMonth,jdbcType=TINYINT},
+      </if>
+      <if test="halfYearSuccessMonthAmount != null" >
+        half_year_success_month_amount = #{halfYearSuccessMonthAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="halfYearAvgProfit != null" >
+        half_year_avg_profit = #{halfYearAvgProfit,jdbcType=DECIMAL},
+      </if>
+      <if test="halfYearAppDealNum != null" >
+        half_year_app_deal_num = #{halfYearAppDealNum,jdbcType=INTEGER},
+      </if>
+      <if test="halfYearAppDealProportion != null" >
+        half_year_app_deal_proportion = #{halfYearAppDealProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="halfYearWechatDealNum != null" >
+        half_year_wechat_deal_num = #{halfYearWechatDealNum,jdbcType=INTEGER},
+      </if>
+      <if test="halfYearWechatDealProportion != null" >
+        half_year_wechat_deal_proportion = #{halfYearWechatDealProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="halfYearPcDealNum != null" >
+        half_year_pc_deal_num = #{halfYearPcDealNum,jdbcType=INTEGER},
+      </if>
+      <if test="halfYearPcDealProportion != null" >
+        half_year_pc_deal_proportion = #{halfYearPcDealProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="lessThirtyDayNum != null" >
+        less_thirty_day_num = #{lessThirtyDayNum,jdbcType=INTEGER},
+      </if>
+      <if test="lessThirtyDayProportion != null" >
+        less_thirty_day_proportion = #{lessThirtyDayProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="thirtyDayNum != null" >
+        thirty_day_num = #{thirtyDayNum,jdbcType=INTEGER},
+      </if>
+      <if test="thirtyDayProportion != null" >
+        thirty_day_proportion = #{thirtyDayProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="oneMonthNum != null" >
+        one_month_num = #{oneMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="oneMonthProportion != null" >
+        one_month_proportion = #{oneMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="twoMonthNum != null" >
+        two_month_num = #{twoMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="twoMonthProportion != null" >
+        two_month_proportion = #{twoMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="threeMonthNum != null" >
+        three_month_num = #{threeMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="threeMonthProportion != null" >
+        three_month_proportion = #{threeMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="fourMonthNum != null" >
+        four_month_num = #{fourMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="fourMonthProportion != null" >
+        four_month_proportion = #{fourMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="fiveMonthNum != null" >
+        five_month_num = #{fiveMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="fiveMonthProportion != null" >
+        five_month_proportion = #{fiveMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="sixMonthNum != null" >
+        six_month_num = #{sixMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="sixMonthProportion != null" >
+        six_month_proportion = #{sixMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="nineMonthNum != null" >
+        nine_month_num = #{nineMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="nineMonthProportion != null" >
+        nine_month_proportion = #{nineMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="tenMonthNum != null" >
+        ten_month_num = #{tenMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="tenMonthProportion != null" >
+        ten_month_proportion = #{tenMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="twelveMonthNum != null" >
+        twelve_month_num = #{twelveMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="twelveMonthProportion != null" >
+        twelve_month_proportion = #{twelveMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="fifteenMonthNum != null" >
+        fifteen_month_num = #{fifteenMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="fifteenMonthProportion != null" >
+        fifteen_month_proportion = #{fifteenMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="eighteenMonthNum != null" >
+        eighteen_month_num = #{eighteenMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="eighteenMonthProportion != null" >
+        eighteen_month_proportion = #{eighteenMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="twentyFourMonthNum != null" >
+        twenty_four_month_num = #{twentyFourMonthNum,jdbcType=INTEGER},
+      </if>
+      <if test="twentyFourMonthProportion != null" >
+        twenty_four_month_proportion = #{twentyFourMonthProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="phoneNum != null" >
+        phone_num = #{phoneNum,jdbcType=BIGINT},
+      </if>
+      <if test="qqCustomerServiceNum != null" >
+        qq_customer_service_num = #{qqCustomerServiceNum,jdbcType=BIGINT},
+      </if>
+      <if test="wechatCustomerServiceNum != null" >
+        wechat_customer_service_num = #{wechatCustomerServiceNum,jdbcType=BIGINT},
+      </if>
+      <if test="dealQuestionNum != null" >
+        deal_question_num = #{dealQuestionNum,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.HalfYearOperationReport" >
+    update hyjf_half_year_operation_report
+    set operation_report_id = #{operationReportId,jdbcType=INTEGER},
+      cn_name = #{cnName,jdbcType=VARCHAR},
+      en_name = #{enName,jdbcType=VARCHAR},
+      first_month_amount = #{firstMonthAmount,jdbcType=DECIMAL},
+      second_month_amount = #{secondMonthAmount,jdbcType=DECIMAL},
+      third_month_amount = #{thirdMonthAmount,jdbcType=DECIMAL},
+      fourth_month_amount = #{fourthMonthAmount,jdbcType=DECIMAL},
+      fifth_month_amount = #{fifthMonthAmount,jdbcType=DECIMAL},
+      sixth_month_amount = #{sixthMonthAmount,jdbcType=DECIMAL},
+      half_year_amount = #{halfYearAmount,jdbcType=DECIMAL},
+      half_year_profit = #{halfYearProfit,jdbcType=DECIMAL},
+      half_year_success_deal = #{halfYearSuccessDeal,jdbcType=INTEGER},
+      half_year_recharge_deal = #{halfYearRechargeDeal,jdbcType=INTEGER},
+      half_year_recharge_amount = #{halfYearRechargeAmount,jdbcType=DECIMAL},
+      half_year_success_month = #{halfYearSuccessMonth,jdbcType=TINYINT},
+      half_year_success_month_amount = #{halfYearSuccessMonthAmount,jdbcType=DECIMAL},
+      half_year_avg_profit = #{halfYearAvgProfit,jdbcType=DECIMAL},
+      half_year_app_deal_num = #{halfYearAppDealNum,jdbcType=INTEGER},
+      half_year_app_deal_proportion = #{halfYearAppDealProportion,jdbcType=DECIMAL},
+      half_year_wechat_deal_num = #{halfYearWechatDealNum,jdbcType=INTEGER},
+      half_year_wechat_deal_proportion = #{halfYearWechatDealProportion,jdbcType=DECIMAL},
+      half_year_pc_deal_num = #{halfYearPcDealNum,jdbcType=INTEGER},
+      half_year_pc_deal_proportion = #{halfYearPcDealProportion,jdbcType=DECIMAL},
+      less_thirty_day_num = #{lessThirtyDayNum,jdbcType=INTEGER},
+      less_thirty_day_proportion = #{lessThirtyDayProportion,jdbcType=DECIMAL},
+      thirty_day_num = #{thirtyDayNum,jdbcType=INTEGER},
+      thirty_day_proportion = #{thirtyDayProportion,jdbcType=DECIMAL},
+      one_month_num = #{oneMonthNum,jdbcType=INTEGER},
+      one_month_proportion = #{oneMonthProportion,jdbcType=DECIMAL},
+      two_month_num = #{twoMonthNum,jdbcType=INTEGER},
+      two_month_proportion = #{twoMonthProportion,jdbcType=DECIMAL},
+      three_month_num = #{threeMonthNum,jdbcType=INTEGER},
+      three_month_proportion = #{threeMonthProportion,jdbcType=DECIMAL},
+      four_month_num = #{fourMonthNum,jdbcType=INTEGER},
+      four_month_proportion = #{fourMonthProportion,jdbcType=DECIMAL},
+      five_month_num = #{fiveMonthNum,jdbcType=INTEGER},
+      five_month_proportion = #{fiveMonthProportion,jdbcType=DECIMAL},
+      six_month_num = #{sixMonthNum,jdbcType=INTEGER},
+      six_month_proportion = #{sixMonthProportion,jdbcType=DECIMAL},
+      nine_month_num = #{nineMonthNum,jdbcType=INTEGER},
+      nine_month_proportion = #{nineMonthProportion,jdbcType=DECIMAL},
+      ten_month_num = #{tenMonthNum,jdbcType=INTEGER},
+      ten_month_proportion = #{tenMonthProportion,jdbcType=DECIMAL},
+      twelve_month_num = #{twelveMonthNum,jdbcType=INTEGER},
+      twelve_month_proportion = #{twelveMonthProportion,jdbcType=DECIMAL},
+      fifteen_month_num = #{fifteenMonthNum,jdbcType=INTEGER},
+      fifteen_month_proportion = #{fifteenMonthProportion,jdbcType=DECIMAL},
+      eighteen_month_num = #{eighteenMonthNum,jdbcType=INTEGER},
+      eighteen_month_proportion = #{eighteenMonthProportion,jdbcType=DECIMAL},
+      twenty_four_month_num = #{twentyFourMonthNum,jdbcType=INTEGER},
+      twenty_four_month_proportion = #{twentyFourMonthProportion,jdbcType=DECIMAL},
+      phone_num = #{phoneNum,jdbcType=BIGINT},
+      qq_customer_service_num = #{qqCustomerServiceNum,jdbcType=BIGINT},
+      wechat_customer_service_num = #{wechatCustomerServiceNum,jdbcType=BIGINT},
+      deal_question_num = #{dealQuestionNum,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=INTEGER},
+      update_user_id = #{updateUserId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=INTEGER},
+      create_user_id = #{createUserId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

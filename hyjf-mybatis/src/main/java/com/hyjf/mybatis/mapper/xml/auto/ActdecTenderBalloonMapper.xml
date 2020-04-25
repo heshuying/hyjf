@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.ActdecTenderBalloonMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.ActdecTenderBalloon" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="true_name" property="trueName" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="tender_nid" property="tenderNid" jdbcType="VARCHAR" />
+    <result column="tender_money" property="tenderMoney" jdbcType="DECIMAL" />
+    <result column="is_first_tender" property="isFirstTender" jdbcType="TINYINT" />
+    <result column="tender_type" property="tenderType" jdbcType="TINYINT" />
+    <result column="balloon_count" property="balloonCount" jdbcType="SMALLINT" />
+    <result column="ballon_can_receive" property="ballonCanReceive" jdbcType="SMALLINT" />
+    <result column="ballon_received" property="ballonReceived" jdbcType="SMALLINT" />
+    <result column="reward_name" property="rewardName" jdbcType="VARCHAR" />
+    <result column="send_status" property="sendStatus" jdbcType="TINYINT" />
+    <result column="tender_time" property="tenderTime" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, user_id, user_name, true_name, mobile, tender_nid, tender_money, is_first_tender, 
+    tender_type, balloon_count, ballon_can_receive, ballon_received, reward_name, send_status, 
+    tender_time, update_time
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.ActdecTenderBalloonExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_actdec_tender_balloon
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_actdec_tender_balloon
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_actdec_tender_balloon
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.ActdecTenderBalloonExample" >
+    delete from hyjf_actdec_tender_balloon
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.ActdecTenderBalloon" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_actdec_tender_balloon (user_id, user_name, true_name, 
+      mobile, tender_nid, tender_money, 
+      is_first_tender, tender_type, balloon_count, 
+      ballon_can_receive, ballon_received, reward_name, 
+      send_status, tender_time, update_time
+      )
+    values (#{userId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{trueName,jdbcType=VARCHAR}, 
+      #{mobile,jdbcType=VARCHAR}, #{tenderNid,jdbcType=VARCHAR}, #{tenderMoney,jdbcType=DECIMAL}, 
+      #{isFirstTender,jdbcType=TINYINT}, #{tenderType,jdbcType=TINYINT}, #{balloonCount,jdbcType=SMALLINT}, 
+      #{ballonCanReceive,jdbcType=SMALLINT}, #{ballonReceived,jdbcType=SMALLINT}, #{rewardName,jdbcType=VARCHAR}, 
+      #{sendStatus,jdbcType=TINYINT}, #{tenderTime,jdbcType=INTEGER}, #{updateTime,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.ActdecTenderBalloon" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_actdec_tender_balloon
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="userName != null" >
+        user_name,
+      </if>
+      <if test="trueName != null" >
+        true_name,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="tenderNid != null" >
+        tender_nid,
+      </if>
+      <if test="tenderMoney != null" >
+        tender_money,
+      </if>
+      <if test="isFirstTender != null" >
+        is_first_tender,
+      </if>
+      <if test="tenderType != null" >
+        tender_type,
+      </if>
+      <if test="balloonCount != null" >
+        balloon_count,
+      </if>
+      <if test="ballonCanReceive != null" >
+        ballon_can_receive,
+      </if>
+      <if test="ballonReceived != null" >
+        ballon_received,
+      </if>
+      <if test="rewardName != null" >
+        reward_name,
+      </if>
+      <if test="sendStatus != null" >
+        send_status,
+      </if>
+      <if test="tenderTime != null" >
+        tender_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="userName != null" >
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="trueName != null" >
+        #{trueName,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="tenderNid != null" >
+        #{tenderNid,jdbcType=VARCHAR},
+      </if>
+      <if test="tenderMoney != null" >
+        #{tenderMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="isFirstTender != null" >
+        #{isFirstTender,jdbcType=TINYINT},
+      </if>
+      <if test="tenderType != null" >
+        #{tenderType,jdbcType=TINYINT},
+      </if>
+      <if test="balloonCount != null" >
+        #{balloonCount,jdbcType=SMALLINT},
+      </if>
+      <if test="ballonCanReceive != null" >
+        #{ballonCanReceive,jdbcType=SMALLINT},
+      </if>
+      <if test="ballonReceived != null" >
+        #{ballonReceived,jdbcType=SMALLINT},
+      </if>
+      <if test="rewardName != null" >
+        #{rewardName,jdbcType=VARCHAR},
+      </if>
+      <if test="sendStatus != null" >
+        #{sendStatus,jdbcType=TINYINT},
+      </if>
+      <if test="tenderTime != null" >
+        #{tenderTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.ActdecTenderBalloonExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_actdec_tender_balloon
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_actdec_tender_balloon
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.userName != null" >
+        user_name = #{record.userName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.trueName != null" >
+        true_name = #{record.trueName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mobile != null" >
+        mobile = #{record.mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tenderNid != null" >
+        tender_nid = #{record.tenderNid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tenderMoney != null" >
+        tender_money = #{record.tenderMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="record.isFirstTender != null" >
+        is_first_tender = #{record.isFirstTender,jdbcType=TINYINT},
+      </if>
+      <if test="record.tenderType != null" >
+        tender_type = #{record.tenderType,jdbcType=TINYINT},
+      </if>
+      <if test="record.balloonCount != null" >
+        balloon_count = #{record.balloonCount,jdbcType=SMALLINT},
+      </if>
+      <if test="record.ballonCanReceive != null" >
+        ballon_can_receive = #{record.ballonCanReceive,jdbcType=SMALLINT},
+      </if>
+      <if test="record.ballonReceived != null" >
+        ballon_received = #{record.ballonReceived,jdbcType=SMALLINT},
+      </if>
+      <if test="record.rewardName != null" >
+        reward_name = #{record.rewardName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sendStatus != null" >
+        send_status = #{record.sendStatus,jdbcType=TINYINT},
+      </if>
+      <if test="record.tenderTime != null" >
+        tender_time = #{record.tenderTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_actdec_tender_balloon
+    set id = #{record.id,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      user_name = #{record.userName,jdbcType=VARCHAR},
+      true_name = #{record.trueName,jdbcType=VARCHAR},
+      mobile = #{record.mobile,jdbcType=VARCHAR},
+      tender_nid = #{record.tenderNid,jdbcType=VARCHAR},
+      tender_money = #{record.tenderMoney,jdbcType=DECIMAL},
+      is_first_tender = #{record.isFirstTender,jdbcType=TINYINT},
+      tender_type = #{record.tenderType,jdbcType=TINYINT},
+      balloon_count = #{record.balloonCount,jdbcType=SMALLINT},
+      ballon_can_receive = #{record.ballonCanReceive,jdbcType=SMALLINT},
+      ballon_received = #{record.ballonReceived,jdbcType=SMALLINT},
+      reward_name = #{record.rewardName,jdbcType=VARCHAR},
+      send_status = #{record.sendStatus,jdbcType=TINYINT},
+      tender_time = #{record.tenderTime,jdbcType=INTEGER},
+      update_time = #{record.updateTime,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.ActdecTenderBalloon" >
+    update hyjf_actdec_tender_balloon
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="userName != null" >
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="trueName != null" >
+        true_name = #{trueName,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="tenderNid != null" >
+        tender_nid = #{tenderNid,jdbcType=VARCHAR},
+      </if>
+      <if test="tenderMoney != null" >
+        tender_money = #{tenderMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="isFirstTender != null" >
+        is_first_tender = #{isFirstTender,jdbcType=TINYINT},
+      </if>
+      <if test="tenderType != null" >
+        tender_type = #{tenderType,jdbcType=TINYINT},
+      </if>
+      <if test="balloonCount != null" >
+        balloon_count = #{balloonCount,jdbcType=SMALLINT},
+      </if>
+      <if test="ballonCanReceive != null" >
+        ballon_can_receive = #{ballonCanReceive,jdbcType=SMALLINT},
+      </if>
+      <if test="ballonReceived != null" >
+        ballon_received = #{ballonReceived,jdbcType=SMALLINT},
+      </if>
+      <if test="rewardName != null" >
+        reward_name = #{rewardName,jdbcType=VARCHAR},
+      </if>
+      <if test="sendStatus != null" >
+        send_status = #{sendStatus,jdbcType=TINYINT},
+      </if>
+      <if test="tenderTime != null" >
+        tender_time = #{tenderTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.ActdecTenderBalloon" >
+    update hyjf_actdec_tender_balloon
+    set user_id = #{userId,jdbcType=INTEGER},
+      user_name = #{userName,jdbcType=VARCHAR},
+      true_name = #{trueName,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      tender_nid = #{tenderNid,jdbcType=VARCHAR},
+      tender_money = #{tenderMoney,jdbcType=DECIMAL},
+      is_first_tender = #{isFirstTender,jdbcType=TINYINT},
+      tender_type = #{tenderType,jdbcType=TINYINT},
+      balloon_count = #{balloonCount,jdbcType=SMALLINT},
+      ballon_can_receive = #{ballonCanReceive,jdbcType=SMALLINT},
+      ballon_received = #{ballonReceived,jdbcType=SMALLINT},
+      reward_name = #{rewardName,jdbcType=VARCHAR},
+      send_status = #{sendStatus,jdbcType=TINYINT},
+      tender_time = #{tenderTime,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

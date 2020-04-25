@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.apiweb.IanternFestivalCustomizeMapper">
+
+	<resultMap id="ianternFestivalmap" type="com.hyjf.mybatis.model.customize.apiweb.IanternFestivalCustomize">
+		<result column="question_num" property="questionNum" jdbcType="INTEGER"/>
+		<result column="question_content" property="questionContent" jdbcType="VARCHAR"/>
+		<result column="question_answer" property="questionAnswer" jdbcType="VARCHAR"/>
+		<result column="answer_time" property="answerTime" jdbcType="VARCHAR"/>
+		<result column="question_image_name" property="questionImageName" jdbcType="VARCHAR"/>
+		<result column="question_hint" property="questionHint" jdbcType="VARCHAR"/>
+		<result column="double_flg" property="doubleFlg" jdbcType="INTEGER"/>
+		<result column="user_id" property="userId" jdbcType="INTEGER"/>
+		<result column="current_exchange" property="currentExchange" jdbcType="INTEGER"/>
+		<result column="prize_jine" property="prizeJine" jdbcType="VARCHAR"/>
+		<result column="user_answer_result" property="userAnswerResult" jdbcType="INTEGER"/>
+		<result column="view_name" property="viewName" jdbcType="VARCHAR"/>
+	</resultMap> 
+	<select id="getUserPresentCumulativeCoupon" resultMap="ianternFestivalmap" parameterType="Map">
+		SELECT
+			hnqc.question_num question_num,
+			hnqc.question_content question_content,
+			hnqc.question_answer question_answer,
+			hnqc.question_image_name question_image_name,
+			hnqc.question_hint question_hint,
+			hnqc.answer_time answer_time,
+			hnqu.double_flg double_flg,
+			hnqu.user_id user_id,
+			hnqu.current_exchange current_exchange,
+			hnqu.prize_jine prize_jine,
+			hnqu.user_answer_result user_answer_result,
+			hnqu.view_name view_name
+		FROM
+			hyjf_newyear_question_user hnqu
+		LEFT JOIN hyjf_newyear_question_config hnqc ON hnqu.question_id = hnqc.id
+		AND hnqu.question_num = hnqc.question_num
+		WHERE
+			hnqu.user_id = #{userId}
+			AND hnqu.current_exchange=1
+	</select>
+	
+	<resultMap id="lanternIlluminemap" type="com.hyjf.mybatis.model.customize.apiweb.UserLanternIllumineCustomize">
+		<result column="question_num" property="questionNum" jdbcType="INTEGER"/>
+		<result column="answer_time" property="answerTime" jdbcType="VARCHAR"/>
+		<result column="user_answer_result" property="userAnswerResult" jdbcType="INTEGER"/>
+	</resultMap>
+	
+	
+	<select id="getUserLanternIllumineList" resultMap="lanternIlluminemap" parameterType="Map">
+		SELECT
+			hnqc.question_num question_num,
+			hnqc.answer_time answer_time,
+			IFNULL(
+				hnqu.user_answer_result,
+				'1'
+			) user_answer_result
+		FROM
+			hyjf_newyear_question_config hnqc
+		LEFT JOIN hyjf_newyear_question_user hnqu ON hnqc.id = hnqu.question_id
+		AND hnqu.user_id = #{userId}
+		ORDER BY
+			hnqc.question_num
+	</select>
+ 
+</mapper>

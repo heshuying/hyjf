@@ -1,0 +1,610 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.BorrowRepaymentCustomizeMapper">
+	<sql id="Where_Clause">
+		<where>
+			<!-- 借款编号 -->
+			<if test="borrowNid != null and borrowNid != ''">
+				AND b.borrow_nid LIKE CONCAT('%', #{borrowNid}, '%')
+			</if>
+			<!-- add by LSY START -->
+			<!-- 资产来源 -->
+			<if test="instCodeSrch != null and instCodeSrch != ''">
+			    AND b.inst_code = #{instCodeSrch}
+			</if>
+			<!-- add by LSY END -->
+			<!-- 借款期限 -->
+			<if test="borrowPeriod != null and borrowPeriod != ''">
+				AND b.borrow_period = #{borrowPeriod}
+			</if>
+			<!-- 借款人 -->
+			<if test="borrowUserName != null and borrowUserName != ''">
+				AND u.username LIKE CONCAT('%', #{borrowUserName}, '%')
+			</if>
+			<!-- 借款标题 -->
+			<if test="borrowName != null and borrowName != ''">
+				AND b.name LIKE CONCAT('%', #{borrowName}, '%')
+			</if>
+			
+			<!-- 还款方式 -->
+			<if test="repayStyleType != null and repayStyleType != ''">
+				AND bs.nid = #{repayStyleType}
+			</if>
+			
+			<!-- 还款状态0还款中,1已还款 -->
+			<if test="statusSrch != null and statusSrch != ''">
+				<if test="statusSrch ==0">
+					AND b.status= 4
+				</if>
+				<if test="statusSrch ==1">
+					AND b.status= 5
+				</if>
+			</if>
+			<!-- 最后还款日 -->
+			<if test="repayLastTimeStartSrch != null and repayLastTimeStartSrch != ''">
+				AND br.repay_time <![CDATA[>=]]>
+				unix_timestamp(#{repayLastTimeStartSrch})
+			</if>
+			<if test="repayLastTimeEndSrch != null and repayLastTimeEndSrch != ''">
+				AND br.repay_time <![CDATA[<=]]>
+				unix_timestamp(#{repayLastTimeEndSrch})+86399
+			</if>
+			<!-- 发布日期 -->
+			<if test="verifyTimeStartSrch != null and verifyTimeStartSrch != ''">
+				AND b.verify_time <![CDATA[>=]]>
+				unix_timestamp(#{verifyTimeStartSrch})
+			</if>
+			<if test="verifyTimeEndSrch != null and verifyTimeEndSrch != ''">
+				AND b.verify_time <![CDATA[<=]]>
+				unix_timestamp(#{verifyTimeEndSrch})+86399
+			</if>
+			<!-- 计划编号 -->
+			<if test="planNidSrch != null and planNidSrch != ''">
+				AND b.plan_nid = #{planNidSrch}
+			</if>
+			<!-- 汇计划加入订单号 -->
+			<if test="accedeOrderIdSrch != null and accedeOrderIdSrch != ''">
+				AND recover.accede_order_id = #{accedeOrderIdSrch}
+			</if>
+			<!-- 还款冻结订单号 -->
+			<if test="freezeOrderId != null and freezeOrderId != ''">
+				AND (flg.order_id = #{freezeOrderId} OR rflg.order_id = #{freezeOrderId})
+			</if>
+			<!-- 实际还款日 -->
+			<if test="actulRepayTimeStartSrch != null and actulRepayTimeStartSrch != ''">
+				AND br.repay_action_time <![CDATA[>=]]>
+				unix_timestamp(#{actulRepayTimeStartSrch})
+			</if>
+			<if test="actulRepayTimeEndSrch != null and actulRepayTimeEndSrch != ''">
+				AND br.repay_action_time <![CDATA[<=]]>
+				unix_timestamp(#{actulRepayTimeEndSrch})+86399
+			</if>
+		</where>
+	</sql>
+
+	<select id="countBorrowRepayment" resultType="java.lang.Long" parameterType="com.hyjf.mybatis.model.customize.BorrowRepaymentCustomize">
+		SELECT
+			COUNT(1)
+		FROM
+			huiyingdai_borrow AS b
+		INNER JOIN huiyingdai_borrow_repay AS br ON b.borrow_nid = br.borrow_nid
+		LEFT JOIN huiyingdai_users u ON b.user_id = u.user_id
+		LEFT JOIN huiyingdai_borrow_style AS bs ON b.borrow_style = bs.nid
+		LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = CAST(b.project_type AS CHAR)
+		LEFT JOIN huiyingdai_borrow_apicron as ba on b.borrow_nid = ba.borrow_nid and ba.api_type = 1 and ba.status <![CDATA[<>]]> 6
+		LEFT JOIN huiyingdai_links as links on b.borrow_measures_instit = links.webname
+		LEFT JOIN hyjf_bank_repay_org_freeze_log flg on flg.borrow_nid = b.borrow_nid and flg.del_flag = 0
+		LEFT JOIN hyjf_bank_repay_freeze_log rflg on rflg.borrow_nid = b.borrow_nid and rflg.del_flag = 0
+		<include refid="Where_Clause" />
+	</select>
+
+	<resultMap id="searchBorrowRepaymentListResultMap" type="com.hyjf.mybatis.model.customize.BorrowRepaymentCustomize">
+		<result column="borrowNid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="nid" property="nid" jdbcType="VARCHAR" />
+		<result column="userId" property="userId" jdbcType="VARCHAR" />
+		<result column="borrowUserName" property="borrowUserName" jdbcType="VARCHAR" />
+		<result column="borrowUserId" property="borrowUserId" jdbcType="VARCHAR" />
+		<result column="borrowName" property="borrowName" jdbcType="VARCHAR" />
+		<result column="projectType" property="projectType" jdbcType="VARCHAR" />
+		<result column="projectTypeName" property="projectTypeName" jdbcType="VARCHAR" />
+		<result column="borrowPeriod" property="borrowPeriod" jdbcType="VARCHAR" />
+		<result column="borrowApr" property="borrowApr" jdbcType="VARCHAR" />
+		<result column="borrowAccount" property="borrowAccount" jdbcType="VARCHAR" />
+		<result column="borrowAccountYes" property="borrowAccountYes" jdbcType="VARCHAR" />
+		<result column="repayType" property="repayType" jdbcType="VARCHAR" />
+		<result column="repayStyleType" property="repayStyleType" jdbcType="VARCHAR" />
+		<result column="repayAccountCapital" property="repayAccountCapital" jdbcType="VARCHAR" />
+		<result column="repayAccountInterest" property="repayAccountInterest" jdbcType="VARCHAR" />
+		<result column="repayAccountAll" property="repayAccountAll" jdbcType="VARCHAR" />
+		<result column="borrowManager" property="borrowManager" jdbcType="VARCHAR" />
+		<result column="repayFee" property="repayFee" jdbcType="VARCHAR" />
+		<result column="repayAccountCapitalYes" property="repayAccountCapitalYes" jdbcType="VARCHAR" />
+		<result column="repayAccountInterestYes" property="repayAccountInterestYes" jdbcType="VARCHAR" />
+		<result column="repayAccountYes" property="repayAccountYes" jdbcType="VARCHAR" />
+		<result column="repayAccountCapitalWait" property="repayAccountCapitalWait" jdbcType="VARCHAR" />
+		<result column="repayAccountInterestWait" property="repayAccountInterestWait" jdbcType="VARCHAR" />
+		<result column="repayAccountWait" property="repayAccountWait" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="repayStatus" property="repayStatus" jdbcType="VARCHAR" />
+		<result column="repayLastTime" property="repayLastTime" jdbcType="VARCHAR" />
+		<result column="repayNextTime" property="repayNextTime" jdbcType="VARCHAR" />
+		<result column="verifyTime" property="verifyTime" jdbcType="VARCHAR" />
+		<result column="borrowStyle" property="borrowStyle" jdbcType="VARCHAR" />
+		<result column="repayMoneySource" property="repayMoneySource" jdbcType="VARCHAR" />
+		<result column="repayActionTime" property="repayActionTime" jdbcType="VARCHAR" />
+		<result column="plan_nid" property="planNid" jdbcType="VARCHAR" />
+		<result column="instName" property="instName" jdbcType="VARCHAR" />
+		<result column="webName" property="partner" jdbcType="VARCHAR" />
+		<result column="create_user_name" property="createUserName" jdbcType="VARCHAR" />
+		<result column="regist_user_name" property="registUserName" jdbcType="VARCHAR" />
+		<result column="countPeriod" property="countPeriod"  />
+		<result column="creditBorrowUserName" property="creditBorrowUserName"  />
+		<result column="everyRepayActionTime" property="everyRepayActionTime" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="searchCreditBorrowTenderListResultMap" type="com.hyjf.mybatis.model.customize.HjhCreditTenderCustomize">
+		<result column="borrowNid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="nid" property="nid" jdbcType="VARCHAR" />
+		<result column="creditNid" property="creditNid" jdbcType="VARCHAR" />
+		<result column="assignOrderId" property="assignOrderId" jdbcType="VARCHAR" />
+		<result column="assignOrderDate" property="assignOrderDate" jdbcType="VARCHAR" />
+		<result column="userId" property="userId" jdbcType="VARCHAR" />
+		<result column="borrowUserName" property="borrowUserName" jdbcType="VARCHAR" />
+		<result column="borrowUserId" property="borrowUserId" jdbcType="VARCHAR" />
+		<result column="borrowName" property="borrowName" jdbcType="VARCHAR" />
+		<result column="projectType" property="projectType" jdbcType="VARCHAR" />
+		<result column="projectTypeName" property="projectTypeName" jdbcType="VARCHAR" />
+		<result column="borrowPeriod" property="borrowPeriod" jdbcType="VARCHAR" />
+		<result column="borrowApr" property="borrowApr" jdbcType="VARCHAR" />
+		<result column="borrowAccount" property="borrowAccount" jdbcType="VARCHAR" />
+		<result column="borrowAccountYes" property="borrowAccountYes" jdbcType="VARCHAR" />
+		<result column="repayType" property="repayType" jdbcType="VARCHAR" />
+		<result column="repayStyleType" property="repayStyleType" jdbcType="VARCHAR" />
+		<result column="repayAccountCapital" property="repayAccountCapital" jdbcType="VARCHAR" />
+		<result column="repayAccountInterest" property="repayAccountInterest" jdbcType="VARCHAR" />
+		<result column="repayAccountAll" property="repayAccountAll" jdbcType="VARCHAR" />
+		<result column="borrowManager" property="borrowManager" jdbcType="VARCHAR" />
+		<result column="repayFee" property="repayFee" jdbcType="VARCHAR" />
+		<result column="repayAccountCapitalYes" property="repayAccountCapitalYes" jdbcType="VARCHAR" />
+		<result column="repayAccountInterestYes" property="repayAccountInterestYes" jdbcType="VARCHAR" />
+		<result column="repayAccountYes" property="repayAccountYes" jdbcType="VARCHAR" />
+		<result column="repayAccountCapitalWait" property="repayAccountCapitalWait" jdbcType="VARCHAR" />
+		<result column="repayAccountInterestWait" property="repayAccountInterestWait" jdbcType="VARCHAR" />
+		<result column="repayAccountWait" property="repayAccountWait" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="repayStatus" property="repayStatus" jdbcType="VARCHAR" />
+		<result column="repayLastTime" property="repayLastTime" jdbcType="VARCHAR" />
+		<result column="repayNextTime" property="repayNextTime" jdbcType="VARCHAR" />
+		<result column="borrowStyle" property="borrowStyle" jdbcType="VARCHAR" />
+		<result column="repayMoneySource" property="repayMoneySource" jdbcType="VARCHAR" />
+		<result column="repayActionTime" property="repayActionTime" jdbcType="VARCHAR" />
+		<result column="plan_nid" property="planNid" jdbcType="VARCHAR" />
+		<result column="instName" property="instName" jdbcType="VARCHAR" />
+		<result column="webName" property="partner" jdbcType="VARCHAR" />
+		<result column="create_user_name" property="createUserName" jdbcType="VARCHAR" />
+		<result column="regist_user_name" property="registUserName" jdbcType="VARCHAR" />
+		<result column="countPeriod" property="countPeriod"  />
+		<result column="creditBorrowUserName" property="creditBorrowUserName"  />
+		<result column="everyRepayActionTime" property="everyRepayActionTime" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectBorrowRepaymentList" resultMap="searchBorrowRepaymentListResultMap" parameterType="com.hyjf.mybatis.model.customize.BorrowRepaymentCustomize">
+		SELECT
+		br.borrow_nid AS borrowNid,
+		u.user_id AS userId,
+		u.username AS borrowUserName,
+		b.name AS borrowName,
+		b.borrow_style AS borrowStyle,
+		b.project_Type AS projectType,
+		bpt.borrow_name AS projectTypeName,
+		CASE WHEN b.borrow_style = 'endday' THEN CONCAT(b.borrow_period, '天') ELSE
+		CONCAT(b.borrow_period, '个月') END AS borrowPeriod,
+		b.borrow_Apr AS borrowApr,
+		b.borrow_account_yes AS borrowAccount,
+		b.borrow_account_yes AS borrowAccountYes,
+		bs.name AS repayType,
+		b.verify_time As verifyTime,
+		bs.nid AS repayStyleType,
+		b.repay_org_name,
+		b.create_user_name,
+		b.regist_user_name,
+		b.repay_account_capital AS repayAccountCapital,
+		b.repay_account_interest AS repayAccountInterest,
+		b.repay_account_all repayAccountAll,
+		b.borrow_manager AS borrowManager,
+		br.repay_fee AS repayFee,
+		b.repay_account_capital_yes AS repayAccountCapitalYes,
+		b.repay_account_interest_yes AS repayAccountInterestYes,
+		b.repay_account_yes AS repayAccountYes,
+		b.repay_account_capital-b.repay_account_capital_yes AS repayAccountCapitalWait,
+		b.repay_account_interest-b.repay_account_interest_yes AS repayAccountInterestWait,
+		b.repay_account_all-b.repay_account_yes AS repayAccountWait,
+		if(b.status=4,0,if(b.status=5 ,1,'')) AS status,
+		ba.repay_status as repayStatus,
+		if(b.repay_last_time='' OR b.repay_last_time='0' OR b.repay_last_time='null','',FROM_UNIXTIME(
+		b.repay_last_time, '%Y-%m-%d' )) AS repayLastTime,
+		if(br.repay_time='' OR br.repay_time='0' OR br.repay_time='null','',FROM_UNIXTIME(
+		br.repay_time, '%Y-%m-%d' )) AS repayNextTime,
+		IF ( br.repay_status=1 AND br.repay_action_time <![CDATA[ > ]]> 0 , 
+			CASE br.repay_money_source WHEN 1 THEN '借款人还款' WHEN 2 THEN '机构垫付' WHEN 3 THEN '保证金垫付' ELSE '借款人还款' END ,
+			'' 
+		) AS repayMoneySource,
+		CASE WHEN br.repay_action_time <![CDATA[ > ]]> 0 AND br.repay_status=1 THEN FROM_UNIXTIME(br.repay_action_time,'%Y-%m-%d %H:%i:%s') ELSE '' END as repayActionTime,
+		b.plan_nid,
+		<!-- add by LSY START -->
+		hic.inst_name as instName,
+		<!-- add by LSY END -->
+		links.webname as webName,
+		IFNULL(flg.order_id,rflg.order_id) AS freezeOrderId
+		FROM huiyingdai_borrow AS b
+		INNER JOIN huiyingdai_borrow_repay AS br on b.borrow_nid=br.borrow_nid
+		LEFT JOIN huiyingdai_users u ON b.user_id = u.user_id
+		LEFT JOIN huiyingdai_users_info ui ON b.user_id= ui.user_id
+		LEFT JOIN huiyingdai_borrow_style AS bs on b.borrow_style=bs.nid
+		LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = CAST(b.project_type AS CHAR)
+		LEFT JOIN huiyingdai_borrow_apicron as ba on b.borrow_nid = ba.borrow_nid and ba.api_type = 1 and ba.status <![CDATA[<>]]> 6
+		LEFT JOIN huiyingdai_links as links on b.borrow_measures_instit = links.webname
+		<!-- add by LSY START -->
+		LEFT JOIN hyjf_hjh_inst_config hic on b.inst_code = hic.inst_code
+		LEFT JOIN hyjf_bank_repay_org_freeze_log flg on flg.borrow_nid = b.borrow_nid and flg.del_flag = 0
+		LEFT JOIN hyjf_bank_repay_freeze_log rflg on rflg.borrow_nid = b.borrow_nid and rflg.del_flag = 0
+		<!-- add by LSY END -->
+		<include refid="Where_Clause" />
+		ORDER BY
+		br.id DESC
+		<if test="limitStart >= 0">
+			LIMIT #{limitStart} , #{limitEnd}
+		</if>
+	</select>
+	
+	
+	
+	
+	<select id="sumBorrowRepayment" resultType="com.hyjf.mybatis.model.customize.BorrowRepaymentCustomize" parameterType="com.hyjf.mybatis.model.customize.BorrowRepaymentCustomize">
+		SELECT
+		SUM(b.borrow_account_yes) AS borrowAccountYes,
+		SUM(b.repay_account_all) AS repayAccountAll,
+		SUM(br.repay_fee) AS
+		repayFee
+		FROM
+		huiyingdai_borrow AS b
+		INNER JOIN huiyingdai_borrow_repay AS br on
+		b.borrow_nid=br.borrow_nid
+		LEFT JOIN huiyingdai_users u ON b.user_id =
+		u.user_id
+		LEFT JOIN
+		huiyingdai_borrow_style AS bs on
+		b.borrow_style=bs.nid
+		LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = CAST(b.project_type AS CHAR)
+		LEFT JOIN huiyingdai_borrow_apicron as ba on b.borrow_nid = ba.borrow_nid and ba.api_type = 1 and ba.status <![CDATA[<>]]> 6
+		LEFT JOIN hyjf_bank_repay_org_freeze_log flg on flg.borrow_nid = b.borrow_nid and flg.del_flag = 0
+		LEFT JOIN hyjf_bank_repay_freeze_log rflg on rflg.borrow_nid = b.borrow_nid and rflg.del_flag = 0
+		<include refid="Where_Clause" />
+	</select>
+	
+	<select id="countHjhBorrowRepayment" resultType="java.lang.Long" parameterType="com.hyjf.mybatis.model.customize.BorrowRepaymentCustomize">
+		SELECT
+			COUNT(1)
+		FROM
+			huiyingdai_borrow_recover AS recover
+		INNER JOIN huiyingdai_borrow AS borrow on recover.borrow_nid=borrow.borrow_nid
+		LEFT JOIN huiyingdai_users u ON recover.user_id = u.user_id
+		LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = CAST(borrow.project_type AS CHAR)
+		LEFT JOIN huiyingdai_borrow_style AS bs on borrow.borrow_style=bs.nid
+		LEFT JOIN hyjf_hjh_inst_config hic ON hic.inst_code = borrow.inst_code
+		LEFT JOIN huiyingdai_borrow_apicron as ba on borrow.borrow_nid = ba.borrow_nid and ba.api_type = 1 and ba.status > 6
+		LEFT JOIN huiyingdai_borrow_repay AS br on recover.borrow_nid=br.borrow_nid
+		<include refid="Where_Clause" />
+	</select>
+	
+	<select id="selectHjhBorrowRepaymentList" resultMap="searchBorrowRepaymentListResultMap" parameterType="com.hyjf.mybatis.model.customize.BorrowRepaymentCustomize">
+		SELECT
+		recover.nid As nid,
+		recover.borrow_nid AS borrowNid,
+		u.user_id AS userId,
+		u.username AS borrowUserName,
+		
+		borrow.user_id AS borrowUserId,
+		
+		borrow.name AS borrowName,
+		borrow.borrow_style AS borrowStyle,
+		bs.name AS borrowStyleName,
+		borrow.project_Type AS projectType,
+		bpt.borrow_name AS projectTypeName,
+		CASE WHEN borrow.borrow_style = 'endday' THEN CONCAT(borrow.borrow_period, '天') ELSE
+		CONCAT(borrow.borrow_period, '个月') END AS borrowPeriod,
+		borrow.borrow_Apr AS borrowApr,
+		borrow.borrow_account_yes AS borrowAccount,
+		borrow.borrow_account_yes AS borrowAccountYes,
+		bs.name AS repayType,
+		recover.recover_capital AS repayAccountCapital,
+		recover.recover_interest AS repayAccountInterest,
+		recover.recover_account AS repayAccountAll,
+		recover.recover_capital_yes AS repayAccountCapitalYes,
+		recover.recover_interest_yes AS repayAccountInterestYes,
+		recover.recover_account_yes AS repayAccountYes,
+		borrow.borrow_manager AS borrowManager,
+		recover.recover_fee AS repayFee,
+		borrow.repay_account_capital-borrow.repay_account_capital_yes AS repayAccountCapitalWait,
+		borrow.repay_account_interest-borrow.repay_account_interest_yes AS repayAccountInterestWait,
+		borrow.repay_account_all-borrow.repay_account_yes AS repayAccountWait,
+		if(borrow.status=4,0,if(borrow.status=5 ,1,'')) AS status,
+		hic.inst_name AS instName,
+		ba.repay_status as repayStatus,
+		if(borrow.repay_last_time='' OR borrow.repay_last_time='0' OR borrow.repay_last_time='null','',FROM_UNIXTIME(
+		borrow.repay_last_time, '%Y-%m-%d' )) AS repayLastTime,
+		if(br.repay_time='' OR br.repay_time='0' OR br.repay_time='null','',FROM_UNIXTIME(
+		br.repay_time, '%Y-%m-%d' )) AS repayNextTime,
+		IF ( br.repay_status=1 AND br.repay_action_time <![CDATA[ > ]]> 0 , 
+			CASE br.repay_money_source WHEN 1 THEN '借款人还款' WHEN 2 THEN '机构垫付' WHEN 3 THEN '保证金垫付' ELSE '借款人还款' END ,
+			'' 
+		) AS repayMoneySource,
+		CASE WHEN br.repay_action_time <![CDATA[ > ]]> 0 AND br.repay_status=1 THEN FROM_UNIXTIME(br.repay_action_time,'%Y-%m-%d %H:%i:%s') ELSE '' END as repayActionTime,
+		borrow.plan_nid
+		FROM huiyingdai_borrow_recover AS recover
+		INNER JOIN huiyingdai_borrow AS borrow on recover.borrow_nid=borrow.borrow_nid
+		LEFT JOIN huiyingdai_users u ON recover.user_id = u.user_id
+		LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = CAST(borrow.project_type AS CHAR)
+		LEFT JOIN huiyingdai_borrow_style AS bs on borrow.borrow_style=bs.nid
+		LEFT JOIN hyjf_hjh_inst_config hic ON hic.inst_code = borrow.inst_code
+		LEFT JOIN huiyingdai_borrow_apicron as ba on borrow.borrow_nid = ba.borrow_nid and ba.api_type = 1 and ba.status <![CDATA[<>]]> 6
+		LEFT JOIN huiyingdai_borrow_repay AS br on recover.borrow_nid=br.borrow_nid
+		
+		<include refid="Where_Clause" />
+		ORDER BY
+		br.repay_time ASC,borrow.id ASC
+		<if test="limitStart >= 0">
+			LIMIT #{limitStart} , #{limitEnd}
+		</if>
+	</select>
+	
+	<!-- add by LSY START -->
+	<resultMap id="sumBorrowRepaymentResultMap" type="com.hyjf.mybatis.model.customize.BorrowRepaymentCustomize">
+		<result column="repayAccountCapital" property="sumRepayAccountCapital" jdbcType="VARCHAR" />
+		<result column="repayAccountInterest" property="sumRepayAccountInterest" jdbcType="VARCHAR" />
+		<result column="repayAccountAll" property="sumRepayAccountAll" jdbcType="VARCHAR" />
+		<result column="repayAccountCapitalYes" property="sumRepayAccountCapitalYes" jdbcType="VARCHAR" />
+		<result column="repayAccountInterestYes" property="sumRepayAccountInterestYes" jdbcType="VARCHAR" />
+		<result column="repayAccountYes" property="sumRepayAccountYes" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="sumHjhBorrowRepayment" resultMap="sumBorrowRepaymentResultMap" parameterType="com.hyjf.mybatis.model.customize.BorrowRepaymentCustomize">
+		SELECT
+		sum(recover.recover_capital) AS repayAccountCapital,
+		sum(recover.recover_interest) AS repayAccountInterest,
+		sum(recover.recover_account) AS repayAccountAll,
+		sum(recover.recover_capital_yes) AS repayAccountCapitalYes,
+		sum(recover.recover_interest_yes) AS repayAccountInterestYes,
+		sum(recover.recover_account_yes) AS repayAccountYes
+		FROM huiyingdai_borrow_recover AS recover
+		INNER JOIN huiyingdai_borrow AS borrow on recover.borrow_nid=borrow.borrow_nid
+		LEFT JOIN huiyingdai_users u ON recover.user_id = u.user_id
+		LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = CAST(borrow.project_type AS CHAR)
+		LEFT JOIN huiyingdai_borrow_style AS bs on borrow.borrow_style=bs.nid
+		LEFT JOIN hyjf_hjh_inst_config hic ON hic.inst_code = borrow.inst_code
+		LEFT JOIN huiyingdai_borrow_apicron as ba on borrow.borrow_nid = ba.borrow_nid and ba.api_type = 1 and ba.status <![CDATA[<>]]> 6
+		LEFT JOIN huiyingdai_borrow_repay AS br on recover.borrow_nid=br.borrow_nid	
+		<include refid="Where_Clause" />
+	</select>
+	<!-- add by LSY END -->
+	
+	
+	<sql id="Where_hjh_credit_Clause">
+		<where>
+			<!-- 加入订单号 -->
+			<if test="accedeOrderIdSrch != null and accedeOrderIdSrch != ''">
+				AND hjhrepay.assign_plan_order_id = #{accedeOrderIdSrch}
+			</if>
+		</where>
+	</sql>
+	
+	<sql id="Where_hjh_Clause">
+		<where>
+			<!-- 加入订单号————分期 -->
+			<if test="accedeOrderIdSrch != null and accedeOrderIdSrch != ''">
+				AND hjhrepay.assign_order_id = #{accedeOrderIdSrch}
+			</if>
+				AND hjhrepay.del_flag = 0
+		</where>
+	</sql>
+	<sql id="Where_hjh_Clause1">
+		<where>
+			<!-- 加入订单号 -->
+			<if test="accedeOrderIdSrch != null and accedeOrderIdSrch != ''">
+				AND hjhrepay.assign_plan_order_id = #{accedeOrderIdSrch}
+			</if>
+				AND hjhrepay.del_flag = 1
+		</where>
+	</sql>
+	
+	<select id="countHjhCreditBorrowRepayment" resultType="java.lang.Long" parameterType="com.hyjf.mybatis.model.customize.BorrowRepaymentCustomize">
+		SELECT
+			COUNT(1)
+		FROM
+		hyjf_hjh_debt_credit_repay AS hjhrepay
+		INNER JOIN huiyingdai_borrow AS borrow on hjhrepay.borrow_nid = borrow.borrow_nid
+		LEFT JOIN huiyingdai_users u ON hjhrepay.user_id = u.user_id
+		LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = CAST(borrow.project_type AS CHAR)
+		LEFT JOIN huiyingdai_borrow_style AS bs on borrow.borrow_style=bs.nid
+		LEFT JOIN hyjf_hjh_inst_config hic ON hic.inst_code = borrow.inst_code
+		LEFT JOIN huiyingdai_borrow_apicron as ba on borrow.borrow_nid = ba.borrow_nid and ba.api_type = 1 and ba.status > 6 
+		LEFT JOIN huiyingdai_borrow_repay AS br on hjhrepay.borrow_nid=br.borrow_nid
+		LEFT JOIN huiyingdai_borrow_repay_plan plan on plan.borrow_nid = br.borrow_nid and plan.repay_period = hjhrepay.repay_period
+		<include refid="Where_hjh_Clause" />
+	</select>
+	<select id="countHjhCreditBorrowTender" resultType="java.lang.Long" parameterType="com.hyjf.mybatis.model.customize.HjhCreditTenderCustomize">
+		SELECT
+			COUNT(1)
+		FROM
+		hyjf_hjh_debt_credit_tender AS hjhrepay
+		INNER JOIN huiyingdai_borrow AS borrow on hjhrepay.borrow_nid = borrow.borrow_nid
+		LEFT JOIN huiyingdai_users u ON hjhrepay.user_id = u.user_id
+		LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = CAST(borrow.project_type AS CHAR)
+		LEFT JOIN huiyingdai_borrow_style AS bs on borrow.borrow_style=bs.nid
+		LEFT JOIN hyjf_hjh_inst_config hic ON hic.inst_code = borrow.inst_code
+		LEFT JOIN huiyingdai_borrow_apicron as ba on borrow.borrow_nid = ba.borrow_nid and ba.api_type = 1 and ba.status > 6 
+		LEFT JOIN huiyingdai_borrow_repay AS br on hjhrepay.borrow_nid=br.borrow_nid
+		LEFT JOIN huiyingdai_borrow_repay_plan plan on plan.borrow_nid = br.borrow_nid and plan.repay_period = hjhrepay.repay_period
+		<include refid="Where_hjh_Clause1" />
+	</select>
+	
+	
+	
+	
+	
+	<select id="selectHjhCreditBorrowRepaymentList" resultMap="searchBorrowRepaymentListResultMap" parameterType="com.hyjf.mybatis.model.customize.BorrowRepaymentCustomize">
+		SELECT
+		hjhrepay.borrow_nid AS borrowNid,
+		hjhrepay.repay_period AS countPeriod,
+		u.user_id AS userId,
+		u.username AS borrowUserName,
+		uu.user_id AS creditUserId,
+		uu.username AS creditBorrowUserName,
+		borrow.user_id AS borrowUserId,
+		borrow.name AS borrowName,
+		borrow.borrow_style AS borrowStyle,
+		borrow.project_Type AS projectType,
+		bpt.borrow_name AS projectTypeName,
+		CASE 
+		WHEN borrow.borrow_style = 'endday' 
+		THEN CONCAT(borrow.borrow_period, '天') 
+		ELSE
+		CONCAT(borrow.borrow_period, '个月') 
+		END AS borrowPeriod,
+		borrow.borrow_Apr AS borrowApr,
+		borrow.borrow_account_yes AS borrowAccount,
+		borrow.borrow_account_yes AS borrowAccountYes,
+		bs.name AS repayType,
+		hjhrepay.repay_capital AS repayAccountCapital,
+		hjhrepay.repay_interest AS repayAccountInterest,
+		hjhrepay.repay_account AS repayAccountAll,
+		hjhrepay.receive_capital_yes AS repayAccountCapitalYes,
+		hjhrepay.receive_interest_yes AS repayAccountInterestYes,
+		hjhrepay.receive_account_yes AS repayAccountYes,
+		borrow.borrow_manager AS borrowManager,
+		hjhrepay.manage_fee AS repayFee,
+		borrow.repay_account_capital-borrow.repay_account_capital_yes AS repayAccountCapitalWait,
+		borrow.repay_account_interest-borrow.repay_account_interest_yes AS repayAccountInterestWait,
+		borrow.repay_account_all-borrow.repay_account_yes AS repayAccountWait,
+		hjhrepay.repay_status AS status,
+		hic.inst_name AS instName,
+		ba.repay_status as repayStatus,
+		if(borrow.repay_last_time='' OR borrow.repay_last_time='0' OR borrow.repay_last_time='null','',
+		FROM_UNIXTIME(hjhrepay.assign_repay_time, '%Y-%m-%d' )) AS repayLastTime,
+		if(br.repay_time='' OR br.repay_time='0' OR br.repay_time='null','',
+		FROM_UNIXTIME(br.repay_time, '%Y-%m-%d' )) AS repayNextTime,
+		IF ( br.repay_status=1 AND br.repay_action_time <![CDATA[ > ]]> 0 , 
+			CASE br.repay_money_source WHEN 1 THEN '借款人还款' WHEN 2 THEN '机构垫付' WHEN 3 THEN '保证金垫付' ELSE '借款人还款' END ,
+			'' 
+		) AS repayMoneySource,
+		CASE WHEN br.repay_action_time <![CDATA[ > ]]> 0 AND br.repay_status=1 THEN FROM_UNIXTIME(br.repay_action_time,'%Y-%m-%d %H:%i:%s') ELSE '' END as repayActionTime,
+		borrow.plan_nid,
+		hjhrepay.assign_plan_order_id AS orderId,
+		borrow.id AS borrowid,
+		
+		CASE WHEN plan.repay_action_time <![CDATA[ > ]]> 0 THEN FROM_UNIXTIME(plan.repay_action_time,'%Y-%m-%d %H:%i:%s') ELSE '' END as everyRepayActionTime,
+		
+		br.repay_time AS ordertime
+		FROM 
+		hyjf_hjh_debt_credit_repay AS hjhrepay
+		INNER JOIN huiyingdai_borrow AS borrow on hjhrepay.borrow_nid = borrow.borrow_nid
+		LEFT JOIN huiyingdai_users u ON hjhrepay.user_id = u.user_id
+		LEFT JOIN huiyingdai_users uu ON hjhrepay.credit_user_id = uu.user_id
+		LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = CAST(borrow.project_type AS CHAR)
+		LEFT JOIN huiyingdai_borrow_style AS bs on borrow.borrow_style=bs.nid
+		LEFT JOIN hyjf_hjh_inst_config hic ON hic.inst_code = borrow.inst_code
+		LEFT JOIN huiyingdai_borrow_apicron as ba on borrow.borrow_nid = ba.borrow_nid and ba.api_type = 1 and ba.status <![CDATA[<>]]> 6 
+		LEFT JOIN huiyingdai_borrow_repay AS br on hjhrepay.borrow_nid=br.borrow_nid
+		
+		LEFT JOIN huiyingdai_borrow_repay_plan plan on plan.borrow_nid = br.borrow_nid and plan.repay_period = hjhrepay.repay_period
+		
+		<include refid="Where_hjh_Clause" />
+		ORDER BY
+		hjhrepay.repay_period ASC,borrow.id ASC
+		<if test="limitStart >= 0">
+			LIMIT #{limitStart} , #{limitEnd}
+		</if>
+	</select>
+	
+	<select id="selectHjhCreditBorrowTendertList" resultMap="searchCreditBorrowTenderListResultMap" parameterType="com.hyjf.mybatis.model.customize.HjhCreditTenderCustomize">
+		SELECT
+		(SELECT SUM(plan.manage_fee) FROM hyjf_hjh_debt_credit_repay plan where plan.assign_order_id = hjhrepay.assign_order_id) AS assignServiceFee,
+		hjhrepay.borrow_nid AS borrowNid,
+		hjhrepay.credit_nid AS creditNid,
+		hjhrepay.assign_order_id AS assignOrderId,
+		<!-- hjhrepay.assign_order_date AS assignOrderDate, -->
+		FROM_UNIXTIME(hjhrepay.create_time,'%Y-%m-%d %H:%i:%s') AS assignOrderDate,
+		hjhrepay.repay_period AS countPeriod,
+		u.user_id AS userId,
+		u.username AS borrowUserName,
+		uu.user_id AS creditUserId,
+		uu.username AS creditBorrowUserName,
+		borrow.user_id AS borrowUserId,
+		borrow. NAME AS borrowName,
+		borrow.borrow_style AS borrowStyle,
+		borrow.project_Type AS projectType,
+		bpt.borrow_name AS projectTypeName,
+		CASE
+	WHEN borrow.borrow_style = 'endday' THEN
+		CONCAT(borrow.borrow_period, '天')
+	ELSE
+		CONCAT(
+			borrow.borrow_period,
+			'个月'
+		)
+	END AS borrowPeriod,
+	 borrow.borrow_Apr AS borrowApr,
+	 borrow.borrow_account_yes AS borrowAccount,
+	 borrow.borrow_account_yes AS borrowAccountYes,
+	 bs. NAME AS repayType,
+	 hjhrepay.assign_capital AS repayAccountCapital,
+	 hjhrepay.assign_interest AS repayAccountInterest,
+	 hjhrepay.assign_account AS repayAccountAll,
+	 hjhrepay.repay_capital_yes AS repayAccountCapitalYes,
+	 hjhrepay.repay_interest_yes AS repayAccountInterestYes,
+	 hjhrepay.repay_account_yes AS repayAccountYes,
+	 borrow.borrow_manager AS borrowManager,
+	 hjhrepay.assign_service_fee AS repayFee,
+	 borrow.repay_account_capital - borrow.repay_account_capital_yes AS repayAccountCapitalWait,
+	 borrow.repay_account_interest - borrow.repay_account_interest_yes AS repayAccountInterestWait,
+	 borrow.repay_account_all - borrow.repay_account_yes AS repayAccountWait,
+	 hjhrepay.status AS STATUS,
+	 hic.inst_name AS instName,
+	 ba.repay_status AS repayStatus,
+		if(borrow.repay_last_time='' OR borrow.repay_last_time='0' OR borrow.repay_last_time='null','',
+		FROM_UNIXTIME(hjhrepay.assign_repay_yes_time, '%Y-%m-%d' )) AS repayLastTime,
+		if(br.repay_time='' OR br.repay_time='0' OR br.repay_time='null','',
+		FROM_UNIXTIME(br.repay_time, '%Y-%m-%d' )) AS repayNextTime,
+		IF ( br.repay_status=1 AND br.repay_action_time <![CDATA[ > ]]> 0 , 
+			CASE br.repay_money_source WHEN 1 THEN '借款人还款' WHEN 2 THEN '机构垫付' WHEN 3 THEN '保证金垫付' ELSE '借款人还款' END ,
+			'' 
+		) AS repayMoneySource,
+		CASE WHEN br.repay_action_time <![CDATA[ > ]]> 0 AND br.repay_status=1 THEN FROM_UNIXTIME(br.repay_action_time,'%Y-%m-%d %H:%i:%s') ELSE '' END as repayActionTime,
+		borrow.plan_nid,
+		hjhrepay.assign_plan_order_id AS orderId,
+		borrow.id AS borrowid,
+		
+		CASE WHEN plan.repay_action_time <![CDATA[ > ]]> 0 THEN FROM_UNIXTIME(plan.repay_action_time,'%Y-%m-%d %H:%i:%s') ELSE '' END as everyRepayActionTime,
+		
+		br.repay_time AS ordertime
+		FROM 
+		hyjf_hjh_debt_credit_tender AS hjhrepay
+		INNER JOIN huiyingdai_borrow AS borrow on hjhrepay.borrow_nid = borrow.borrow_nid
+		LEFT JOIN huiyingdai_users u ON hjhrepay.user_id = u.user_id
+		LEFT JOIN huiyingdai_users uu ON hjhrepay.credit_user_id = uu.user_id
+		LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = CAST(borrow.project_type AS CHAR)
+		LEFT JOIN huiyingdai_borrow_style AS bs on borrow.borrow_style=bs.nid
+		LEFT JOIN hyjf_hjh_inst_config hic ON hic.inst_code = borrow.inst_code
+		LEFT JOIN huiyingdai_borrow_apicron as ba on borrow.borrow_nid = ba.borrow_nid and ba.api_type = 1 and ba.status <![CDATA[<>]]> 6 
+		LEFT JOIN huiyingdai_borrow_repay AS br on hjhrepay.borrow_nid=br.borrow_nid
+		
+		LEFT JOIN huiyingdai_borrow_repay_plan plan on plan.borrow_nid = br.borrow_nid and plan.repay_period = hjhrepay.repay_period
+		
+		<include refid="Where_hjh_Clause1" />
+		ORDER BY
+		hjhrepay.create_time ASC,borrow.id ASC
+		<if test="limitStart >= 0">
+			LIMIT #{limitStart} , #{limitEnd}
+		</if>
+	</select>
+	
+</mapper>

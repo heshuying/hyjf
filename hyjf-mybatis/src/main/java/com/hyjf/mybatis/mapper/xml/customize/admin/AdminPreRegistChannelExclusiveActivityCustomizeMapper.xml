@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.AdminPreRegistChannelExclusiveActivityCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+			<if test="id != null and id !='' ">
+				AND hprcea.id = #{id}
+			</if>
+			<if test="userName != null and userName !='' ">
+				AND hprcea.username = #{userName}
+			</if>
+			<if test="mobile != null and mobile !='' ">
+				AND hprcea.mobile = #{mobile}
+			</if>
+			<if test="utmSource != null and utmSource !='' ">
+				AND hprcea.utm_source = #{utmSource}
+			</if>
+			<if test="reward != null and reward !='' ">
+				AND hprcea.reward LIKE CONCAT('%', #{reward}, '%')
+			</if>
+		</where>
+	</sql>
+
+	<resultMap id="PreRegistChannelExclusiveActivityMap" type="com.hyjf.mybatis.model.customize.admin.AdminPreRegistChannelExclusiveActivityCustomize">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<!-- 用户ID -->
+		<result column="userId" property="userId" jdbcType="VARCHAR" />
+		<!-- 用户名 -->
+		<result column="userName" property="userName" jdbcType="VARCHAR" />
+		<!-- 手机号 -->
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<!-- 推荐人ID -->
+		<result column="referrer" property="referrer" jdbcType="VARCHAR" />
+		<!-- 推荐人用户名 -->
+		<result column="referrerUserName" property="referrerUserName" jdbcType="VARCHAR" />
+		<!-- 预注册时间 -->
+		<result column="preRegistTime" property="preRegistTime" jdbcType="VARCHAR" />
+		<!-- 注册时间 -->
+		<result column="registTime" property="registTime" jdbcType="VARCHAR" />
+		<!-- 关键字ID -->
+		<result column="utmId" property="utmId" jdbcType="VARCHAR" />
+		<!-- 关键词 -->
+		<result column="utmTerm" property="utmTerm" jdbcType="VARCHAR" />
+		<!-- 渠道平台ID -->
+		<result column="sourceId" property="sourceId" jdbcType="VARCHAR" />
+		<!-- 渠道平台名称 -->
+		<result column="utmSource" property="utmSource" jdbcType="VARCHAR" />
+		<!-- 活动期内累计投资额 -->
+		<result column="tenderTotal" property="tenderTotal" jdbcType="VARCHAR" />
+		<!-- 活动期内最高单笔投资额 -->
+		<result column="tenderSingle" property="tenderSingle" jdbcType="VARCHAR" />
+		<!-- 活动奖励 -->
+		<result column="reward" property="reward" jdbcType="VARCHAR" />
+		<!-- 备注 -->
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<!-- 创建时间 -->
+		<result column="createTime" property="createTime" jdbcType="VARCHAR" />
+		<!-- 更新时间 -->
+		<result column="updateTime" property="updateTime" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<!-- 初始化预注册渠道专属活动数据 -->
+	<select id="iniPreRegistChannelExclusiveActivity" resultMap="PreRegistChannelExclusiveActivityMap" parameterType="Map">
+		SELECT
+			<!-- 用户ID -->
+			hu.user_id AS userId,
+			<!-- 用户名 -->
+			hu.username AS userName,
+			<!-- 手机号 -->
+			hu.mobile AS mobile,
+			<!-- 推荐人ID -->
+			hu.referrer AS referrer,
+			<!-- 推荐人用户名 -->
+			hu.referrer_user_name AS referrerUserName,
+			<!-- 预注册时间 -->
+			hpr.pre_regist_time AS preRegistTime,
+			<!-- 注册时间 -->
+			hu.reg_time AS registTime,
+			<!-- 关键字ID -->
+			hutm.utm_id AS utmId,
+			<!-- 关键词 -->
+			hutm.utm_term AS utmTerm,
+			<!-- 渠道平台ID -->
+			hutm.source_id AS sourceId,
+			<!-- 渠道平台名称 -->
+			hutm.utm_source AS utmSource,
+			<!-- 活动期内累计投资额 -->
+			hbt.accountTotal AS tenderTotal,
+			<!-- 活动期内最高单笔投资额 -->
+			hbt.accountMax AS tenderSingle
+		FROM
+			huiyingdai_users hu
+		LEFT JOIN hyjf_pre_regist hpr ON hu.mobile = hpr.mobile
+		LEFT JOIN huiyingdai_utm_reg hur ON hur.user_id = hu.user_id
+		LEFT JOIN huiyingdai_utm hutm ON hur.utm_id = hutm.utm_id
+		LEFT JOIN  
+		(SELECT
+			hbt2.user_id AS user_id,
+			SUM(hbt2.account) AS accountTotal,
+			MAX(hbt2.account) AS accountMax	
+		FROM
+			huiyingdai_borrow_tender hbt2
+		INNER JOIN huiyingdai_borrow hb ON hbt2.borrow_nid = hb.borrow_nid
+		WHERE
+			hb.project_type NOT IN (4, 8)
+			AND
+			hbt2.addtime <![CDATA[>=]]> #{preRegChannelExclusiveActivityTimeStart,jdbcType=INTEGER} AND hbt2.addtime <![CDATA[<=]]> #{preRegChannelExclusiveActivityTimeEnd,jdbcType=INTEGER}
+			GROUP BY hbt2.user_id
+		) hbt ON hu.user_id = hbt.user_id
+		WHERE
+		<!-- 
+			hu.mobile IN (
+				SELECT
+					hpr2.mobile
+				FROM
+					hyjf_pre_regist hpr2
+			)
+		 -->
+		hbt.accountTotal <![CDATA[>]]> 0
+		AND (hu.reg_esb IN (2,3) OR (hu.reg_esb IN (1,4) AND hutm.utm_source ='电信DSP_201606'))
+		AND hu.reg_time <![CDATA[>=]]> #{preRegChannelExclusiveActivityTimeStart,jdbcType=INTEGER} AND hu.reg_time <![CDATA[<=]]> #{preRegChannelExclusiveActivityTimeEnd,jdbcType=INTEGER}
+	</select>
+	
+	<!-- 查询预注册渠道专属活动数据列表 -->
+	<select id="selectRecordList" resultMap="PreRegistChannelExclusiveActivityMap" parameterType="Map">
+		SELECT
+			hprcea.id AS id,
+			hprcea.user_id AS userId,
+			hprcea.username AS userName,
+			hprcea.mobile AS mobile,
+			hprcea.referrer AS referrer,
+			hprcea.referrer_user_name AS referrerUserName,
+			FROM_UNIXTIME( hprcea.pre_regist_time, '%Y-%m-%d %H:%i:%s' ) AS preRegistTime,
+			FROM_UNIXTIME( hprcea.regist_time, '%Y-%m-%d %H:%i:%s' ) AS registTime,
+			hprcea.utm_id AS utmId,
+			hprcea.utm_term AS utmTerm,
+			hprcea.source_id AS sourceId,
+			hprcea.utm_source AS utmSource,
+			hprcea.tender_total AS tenderTotal,
+			hprcea.tender_single AS tenderSingle,
+			hprcea.reward AS reward,
+			hprcea.remark AS remark,
+			FROM_UNIXTIME( hprcea.create_time, '%Y-%m-%d %H:%i:%s' ) AS createTime,
+			FROM_UNIXTIME( hprcea.update_time, '%Y-%m-%d %H:%i:%s' ) AS updateTime
+		FROM
+			hyjf_pre_regist_channel_exclusive_activity hprcea
+		<include refid="Where_Clause" />
+		ORDER BY hprcea.tender_total DESC
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	<!-- 查询预注册渠道专属活动数目 -->
+	<select id="countRecordTotal" resultType="java.lang.Integer" parameterType="Map">
+		SELECT COUNT(hprcea.id)
+		FROM
+			hyjf_pre_regist_channel_exclusive_activity hprcea
+		<include refid="Where_Clause" />
+	</select>
+</mapper>

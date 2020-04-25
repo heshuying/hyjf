@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.RepayExceptionInfoCustomizeMapper">
+	<sql id="Where_Clause">
+		<where>
+
+			<!-- 借款编号 -->
+			<if test="borrowNidSrch != null and borrowNidSrch != ''">
+				AND b.borrow_nid LIKE CONCAT('%', #{borrowNidSrch}, '%')
+			</if>
+			<!-- 借款人 -->
+			<if test="borrowUserNameSrch != null and borrowUserNameSrch != ''">
+				AND u.username LIKE CONCAT('%', #{borrowUserNameSrch}, '%')
+			</if>
+			<!-- 借款标题 -->
+			<if test="borrowNameSrch != null and borrowNameSrch != ''">
+				AND b.name LIKE CONCAT('%', #{borrowNameSrch}, '%')
+			</if>
+			<!-- 还款状态0还款中,1已还款 -->
+			<if test="recoverStatusSrch != null and recoverStatusSrch != ''">
+				<if test="recoverStatusSrch ==0">
+					AND br.recover_status=0
+				</if>
+				<if test="recoverStatusSrch ==1">
+					AND br.recover_status=1
+				</if>
+			</if>
+		</where>
+	</sql>
+
+	<select id="countBorrowRepayment" resultType="java.lang.Long" parameterType="com.hyjf.mybatis.model.customize.RepayExceptionCustomize">
+		SELECT
+		count(*)
+		FROM
+		huiyingdai_borrow AS b
+		LEFT JOIN huiyingdai_users u ON b.user_id = u.user_id
+		INNER JOIN huiyingdai_borrow_apicron AS ba ON b.borrow_nid = ba.borrow_nid
+		AND ba.api_type = 1
+		AND ba.repay_status IN (0, 2, 9)
+		<if test="monthType == '0'.toString()">
+			INNER JOIN huiyingdai_borrow_recover_plan AS br ON b.borrow_nid = br.borrow_nid and br.recover_period = ba.period_now
+		</if>
+		<if test="monthType != '0'.toString()">
+			INNER JOIN huiyingdai_borrow_recover AS br ON b.borrow_nid = br.borrow_nid
+		</if>
+		LEFT JOIN huiyingdai_users u2 ON br.user_id = u2.user_id
+		<include refid="Where_Clause" />
+	</select>
+
+	<resultMap id="searchBorrowRepaymentListResultMap" type="com.hyjf.mybatis.model.customize.RepayExceptionCustomize">
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="borrow_userid" property="userId" jdbcType="INTEGER" />
+		<result column="borrow_username" property="borrowUserName" jdbcType="VARCHAR" />
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<result column="recover_period" property="recoverPeriod" jdbcType="VARCHAR" />
+		<result column="tender_userid" property="tenderUserId" jdbcType="INTEGER" />
+		<result column="tender_username" property="tenderUserName" jdbcType="VARCHAR" />
+		<result column="recover_account" property="recoverAccount" jdbcType="DECIMAL" />
+		<result column="recover_fee" property="recoverFee" jdbcType="DECIMAL" />
+		<result column="recover_account_yes" property="recoverAccountYes" jdbcType="DECIMAL" />
+		<result column="recover_status" property="recoverStatus" jdbcType="INTEGER" />
+		<result column="recover_yestime" property="recoverYestime" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectBorrowRepaymentList" resultMap="searchBorrowRepaymentListResultMap" parameterType="com.hyjf.mybatis.model.customize.RepayExceptionCustomize">
+		SELECT
+			br.borrow_nid,
+			b.user_id AS borrow_userid,
+			u.username AS borrow_username,
+			b.`name` as borrow_name,
+			<if test="monthType == '0'.toString()">
+			br.recover_period,
+			</if>
+			<if test="monthType != '0'.toString()">
+			'' as recover_period,
+			</if>
+			br.user_id AS tender_userid,
+			u2.username AS tender_username,
+			br.recover_account,
+			br.recover_fee,
+			br.recover_account_yes,
+			br.recover_status,
+			FROM_UNIXTIME(br.recover_yestime, '%Y-%m-%d') as recover_yestime
+		FROM
+		huiyingdai_borrow AS b
+		LEFT JOIN huiyingdai_users u ON b.user_id = u.user_id
+		INNER JOIN huiyingdai_borrow_apicron AS ba ON
+		b.borrow_nid = ba.borrow_nid
+		AND ba.api_type = 1
+		AND ba.repay_status IN (0, 2, 9)
+		<if test="monthType == '0'.toString()">
+			INNER JOIN huiyingdai_borrow_recover_plan AS br ON b.borrow_nid = br.borrow_nid and br.recover_period = ba.period_now
+		</if>
+		<if test="monthType != '0'.toString()">
+			INNER JOIN huiyingdai_borrow_recover AS br ON b.borrow_nid = br.borrow_nid
+		</if>
+		LEFT JOIN huiyingdai_users u2 ON br.user_id = u2.user_id
+		<include refid="Where_Clause" />
+		ORDER BY
+		b.repay_next_time ASC
+		<if test="limitStart >= 0">
+			LIMIT #{limitStart} , #{limitEnd}
+		</if>
+	</select>
+
+	<select id="sumBorrowRepaymentInfo" resultType="com.hyjf.mybatis.model.customize.RepayExceptionCustomize" parameterType="com.hyjf.mybatis.model.customize.RepayExceptionCustomize">
+		SELECT
+			SUM(br.recover_account) AS recoverAccount,
+			SUM(br.recover_fee) AS recoverFee,
+			SUM(br.recover_account_yes) AS recoverAccountYes
+		FROM
+		huiyingdai_borrow AS b
+		LEFT JOIN huiyingdai_users u ON b.user_id = u.user_id
+		INNER JOIN huiyingdai_borrow_apicron AS ba ON
+		b.borrow_nid = ba.borrow_nid
+		AND ba.api_type = 1
+		AND ba.repay_status IN (0, 2, 9)
+		<if test="monthType == '0'.toString()">
+			INNER JOIN huiyingdai_borrow_recover_plan AS br ON b.borrow_nid = br.borrow_nid and br.recover_period = ba.period_now
+		</if>
+		<if test="monthType != '0'.toString()">
+			INNER JOIN huiyingdai_borrow_recover AS br ON b.borrow_nid = br.borrow_nid
+		</if>
+		LEFT JOIN huiyingdai_users u2 ON br.user_id = u2.user_id
+		<include refid="Where_Clause" />
+	</select>
+</mapper>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.hyjf.mybatis.mapper.customize.admin.AdminAccountCustomizeQuiryMapper">
+	
+	<resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.customize.admin.OpenAccountEnquiryBean">
+		<result column="user_id" property="userid" jdbcType="VARCHAR" />
+		<!-- <result column="account" property="phone" jdbcType="VARCHAR" />
+		<result column="code" property="idcard" jdbcType="VARCHAR" /> -->
+		<result column="accounts" property="accountStatus" jdbcType="VARCHAR" />
+		<result column="accounttime" property="regTimeEnd" jdbcType="TIMESTAMP" />
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<result column="account" property="platform" jdbcType="INTEGER" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+        <result column="role_id" property="roleId" jdbcType="VARCHAR" />
+        <result column="truename" property="name" jdbcType="VARCHAR" />
+        <result column="idNo" property="idNo" jdbcType="VARCHAR" />
+        <result column="bankaccount" property="account" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="accountEnquiry" parameterType="java.util.Map" resultMap="BaseResultMap" >
+    SELECT users.user_id,reg_esb account,bank_open_account accounts,users.mobile,users.username,
+      hboa.create_time accounttime,
+      hu1.role_id role_id,
+      hu1.truename truename,
+      hu1.idcard idNo,
+      hboa.account bankaccount
+      FROM huiyingdai_users users
+      left join huiyingdai_users_info hu1 on hu1.user_id=users.user_id
+      left join hyjf_bank_open_account hboa on hboa.user_id=users.user_id
+      WHERE 1=1
+    <if test="phone != null" >
+      and mobile =#{phone}
+    </if>
+    <if test="username != null" >
+      and username =#{username}
+    </if>
+    <if test="idcard != null" >
+      and user_id =(SELECT user_id FROM huiyingdai_users_info WHERE idcard=#{idcard})
+    </if>
+  </select>
+  
+  
+  <resultMap id="LogMap" type="com.hyjf.mybatis.model.auto.BankOpenAccountLog" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="id_type" property="idType" jdbcType="VARCHAR" />
+    <result column="id_no" property="idNo" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="card_no" property="cardNo" jdbcType="VARCHAR" />
+    <result column="acct_use" property="acctUse" jdbcType="VARCHAR" />
+    <result column="last_srv_auth_code" property="lastSrvAuthCode" jdbcType="VARCHAR" />
+    <result column="user_ip" property="userIp" jdbcType="VARCHAR" />
+    <result column="acq_res" property="acqRes" jdbcType="VARCHAR" />
+    <result column="client" property="client" jdbcType="TINYINT" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="create_user_id" property="createUserId" jdbcType="INTEGER" />
+    <result column="create_user_name" property="createUserName" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user_id" property="updateUserId" jdbcType="INTEGER" />
+    <result column="update_user_name" property="updateUserName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="bankOpenAccountLogSelect" parameterType="com.hyjf.mybatis.model.auto.BankOpenAccountLog" resultMap="LogMap" >
+    SELECT order_id,create_time FROM hyjf_bank_open_account_log WHERE 1=1 
+    <if test="mobile != null" >
+      and mobile =#{mobile}
+    </if>
+    <if test="idNo != null" >
+      and id_no =#{idNo}
+    </if>
+  </select>
+	
+</mapper>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.app.AppChannelStatisticsDetailCustomizeMapper">
+
+	<resultMap id="selectListMap" type="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsDetailCustomize">
+		<result column="id" property="id" jdbcType="INTEGER" />
+		<result column="source_id" property="sourceId" jdbcType="INTEGER" />
+		<result column="source_name" property="sourceName" jdbcType="VARCHAR" />
+		<result column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="register_time" property="registerTime" jdbcType="TIMESTAMP" />
+		<result column="open_account_time" property="openAccountTime" jdbcType="TIMESTAMP" />
+		<result column="first_invest_time" property="firstInvestTime" jdbcType="INTEGER" />
+		<result column="cumulative_invest" property="cumulativeInvest" jdbcType="DECIMAL" />
+		<result column="invest_amount" property="investAmount" jdbcType="DECIMAL" />
+		<result column="invest_project_type" property="investProjectType" jdbcType="VARCHAR" />
+		<result column="invest_project_period" property="investProjectPeriod" jdbcType="VARCHAR" />
+		<result column="sex" property="sex" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="exportList" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsDetailCustomize">
+		SELECT
+			t.id,
+			t.source_id,
+			t.source_name,
+			t.user_id,
+			t.user_name,
+			t.register_time,
+			t.open_account_time,
+			t.first_invest_time,
+			t.cumulative_invest,
+			t.invest_amount,
+			t.invest_project_type,
+			t.invest_project_period,
+			CASE ui.sex
+			WHEN 1 THEN '男'
+			WHEN 2 THEN '女'
+			ELSE '未知'  END AS sex
+		FROM
+			hyjf_app_channel_statistics_detail t
+			LEFT JOIN huiyingdai_users_info ui ON t.user_id = ui.user_id
+		<where>
+		    <if test="userName != null and userName !='' " >
+		      AND t.user_name LIKE CONCAT('%', #{userName}, '%')
+		    </if>
+		    <if test="sourceId != null and sourceId != ''" >
+		      AND t.source_id <![CDATA[=]]> #{sourceId}
+		    </if>
+		    <if test="utmIdsSrch != null and utmIdsSrch != ''">
+				AND t.source_id in
+				<foreach collection="utmIdsSrch" open="(" close=")" separator="," item="utmId">
+					#{utmId}
+				</foreach>
+			</if>
+		</where>
+			ORDER BY t.register_time DESC
+	</select>
+	
+	<!-- 后台展示列表 -->
+	<select id="selectList" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsDetailCustomize">
+		SELECT
+			t.id,
+			t.source_id,
+			t.source_name,
+			t.user_id,
+			t.user_name,
+			t.register_time,
+			t.open_account_time,
+			t.first_invest_time,
+			t.cumulative_invest,
+			t.invest_amount,
+			t.invest_project_type,
+			t.invest_project_period
+		FROM
+			hyjf_app_channel_statistics_detail t
+		<where>
+		    <if test="userName != null and userName !='' " >
+		      AND t.user_name LIKE CONCAT('%', #{userName}, '%')
+		    </if>
+		    <if test="sourceId != null and sourceId != ''" >
+		      AND t.source_id <![CDATA[=]]> #{sourceId}
+		    </if>
+		    <if test="utmIdsSrch != null and utmIdsSrch != ''">
+				AND t.source_id in
+				<foreach collection="utmIdsSrch" open="(" close=")" separator="," item="utmId">
+					#{utmId}
+				</foreach>
+			</if>
+		</where>
+			ORDER BY t.register_time DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<select id="countList" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.app.AppChannelStatisticsDetailCustomize">
+		SELECT
+			COUNT(1)
+		FROM
+			hyjf_app_channel_statistics_detail t
+		<where>
+		    <if test="userName != null and userName !='' " >
+		      AND t.user_name LIKE CONCAT('%', #{userName}, '%')
+		    </if>
+		    <if test="sourceId != null and sourceId != ''" >
+		      AND t.source_id <![CDATA[=]]> #{sourceId}
+		    </if>
+		    <if test="utmIdsSrch != null and utmIdsSrch != ''">
+				AND t.source_id in
+				<foreach collection="utmIdsSrch" open="(" close=")" separator="," item="utmId">
+					#{utmId}
+				</foreach>
+			</if>
+		</where>
+	</select>
+	
+	 <update id="updateAppChannelStatisticsDetail" parameterType="map" >
+	    UPDATE hyjf_app_channel_statistics_detail 
+		SET cumulative_invest = cumulative_invest + #{accountDecimal,jdbcType=DECIMAL}
+		WHERE
+			id = #{id,jdbcType=BIGINT}
+  	</update>
+	<update id="updateFirstAppChannelStatisticsDetail" parameterType="map" >
+	    UPDATE hyjf_app_channel_statistics_detail 
+		SET cumulative_invest = cumulative_invest + #{accountDecimal,jdbcType=DECIMAL},
+		invest_amount = #{accountDecimal,jdbcType=DECIMAL},
+		invest_project_type = #{projectType},
+		first_invest_time = #{investTime},
+		invest_project_period = #{investProjectPeriod}
+		WHERE
+			id = #{id,jdbcType=BIGINT}
+  	</update>
+	
+	<update id="updateFirstUtmReg" parameterType="map" >
+	    UPDATE huiyingdai_utm_reg 
+		SET invest_amount = #{accountDecimal,jdbcType=DECIMAL},
+		invest_project_type = #{projectType},
+		invest_time = #{investTime},
+		invest_project_period = #{investProjectPeriod}
+		WHERE
+			id = #{id,jdbcType=BIGINT}
+  	</update>
+</mapper>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.act.ActCustomizeMapper">
+
+	<select id="selectBalloonList" resultType="com.hyjf.mybatis.model.auto.ActdecTenderBalloon" parameterType="map">
+		SELECT
+			id, user_id AS userId, user_name AS userName, true_name AS trueName, mobile, tender_money AS tenderMoney, is_first_tender AS isFirstTender, balloon_count AS balloonCount, ballon_can_receive AS ballonCanReceive, 
+    		ballon_received AS ballonReceived, reward_name AS rewardName, send_status AS sendStatus, tender_time AS tenderTime, update_time AS updateTime
+		FROM
+			hyjf_actdec_tender_balloon tb
+		WHERE 1=1
+		<if test="sendStatus != null and sendStatus != ''">
+		and tb.send_status = #{sendStatus}
+		</if>
+		<if test="usernameSrch != null and usernameSrch != ''">
+		and tb.user_name = #{usernameSrch}
+		</if>
+		<if test="truenameSrch != null and truenameSrch != ''">
+		and tb.true_name = #{truenameSrch}
+		</if>
+		<if test="mobileSrch != null and mobileSrch != ''">
+		and tb.mobile = #{mobileSrch}
+		</if>
+		GROUP BY tb.user_id
+		ORDER BY tb.id desc
+		<if test="limitStart != null and limitEnd != null">
+			limit #{limitStart},#{limitEnd}
+		</if>
+	</select>
+	
+	<select id="countBalloonList" resultType="int" parameterType="map">
+	SELECT IFNULL(COUNT(t.user_id),0) FROM (
+		SELECT
+			tb.user_id
+		FROM
+			hyjf_actdec_tender_balloon tb
+		WHERE 1=1
+		<if test="sendStatus != null and sendStatus != ''">
+		and tb.send_status = #{sendStatus}
+		</if>
+		<if test="usernameSrch != null and usernameSrch != ''">
+		and tb.user_name = #{usernameSrch}
+		</if>
+		<if test="truenameSrch != null and truenameSrch != ''">
+		and tb.true_name = #{truenameSrch}
+		</if>
+		<if test="mobileSrch != null and mobileSrch != ''">
+		and tb.mobile = #{mobileSrch}
+		</if>
+		GROUP BY tb.user_id) t
+		
+	</select>
+
+</mapper>

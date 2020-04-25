@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.InviteUserCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+			<!-- 用户名 -->
+			<if test="userName != null and userName != ''">
+				AND u.username LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<!-- 手机号 -->
+			<if test="mobile != null and mobile != ''">
+				AND u.mobile LIKE CONCAT('%', #{mobile}, '%')
+			</if>
+			<!-- 部门 -->
+			<if test="combotreeListSrch != null and combotreeListSrch != ''">
+				AND od2.id in
+				<foreach collection="combotreeListSrch" open="(" close=")" separator="," item="dep">
+					#{dep}
+				</foreach>
+			</if>
+			
+			<!-- 用户属性 -->
+			<if test="userAttrCd != null">
+				AND ui.attribute = #{userAttrCd}
+			</if>
+			
+			<!-- 可用推荐星数量 -->
+			<if test="recommendValidCountMin != null">
+				AND (ir.prize_all_count - ir.prize_used_count) <![CDATA[>=]]> #{recommendValidCountMin}
+			</if>
+			<if test="recommendValidCountMax != null">
+				AND (ir.prize_all_count - ir.prize_used_count) <![CDATA[<=]]> #{recommendValidCountMax}
+			</if>
+			
+			<!-- 累计推荐星数量 -->
+			<if test="recommendAllCountMin != null">
+				AND ir.prize_all_count <![CDATA[>=]]> #{recommendAllCountMin}
+			</if>
+			<if test="recommendAllCountMax != null">
+				AND ir.prize_all_count <![CDATA[<=]]> #{recommendAllCountMax}
+			</if>
+			<!-- 使用推荐星数量 -->
+			<if test="recommendUsedCountMin != null">
+				AND ir.prize_used_count <![CDATA[>=]]> #{recommendUsedCountMin}
+			</if>
+			<if test="recommendUsedCountMax != null">
+				AND ir.prize_used_count <![CDATA[<=]]> #{recommendUsedCountMax}
+			</if>
+		</where>
+	</sql>
+
+	<resultMap id="InviteUser" type="com.hyjf.mybatis.model.customize.admin.InviteUserCustomize">
+		<id column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="username" property="userName" />
+		<result column="truename" property="trueName" />
+		<result column="mobile" property="mobile" />
+		<result column="departmentName" property="departmentName" />
+		<result column="userAttrName" property="userAttrName" />
+		<result column="recommendValidCount" property="recommendValidCount" />
+		<result column="recommendAllCount" property="recommendAllCount" />
+		<result column="recommendUsedCount" property="recommendUsedCount" />
+	</resultMap>
+	<select id="selectInviteUserList" resultMap="InviteUser" parameterType="com.hyjf.mybatis.model.customize.admin.InviteUserCustomize">
+		SELECT
+			u.user_id,
+			u.username,
+			ui.truename,
+			u.mobile,
+			od2.`name` AS departmentName,
+			pn.`name` AS userAttrName,
+			ir.prize_all_count - ir.prize_used_count AS recommendValidCount,
+			ir.prize_all_count AS recommendAllCount,
+			ir.prize_used_count AS recommendUsedCount
+		FROM
+			hyjf_invite_recommend ir
+		INNER JOIN huiyingdai_users u ON ir.user_id = u.user_id
+		INNER JOIN huiyingdai_users_info ui ON u.user_id = ui.user_id
+		LEFT JOIN hyjf_param_name pn ON ui.attribute = pn.name_cd
+		AND pn.name_class = 'USER_PROPERTY'
+		LEFT JOIN `hyjf_crm`.`oa_users` `ou` ON `ou`.hyd_id = u.referrer AND ou.user_status IN ('E','Q1','Q11','Q2','Q21')
+		LEFT JOIN `hyjf_crm`.`oa_department` `od` ON `od`.`id` = `ou`.`departmentid` AND `od`.id IS NOT NULL
+		LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+		<include refid="Where_Clause" />
+		ORDER BY
+			ir.update_time DESC
+		<if test="limitStart != null and limitStart >= 0 and limitEnd !=null and limitEnd >= 0" >
+    		LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+   		</if>
+	</select>
+	
+	<select id="selectInviteUserTotal" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.admin.InviteUserCustomize">
+		SELECT
+			count(1)
+		FROM
+			hyjf_invite_recommend ir
+		INNER JOIN huiyingdai_users u ON ir.user_id = u.user_id
+		INNER JOIN huiyingdai_users_info ui ON u.user_id = ui.user_id
+		LEFT JOIN hyjf_param_name pn ON ui.attribute = pn.name_cd
+		AND pn.name_class = 'USER_PROPERTY'
+		LEFT JOIN `hyjf_crm`.`oa_users` `ou` ON `ou`.hyd_id = u.referrer AND ou.user_status IN ('E','Q1','Q11','Q2','Q21')
+		LEFT JOIN `hyjf_crm`.`oa_department` `od` ON `od`.`id` = `ou`.`departmentid` AND `od`.id IS NOT NULL
+		LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+		<include refid="Where_Clause" />
+	</select>
+
+	
+</mapper>

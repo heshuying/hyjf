@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.hyjf.mybatis.mapper.customize.BorrowUserCustomizeMapper">
+	<resultMap id="userInfoMapResult" type="com.hyjf.mybatis.model.auto.Users">
+		<result column="user_id" property="userId" /> <!-- 用户id -->
+	</resultMap>
+	<select id="searchBorrowUserList" resultMap="userInfoMapResult">
+		SELECT
+			hdu.user_id AS user_id
+		FROM
+			huiyingdai_users hdu
+		INNER JOIN huiyingdai_users_info hdui ON hdu.user_id = hdui.user_id
+		AND hdui.role_id = 2
+	</select>
+	<select id="getBorrowUserBankWaitRepay" parameterType="map" resultType="java.math.BigDecimal">
+		SELECT 
+			IFNULL(SUM(IFNULL(hbr.repay_fee, 0) - IFNULL(hb.borrow_manager, 0)),0)
+		FROM huiyingdai_borrow hb
+		INNER JOIN huiyingdai_borrow_repay hbr ON hbr.borrow_nid = hb.borrow_nid
+		WHERE
+			hb.user_id = #{userId}
+		AND hb.`status` = 4
+		GROUP BY
+			hb.user_id
+	</select>
+</mapper>

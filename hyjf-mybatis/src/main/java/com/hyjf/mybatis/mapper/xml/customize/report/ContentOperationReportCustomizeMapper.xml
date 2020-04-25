@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.report.ContentOperationReportCustomizeMapper">
+    <resultMap id="OperationReportMap" type="com.hyjf.mybatis.model.customize.report.OperationReportCustomize">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="cn_name" property="cnName" jdbcType="VARCHAR"/>
+        <result column="en_name" property="enName" jdbcType="VARCHAR"/>
+        <result column="year" property="year" jdbcType="VARCHAR"/>
+        <result column="operation_report_type" property="operationReportType" jdbcType="TINYINT"/>
+        <result column="all_amount" property="allAmount" jdbcType="DECIMAL"/>
+        <result column="all_profit" property="allProfit" jdbcType="DECIMAL"/>
+        <result column="regist_num" property="registNum" jdbcType="BIGINT"/>
+        <result column="success_deal_num" property="successDealNum" jdbcType="INTEGER"/>
+        <result column="operation_amount" property="operationAmount" jdbcType="DECIMAL"/>
+        <result column="operation_profit" property="operationProfit" jdbcType="DECIMAL"/>
+        <result column="is_release" property="isRelease" jdbcType="TINYINT"/>
+        <result column="is_delete" property="isDelete" jdbcType="TINYINT"/>
+        <result column="release_time" property="releaseTimeStr" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="INTEGER"/>
+        <result column="update_user_id" property="updateUserId" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="INTEGER"/>
+        <result column="create_user_id" property="createUserId" jdbcType="INTEGER"/>
+    </resultMap>
+    <resultMap id="ReportCustomizeMap" type="com.hyjf.mybatis.model.customize.report.OperationReportCustomize">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="cn_name" property="cnName" jdbcType="VARCHAR"/>
+        <result column="en_name" property="enName" jdbcType="VARCHAR"/>
+        <result column="year" property="year" jdbcType="VARCHAR"/>
+        <result column="operation_report_type" property="operationReportType" jdbcType="TINYINT"/>
+        <result column="all_amount" property="allAmount" jdbcType="DECIMAL"/>
+        <result column="all_profit" property="allProfit" jdbcType="DECIMAL"/>
+        <result column="regist_num" property="registNum" jdbcType="BIGINT"/>
+        <result column="success_deal_num" property="successDealNum" jdbcType="INTEGER"/>
+        <result column="operation_amount" property="operationAmount" jdbcType="DECIMAL"/>
+        <result column="operation_profit" property="operationProfit" jdbcType="DECIMAL"/>
+        <result column="is_release" property="isRelease" jdbcType="TINYINT"/>
+        <result column="is_delete" property="isDelete" jdbcType="TINYINT"/>
+        <result column="release_time" property="releaseTimeStr" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="INTEGER"/>
+        <result column="update_user_id" property="updateUserId" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="INTEGER"/>
+        <result column="create_user_id" property="createUserId" jdbcType="INTEGER"/>
+        <result column="typeRealName" property="typeRealName" jdbcType="INTEGER"/>
+    </resultMap>
+    <sql id="Where_Clause">
+        <where>
+            is_delete = 0
+            <if test="isRelease != null and isRelease != ''">
+                AND is_release = #{isRelease}
+            </if>
+            <if test="timeStar != null and timeStar != ''">
+                AND create_time <![CDATA[>=]]> UNIX_TIMESTAMP(#{timeStar})
+            </if>
+            <if test="timeEnd != null and timeEnd != ''">
+                AND create_time <![CDATA[<=]]> UNIX_TIMESTAMP(#{timeEnd})
+            </if>
+        </where>
+    </sql>
+
+    <select id="countRecord" resultType="java.lang.Integer" parameterType="java.util.Map">
+        SELECT
+        count(id)
+        FROM
+        hyjf_operation_report
+        <include refid="Where_Clause"/>
+    </select>
+    <select id="getCustomizeRecordList" resultMap="ReportCustomizeMap" parameterType="java.util.Map">
+        SELECT
+        a.id, cn_name, en_name, operation_report_type,
+        CASE operation_report_type
+        WHEN 1 THEN (SELECT  CONCAT(MONTH,'月份') from hyjf_monthly_operation_report where operation_report_id =a.id limit 1)
+        WHEN 2 THEN (SELECT  case quarter_type when 1 THEN '一季度' when 2 THEN '二季度' when 3 THEN '三季度' ELSE '四季度' END quarter_type from hyjf_quarter_operation_report where operation_report_id =a.id limit 1)
+        WHEN 3 THEN '上半年'
+        WHEN 4 THEN '年度'
+        ELSE '' END typeRealName,
+        CASE operation_report_type
+        WHEN 1 THEN (SELECT  MONTH from hyjf_monthly_operation_report where operation_report_id =a.id limit 1)
+        WHEN 2 THEN (SELECT  quarter_type from hyjf_quarter_operation_report where operation_report_id =a.id limit 1)
+        ELSE '' END sortMonth,
+        all_amount, all_profit, regist_num,
+        success_deal_num, operation_amount, operation_profit,is_release, is_delete,FROM_UNIXTIME(release_time,'%Y-%m-%d %H:%i:%s') release_time,
+        FROM_UNIXTIME(update_time,'%Y-%m-%d %H:%i:%s') AS update_time,
+        update_user_id,FROM_UNIXTIME(create_time,'%Y-%m-%d %H:%i:%s') AS create_time , create_user_id,year
+        FROM
+        hyjf_operation_report a
+        <include refid="Where_Clause"/>
+        ORDER BY create_time DESC
+        <if test="limitStart != null and limitEnd != null">
+        limit #{limitStart} , #{limitEnd}
+        </if>
+    </select>
+
+    <select id="getRecordList" resultMap="OperationReportMap" parameterType="java.util.Map">
+        SELECT
+        id, cn_name, en_name, operation_report_type, all_amount, all_profit, regist_num,
+        success_deal_num, operation_amount, operation_profit,is_release, is_delete,FROM_UNIXTIME(release_time,'%Y-%m-%d %H:%i:%s') release_time,
+        FROM_UNIXTIME(update_time,'%Y-%m-%d %H:%i:%s') AS update_time,
+        update_user_id,FROM_UNIXTIME(create_time,'%Y-%m-%d %H:%i:%s') AS create_time , create_user_id,year
+        FROM
+        hyjf_operation_report
+        <include refid="Where_Clause"/>
+        ORDER BY create_time DESC
+        <if test="limitStart != null and limitEnd != null">
+            limit #{limitStart} , #{limitEnd}
+        </if>
+    </select>
+
+    <select id="countRecordByMonth" resultType="java.lang.Integer" parameterType="java.util.Map">
+        SELECT
+          count(1)
+        FROM
+        hyjf_operation_report t1
+        INNER join hyjf_monthly_operation_report t2
+        on t1.id = t2.operation_report_id
+        where t1.is_delete = 0 and t1.operation_report_type = 1
+        <if test="monthType != null and monthType != ''">
+          and t2.month = #{monthType}
+        </if>
+    </select>
+    <select id="getRecordListByMonth" resultMap="OperationReportMap" parameterType="java.util.Map">
+        SELECT
+        t1.id, t1.cn_name, t1.en_name, t1.operation_report_type, t1.all_amount, t1.all_profit, t1.regist_num,
+        t1.success_deal_num, t1.operation_amount, t1.operation_profit,  is_release, t1.is_delete, FROM_UNIXTIME(t1.release_time,'%Y-%m-%d %H:%i:%s') as release_time,
+        FROM_UNIXTIME(t1.update_time,'%Y-%m-%d %H:%i:%s') AS update_time, t1.update_user_id,FROM_UNIXTIME(t1.create_time,'%Y-%m-%d %H:%i:%s') AS create_time , t1.create_user_id,t1.year
+        FROM
+        hyjf_operation_report t1
+        INNER join hyjf_monthly_operation_report t2
+        on t1.id = t2.operation_report_id
+        where t1.is_delete = 0 and t1.operation_report_type = 1
+        <if test="monthType != null and monthType != ''">
+            and t2.month = #{monthType}
+        </if>
+        ORDER BY t1.create_time DESC
+        <if test="limitStart != null and limitEnd != null">
+        limit #{limitStart} , #{limitEnd}
+        </if>
+    </select>
+    <select id="countRecordByQuarter" resultType="java.lang.Integer" parameterType="java.util.Map">
+       SELECT
+          count(1)
+        FROM
+        hyjf_operation_report t1
+        INNER join hyjf_quarter_operation_report t2
+        on t1.id = t2.operation_report_id
+        where t1.is_delete = 0 and t1.operation_report_type = 2
+        <if test="quarterType != null and quarterType != ''">
+          and t2.quarter_type = #{quarterType}
+        </if>
+    </select>
+    <select id="getRecordListByQuarter" resultMap="OperationReportMap" parameterType="java.util.Map">
+        SELECT
+        t1.id, t1.cn_name, t1.en_name, t1.operation_report_type, t1.all_amount, t1.all_profit, t1.regist_num,
+        t1.success_deal_num, t1.operation_amount, t1.operation_profit,  is_release, t1.is_delete,FROM_UNIXTIME(t1.release_time,'%Y-%m-%d %H:%i:%s') as release_time,
+        FROM_UNIXTIME(t1.update_time,'%Y-%m-%d %H:%i:%s') AS update_time, t1.update_user_id,FROM_UNIXTIME(t1.create_time,'%Y-%m-%d %H:%i:%s') AS create_time , t1.create_user_id,t1.year
+        FROM
+        hyjf_operation_report t1
+        INNER join hyjf_quarter_operation_report t2
+        on t1.id = t2.operation_report_id
+        where t1.is_delete = 0 and t1.operation_report_type = 2
+        <if test="quarterType != null and quarterType != ''">
+          and t2.quarter_type = #{quarterType}
+        </if>
+        ORDER BY t1.create_time DESC
+        <if test="limitStart != null and limitEnd != null">
+        limit #{limitStart} , #{limitEnd}
+        </if>
+    </select>
+
+    <select id="countRecordByHalfYear" resultType="java.lang.Integer" parameterType="java.util.Map">
+        SELECT
+          count(1)
+        FROM
+        hyjf_operation_report t1
+        INNER join hyjf_half_year_operation_report t2
+        on t1.id = t2.operation_report_id
+        where t1.is_delete = 0 and t1.operation_report_type = 3
+    </select>
+
+    <select id="getRecordListByHalfYear" resultMap="OperationReportMap" parameterType="java.util.Map">
+        SELECT
+        t1.id, t1.cn_name, t1.en_name, t1.operation_report_type, t1.all_amount, t1.all_profit, t1.regist_num,
+        t1.success_deal_num, t1.operation_amount, t1.operation_profit,  is_release, t1.is_delete, FROM_UNIXTIME(t1.release_time,'%Y-%m-%d %H:%i:%s') as release_time,
+        FROM_UNIXTIME(t1.update_time,'%Y-%m-%d %H:%i:%s') AS update_time, t1.update_user_id,FROM_UNIXTIME(t1.create_time,'%Y-%m-%d %H:%i:%s') AS create_time , t1.create_user_id,t1.year
+        FROM
+        hyjf_operation_report t1
+        INNER join hyjf_half_year_operation_report t2
+        on t1.id = t2.operation_report_id
+        where t1.is_delete = 0 and t1.operation_report_type = 3
+        ORDER BY t1.create_time DESC
+        <if test="limitStart != null and limitEnd != null">
+        limit #{limitStart} , #{limitEnd}
+        </if>
+    </select>
+
+    <select id="countRecordByYear" resultType="java.lang.Integer" parameterType="java.util.Map">
+       SELECT
+          count(1)
+        FROM
+        hyjf_operation_report t1
+        INNER join hyjf_year_operation_report t2
+        on t1.id = t2.operation_report_id
+        where t1.is_delete = 0 and t1.operation_report_type = 4
+    </select>
+
+    <select id="selectByPrimaryKey" resultMap="OperationReportMap" parameterType="java.lang.Integer">
+        select
+        id, cn_name, en_name, operation_report_type, all_amount, all_profit, regist_num,
+        success_deal_num, operation_amount, operation_profit,is_release, is_delete,FROM_UNIXTIME(release_time,'%Y-%m-%d %H:%i:%s') release_time,
+        FROM_UNIXTIME(update_time,'%Y-%m-%d %H:%i:%s') AS update_time, update_user_id,FROM_UNIXTIME(create_time,'%Y-%m-%d %H:%i:%s') AS create_time , create_user_id,year
+        from hyjf_operation_report
+        where id = #{id,jdbcType=INTEGER} and is_delete=0
+    </select>
+    <select id="getRecordListByYear" resultMap="OperationReportMap" parameterType="java.util.Map">
+        SELECT
+        t1.id, t1.cn_name, t1.en_name, t1.operation_report_type, t1.all_amount, t1.all_profit, t1.regist_num,
+        t1.success_deal_num, t1.operation_amount, t1.operation_profit,  is_release, t1.is_delete, FROM_UNIXTIME(t1.release_time,'%Y-%m-%d %H:%i:%s') as release_time,
+        FROM_UNIXTIME(t1.update_time,'%Y-%m-%d %H:%i:%s') AS update_time, t1.update_user_id,FROM_UNIXTIME(t1.create_time,'%Y-%m-%d %H:%i:%s') AS create_time , t1.create_user_id,t1.year
+        FROM
+        hyjf_operation_report t1
+        INNER join hyjf_year_operation_report t2
+        on t1.id = t2.operation_report_id
+        where t1.is_delete = 0 and t1.operation_report_type = 4
+        ORDER BY t1.create_time DESC
+        <if test="limitStart != null and limitEnd != null">
+        limit #{limitStart} , #{limitEnd}
+        </if>
+    </select>
+</mapper>

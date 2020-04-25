@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.ProductRedeemDetailCustomizeMapper">
+	<resultMap id="selectRedeemDetailRecordsMap" type="com.hyjf.mybatis.model.customize.ProductRedeemDetailCustomize">
+	    <id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="user_id" property="userId" jdbcType="INTEGER" />
+	    <result column="list_id" property="listId" jdbcType="VARCHAR" />
+	    <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+	    <result column="amount" property="amount" jdbcType="DECIMAL" />
+	    <result column="redeem_time" property="redeemTime" jdbcType="VARCHAR" />
+	    <result column="interest" property="interest" jdbcType="DECIMAL" />
+	    <result column="total" property="total" jdbcType="DECIMAL" />
+	    <result column="referee" property="referee" jdbcType="INTEGER" />
+	    <result column="area" property="area" jdbcType="INTEGER" />
+	    <result column="company" property="company" jdbcType="INTEGER" />
+	    <result column="department" property="department" jdbcType="INTEGER" />
+	    <result column="client" property="client" jdbcType="INTEGER" />
+	    <result column="username" property="username" jdbcType="VARCHAR" />
+	    <result column="status" property="status" jdbcType="INTEGER" />
+	</resultMap>
+
+  	<sql id="Where_Clause">
+			<where>
+			<if test="userId != null" >
+		      AND p.user_id = #{userId}
+		    </if>
+		    <if test="listId != null" >
+		      AND p.list_id = #{listId}
+		    </if>
+		    <if test="status != null" >
+		      AND p.status = #{status}
+		    </if>
+		    <if test="username != null" >
+		      AND u.username LIKE CONCAT('%', #{username}, '%')
+		    </if>
+		    <if test="timeStartSrch != null">
+			  AND p.redeem_time <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+		    <if test="timeEndSrch != null">
+			  AND p.redeem_time <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+			</where>
+		</sql>
+	
+   <select id="countRedeemDetailRecord" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.ProductRedeemDetailCustomize">
+		SELECT
+		  COUNT(1)
+			FROM
+				huiyingdai_product_redeem_list p
+			LEFT JOIN huiyingdai_users u ON p.user_id = u.user_id
+		<include refid="Where_Clause" />
+	</select>
+
+	<select id="selectRedeemDetailRecords" resultMap="selectRedeemDetailRecordsMap" parameterType="com.hyjf.mybatis.model.customize.ProductRedeemDetailCustomize">
+			SELECT
+				p.id,
+				p.user_id,
+				p.list_id,
+				p.order_id,
+				p.amount,
+				FROM_UNIXTIME(p.redeem_time,'%Y-%m-%d %H:%i:%s') AS redeem_time,
+				truncate(p.interest,2) AS interest,
+				truncate(p.total,2) AS total,
+				p.referee,
+				p.area,
+				p.company,
+				p.department,
+				p.client,
+				u.username,
+				p.status
+			FROM
+				huiyingdai_product_redeem_list p
+			LEFT JOIN huiyingdai_users u ON p.user_id = u.user_id
+			<include refid="Where_Clause" />
+				ORDER BY  p.redeem_time DESC  
+		    <if test="limitStart >= 0" >
+		      LIMIT #{limitStart} , #{limitEnd}
+		    </if>
+	</select>
+		<select id="selectRedeemListSumByListId" resultMap="selectRedeemDetailRecordsMap"  parameterType="com.hyjf.mybatis.model.customize.ProductRedeemDetailCustomize">
+				SELECT
+				SUM(t.amount) AS amount,
+				SUM(t.interest) AS interest,
+				SUM(t.total) AS total
+				FROM
+					huiyingdai_product_redeem_list t
+			<where>
+		    <if test="listId != null" >
+		      AND t.list_id = #{listId}
+		    </if>
+		      AND t.status = 0
+			</where>
+	</select>
+</mapper>

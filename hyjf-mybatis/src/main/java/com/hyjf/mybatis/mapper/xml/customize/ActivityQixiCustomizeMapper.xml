@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.ActivityQixiCustomizeMapper">
+	<update id="updateActivityQixi" parameterType="list">
+		<foreach collection="list" item="item" index="index" separator=";">
+			UPDATE hyjf_activity_qixi
+			SET reward_type =
+			CASE WHEN
+			(#{item.money}>=5000 and #{item.money}&lt;7000)
+			or (#{item.money}>=50000 and #{item.money}&lt;70000)
+			or (#{item.money}>=150000 and #{item.money}&lt;170000)
+			or (#{item.money}>=650000 and #{item.money}&lt;700000)
+			THEN '加息券'
+			WHEN #{item.money}>=7000  THEN '实物' end,
+			reward_name =
+			CASE WHEN
+			(#{item.money}>=5000 and #{item.money}&lt;7000) THEN '1.5%加息券'
+			WHEN (#{item.money}>=50000 and #{item.money}&lt;70000) THEN '1.6%加息券'
+			WHEN (#{item.money}>=150000 and #{item.money}&lt;170000) THEN '1.7%加息券'
+			WHEN (#{item.money}>=650000 and #{item.money}&lt;700000) THEN '1.8%加息券'
+			WHEN (#{item.money}>=7000 and #{item.money}&lt;17000) THEN '19.8元爱奇艺会员卡·月卡'
+			WHEN (#{item.money}>=17000 and #{item.money}&lt;50000) THEN '69元美菱家用加湿机'
+			WHEN (#{item.money}>=70000 and #{item.money}&lt;150000) THEN '300元京东E卡电子卡'
+			WHEN (#{item.money}>=170000 and #{item.money}&lt;650000) THEN '698元上海迪士尼双人门票'
+			WHEN (#{item.money}>=700000 and #{item.money}&lt;1700000) THEN '3290元戴森(Dyson) 吹风机 Dyson Supersonic 电吹风 进口家用 HD01'
+			WHEN (#{item.money}>=1700000) THEN '携程8000元礼品卡(8张1000元电子卡)' end,
+			reward_id =
+			CASE WHEN
+			(#{item.money}>=5000 and #{item.money}&lt;7000) THEN 'PJ3916427'
+			WHEN (#{item.money}>=50000 and #{item.money}&lt;70000) THEN 'PJ7694352'
+			WHEN (#{item.money}>=150000 and #{item.money}&lt;170000) THEN 'PJ4286173'
+			WHEN (#{item.money}>=650000 and #{item.money}&lt;700000) THEN 'PJ9183025' end,
+			distribution_status =
+			CASE
+			WHEN (#{item.money}>=7000 and #{item.money}&lt;17000)
+			or (#{item.money}>=17000 and #{item.money}&lt;50000)
+			or (#{item.money}>=70000 and #{item.money}&lt;150000)
+			or (#{item.money}>=170000 and #{item.money}&lt;650000)
+			or (#{item.money}>=700000 and #{item.money}&lt;1700000)
+			or (#{item.money}>=1700000) THEN 1
+			ELSE 0
+			end,
+			reward_status =
+			CASE WHEN
+			(#{item.money}>=5000 and #{item.money}&lt;7000)
+			or (#{item.money}>=50000 and #{item.money}&lt;70000)
+			or (#{item.money}>=150000 and #{item.money}&lt;170000)
+			or (#{item.money}>=650000 and #{item.money}&lt;700000)
+			THEN 1
+			ELSE 0 end,
+			send_time = now()
+			WHERE user_id = #{item.userId}
+			
+		</foreach>
+	</update>
+
+</mapper>

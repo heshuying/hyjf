@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.InterestSumCustomizeMapper">
+	
+	<!-- 根据用户id查询用户汇直投的累计收益 -->
+	<select id="getHtlInvestInterestSum" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+		SELECT
+			IFNULL(SUM(hpi.interest),0)
+		FROM
+			huiyingdai_product_interest hpi
+		WHERE hpi.user_id = #{userId}
+	</select>
+	
+	<!-- 根据用户id查询用户汇转让的累计收益 -->
+	<select id="getHzrInvestInterestSum" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+		SELECT
+			IFNULL(SUM(hcr.assign_repay_interest),0)
+		FROM
+			 huiyingdai_credit_repay hcr
+		WHERE hcr.user_id = #{userId}
+		AND hcr.status = 1
+	</select>
+	<!-- 根据用户Id查询用户 -->
+	<select id="getHztInvestInterestSum" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+		SELECT
+			IFNULL(SUM(hbr.recover_interest_yes),0)
+		FROM huiyingdai_borrow_recover hbr
+		WHERE hbr.user_id = #{userId}
+	</select>
+	<!-- 出让人出让的债权利息 -->
+	<select id="getHztCreditInterestSum" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+		SELECT 
+			IFNULL(SUM(hct.assign_repay_interest),0)
+		FROM huiyingdai_credit_tender hct
+		where hct.credit_user_id = #{userId}
+	</select>
+	<!-- 出人人收到承接的垫付利息 -->
+	<select id="getHzrCreditInterestAdvance" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+		SELECT 
+			IFNULL(SUM(hct.assign_interest_advance),0)
+		FROM huiyingdai_credit_tender hct
+		where hct.credit_user_id = #{userId}
+	</select>
+	<!-- 融通宝加息部分的已还收益 -->
+	<select id="getIncreaseInterestSum" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+		SELECT 
+			IFNULL(SUM(hiil.repay_interest_yes),0)
+		FROM hyjf_increase_interest_loan hiil
+		where hiil.user_id = #{userId}
+	</select>
+	
+	<!--优惠券部分的已还收益 -->
+	<select id="getCouponInterestSum" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+		SELECT 
+			IFNULL(SUM(hbtc.recover_account_yes),0)
+		FROM hyjf_borrow_tender_cpn hbtc
+		where hbtc.user_id = #{userId}
+	</select>
+</mapper>

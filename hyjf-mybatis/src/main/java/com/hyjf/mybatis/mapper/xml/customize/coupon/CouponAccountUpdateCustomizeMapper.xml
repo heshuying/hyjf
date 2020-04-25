@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.coupon.CouponAccountUpdateCustomizeMapper">
+
+	<!-- 根据用户编号查询用户的唯一快捷卡 -->
+	<select id="selectDataForAccountUpdate" resultType="java.util.Map">
+		SELECT
+			c.user_id,
+			SUM(IFNULL(r.recover_account,0)) AS recover_account
+		FROM
+			hyjf_coupon_recover r
+		INNER JOIN hyjf_borrow_tender_cpn c ON r.tender_id = c.nid
+		WHERE
+			r.recover_status = 0
+		GROUP BY
+			c.user_id
+		ORDER BY
+			c.user_id 
+	</select>
+
+</mapper>

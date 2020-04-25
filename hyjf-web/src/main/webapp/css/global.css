@@ -1,0 +1,14 @@
+@charset "utf-8";
+*{ margin:0; padding:0;}
+ul { list-style:none;}
+a{text-decoration:none;}
+a img { border:0;}
+.fl{float:left;}
+.fr{float:right;}
+.cb{clear:both;}
+.dn{display:none;}
+i, cite, em, var, address, dfn { font-style:normal;}
+input, button{outline: none;}
+input,img{vertical-align:middle;}
+input,select,textarea{border:0;border-radius:0;}
+body { font:12px/1.5 ' 宋体'; color:#000000;background:#f3f3f3;}

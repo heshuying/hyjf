@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.RechargeFeeCustomizeMapper">
+	<resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.customize.RechargeFeeCustomize">
+		<result column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="username" property="userName" jdbcType="VARCHAR" />
+		<result column="start_time" property="startTime" jdbcType="INTEGER" />
+		<result column="end_time" property="endTime" jdbcType="INTEGER" />
+		<result column="recharge_amount" property="rechargeAmount" jdbcType="DECIMAL" />
+		<result column="recharge_fee" property="rechargeFee" jdbcType="DECIMAL" />
+	</resultMap>
+
+	<resultMap id="rechargeFeeStatisticsMap" type="com.hyjf.mybatis.model.customize.RechargeFeeStatisticsCustomize">
+		<result column="recharge_amount" property="rechargeAmount" jdbcType="DECIMAL" />
+		<result column="personal_amount" property="personalAmount" jdbcType="DECIMAL" />
+		<result column="quick_amount" property="quickAmount" jdbcType="DECIMAL" />
+		<result column="comp_amount" property="compAmount" jdbcType="DECIMAL" />
+		<result column="dianfu_amount" property="dianfuAmount" jdbcType="DECIMAL" />
+	</resultMap>
+	
+	
+	<resultMap id="rechargeFeeStatisticsSumMap" type="com.hyjf.mybatis.model.customize.RechargeFeeStatisticsCustomize">
+		<result column="recharge_amount_sum" property="rechargeAmountSum" jdbcType="DECIMAL" />
+		<result column="personal_amount_sum" property="personalAmountSum" jdbcType="DECIMAL" />
+		<result column="quick_amount_sum" property="quickAmountSum" jdbcType="DECIMAL" />
+		<result column="comp_amount_sum" property="compAmountSum" jdbcType="DECIMAL" />
+		<result column="fee_sum" property="feeSum" jdbcType="DECIMAL" />
+	</resultMap>
+	
+
+	<!-- 根据时间查询借款人充值手续费 -->
+	<select id="selectRechargeFeeReconciliationList" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.customize.RechargeFeeCustomize">
+			SELECT
+				re.user_id,
+				u.username,
+				SUM(re.money) AS recharge_amount,
+				SUM(re.dianfu_fee) AS recharge_fee
+			FROM
+				huiyingdai_account_recharge re
+			LEFT JOIN huiyingdai_users u ON re.user_id = u.user_id
+			LEFT JOIN huiyingdai_users_info ui ON ui.user_id = u.user_id
+			WHERE
+				re. STATUS = 1
+			AND ui.role_id = 2
+			AND u.open_account = 1
+			<if test="startTime != null">
+			  AND re.create_time <![CDATA[>=]]> #{startTime}
+			</if>
+		    <if test="endTime != null">
+			  AND re.create_time <![CDATA[<=]]> #{endTime}
+			</if>
+			GROUP BY
+				re.user_id		
+	</select>
+
+
+	<!-- 查询重复支付订单 -->
+	<select id="selectTransferRepeatList" resultType="com.hyjf.mybatis.model.auto.UserTransfer" >
+		SELECT
+				id,
+				order_id,
+				out_user_id,
+				out_user_name,
+				in_user_id,
+				in_user_name,
+				transfer_amount,
+				transfer_url,
+				transfer_time,
+				`status`,
+				transfer_type,
+				remark,
+				create_user_id,
+				create_time,
+				update_user_id,
+				update_time,
+				create_user_name,
+				reconciliation_id
+		FROM
+			hyjf_user_transfer
+		WHERE
+			reconciliation_id IS NOT NULL
+		AND `status` = 2
+		GROUP BY
+			reconciliation_id,
+			transfer_amount
+		HAVING
+			count(*) <![CDATA[>]]> 1	
+	</select>
+
+	<!-- 充值手续费统计查询 -->
+	<select id="selectRechargeFeeStatistics" resultMap="rechargeFeeStatisticsMap" parameterType="com.hyjf.mybatis.model.customize.RechargeFeeStatisticsCustomize">
+		SELECT
+				a.recharge_amount,
+				a.personal_amount,
+				a.quick_amount,
+				a.comp_amount,
+				a.dianfu_amount
+			FROM
+				(
+				SELECT 
+					(
+						SELECT
+							SUM(money)
+						FROM
+							huiyingdai_account_recharge
+						WHERE
+							`status` = 1 
+						  	AND gate_type != 'ADMIN'
+						<if test="startTime != null">
+						  AND create_time <![CDATA[>=]]> #{startTime}
+						</if>
+					    <if test="endTime != null">
+						  AND create_time <![CDATA[<=]]> #{endTime}
+						</if>
+					) AS recharge_amount,
+					(
+						SELECT
+							SUM(money)
+						FROM
+							huiyingdai_account_recharge
+						WHERE
+							`status` = 1
+						AND gate_type = 'QP'
+						<if test="startTime != null">
+						  AND create_time <![CDATA[>=]]> #{startTime}
+						</if>
+					    <if test="endTime != null">
+						  AND create_time <![CDATA[<=]]> #{endTime}
+						</if>
+					) AS quick_amount,
+					(
+						SELECT
+							SUM(money)
+						FROM
+							huiyingdai_account_recharge
+						WHERE
+							`status` = 1
+						AND gate_type = 'B2C'
+						<if test="startTime != null">
+						  AND create_time <![CDATA[>=]]> #{startTime}
+						</if>
+					    <if test="endTime != null">
+						  AND create_time <![CDATA[<=]]> #{endTime}
+						</if>
+
+					) AS personal_amount,
+					(
+						SELECT
+							SUM(money)
+						FROM
+							huiyingdai_account_recharge
+						WHERE
+							`status` = 1
+						AND gate_type = 'B2B'
+						<if test="startTime != null">
+						  AND create_time <![CDATA[>=]]> #{startTime}
+						</if>
+					    <if test="endTime != null">
+						  AND create_time <![CDATA[<=]]> #{endTime}
+						</if>
+
+					) AS comp_amount,
+					(
+						SELECT
+							SUM(dianfu_fee)
+						FROM
+							huiyingdai_account_recharge
+						WHERE
+							`status` = 1
+							AND gate_type != 'ADMIN'
+						<if test="startTime != null">
+						  AND create_time <![CDATA[>=]]> #{startTime}
+						</if>
+					    <if test="endTime != null">
+						  AND create_time <![CDATA[<=]]> #{endTime}
+						</if>
+					) AS dianfu_amount
+				) a 
+
+	</select>
+
+	<!-- 总计查询 -->
+	<select id="selectRechargeFeeStatisticsSum" resultMap="rechargeFeeStatisticsSumMap" parameterType="com.hyjf.mybatis.model.customize.RechargeFeeStatisticsCustomize">
+			SELECT
+				SUM(recharge_amount) AS recharge_amount_sum,
+				SUM(quick_amount) AS quick_amount_sum,
+				SUM(personal_amount) AS personal_amount_sum,
+				SUM(com_amount) AS comp_amount_sum,
+				SUM(fee) AS fee_sum
+			FROM
+				hyjf_recharge_fee_statistics
+			WHERE 1=1 	
+			<if test="startDate != null">
+			  AND stat_date <![CDATA[>=]]> #{startDate}
+			</if>
+		    <if test="endDate != null">
+			  AND stat_date <![CDATA[<=]]> #{endDate}
+			</if>
+
+	</select>
+
+
+
+</mapper>

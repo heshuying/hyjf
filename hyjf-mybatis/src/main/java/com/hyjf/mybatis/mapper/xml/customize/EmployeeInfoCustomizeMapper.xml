@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.EmployeeInfoCustomizeMapper">
+	<resultMap id="selectAllStaff" type="com.hyjf.mybatis.model.customize.EmployeeInfoCustomize">
+		<result column="name" 			property="name" 	  	 jdbcType="VARCHAR" />
+		<result column="manager" 		property="manager" 	   	 jdbcType="VARCHAR" />
+		<result column="user_realname"  property="user_realname" jdbcType="VARCHAR" />
+		<result column="level" 			property="level" 	  	 jdbcType="INTEGER" />
+		<result column="positionid" 	property="positionid" 	 jdbcType="INTEGER" />
+		<result column="mobile" 		property="mobile" 	  	 jdbcType="CHAR" />
+		<result column="entrydate" 	 	property="entrydate"  	 jdbcType="DATE" />
+		<result column="temporary"  	property="temporary"  	 jdbcType="INTEGER" />
+		<result column="hyd_id" 		property="hyd_id" 	  	 jdbcType="INTEGER" />
+		<result column="id" 			property="id" 	  	 	 jdbcType="INTEGER" />
+	</resultMap>
+	<select id="selectStaff" resultMap="selectAllStaff" resultType="com.hyjf.mybatis.model.customize.EmployeeInfoCustomize"  parameterType="int">
+		SELECT u.id AS id,d2.name AS seconddepart,	
+				(SELECT us.user_realname
+					FROM hyjf_crm.oa_department de LEFT JOIN hyjf_crm.oa_users us on  us.id = de.header 
+					WHERE (de.id=u.id))  AS cityManager,
+		 	    d3.name as thirddepart, u.user_realname, u.level, p.name as pname, u.mobile, u.entrydate, u.temporary, u.hyd_name, u.hyd_id, 	 	    
+		 	     d1.`name` AS firstdepart,u.payroll,u.idcard,u.sex, u.age, u.acc_address, 
+				u.bank_address, u.bank_user, u.bank_num, u.user_email, u.reference,d3.cityid, 
+				u.education, u.specialty, u.create_time
+		FROM hyjf_crm.oa_users u 
+				LEFT JOIN hyjf_crm.oa_department d3 ON u.departmentid = d3.id
+				LEFT JOIN hyjf_crm.oa_department d2 ON d2.id = d3.parentid 
+				LEFT JOIN hyjf_crm.oa_department d1 ON d1.id = d2.parentid
+				LEFT JOIN hyjf_crm.oa_position p ON u.positionid = p.id
+		WHERE u.user_status = 'E'
+			<if test="id != null and id != ''">
+				AND u.id = #{id}
+			</if>
+			<if test="levelSrch != null and levelSrch != ''">
+				AND u.level = #{levelSrch}
+			</if>
+			<if test="truenameSrch != null and truenameSrch != ''">
+				AND u.user_realname like CONCAT('%', #{truenameSrch}, '%')
+			</if>
+			<if test="mobileSrch != null and mobileSrch != ''">
+				AND u.mobile like CONCAT('%', #{mobileSrch}, '%')
+			</if>
+			<if test="temporarySrch != null and temporarySrch != ''">
+				AND u.temporary = #{temporarySrch}
+			</if>	
+		<if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	    
+	</select>
+	
+	
+	<resultMap id="selectStaffDetail" type="com.hyjf.mybatis.model.customize.EmployeeInfoCustomize">
+		<result column="id" 			property="id" 	  	 	 jdbcType="INTEGER" />
+		<result column="user_login" 	property="user_login" 	 jdbcType="VARCHAR" />
+		<result column="user_realname"  property="user_realname" jdbcType="VARCHAR" />
+		<result column="user_email"   	property="user_email" 	 jdbcType="VARCHAR" />
+		<result column="idcard" 		property="idcard" 	  	 jdbcType="VARCHAR" />
+		<result column="avatar" 		property="avatar" 	 	 jdbcType="VARCHAR" />
+		<result column="sex" 			property="sex" 	  	 	 jdbcType="INTEGER" />
+		<result column="acc_province" 	property="acc_province"  jdbcType="VARCHAR" />
+		<result column="acc_city" 		property="acc_city" 	 jdbcType="VARCHAR" />
+		<result column="acc_address" 	property="acc_address" 	 jdbcType="VARCHAR" />
+		<result column="departmentid" 	property="departmentid"  jdbcType="INTEGER" />
+		<result column="positionid" 	property="positionid" 	 jdbcType="INTEGER" />
+		<result column="level" 			property="level" 	  	 jdbcType="INTEGER" />
+		<result column="temporary"  	property="temporary"  	 jdbcType="INTEGER" />
+		<result column="ispart" 		property="ispart" 	  	 jdbcType="CHAR" />
+		<result column="payroll_try" 	property="payroll_try" 	 jdbcType="INTEGER" />
+		<result column="payroll" 		property="payroll" 	  	 jdbcType="INTEGER" />
+		<result column="entrydate" 	 	property="entrydate"  	 jdbcType="DATE" />
+		<result column="reference" 		property="reference"  	 jdbcType="VARCHAR" />
+		<result column="education" 		property="education" 	 jdbcType="INTEGER" />
+		<result column="school" 		property="school" 	 	 jdbcType="VARCHAR" />
+		<result column="specialty" 		property="specialty"  	 jdbcType="VARCHAR" />	
+		<result column="mobile" 	 	property="mobile"  	 	 jdbcType="CHAR" />
+		<result column="last_login_ip" 	property="last_login_ip" jdbcType="VARCHAR" />
+		<result column="last_login_time" property="last_login_time" jdbcType="CHAR" />
+		<result column="create_time" 	property="create_time" 	 jdbcType="CHAR" />
+		<result column="bank_address" 	property="bank_address"  jdbcType="VARCHAR" />	
+		<result column="bank_user" 		property="bank_user" 	 jdbcType="VARCHAR" />
+		<result column="bank_num" 		property="bank_num"  	 jdbcType="VARCHAR" />	
+		<result column="user_status" 	property="user_status"   jdbcType="CHAR" />	
+		<result column="age" 			property="age"  		 jdbcType="INTEGER" />	
+		<result column="hyd_name" 		property="hyd_name" 	 jdbcType="VARCHAR" />
+		<result column="hyd_id" 		property="hyd_id" 	  	 jdbcType="INTEGER" />	
+		<result column="user_type" 		property="user_type"   jdbcType="INTEGER" />	
+	</resultMap>
+	<select id="selectDetail" resultMap="selectStaffDetail" resultType="com.hyjf.mybatis.model.customize.EmployeeInfoCustomize" parameterType="int">
+		SELECT  d1.`name` AS firstdepart,d2.`name` AS seconddepart,
+				d3.name AS  thirddepart, u.level, p.name AS pname, u.payroll, u.hyd_name, u.user_realname, u.idcard, u.sex, u.age, u.mobile, u.acc_address, 
+				u.temporary, u.bank_address, u.bank_user, u.bank_num, u.user_email, u.reference,d3.cityid, u.entrydate,
+				u.education, u.specialty, FROM_UNIXTIME(u.create_time,'%Y-%m-%d %H:%i:%s') AS create_time, u.hyd_id 
+		FROM hyjf_crm.oa_users u 
+					LEFT JOIN hyjf_crm.oa_department d3 ON u.departmentid = d3.id
+					LEFT JOIN hyjf_crm.oa_department d2 ON d2.id = d3.parentid 
+					LEFT JOIN hyjf_crm.oa_department d1 ON d1.id = d2.parentid
+					LEFT JOIN hyjf_crm.oa_position p ON u.positionid = p.id
+		WHERE u.id = #{u.id}
+	</select>
+	
+	<select id="countEmployee" resultType="int">
+		SELECT count(*)
+		FROM hyjf_crm.oa_users
+	</select>
+	
+	 
+	<update id="editStaff">
+		UPDATE hyjf_crm.oa_users
+		SET departmentid = #{departmentid,jdbcType=INTEGER},
+			level = #{level,jdbcType=INTEGER},
+			positionid = #{positionid,jdbcType=INTEGER},
+			payroll = #{payroll,jdbcType=INTEGER},
+			sex = #{sex,jdbcType=INTEGER},
+			age = #{age,jdbcType=INTEGER},
+			mobile = #{mobile,jdbcType=CHAR},
+			acc_address = #{acc_address,jdbcType=VARCHAR}, 
+			temporary = #{temporary,jdbcType=INTEGER},
+			bank_address = #{bank_address,jdbcType=VARCHAR},
+			bank_user = #{bank_user,jdbcType=VARCHAR},
+			bank_num = #{bank_num,jdbcType=VARCHAR},
+			user_email = #{user_email,jdbcType=VARCHAR},
+			reference = #{reference,jdbcType=VARCHAR},
+			
+			education = #{education,jdbcType=INTEGER},
+			specialty = #{specialty,jdbcType=VARCHAR}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateByUserid" parameterType="com.hyjf.mybatis.model.customize.EmployeeInfoCustomize">
+		update hyjf_crm.oa_users set id=#{id,jdbcType=INTEGER}  where id=#{id,jdbcType=INTEGER}
+	</update>
+	
+	
+	<update id="updatePassword" parameterType="int">
+		UPDATE hyjf_crm.oa_users
+		SET user_pass = "123456" 
+		WHERE id = #{id}
+	</update>
+ 
+	 <insert id="insert" parameterType="com.hyjf.mybatis.model.customize.EmployeeInfoCustomize" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_crm.oa_users (departmentid,  level,  positionid, payroll,  sex, age,  mobile, acc_address, temporary, bank_address,
+    			bank_user,  bank_num, user_email,reference,education,specialty
+      )
+    values (#{departmentid,jdbcType=INTEGER}, #{level,jdbcType=INTEGER}, #{positionid,jdbcType=INTEGER}, 
+      #{payroll,jdbcType=INTEGER}, #{sex,jdbcType=INTEGER}, #{age,jdbcType=INTEGER}, 
+      #{mobile,jdbcType=CHAR}, #{acc_address,jdbcType=VARCHAR}, #{temporary,jdbcType=INTEGER}, 
+      #{bank_address,jdbcType=VARCHAR}, #{bank_user,jdbcType=VARCHAR}, #{bank_num,jdbcType=VARCHAR}, 
+      #{user_email,jdbcType=VARCHAR}, #{reference,jdbcType=VARCHAR},    
+      #{education,jdbcType=INTEGER}, #{specialty,jdbcType=VARCHAR}
+      )
+  </insert>
+   <insert id="insert1" parameterType="com.hyjf.mybatis.model.customize.EmployeeInfoCustomize" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_crm.oa_users (departmentid, level, positionid, payroll,hyd_name,user_realname,idcard,  
+    						sex, age, mobile, acc_address, temporary, bank_address, 
+    						bank_user,  bank_num, user_email,reference,education,specialty,acc_province,
+    						acc_city,ispart,entrydate,school,
+    						last_login_ip,last_login_time,create_time,user_status,hyd_id
+      )
+    values (#{departmentid,jdbcType=INTEGER}, #{level,jdbcType=INTEGER}, #{positionid,jdbcType=INTEGER}, 
+      #{payroll,jdbcType=INTEGER}, #{hyd_name,jdbcType=VARCHAR}, #{user_realname,jdbcType=VARCHAR}, #{idcard,jdbcType=VARCHAR}, 
+      #{sex,jdbcType=INTEGER}, #{age,jdbcType=INTEGER}, 
+      #{mobile,jdbcType=CHAR}, #{acc_address,jdbcType=VARCHAR}, #{temporary,jdbcType=INTEGER}, 
+      #{bank_address,jdbcType=VARCHAR}, #{bank_user,jdbcType=VARCHAR}, #{bank_num,jdbcType=VARCHAR}, 
+      #{user_email,jdbcType=VARCHAR}, #{reference,jdbcType=VARCHAR},    
+      #{education,jdbcType=INTEGER}, #{specialty,jdbcType=VARCHAR},#{acc_province,jdbcType=VARCHAR},
+      #{acc_city,jdbcType=VARCHAR},#{ispart,jdbcType=CHAR},#{entrydate,jdbcType=DATE},
+      #{school,jdbcType=VARCHAR}, #{last_login_ip,jdbcType=VARCHAR},#{last_login_time,jdbcType=CHAR},
+      #{create_time,jdbcType=CHAR},#{user_status,jdbcType=CHAR},#{hyd_id,jdbcType=INTEGER}
+      )
+  </insert>
+   <insert id="insertEntry" parameterType="com.hyjf.mybatis.model.customize.EmployeeInfoCustomize" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_crm.oa_users (departmentid, level, positionid, payroll,hyd_name,user_realname,idcard,  
+    						sex, age, mobile, acc_address, temporary, bank_address, 
+    						bank_user,  bank_num, user_email,reference,education,specialty,acc_province,
+    						acc_city,ispart,entrydate,school,
+    						last_login_ip,last_login_time,create_time,user_status,hyd_id
+      )
+    values (#{departmentid,jdbcType=INTEGER}, #{level,jdbcType=INTEGER}, #{positionid,jdbcType=INTEGER}, 
+      #{payroll,jdbcType=INTEGER}, #{hyd_name,jdbcType=VARCHAR}, #{user_realname,jdbcType=VARCHAR}, #{idcard,jdbcType=VARCHAR}, 
+      #{sex,jdbcType=INTEGER}, #{age,jdbcType=INTEGER}, 
+      #{mobile,jdbcType=CHAR}, #{acc_address,jdbcType=VARCHAR}, #{temporary,jdbcType=INTEGER}, 
+      #{bank_address,jdbcType=VARCHAR}, #{bank_user,jdbcType=VARCHAR}, #{bank_num,jdbcType=VARCHAR}, 
+      #{user_email,jdbcType=VARCHAR}, #{reference,jdbcType=VARCHAR},    
+      #{education,jdbcType=INTEGER}, #{specialty,jdbcType=VARCHAR},#{acc_province,jdbcType=VARCHAR},
+      #{acc_city,jdbcType=VARCHAR},#{ispart,jdbcType=CHAR},#{entrydate,jdbcType=DATE},
+      #{school,jdbcType=VARCHAR}, #{last_login_ip,jdbcType=VARCHAR},#{last_login_time,jdbcType=CHAR},
+      #{create_time,jdbcType=CHAR},#{user_status,jdbcType=CHAR},#{hyd_id,jdbcType=INTEGER}
+      )
+  </insert>
+<!-- 	<insert id="insert1" parameterType="com.hyjf.mybatis.model.customize.EmployeeInfoCustomize">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      		SELECT LAST_INSERT_ID()
+    	</selectKey>
+		insert crm.oa_user_entry (otype,oprocess,ostatus,userid,creater,remark,createtime)
+		valuse (#{otype,jdbcType=CHAR},#{oprocess,jdbcType=CHAR},#{ostatus,jdbcType=CHAR},
+				#{userid,jdbcType=INTEGER},#{creater,jdbcType=INTEGER},#{remark,jdbcType=VARCHAR},
+				#{createtime,jdbcType=CHAR})
+	</insert>
+ -->
+	<!-- 
+	<update id="editStaff">
+		UPDATE crm.oa_users
+		SET departmentid = #{departmentid,jdbcType=INTEGER},
+			level = #{level,jdbcType=INTEGER},
+			positionid = #{positionid,jdbcType=INTEGER},
+			payroll = #{payroll,jdbcType=INTEGER},
+			sex = #{sex,jdbcType=INTEGER},
+			age = #{age,jdbcType=INTEGER},
+			mobile = #{mobile,jdbcType=CHAR},
+			acc_address = #{acc_address,jdbcType=VARCHAR}, 
+			temporary = #{temporary,jdbcType=INTEGER},
+			bank_address = #{bank_address,jdbcType=VARCHAR},
+			bank_user = #{bank_user,jdbcType=VARCHAR},
+			bank_num = #{bank_num,jdbcType=VARCHAR},
+			user_email = #{user_email,jdbcType=VARCHAR},
+			reference = #{reference,jdbcType=VARCHAR},
+			
+			education = #{education,jdbcType=INTEGER},
+			specialty = #{specialty,jdbcType=VARCHAR}
+		WHERE id = #{id}
+	</update>
+	 -->
+<!--  
+	<delete id="deleteStaff">
+		DELETE FROM crm.oa_users
+		WHERE id=#{id}
+	</delete>
+-->
+	
+<!--  	
+	<select id="selectLeave">
+		SELECT 
+		FROM crm.oa_
+	</select>
+-->
+	<update id="leaveStaff">
+		update hyjf_crm.oa_users
+		set user_status = 'Q1'
+		where id=#{id}
+	</update>
+  
+ 	<insert id="insertLeaveStaff" parameterType="com.hyjf.mybatis.model.customize.EmployeeDimissionCustomize">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      		SELECT LAST_INSERT_ID()
+    	</selectKey>
+		INSERT INTO hyjf_crm.oa_user_leave 
+		VALUES( #{oprocess,jdbcType=CHAR},#{userid,jdbcType=INTEGER},#{creater,jdbcType=INTEGER},
+				#{leave_time,jdbcType=DATE},#{end_time,jdbcType=DATE},#{remark,jdbcType=INTEGER},
+				#{f_creater,jdbcType=INTEGER},#{f_remark,jdbcType=VARCHAR},#{f_time,jdbcType=CHAR},
+				#{s_creater,jdbcType=INTEGER},#{s_remark,jdbcType=VARCHAR},#{s_time,jdbcType=CHAR},
+				#{q_creater,jdbcType=INTEGER},#{q_remark,jdbcType=VARCHAR},#{q_time,jdbcType=CHAR},
+				#{createtime,jdbcType=CHAR}
+	</insert>
+
+</mapper>

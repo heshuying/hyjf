@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.hyjf.mybatis.mapper.customize.batch.BatchDebtPlanCustomizeMapper">
+	<update id="updateDebtPlanAssign" parameterType="com.hyjf.mybatis.model.auto.DebtPlan">
+		update
+		hyjf_debt_plan
+		set
+		debt_plan_balance =  IFNULL(debt_plan_balance,0) - #{debtPlanBalance,jdbcType=DECIMAL},
+		update_time = #{updateTime,jdbcType=INTEGER},
+		update_user_id = #{updateUserId,jdbcType=INTEGER},
+		update_user_name = #{updateUserName,jdbcType=VARCHAR}
+		where
+		debt_plan_nid = #{debtPlanNid,jdbcType=VARCHAR}
+	</update>
+	<update id="updateDebtPlanInvest" parameterType="com.hyjf.mybatis.model.auto.DebtPlan">
+		update
+		hyjf_debt_plan
+		set
+		debt_plan_balance = IFNULL(debt_plan_balance,0) - #{debtPlanBalance,jdbcType=DECIMAL},
+		debt_plan_frost = IFNULL(debt_plan_frost,0) + #{debtPlanFrost,jdbcType=DECIMAL},
+		update_time = #{updateTime,jdbcType=INTEGER},
+		update_user_id = #{updateUserId,jdbcType=INTEGER},
+		update_user_name = #{updateUserName,jdbcType=VARCHAR}
+		where
+		debt_plan_nid = #{debtPlanNid,jdbcType=VARCHAR}
+	</update>
+	<update id="updateDebtPlanSeller" parameterType="com.hyjf.mybatis.model.auto.DebtPlan">
+		update
+		hyjf_debt_plan dp
+		set
+		dp.service_fee = IFNULL(dp.service_fee,0) + #{serviceFee,jdbcType=DECIMAL},
+		dp.liquidate_arrival_amount = IFNULL(dp.liquidate_arrival_amount,0) + #{liquidateArrivalAmount,jdbcType=DECIMAL},
+		dp.liquidate_apr = TRUNCATE(
+	      	IFNULL(
+	      		(SELECT
+					SUM(IFNULL(dc.credit_capital_assigned, 0))
+				FROM
+					hyjf_debt_credit dc
+				WHERE dc.plan_nid = dp.debt_plan_nid
+				),
+				0
+		  	)
+	      	/ 
+	      	(IFNULL(
+	      		(SELECT
+					SUM(IFNULL(dc.credit_capital, 0))
+				FROM
+					hyjf_debt_credit dc
+				WHERE dc.plan_nid = dp.debt_plan_nid
+				),
+				1
+		  	)
+		  )*100,2),
+		<if test="debtPlanStatus != null and debtPlanStatus !='' ">
+			dp.debt_plan_status = #{debtPlanStatus,jdbcType=INTEGER},
+		</if>
+		dp.update_time = #{updateTime,jdbcType=INTEGER},
+		dp.update_user_id = #{updateUserId,jdbcType=INTEGER},
+		dp.update_user_name = #{updateUserName,jdbcType=VARCHAR}
+		where
+		dp.debt_plan_nid = #{debtPlanNid,jdbcType=VARCHAR}
+	</update>
+	<update id="updatePlanRepay" parameterType="com.hyjf.mybatis.model.auto.DebtPlan">
+		update
+			hyjf_debt_plan
+		set
+			<if test="debtPlanBalance != null and debtPlanBalance !='' ">
+				debt_plan_balance = IFNULL(debt_plan_balance,0) + #{debtPlanBalance,jdbcType=DECIMAL},
+			</if>
+			<if test="serviceFee != null and serviceFee !='' ">
+				service_fee = IFNULL(service_fee,0) + #{serviceFee,jdbcType=DECIMAL},
+			</if>
+			update_time = #{updateTime,jdbcType=INTEGER},
+			update_user_id = #{updateUserId,jdbcType=INTEGER},
+			update_user_name = #{updateUserName,jdbcType=VARCHAR}
+		where
+			debt_plan_nid = #{debtPlanNid,jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updatePlanCredit" parameterType="com.hyjf.mybatis.model.auto.DebtPlan">
+		update
+			hyjf_debt_plan
+		set
+			<if test="debtPlanBalance != null and debtPlanBalance !='' ">
+				debt_plan_balance = IFNULL(debt_plan_balance,0) + #{debtPlanBalance,jdbcType=DECIMAL},
+			</if>
+			<if test="serviceFee != null and serviceFee !='' ">
+				service_fee = IFNULL(service_fee,0) + #{serviceFee,jdbcType=DECIMAL},
+			</if>
+			<if test="liquidateArrivalAmount != null and liquidateArrivalAmount !='' ">
+				liquidate_arrival_amount = IFNULL(liquidate_arrival_amount,0) + #{liquidateArrivalAmount,jdbcType=DECIMAL},
+			</if>
+			update_time = #{updateTime,jdbcType=INTEGER},
+			update_user_id = #{updateUserId,jdbcType=INTEGER},
+			update_user_name = #{updateUserName,jdbcType=VARCHAR}
+		where
+			debt_plan_nid = #{debtPlanNid,jdbcType=VARCHAR}
+	</update>
+</mapper>

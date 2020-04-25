@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.BankMerchantAccountListCustomizeMapper">
+	<resultMap id="bankMerchantAccountListMap"
+		type="com.hyjf.mybatis.model.customize.admin.BankMerchantAccountListCustomize">
+		<result column="id" property="id" />
+		<result column="create_time" property="createTime" /> <!-- 交易日期 -->
+		<result column="seq_no" property="seqNo" /> <!-- 流水号 -->
+		<result column="order_id" property="orderId" /> <!-- 订单号 -->
+		<result column="region_name" property="regionName" /> <!-- 分公司 -->
+		<result column="branch_name" property="branchName" /> <!-- 分部  -->
+		<result column="department_name" property="departmentName" /> <!-- 团队  -->
+		<result column="username" property="userName" /> <!-- 用户名  -->
+		<result column="account_id" property="accountId" /> <!-- 电子帐号  -->
+		<result column="type" property="type" /> <!-- 收支类型  -->
+		<result column="type_str" property="typeStr" /> <!-- 收支类型  -->
+		<result column="trans_type" property="transType" /> <!-- 交易类型  -->
+		<result column="trans_type_str" property="transTypeStr" /> <!-- 交易类型 -->
+		<result column="amount" property="amount" /> <!-- 交易金额 -->
+		<result column="status" property="status" /> <!-- 交易状态  -->
+		<result column="status_str" property="statusStr" /> <!-- 交易状态  -->
+		<result column="bank_account_balance" property="bankAccountBalance" /> <!-- 账户可用金额  -->
+		<result column="bank_account_frost" property="bankAccountFrost" /> <!-- 账户冻结金额  -->
+		<result column="remark" property="remark" /> <!-- 备注  -->
+	</resultMap>
+
+	<sql id="Where_Clause">
+		<if test="seqNo != null and seqNo != ''">
+			AND hbmal.seq_no LIKE CONCAT('%', #{seqNo,jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="orderId != null and orderId != ''">
+			AND hbmal.order_id LIKE CONCAT('%', #{orderId,jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="accountId != null and accountId != ''">
+			AND hbmal.account_id LIKE CONCAT('%', #{accountId,jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="type != null">
+			AND hbmal.type = #{type}
+		</if>
+		<if test="transType != null">
+			AND hbmal.trans_type = #{transType}
+		</if>
+		<if test="status != null">
+			AND hbmal.`status` = #{status}
+		</if>
+		<if test="timeStartSrch != null and timeStartSrch != ''">
+
+			AND FROM_UNIXTIME(hbmal.create_time, '%Y-%m-%d %H:%i:%S') &gt;= STR_TO_DATE(CONCAT(#{timeStartSrch},'00:00:00'
+			),'%Y-%m-%d %H:%i:%s')
+		</if>
+		<if test="timeEndSrch != null and timeEndSrch != ''">
+
+			AND FROM_UNIXTIME(hbmal.create_time, '%Y-%m-%d %H:%i:%S') &lt;= STR_TO_DATE(CONCAT(#{timeEndSrch},'23:59:59'
+			),'%Y-%m-%d %H:%i:%s')
+		</if>
+	</sql>
+	
+	<select id="selectRecordList" resultMap="bankMerchantAccountListMap"
+		parameterType="com.hyjf.mybatis.model.customize.admin.BankMerchantAccountListCustomize">
+		SELECT
+			hbmal.id id,
+			hbmal.user_id user_id,
+			hu.username username,
+			hbmal.create_time create_time,
+			hbmal.seq_no seq_no,
+			hbmal.order_id order_id,
+			hbmal.region_name region_name,
+			hbmal.branch_name branch_name,
+			hbmal.department_name department_name,
+			hbmal.account_id account_id,
+			hbmal.type type,
+			hpn2.`name` type_str,
+			hbmal.trans_type trans_type,
+			hpn1.`name` trans_type_str,
+			hbmal.amount amount,
+			hbmal.`status` status,
+			hpn3.`name` status_str,
+			hbmal.bank_account_balance bank_account_balance,
+			hbmal.bank_account_frost bank_account_frost,
+			hbmal.remark remark
+		FROM
+			hyjf_bank_merchant_account_list hbmal
+		LEFT JOIN huiyingdai_users hu ON hbmal.user_id = hu.user_id
+		LEFT JOIN hyjf_param_name hpn1 ON hpn1.name_class = 'BANK_MER_TRANS_TYPE' AND hpn1.name_cd=hbmal.trans_type
+		LEFT JOIN hyjf_param_name hpn2 ON hpn2.name_class = 'BANK_MER_TYPE' AND hpn2.name_cd=hbmal.`type`
+		LEFT JOIN hyjf_param_name hpn3 ON hpn3.name_class = 'BANK_MER_TRANS_STATUS' AND hpn3.name_cd=hbmal.`status`
+		WHERE
+			hbmal.bank_account_code=#{bankAccountCode}
+		<include refid="Where_Clause"/>
+		ORDER BY hbmal.create_time DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<select id="queryRecordTotal" resultType="java.lang.Integer"
+		parameterType="com.hyjf.mybatis.model.customize.admin.BankMerchantAccountListCustomize">
+		SELECT 
+			COUNT(1)
+		FROM
+			hyjf_bank_merchant_account_list hbmal
+		LEFT JOIN huiyingdai_users hu ON hbmal.user_id = hu.user_id
+		LEFT JOIN hyjf_param_name hpn1 ON hpn1.name_class = 'BANK_MER_TRANS_TYPE' AND hpn1.name_cd=hbmal.trans_type
+		LEFT JOIN hyjf_param_name hpn2 ON hpn2.name_class = 'BANK_MER_TYPE' AND hpn2.name_cd=hbmal.`type`
+		LEFT JOIN hyjf_param_name hpn3 ON hpn3.name_class = 'BANK_MER_TRANS_STATUS' AND hpn3.name_cd=hbmal.`status`
+		WHERE
+			hbmal.bank_account_code=#{bankAccountCode}
+		<include refid="Where_Clause"/>
+		
+	</select>
+	
+	<update id="updateMerchantByAccountCode" parameterType="com.hyjf.mybatis.model.auto.BankMerchantAccount">
+	    update hyjf_bank_merchant_account
+	    set
+	    account_balance = IFNULL(account_balance,0) + #{accountBalance,jdbcType=DECIMAL},
+	    available_balance = IFNULL(available_balance,0) + #{availableBalance,jdbcType=DECIMAL}
+	    where
+	    account_code = #{accountCode,jdbcType=VARCHAR}
+	</update>
+	
+</mapper>
+

@@ -1,0 +1,43 @@
+package com.hyjf.admin.manager.activity.billion.second;
+
+import com.hyjf.admin.BaseDefine;
+import com.hyjf.common.util.ShiroConstants;
+import com.hyjf.common.util.StringPool;
+
+/**
+ * 十一月份活动
+ * @author Michael
+ */
+public class BillionSecondDefine extends BaseDefine {
+
+    /** 权限 CONTROLLOR @RequestMapping值 */
+    public static final String REQUEST_MAPPING = "/manager/activity/billion/second";
+
+    /** 列表画面 路径 */
+    public static final String LIST_PATH = "manager/activity/billion/billion_second";
+    
+    /** 列表画面 @RequestMapping值 */
+    public static final String INIT = "init";
+    
+    /** 导出数据 @RequestMapping值 */
+    public static final String EXPORT_ACTION = "exportAction";
+    
+    /** 检索数据 @RequestMapping值 */
+    public static final String SEARCH_ACTION = "searchAction";
+    
+    /** FROM */
+    public static final String FORM = "billionSecondForm";
+
+    /** 查看权限 */
+    public static final String PERMISSIONS = "activitylist";
+
+    /** 查看权限 */
+    public static final String PERMISSIONS_VIEW = PERMISSIONS + StringPool.COLON + ShiroConstants.PERMISSION_VIEW;
+
+    /** 查找权限 */
+    public static final String PERMISSIONS_SEARCH = PERMISSIONS + StringPool.COLON + ShiroConstants.PERMISSION_SEARCH;
+
+    /** 导出权限 */
+    public static final String PERMISSIONS_EXPORT = PERMISSIONS + StringPool.COLON + ShiroConstants.PERMISSION_EXPORT;
+
+}

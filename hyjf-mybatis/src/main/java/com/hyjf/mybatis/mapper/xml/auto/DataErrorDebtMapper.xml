@@ -1,0 +1,578 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.DataErrorDebtMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.DataErrorDebt" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="bank_id" property="bankId" jdbcType="VARCHAR" />
+    <result column="batch_id" property="batchId" jdbcType="VARCHAR" />
+    <result column="borrow_user_id" property="borrowUserId" jdbcType="INTEGER" />
+    <result column="ten_user_id" property="tenUserId" jdbcType="INTEGER" />
+    <result column="debt_holder_acc" property="debtHolderAcc" jdbcType="VARCHAR" />
+    <result column="prod_issuer" property="prodIssuer" jdbcType="VARCHAR" />
+    <result column="borrow_id" property="borrowId" jdbcType="INTEGER" />
+    <result column="serial_num" property="serialNum" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="interest_wait" property="interestWait" jdbcType="DECIMAL" />
+    <result column="interest_paid" property="interestPaid" jdbcType="DECIMAL" />
+    <result column="debt_obt_date" property="debtObtDate" jdbcType="VARCHAR" />
+    <result column="interest_date" property="interestDate" jdbcType="VARCHAR" />
+    <result column="int_pay_style" property="intPayStyle" jdbcType="TINYINT" />
+    <result column="int_pay_date" property="intPayDate" jdbcType="VARCHAR" />
+    <result column="end_date" property="endDate" jdbcType="VARCHAR" />
+    <result column="expect_anual_rate" property="expectAnualRate" jdbcType="DECIMAL" />
+    <result column="curr_type" property="currType" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="revers" property="revers" jdbcType="VARCHAR" />
+    <result column="ret_code" property="retCode" jdbcType="VARCHAR" />
+    <result column="auth_code" property="authCode" jdbcType="VARCHAR" />
+    <result column="error_desc" property="errorDesc" jdbcType="VARCHAR" />
+    <result column="tender_type" property="tenderType" jdbcType="TINYINT" />
+    <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, bank_id, batch_id, borrow_user_id, ten_user_id, debt_holder_acc, prod_issuer, 
+    borrow_id, serial_num, amount, interest_wait, interest_paid, debt_obt_date, interest_date, 
+    int_pay_style, int_pay_date, end_date, expect_anual_rate, curr_type, `name`, revers, 
+    ret_code, auth_code, error_desc, tender_type, order_id, create_time, update_time
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.DataErrorDebtExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_data_error_debt
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_data_error_debt
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_data_error_debt
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.DataErrorDebtExample" >
+    delete from hyjf_data_error_debt
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.DataErrorDebt" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_data_error_debt (bank_id, batch_id, borrow_user_id, 
+      ten_user_id, debt_holder_acc, prod_issuer, 
+      borrow_id, serial_num, amount, 
+      interest_wait, interest_paid, debt_obt_date, 
+      interest_date, int_pay_style, int_pay_date, 
+      end_date, expect_anual_rate, curr_type, 
+      `name`, revers, ret_code, 
+      auth_code, error_desc, tender_type, 
+      order_id, create_time, update_time
+      )
+    values (#{bankId,jdbcType=VARCHAR}, #{batchId,jdbcType=VARCHAR}, #{borrowUserId,jdbcType=INTEGER}, 
+      #{tenUserId,jdbcType=INTEGER}, #{debtHolderAcc,jdbcType=VARCHAR}, #{prodIssuer,jdbcType=VARCHAR}, 
+      #{borrowId,jdbcType=INTEGER}, #{serialNum,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL}, 
+      #{interestWait,jdbcType=DECIMAL}, #{interestPaid,jdbcType=DECIMAL}, #{debtObtDate,jdbcType=VARCHAR}, 
+      #{interestDate,jdbcType=VARCHAR}, #{intPayStyle,jdbcType=TINYINT}, #{intPayDate,jdbcType=VARCHAR}, 
+      #{endDate,jdbcType=VARCHAR}, #{expectAnualRate,jdbcType=DECIMAL}, #{currType,jdbcType=VARCHAR}, 
+      #{name,jdbcType=VARCHAR}, #{revers,jdbcType=VARCHAR}, #{retCode,jdbcType=VARCHAR}, 
+      #{authCode,jdbcType=VARCHAR}, #{errorDesc,jdbcType=VARCHAR}, #{tenderType,jdbcType=TINYINT}, 
+      #{orderId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.DataErrorDebt" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_data_error_debt
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="bankId != null" >
+        bank_id,
+      </if>
+      <if test="batchId != null" >
+        batch_id,
+      </if>
+      <if test="borrowUserId != null" >
+        borrow_user_id,
+      </if>
+      <if test="tenUserId != null" >
+        ten_user_id,
+      </if>
+      <if test="debtHolderAcc != null" >
+        debt_holder_acc,
+      </if>
+      <if test="prodIssuer != null" >
+        prod_issuer,
+      </if>
+      <if test="borrowId != null" >
+        borrow_id,
+      </if>
+      <if test="serialNum != null" >
+        serial_num,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="interestWait != null" >
+        interest_wait,
+      </if>
+      <if test="interestPaid != null" >
+        interest_paid,
+      </if>
+      <if test="debtObtDate != null" >
+        debt_obt_date,
+      </if>
+      <if test="interestDate != null" >
+        interest_date,
+      </if>
+      <if test="intPayStyle != null" >
+        int_pay_style,
+      </if>
+      <if test="intPayDate != null" >
+        int_pay_date,
+      </if>
+      <if test="endDate != null" >
+        end_date,
+      </if>
+      <if test="expectAnualRate != null" >
+        expect_anual_rate,
+      </if>
+      <if test="currType != null" >
+        curr_type,
+      </if>
+      <if test="name != null" >
+        `name`,
+      </if>
+      <if test="revers != null" >
+        revers,
+      </if>
+      <if test="retCode != null" >
+        ret_code,
+      </if>
+      <if test="authCode != null" >
+        auth_code,
+      </if>
+      <if test="errorDesc != null" >
+        error_desc,
+      </if>
+      <if test="tenderType != null" >
+        tender_type,
+      </if>
+      <if test="orderId != null" >
+        order_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="bankId != null" >
+        #{bankId,jdbcType=VARCHAR},
+      </if>
+      <if test="batchId != null" >
+        #{batchId,jdbcType=VARCHAR},
+      </if>
+      <if test="borrowUserId != null" >
+        #{borrowUserId,jdbcType=INTEGER},
+      </if>
+      <if test="tenUserId != null" >
+        #{tenUserId,jdbcType=INTEGER},
+      </if>
+      <if test="debtHolderAcc != null" >
+        #{debtHolderAcc,jdbcType=VARCHAR},
+      </if>
+      <if test="prodIssuer != null" >
+        #{prodIssuer,jdbcType=VARCHAR},
+      </if>
+      <if test="borrowId != null" >
+        #{borrowId,jdbcType=INTEGER},
+      </if>
+      <if test="serialNum != null" >
+        #{serialNum,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="interestWait != null" >
+        #{interestWait,jdbcType=DECIMAL},
+      </if>
+      <if test="interestPaid != null" >
+        #{interestPaid,jdbcType=DECIMAL},
+      </if>
+      <if test="debtObtDate != null" >
+        #{debtObtDate,jdbcType=VARCHAR},
+      </if>
+      <if test="interestDate != null" >
+        #{interestDate,jdbcType=VARCHAR},
+      </if>
+      <if test="intPayStyle != null" >
+        #{intPayStyle,jdbcType=TINYINT},
+      </if>
+      <if test="intPayDate != null" >
+        #{intPayDate,jdbcType=VARCHAR},
+      </if>
+      <if test="endDate != null" >
+        #{endDate,jdbcType=VARCHAR},
+      </if>
+      <if test="expectAnualRate != null" >
+        #{expectAnualRate,jdbcType=DECIMAL},
+      </if>
+      <if test="currType != null" >
+        #{currType,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="revers != null" >
+        #{revers,jdbcType=VARCHAR},
+      </if>
+      <if test="retCode != null" >
+        #{retCode,jdbcType=VARCHAR},
+      </if>
+      <if test="authCode != null" >
+        #{authCode,jdbcType=VARCHAR},
+      </if>
+      <if test="errorDesc != null" >
+        #{errorDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="tenderType != null" >
+        #{tenderType,jdbcType=TINYINT},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.DataErrorDebtExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_data_error_debt
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_data_error_debt
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.bankId != null" >
+        bank_id = #{record.bankId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.batchId != null" >
+        batch_id = #{record.batchId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.borrowUserId != null" >
+        borrow_user_id = #{record.borrowUserId,jdbcType=INTEGER},
+      </if>
+      <if test="record.tenUserId != null" >
+        ten_user_id = #{record.tenUserId,jdbcType=INTEGER},
+      </if>
+      <if test="record.debtHolderAcc != null" >
+        debt_holder_acc = #{record.debtHolderAcc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.prodIssuer != null" >
+        prod_issuer = #{record.prodIssuer,jdbcType=VARCHAR},
+      </if>
+      <if test="record.borrowId != null" >
+        borrow_id = #{record.borrowId,jdbcType=INTEGER},
+      </if>
+      <if test="record.serialNum != null" >
+        serial_num = #{record.serialNum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.amount != null" >
+        amount = #{record.amount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.interestWait != null" >
+        interest_wait = #{record.interestWait,jdbcType=DECIMAL},
+      </if>
+      <if test="record.interestPaid != null" >
+        interest_paid = #{record.interestPaid,jdbcType=DECIMAL},
+      </if>
+      <if test="record.debtObtDate != null" >
+        debt_obt_date = #{record.debtObtDate,jdbcType=VARCHAR},
+      </if>
+      <if test="record.interestDate != null" >
+        interest_date = #{record.interestDate,jdbcType=VARCHAR},
+      </if>
+      <if test="record.intPayStyle != null" >
+        int_pay_style = #{record.intPayStyle,jdbcType=TINYINT},
+      </if>
+      <if test="record.intPayDate != null" >
+        int_pay_date = #{record.intPayDate,jdbcType=VARCHAR},
+      </if>
+      <if test="record.endDate != null" >
+        end_date = #{record.endDate,jdbcType=VARCHAR},
+      </if>
+      <if test="record.expectAnualRate != null" >
+        expect_anual_rate = #{record.expectAnualRate,jdbcType=DECIMAL},
+      </if>
+      <if test="record.currType != null" >
+        curr_type = #{record.currType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.name != null" >
+        `name` = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.revers != null" >
+        revers = #{record.revers,jdbcType=VARCHAR},
+      </if>
+      <if test="record.retCode != null" >
+        ret_code = #{record.retCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.authCode != null" >
+        auth_code = #{record.authCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.errorDesc != null" >
+        error_desc = #{record.errorDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tenderType != null" >
+        tender_type = #{record.tenderType,jdbcType=TINYINT},
+      </if>
+      <if test="record.orderId != null" >
+        order_id = #{record.orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_data_error_debt
+    set id = #{record.id,jdbcType=INTEGER},
+      bank_id = #{record.bankId,jdbcType=VARCHAR},
+      batch_id = #{record.batchId,jdbcType=VARCHAR},
+      borrow_user_id = #{record.borrowUserId,jdbcType=INTEGER},
+      ten_user_id = #{record.tenUserId,jdbcType=INTEGER},
+      debt_holder_acc = #{record.debtHolderAcc,jdbcType=VARCHAR},
+      prod_issuer = #{record.prodIssuer,jdbcType=VARCHAR},
+      borrow_id = #{record.borrowId,jdbcType=INTEGER},
+      serial_num = #{record.serialNum,jdbcType=VARCHAR},
+      amount = #{record.amount,jdbcType=DECIMAL},
+      interest_wait = #{record.interestWait,jdbcType=DECIMAL},
+      interest_paid = #{record.interestPaid,jdbcType=DECIMAL},
+      debt_obt_date = #{record.debtObtDate,jdbcType=VARCHAR},
+      interest_date = #{record.interestDate,jdbcType=VARCHAR},
+      int_pay_style = #{record.intPayStyle,jdbcType=TINYINT},
+      int_pay_date = #{record.intPayDate,jdbcType=VARCHAR},
+      end_date = #{record.endDate,jdbcType=VARCHAR},
+      expect_anual_rate = #{record.expectAnualRate,jdbcType=DECIMAL},
+      curr_type = #{record.currType,jdbcType=VARCHAR},
+      `name` = #{record.name,jdbcType=VARCHAR},
+      revers = #{record.revers,jdbcType=VARCHAR},
+      ret_code = #{record.retCode,jdbcType=VARCHAR},
+      auth_code = #{record.authCode,jdbcType=VARCHAR},
+      error_desc = #{record.errorDesc,jdbcType=VARCHAR},
+      tender_type = #{record.tenderType,jdbcType=TINYINT},
+      order_id = #{record.orderId,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.DataErrorDebt" >
+    update hyjf_data_error_debt
+    <set >
+      <if test="bankId != null" >
+        bank_id = #{bankId,jdbcType=VARCHAR},
+      </if>
+      <if test="batchId != null" >
+        batch_id = #{batchId,jdbcType=VARCHAR},
+      </if>
+      <if test="borrowUserId != null" >
+        borrow_user_id = #{borrowUserId,jdbcType=INTEGER},
+      </if>
+      <if test="tenUserId != null" >
+        ten_user_id = #{tenUserId,jdbcType=INTEGER},
+      </if>
+      <if test="debtHolderAcc != null" >
+        debt_holder_acc = #{debtHolderAcc,jdbcType=VARCHAR},
+      </if>
+      <if test="prodIssuer != null" >
+        prod_issuer = #{prodIssuer,jdbcType=VARCHAR},
+      </if>
+      <if test="borrowId != null" >
+        borrow_id = #{borrowId,jdbcType=INTEGER},
+      </if>
+      <if test="serialNum != null" >
+        serial_num = #{serialNum,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="interestWait != null" >
+        interest_wait = #{interestWait,jdbcType=DECIMAL},
+      </if>
+      <if test="interestPaid != null" >
+        interest_paid = #{interestPaid,jdbcType=DECIMAL},
+      </if>
+      <if test="debtObtDate != null" >
+        debt_obt_date = #{debtObtDate,jdbcType=VARCHAR},
+      </if>
+      <if test="interestDate != null" >
+        interest_date = #{interestDate,jdbcType=VARCHAR},
+      </if>
+      <if test="intPayStyle != null" >
+        int_pay_style = #{intPayStyle,jdbcType=TINYINT},
+      </if>
+      <if test="intPayDate != null" >
+        int_pay_date = #{intPayDate,jdbcType=VARCHAR},
+      </if>
+      <if test="endDate != null" >
+        end_date = #{endDate,jdbcType=VARCHAR},
+      </if>
+      <if test="expectAnualRate != null" >
+        expect_anual_rate = #{expectAnualRate,jdbcType=DECIMAL},
+      </if>
+      <if test="currType != null" >
+        curr_type = #{currType,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="revers != null" >
+        revers = #{revers,jdbcType=VARCHAR},
+      </if>
+      <if test="retCode != null" >
+        ret_code = #{retCode,jdbcType=VARCHAR},
+      </if>
+      <if test="authCode != null" >
+        auth_code = #{authCode,jdbcType=VARCHAR},
+      </if>
+      <if test="errorDesc != null" >
+        error_desc = #{errorDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="tenderType != null" >
+        tender_type = #{tenderType,jdbcType=TINYINT},
+      </if>
+      <if test="orderId != null" >
+        order_id = #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.DataErrorDebt" >
+    update hyjf_data_error_debt
+    set bank_id = #{bankId,jdbcType=VARCHAR},
+      batch_id = #{batchId,jdbcType=VARCHAR},
+      borrow_user_id = #{borrowUserId,jdbcType=INTEGER},
+      ten_user_id = #{tenUserId,jdbcType=INTEGER},
+      debt_holder_acc = #{debtHolderAcc,jdbcType=VARCHAR},
+      prod_issuer = #{prodIssuer,jdbcType=VARCHAR},
+      borrow_id = #{borrowId,jdbcType=INTEGER},
+      serial_num = #{serialNum,jdbcType=VARCHAR},
+      amount = #{amount,jdbcType=DECIMAL},
+      interest_wait = #{interestWait,jdbcType=DECIMAL},
+      interest_paid = #{interestPaid,jdbcType=DECIMAL},
+      debt_obt_date = #{debtObtDate,jdbcType=VARCHAR},
+      interest_date = #{interestDate,jdbcType=VARCHAR},
+      int_pay_style = #{intPayStyle,jdbcType=TINYINT},
+      int_pay_date = #{intPayDate,jdbcType=VARCHAR},
+      end_date = #{endDate,jdbcType=VARCHAR},
+      expect_anual_rate = #{expectAnualRate,jdbcType=DECIMAL},
+      curr_type = #{currType,jdbcType=VARCHAR},
+      `name` = #{name,jdbcType=VARCHAR},
+      revers = #{revers,jdbcType=VARCHAR},
+      ret_code = #{retCode,jdbcType=VARCHAR},
+      auth_code = #{authCode,jdbcType=VARCHAR},
+      error_desc = #{errorDesc,jdbcType=VARCHAR},
+      tender_type = #{tenderType,jdbcType=TINYINT},
+      order_id = #{orderId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

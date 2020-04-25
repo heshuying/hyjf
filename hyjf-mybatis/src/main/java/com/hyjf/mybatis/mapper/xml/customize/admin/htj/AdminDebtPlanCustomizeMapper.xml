@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.hyjf.mybatis.mapper.customize.admin.htj.AdminDebtPlanCustomizeMapper">
+	<resultMap id="debtPlanResult"
+		type="com.hyjf.mybatis.model.customize.admin.htj.DebtPlanCustomize">
+		<result column="debt_plan_nid" property="planNid" /><!-- 计划编号 -->
+		<result column="debt_plan_name" property="planName" /> <!-- 计划名称 -->
+		<result column="debt_plan_type_name" property="planTypeName" /> <!-- 计划类型 -->
+		<result column="debt_plan_status" property="planStatus" /> <!-- 计划状态 -->
+		<result column="debt_lock_period" property="lockPeriod" /> <!-- 锁定期 -->
+		<result column="full_expire_time" property="fullExpireTime" /> <!-- 计划满标时间 -->
+		<result column="buy_end_time" property="buyEndTime" /> <!-- 计划截止时间 -->
+		<result column="liquidate_should_time" property="liquidateShouldTime" /> <!-- 计划应清算时间 -->
+		<result column="debt_plan_money" property="planMoney" /> <!-- 计划总额 -->
+		<result column="debt_plan_money_yes" property="planMoneyYes" /> <!-- 计划加入金额 -->
+		<result column="accede_times" property="accedeTimes" /> <!-- 计划加入订单数 -->
+		<result column="debt_plan_balance" property="planBalance" /> <!-- 计划余额 -->
+		<result column="debt_plan_frost" property="planFrost" /> <!-- 计划冻结金额 -->
+		<result column="expect_apr" property="expectApr" /> <!-- 预期年化收益率 -->
+		<result column="actual_apr" property="actualApr" /> <!-- 实际年化收益率 -->
+		<result column="tender_num" property="tenderNum" /> <!-- 直投笔数 -->
+		<result column="tender_capital" property="tenderCapital" /> <!-- 持有直投本金 -->
+		<result column="credit_num" property="creditNum" /> <!-- 持有债权笔数 -->
+		<result column="credit_capital" property="creditCapital" /> <!-- 持有债权本金 -->
+		<result column="credit_account" property="creditAccount" /> <!-- 实际支付债权金额 -->
+		<result column="fair_value_total" property="fairValueTotal" /> <!-- 计划公允价值 -->
+	</resultMap>
+
+	<select id="selectByPlanNid" resultMap="debtPlanResult"
+		parameterType="String">
+		SELECT
+			debt_plan_nid,
+			debt_plan_name,
+			debt_plan_type_name,
+			debt_plan_status,
+			debt_lock_period,
+			FORMAT(debt_plan_money, 2) debt_plan_money,
+			FORMAT(debt_plan_money_yes, 2) debt_plan_money_yes,
+			accede_times,
+			expect_apr,
+			actual_apr,
+			FORMAT(debt_plan_balance, 2) debt_plan_balance,
+			FORMAT(debt_plan_frost, 2) debt_plan_frost,
+			full_expire_time,
+			buy_end_time,
+			liquidate_should_time,
+			(
+				SELECT
+					COUNT(1)
+				FROM
+					(
+						SELECT
+							COUNT(1)
+						FROM
+							hyjf_debt_detail
+						WHERE
+							order_type = 0
+						AND plan_nid = #{planNid}
+						GROUP BY
+							order_id
+					) t
+			) tender_num,
+			(
+				SELECT
+					SUM(repay_capital_wait)
+				FROM
+					hyjf_debt_detail
+				WHERE
+					order_type = 0
+				AND status=1
+				AND plan_nid = hdp.debt_plan_nid
+			) tender_capital,
+			(
+				SELECT
+					COUNT(1)
+				FROM
+					(
+						SELECT
+							COUNT(1)
+						FROM
+							hyjf_debt_detail
+						WHERE
+							order_type = 1
+						AND plan_nid = #{planNid}
+						GROUP BY
+							order_id
+					) t
+			) credit_num,
+			(
+				SELECT
+					SUM(loan_capital)
+				FROM
+					hyjf_debt_detail
+				WHERE
+					order_type = 1
+				AND plan_nid = hdp.debt_plan_nid
+			) credit_capital,
+			(
+				SELECT
+					SUM(account)
+				FROM
+					hyjf_debt_detail
+				WHERE
+					order_type = 1
+				AND plan_nid = hdp.debt_plan_nid
+			) credit_account,
+			(
+				(
+					SELECT
+						SUM(fair_value)
+					FROM
+						(
+							SELECT
+							TRUNCATE (
+								CASE WHEN hb.borrow_style='end' 
+									 THEN 
+										TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait* 
+												datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+												datediff(FROM_UNIXTIME(hb.repay_last_time,'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d')) ,2)
+									WHEN hb.borrow_style='endday'
+									THEN 
+										TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait* 
+												datediff(DATE_FORMAT(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+												 hb.borrow_period,2)	
+									ELSE 
+											TRUNCATE (	(SELECT sum(repay_capital_wait) FROM hyjf_debt_detail WHERE order_id=hdd.order_id and status=1) + IFNULL((SELECT SUM(repay_interest_wait) FROM hyjf_debt_detail   WHERE  order_id=hdd.order_id AND late_days!=0  and status=1),0) +
+													hdd.repay_interest_wait*
+																	datediff(DATE_FORMAT(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),'%Y-%m-%d'),
+																						DATE_FORMAT(DATE_SUB(FROM_UNIXTIME(hdd.repay_time),INTERVAL 1 MONTH),'%Y-%m-%d'))/
+																						ABS(datediff(DATE_FORMAT(DATE_SUB(FROM_UNIXTIME(hdd.repay_time),INTERVAL 1 MONTH),'%Y-%m-%d'),
+																							FROM_UNIXTIME(hdd.repay_time,'%Y-%m-%d')))
+																		
+												,2)
+									END 
+							+IF(hdd.repay_status=0,hdd.late_interest+hdd.delay_interest -hdd.late_interest_assigned-hdd.delay_interest_assigned,0),2)
+							 fair_value
+							FROM
+								hyjf_debt_detail hdd
+							LEFT JOIN hyjf_debt_borrow hb ON hdd.borrow_nid = hb.borrow_nid
+							WHERE
+								hdd.plan_nid = #{planNid}
+								AND hdd.status=1
+								AND
+						((	hb.borrow_style <![CDATA[<>]]> 'end' and hb.borrow_style <![CDATA[<>]]> 'endday'	AND	DATE_FORMAT(FROM_UNIXTIME(hdd.repay_time),'%Y-%m-%d') <![CDATA[>=]]> DATE_FORMAT(NOW(),'%Y-%m-%d')
+						AND 	DATE_FORMAT(DATE_SUB(FROM_UNIXTIME(hdd.repay_time),INTERVAL 1 MONTH),'%Y-%m-%d') <![CDATA[<]]> DATE_FORMAT(NOW(),'%Y-%m-%d')) or (hb.borrow_style = 'end' or hb.borrow_style = 'endday' ))
+						) fair_value
+				) + hdp.debt_plan_balance + hdp.debt_plan_frost+
+						IFNULL((select sum(liquidates_credit_frost+liquidates_repay_frost+service_fee) from hyjf_debt_plan_accede where plan_nid=hdp.debt_plan_nid),0)
+			) fair_value_total
+		FROM
+			hyjf_debt_plan hdp
+		WHERE
+			debt_plan_nid = #{planNid}
+	</select>
+
+</mapper>
+

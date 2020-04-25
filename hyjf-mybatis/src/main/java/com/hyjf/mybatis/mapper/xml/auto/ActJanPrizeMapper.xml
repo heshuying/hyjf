@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.ActJanPrizeMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.ActJanPrize" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="prize_name" property="prizeName" jdbcType="VARCHAR" />
+    <result column="prize_code" property="prizeCode" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="price_goal" property="priceGoal" jdbcType="DECIMAL" />
+    <result column="amount_total" property="amountTotal" jdbcType="INTEGER" />
+    <result column="remain_count" property="remainCount" jdbcType="INTEGER" />
+    <result column="order_weight" property="orderWeight" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+    <result column="del_flg" property="delFlg" jdbcType="TINYINT" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, prize_name, prize_code, price, price_goal, amount_total, remain_count, order_weight, 
+    update_time, del_flg
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.ActJanPrizeExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_act_jan_prize
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_act_jan_prize
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_act_jan_prize
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.ActJanPrizeExample" >
+    delete from hyjf_act_jan_prize
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.ActJanPrize" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_act_jan_prize (prize_name, prize_code, price, 
+      price_goal, amount_total, remain_count, 
+      order_weight, update_time, del_flg
+      )
+    values (#{prizeName,jdbcType=VARCHAR}, #{prizeCode,jdbcType=VARCHAR}, #{price,jdbcType=DECIMAL}, 
+      #{priceGoal,jdbcType=DECIMAL}, #{amountTotal,jdbcType=INTEGER}, #{remainCount,jdbcType=INTEGER}, 
+      #{orderWeight,jdbcType=INTEGER}, #{updateTime,jdbcType=INTEGER}, #{delFlg,jdbcType=TINYINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.ActJanPrize" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_act_jan_prize
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="prizeName != null" >
+        prize_name,
+      </if>
+      <if test="prizeCode != null" >
+        prize_code,
+      </if>
+      <if test="price != null" >
+        price,
+      </if>
+      <if test="priceGoal != null" >
+        price_goal,
+      </if>
+      <if test="amountTotal != null" >
+        amount_total,
+      </if>
+      <if test="remainCount != null" >
+        remain_count,
+      </if>
+      <if test="orderWeight != null" >
+        order_weight,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="delFlg != null" >
+        del_flg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="prizeName != null" >
+        #{prizeName,jdbcType=VARCHAR},
+      </if>
+      <if test="prizeCode != null" >
+        #{prizeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null" >
+        #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="priceGoal != null" >
+        #{priceGoal,jdbcType=DECIMAL},
+      </if>
+      <if test="amountTotal != null" >
+        #{amountTotal,jdbcType=INTEGER},
+      </if>
+      <if test="remainCount != null" >
+        #{remainCount,jdbcType=INTEGER},
+      </if>
+      <if test="orderWeight != null" >
+        #{orderWeight,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="delFlg != null" >
+        #{delFlg,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.ActJanPrizeExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_act_jan_prize
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_act_jan_prize
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.prizeName != null" >
+        prize_name = #{record.prizeName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.prizeCode != null" >
+        prize_code = #{record.prizeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.price != null" >
+        price = #{record.price,jdbcType=DECIMAL},
+      </if>
+      <if test="record.priceGoal != null" >
+        price_goal = #{record.priceGoal,jdbcType=DECIMAL},
+      </if>
+      <if test="record.amountTotal != null" >
+        amount_total = #{record.amountTotal,jdbcType=INTEGER},
+      </if>
+      <if test="record.remainCount != null" >
+        remain_count = #{record.remainCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.orderWeight != null" >
+        order_weight = #{record.orderWeight,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.delFlg != null" >
+        del_flg = #{record.delFlg,jdbcType=TINYINT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_act_jan_prize
+    set id = #{record.id,jdbcType=INTEGER},
+      prize_name = #{record.prizeName,jdbcType=VARCHAR},
+      prize_code = #{record.prizeCode,jdbcType=VARCHAR},
+      price = #{record.price,jdbcType=DECIMAL},
+      price_goal = #{record.priceGoal,jdbcType=DECIMAL},
+      amount_total = #{record.amountTotal,jdbcType=INTEGER},
+      remain_count = #{record.remainCount,jdbcType=INTEGER},
+      order_weight = #{record.orderWeight,jdbcType=INTEGER},
+      update_time = #{record.updateTime,jdbcType=INTEGER},
+      del_flg = #{record.delFlg,jdbcType=TINYINT}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.ActJanPrize" >
+    update hyjf_act_jan_prize
+    <set >
+      <if test="prizeName != null" >
+        prize_name = #{prizeName,jdbcType=VARCHAR},
+      </if>
+      <if test="prizeCode != null" >
+        prize_code = #{prizeCode,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null" >
+        price = #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="priceGoal != null" >
+        price_goal = #{priceGoal,jdbcType=DECIMAL},
+      </if>
+      <if test="amountTotal != null" >
+        amount_total = #{amountTotal,jdbcType=INTEGER},
+      </if>
+      <if test="remainCount != null" >
+        remain_count = #{remainCount,jdbcType=INTEGER},
+      </if>
+      <if test="orderWeight != null" >
+        order_weight = #{orderWeight,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="delFlg != null" >
+        del_flg = #{delFlg,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.ActJanPrize" >
+    update hyjf_act_jan_prize
+    set prize_name = #{prizeName,jdbcType=VARCHAR},
+      prize_code = #{prizeCode,jdbcType=VARCHAR},
+      price = #{price,jdbcType=DECIMAL},
+      price_goal = #{priceGoal,jdbcType=DECIMAL},
+      amount_total = #{amountTotal,jdbcType=INTEGER},
+      remain_count = #{remainCount,jdbcType=INTEGER},
+      order_weight = #{orderWeight,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=INTEGER},
+      del_flg = #{delFlg,jdbcType=TINYINT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

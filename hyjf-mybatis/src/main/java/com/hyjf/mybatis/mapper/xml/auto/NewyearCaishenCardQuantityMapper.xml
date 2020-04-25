@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.NewyearCaishenCardQuantityMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.NewyearCaishenCardQuantity" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="card_jin_quantity" property="cardJinQuantity" jdbcType="INTEGER" />
+    <result column="card_ji_quantity" property="cardJiQuantity" jdbcType="INTEGER" />
+    <result column="card_na_quantity" property="cardNaQuantity" jdbcType="INTEGER" />
+    <result column="card_fu_quantity" property="cardFuQuantity" jdbcType="INTEGER" />
+    <result column="add_time" property="addTime" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, user_id, card_jin_quantity, card_ji_quantity, card_na_quantity, card_fu_quantity, 
+    add_time, update_time
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.NewyearCaishenCardQuantityExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_newyear_caishen_card_quantity
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_newyear_caishen_card_quantity
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_newyear_caishen_card_quantity
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.NewyearCaishenCardQuantityExample" >
+    delete from hyjf_newyear_caishen_card_quantity
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.NewyearCaishenCardQuantity" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_newyear_caishen_card_quantity (user_id, card_jin_quantity, card_ji_quantity, 
+      card_na_quantity, card_fu_quantity, add_time, 
+      update_time)
+    values (#{userId,jdbcType=INTEGER}, #{cardJinQuantity,jdbcType=INTEGER}, #{cardJiQuantity,jdbcType=INTEGER}, 
+      #{cardNaQuantity,jdbcType=INTEGER}, #{cardFuQuantity,jdbcType=INTEGER}, #{addTime,jdbcType=INTEGER}, 
+      #{updateTime,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.NewyearCaishenCardQuantity" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_newyear_caishen_card_quantity
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="cardJinQuantity != null" >
+        card_jin_quantity,
+      </if>
+      <if test="cardJiQuantity != null" >
+        card_ji_quantity,
+      </if>
+      <if test="cardNaQuantity != null" >
+        card_na_quantity,
+      </if>
+      <if test="cardFuQuantity != null" >
+        card_fu_quantity,
+      </if>
+      <if test="addTime != null" >
+        add_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="cardJinQuantity != null" >
+        #{cardJinQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="cardJiQuantity != null" >
+        #{cardJiQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="cardNaQuantity != null" >
+        #{cardNaQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="cardFuQuantity != null" >
+        #{cardFuQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="addTime != null" >
+        #{addTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.NewyearCaishenCardQuantityExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_newyear_caishen_card_quantity
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_newyear_caishen_card_quantity
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.cardJinQuantity != null" >
+        card_jin_quantity = #{record.cardJinQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="record.cardJiQuantity != null" >
+        card_ji_quantity = #{record.cardJiQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="record.cardNaQuantity != null" >
+        card_na_quantity = #{record.cardNaQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="record.cardFuQuantity != null" >
+        card_fu_quantity = #{record.cardFuQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="record.addTime != null" >
+        add_time = #{record.addTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_newyear_caishen_card_quantity
+    set id = #{record.id,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      card_jin_quantity = #{record.cardJinQuantity,jdbcType=INTEGER},
+      card_ji_quantity = #{record.cardJiQuantity,jdbcType=INTEGER},
+      card_na_quantity = #{record.cardNaQuantity,jdbcType=INTEGER},
+      card_fu_quantity = #{record.cardFuQuantity,jdbcType=INTEGER},
+      add_time = #{record.addTime,jdbcType=INTEGER},
+      update_time = #{record.updateTime,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.NewyearCaishenCardQuantity" >
+    update hyjf_newyear_caishen_card_quantity
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="cardJinQuantity != null" >
+        card_jin_quantity = #{cardJinQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="cardJiQuantity != null" >
+        card_ji_quantity = #{cardJiQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="cardNaQuantity != null" >
+        card_na_quantity = #{cardNaQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="cardFuQuantity != null" >
+        card_fu_quantity = #{cardFuQuantity,jdbcType=INTEGER},
+      </if>
+      <if test="addTime != null" >
+        add_time = #{addTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.NewyearCaishenCardQuantity" >
+    update hyjf_newyear_caishen_card_quantity
+    set user_id = #{userId,jdbcType=INTEGER},
+      card_jin_quantity = #{cardJinQuantity,jdbcType=INTEGER},
+      card_ji_quantity = #{cardJiQuantity,jdbcType=INTEGER},
+      card_na_quantity = #{cardNaQuantity,jdbcType=INTEGER},
+      card_fu_quantity = #{cardFuQuantity,jdbcType=INTEGER},
+      add_time = #{addTime,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

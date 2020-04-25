@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.SqlWithdrawCustomizeMapper">
+	<resultMap id="selectWithdraw" type="com.hyjf.mybatis.model.customize.SqlWithdrawCustomize">
+		<result column="firstdepart"  property="firstdepartname"  jdbcType="VARCHAR" />
+		<result column="seconddepart" property="seconddepartname" jdbcType="VARCHAR" />
+		<result column="客户" 	 property="username" 	  jdbcType="CHAR" />
+		<result column="推荐人" 	 property="user_realname" jdbcType="VARCHAR" />
+		<result column="total" 	 property="total"		  jdbcType="DECIMAL" />
+		<result column="addtime" property="addtime" 	  jdbcType="INTEGER" />
+	</resultMap>
+	<select id="selectWithdrawByAddtime" resultMap="selectWithdraw" parameterType="int">
+		SELECT
+		d3.`name` AS firstdepart,
+		d2.`name` AS seconddepart,
+		u.username AS '客户',
+		ou.user_realname AS '推荐人',
+		w.total AS total,
+		FROM_UNIXTIME(w.addtime,'%Y-%m-%d %H:%i:%S') AS addtime
+		FROM
+		huiyingdai_account_withdraw w
+		INNER JOIN huiyingdai_users_info ui ON w.user_id = ui.user_id
+		AND ui.role_id = 1
+		AND ui.attribute IN (0, 1)
+		LEFT JOIN huiyingdai_spreads_users su ON w.user_id = su.user_id
+		LEFT JOIN huiyingdai_users u ON u.user_id = w.user_id
+		LEFT JOIN hyjf_crm.oa_users ou ON ou.hyd_id = su.spreads_userid
+		AND ou.user_status IN ('E', 'Q1', 'Q2')
+		LEFT JOIN hyjf_crm.oa_department d ON ou.departmentid = d.id
+		LEFT JOIN hyjf_crm.oa_department d2 ON d2.id = d.parentid
+		LEFT JOIN hyjf_crm.oa_department d3 ON d3.id = d2.parentid
+		WHERE
+		FROM_UNIXTIME(w.addtime, '%Y%m%d') = #{w.addtime}
+		AND w. STATUS = 4
+		AND w.user_id NOT IN (
+		SELECT DISTINCT ui.user_id
+		FROM
+		huiyingdai_users_info ui
+		INNER JOIN huiyingdai_borrow b ON ui.user_id = b.user_id
+		WHERE
+		ui.role_id = 1
+		)
+		UNION
+		SELECT
+		d3.`name` AS firstdepart,
+		d2.`name` AS seconddepart,
+		ou.hyd_name AS '客户',
+		NULL AS '推荐人',
+		w.total AS total,
+		FROM_UNIXTIME(w.addtime,'%Y-%m-%d %H:%i:%S') AS addtime
+		FROM
+		huiyingdai_account_withdraw w
+		INNER JOIN hyjf_crm.oa_users ou ON ou.hyd_id = w.user_id
+		AND ou.user_status IN ('E', 'Q1', 'Q2')
+		LEFT JOIN hyjf_crm.oa_department d ON ou.departmentid = d.id
+		LEFT JOIN hyjf_crm.oa_department d2 ON d2.id = d.parentid
+		LEFT JOIN hyjf_crm.oa_department d3 ON d3.id = d2.parentid
+		WHERE
+		FROM_UNIXTIME(w.addtime, '%Y%m%d') = #{w.addtime}
+		AND w. STATUS = 4
+		AND d3.`name` NOT LIKE '%勿动%'
+	</select>
+
+</mapper>

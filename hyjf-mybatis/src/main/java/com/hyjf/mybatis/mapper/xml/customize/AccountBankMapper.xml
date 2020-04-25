@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.AccountBankCustomizeMapper">
+	<resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.customize.QpCardInfo">
+		<result column="name" property="bank" jdbcType="VARCHAR" />
+		<result column="app_logo" property="logo" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="account" property="cardNo" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 根据用户编号查询用户的唯一快捷卡 -->
+	<select id="selectQpCardInfoByUserId" parameterType="int" resultMap="BaseResultMap">
+		SELECT
+			hab.account,
+			hbc. NAME,
+			hbc.app_logo,
+			hbc. CODE
+		FROM
+			huiyingdai_account_bank hab,
+			huiyingdai_bank_config hbc
+		WHERE
+			hab.user_id = #{userId} 
+		AND hab. STATUS = 0
+		AND hab.bank = hbc. CODE
+	</select>
+
+</mapper>

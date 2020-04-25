@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.act.ActSigninCustomizeMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.ActSignin" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="truename" property="truename" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="current_sign_num" property="currentSignNum" jdbcType="TINYINT" />
+    <result column="sign_time" property="signTime" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="INTEGER" />
+    <result column="del_flg" property="delFlg" jdbcType="TINYINT" />
+  </resultMap>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="map" >
+		SELECT
+			MAX(h.sign_time) as sign_time,
+			h.user_id,
+			MAX(create_time) as create_time,
+			h.user_name,
+			 mobile,
+			id,
+			truename,
+			MAX(h.current_sign_num) as current_sign_num,
+			del_flg,(
+				SELECT
+					count(b.user_id)
+				FROM
+					hyjf_act_rewardlist b
+				WHERE
+					b.user_id = h.user_id
+				AND b.act_type = 9
+			) as remark
+		FROM
+			hyjf_act_signin h
+		where 1=1 
+		<if test="userName != null " >
+    		 and h.user_name = #{userName}
+    	</if>
+    	<if test="mobile != null " >
+    		 and h.mobile = #{mobile}
+    	</if>
+    	<if test="count != null and count > 0" >
+    		 and h.user_id in (select user_id  from   hyjf_act_rewardlist GROUP By user_id HAVING count(user_id) = #{count,jdbcType=INTEGER})
+    	</if>
+    	<if test="count == 0" >
+    		 and h.user_id not in (select distinct user_id  from hyjf_act_rewardlist)
+    	</if>
+		GROUP BY
+			h.user_id
+		ORDER BY
+			MAX(create_time) DESC
+		<if test="limitStart != null and limitStart >= 0 and limitEnd !=null and limitEnd >= 0" >
+    		LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+    	</if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="map" >
+		SELECT
+			id,
+			user_id,
+			user_name,
+			truename,
+			mobile,
+			current_sign_num,
+			sign_time,
+			remark,
+			create_time,
+			del_flg
+		FROM
+			hyjf_act_signin
+		WHERE
+			user_id = #{userId,jdbcType=INTEGER}
+		ORDER BY
+			create_time DESC
+		<if test="limitStart != null and limitStart >= 0 and limitEnd !=null and limitEnd >= 0" >
+    		LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+    	</if>
+  </select>
+</mapper>

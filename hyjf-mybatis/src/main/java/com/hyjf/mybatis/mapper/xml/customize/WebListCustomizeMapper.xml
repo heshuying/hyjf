@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.WebListCustomizeMapper">
+	<resultMap id="WebMapResult"
+		type="com.hyjf.mybatis.model.customize.WebListCustomize">
+		<result column="id" property="id" />
+		<result column="ordid" property="ordid" /> <!-- 订单号 -->
+		<result column="borrow_nid" property="borrowNid" /> <!-- 相关借款号 -->
+		<result column="recover_fee" property="amount" /> <!-- 操作金额 -->
+		<result column="user_id" property="userId" /> <!-- 对方用户ID -->
+		<result column="recover_yestime" property="createTime" /> <!-- 发生时间 -->
+	</resultMap>
+
+	<select id="selectBorrowRecoverOfWeb" resultMap="WebMapResult"
+		parameterType="com.hyjf.mybatis.model.customize.WebListCustomize">
+		SELECT
+			*
+		FROM
+			(
+				SELECT
+				    p.id,
+					CONCAT(p.nid, "_", p.recover_period) AS ordid,
+					p.borrow_nid,
+					p.user_id,
+					p.recover_fee,
+					p.recover_yestime
+				FROM
+					huiyingdai_borrow_recover r,
+					huiyingdai_borrow_recover_plan p
+				WHERE
+					r.borrow_nid = p.borrow_nid
+				AND r.nid = p.nid
+				AND p.recover_status = 1
+				AND r.web = 0
+				AND p.recover_fee > 0
+				UNION
+					SELECT
+					    r.id,
+						CONCAT(r.nid) AS ordid,
+						r.borrow_nid,
+						r.user_id,
+						r.recover_fee,
+						r.recover_yestime
+					FROM
+						huiyingdai_borrow_recover r
+					WHERE
+						r.web = 0
+					AND r.recover_status = 1
+			) t
+		WHERE
+			NOT EXISTS (
+				SELECT
+					list.id
+				FROM
+					huiyingdai_account_web_list list
+				WHERE
+					list.ordid = t.ordid
+		        and list.trade = 'REPAYFEE')
+		ORDER BY t.id
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+
+</mapper>
+

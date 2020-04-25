@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.batch.BatchChannelStatisticsOldCustomizeMapper">
+
+
+
+	<select id="selectChannelStatisticsOldList" resultMap="selectListMap" parameterType="com.hyjf.mybatis.model.customize.batch.BatchChannelStatisticsOldCustomize">
+		SELECT
+			b.source_name AS channel_name,
+			b.source_id,
+		    SUM(hzt_tender_price) + SUM(hxf_tender_price) + SUM(htl_tender_price) + SUM(htj_tender_price) + SUM(rtb_tender_price) + SUM(hzr_tender_price) AS cumulative_invest,
+			SUM(hzt_tender_price) AS hzt_invest_sum,
+			SUM(hxf_tender_price) AS hxf_invest_sum,
+			SUM(htl_tender_price) AS htl_invest_sum,
+			SUM(htj_tender_price) AS htj_invest_sum,
+			SUM(rtb_tender_price) AS rtb_invest_sum,
+			SUM(hzr_tender_price) AS hzr_invest_sum
+		FROM
+			(
+				SELECT
+					a.source_id,
+					a.source_name,
+					(
+						SELECT
+							CASE
+						WHEN SUM(tender.account) IS NULL THEN
+							0
+						ELSE
+							SUM(tender.account)
+						END account
+						FROM
+							hyjf_app_channel_statistics_detail reg
+						INNER JOIN huiyingdai_borrow_tender tender ON tender.user_id = reg.user_id
+						INNER JOIN huiyingdai_borrow borrow ON borrow.borrow_nid = tender.borrow_nid
+						AND borrow.project_type <![CDATA[<>]]> 8
+						AND borrow.project_type <![CDATA[<>]]> 13
+						WHERE
+							reg.source_id = a.source_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS hzt_tender_price,
+					(
+						SELECT
+							CASE
+						WHEN SUM(tender.account) IS NULL THEN
+							0
+						ELSE
+							SUM(tender.account)
+						END account
+						FROM
+							hyjf_app_channel_statistics_detail reg
+						INNER JOIN huiyingdai_borrow_tender tender ON tender.user_id = reg.user_id
+						INNER JOIN huiyingdai_borrow borrow ON borrow.borrow_nid = tender.borrow_nid
+						AND borrow.project_type = 8
+						WHERE
+							reg.source_id = a.source_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS hxf_tender_price,
+					(
+						SELECT
+							CASE
+						WHEN SUM(list.amount) IS NULL THEN
+							0
+						ELSE
+							SUM(list.amount)
+						END amount
+						FROM
+							hyjf_app_channel_statistics_detail reg
+						INNER JOIN huiyingdai_product_list list ON list.user_id = reg.user_id
+						AND list.invest_status = 0
+						WHERE
+							reg.source_id = a.source_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( list.invest_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS htl_tender_price,
+					(
+						SELECT
+							CASE
+						WHEN SUM(hdpa.accede_account) IS NULL THEN
+							0
+						ELSE
+							SUM(hdpa.accede_account)
+						END amount
+						FROM
+							hyjf_app_channel_statistics_detail reg
+						INNER JOIN hyjf_debt_plan_accede hdpa ON hdpa.user_id = reg.user_id
+						WHERE
+							reg.source_id = a.source_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( hdpa.create_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS htj_tender_price,
+					(
+						SELECT
+							CASE
+						WHEN SUM(tender.account) IS NULL THEN
+							0
+						ELSE
+							SUM(tender.account)
+						END account
+						FROM
+							hyjf_app_channel_statistics_detail reg
+						INNER JOIN huiyingdai_borrow_tender tender ON tender.user_id = reg.user_id
+						INNER JOIN huiyingdai_borrow borrow ON borrow.borrow_nid = tender.borrow_nid
+						AND borrow.project_type = 13
+						WHERE
+							reg.source_id = a.source_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( tender.addtime, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS rtb_tender_price,
+					(
+						SELECT
+							CASE
+						WHEN SUM(hct.assign_capital) IS NULL THEN
+							0
+						ELSE
+							SUM(hct.assign_capital)
+						END account
+						FROM
+							hyjf_app_channel_statistics_detail reg
+						INNER JOIN huiyingdai_credit_tender hct ON hct.user_id = reg.user_id
+						WHERE
+							reg.source_id = a.source_id
+							<if test="timeStartSrch != null and timeStartSrch != ''">
+								AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[>=]]> #{timeStartSrch}
+							</if>
+							<if test="timeEndSrch != null and timeEndSrch != ''">
+								AND FROM_UNIXTIME( hct.add_time, '%Y-%m-%d %H:%i:%S' ) <![CDATA[<=]]> #{timeEndSrch}
+							</if>
+					) AS hzr_tender_price
+					
+				FROM
+					(
+						SELECT DISTINCT
+							utm.source_id,
+							utm.source_name
+						FROM
+							huiyingdai_utm_plat utm  WHERE utm.source_type = 1
+					) a
+			) b
+		WHERE
+		  b.source_id  <![CDATA[=]]> #{sourceId}
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+
+	<resultMap id="selectListMap" type="com.hyjf.mybatis.model.customize.batch.BatchChannelStatisticsOldCustomize">
+		<result column="channel_name" property="channelName" jdbcType="VARCHAR" />
+		<result column="source_id" property="sourceId" jdbcType="VARCHAR" />
+		<result column="cumulative_invest" property="cumulativeInvest" jdbcType="VARCHAR" />
+		<result column="hzt_invest_sum" property="hztInvestSum" jdbcType="VARCHAR" />
+		<result column="hxf_invest_sum" property="hxfInvestSum" jdbcType="VARCHAR" />
+		<result column="htl_invest_sum" property="htlInvestSum" jdbcType="VARCHAR" />
+		<result column="htj_invest_sum" property="htjInvestSum" jdbcType="VARCHAR" />
+		<result column="rtb_invest_sum" property="rtbInvestSum" jdbcType="VARCHAR" />
+		<result column="hzr_invest_sum" property="hzrInvestSum" jdbcType="VARCHAR" />
+	</resultMap>
+	
+</mapper>

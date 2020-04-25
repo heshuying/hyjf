@@ -1,0 +1,798 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.AccountLogMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.AccountLog" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="nid" property="nid" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="total" property="total" jdbcType="DECIMAL" />
+    <result column="total_old" property="totalOld" jdbcType="DECIMAL" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="code_type" property="codeType" jdbcType="VARCHAR" />
+    <result column="code_nid" property="codeNid" jdbcType="VARCHAR" />
+    <result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+    <result column="money" property="money" jdbcType="DECIMAL" />
+    <result column="income" property="income" jdbcType="DECIMAL" />
+    <result column="income_old" property="incomeOld" jdbcType="DECIMAL" />
+    <result column="income_new" property="incomeNew" jdbcType="DECIMAL" />
+    <result column="account_web_status" property="accountWebStatus" jdbcType="INTEGER" />
+    <result column="account_user_status" property="accountUserStatus" jdbcType="INTEGER" />
+    <result column="account_type" property="accountType" jdbcType="VARCHAR" />
+    <result column="expend" property="expend" jdbcType="DECIMAL" />
+    <result column="expend_old" property="expendOld" jdbcType="DECIMAL" />
+    <result column="expend_new" property="expendNew" jdbcType="DECIMAL" />
+    <result column="balance" property="balance" jdbcType="DECIMAL" />
+    <result column="balance_old" property="balanceOld" jdbcType="DECIMAL" />
+    <result column="balance_new" property="balanceNew" jdbcType="DECIMAL" />
+    <result column="balance_cash" property="balanceCash" jdbcType="DECIMAL" />
+    <result column="balance_cash_old" property="balanceCashOld" jdbcType="DECIMAL" />
+    <result column="balance_cash_new" property="balanceCashNew" jdbcType="DECIMAL" />
+    <result column="balance_frost" property="balanceFrost" jdbcType="DECIMAL" />
+    <result column="balance_frost_old" property="balanceFrostOld" jdbcType="DECIMAL" />
+    <result column="balance_frost_new" property="balanceFrostNew" jdbcType="DECIMAL" />
+    <result column="frost" property="frost" jdbcType="DECIMAL" />
+    <result column="frost_old" property="frostOld" jdbcType="DECIMAL" />
+    <result column="frost_new" property="frostNew" jdbcType="DECIMAL" />
+    <result column="repay" property="repay" jdbcType="DECIMAL" />
+    <result column="repay_new" property="repayNew" jdbcType="DECIMAL" />
+    <result column="repay_old" property="repayOld" jdbcType="DECIMAL" />
+    <result column="await" property="await" jdbcType="DECIMAL" />
+    <result column="await_old" property="awaitOld" jdbcType="DECIMAL" />
+    <result column="await_new" property="awaitNew" jdbcType="DECIMAL" />
+    <result column="to_userid" property="toUserid" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="addtime" property="addtime" jdbcType="VARCHAR" />
+    <result column="addip" property="addip" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, nid, user_id, `type`, total, total_old, code, code_type, code_nid, borrow_nid, 
+    money, income, income_old, income_new, account_web_status, account_user_status, account_type, 
+    expend, expend_old, expend_new, balance, balance_old, balance_new, balance_cash, 
+    balance_cash_old, balance_cash_new, balance_frost, balance_frost_old, balance_frost_new, 
+    frost, frost_old, frost_new, repay, repay_new, repay_old, await, await_old, await_new, 
+    to_userid, remark, addtime, addip
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.AccountLogExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from huiyingdai_account_log
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from huiyingdai_account_log
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from huiyingdai_account_log
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.AccountLogExample" >
+    delete from huiyingdai_account_log
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.AccountLog" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into huiyingdai_account_log (nid, user_id, `type`, 
+      total, total_old, code, 
+      code_type, code_nid, borrow_nid, 
+      money, income, income_old, 
+      income_new, account_web_status, account_user_status, 
+      account_type, expend, expend_old, 
+      expend_new, balance, balance_old, 
+      balance_new, balance_cash, balance_cash_old, 
+      balance_cash_new, balance_frost, balance_frost_old, 
+      balance_frost_new, frost, frost_old, 
+      frost_new, repay, repay_new, 
+      repay_old, await, await_old, 
+      await_new, to_userid, remark, 
+      addtime, addip)
+    values (#{nid,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR}, 
+      #{total,jdbcType=DECIMAL}, #{totalOld,jdbcType=DECIMAL}, #{code,jdbcType=VARCHAR}, 
+      #{codeType,jdbcType=VARCHAR}, #{codeNid,jdbcType=VARCHAR}, #{borrowNid,jdbcType=VARCHAR}, 
+      #{money,jdbcType=DECIMAL}, #{income,jdbcType=DECIMAL}, #{incomeOld,jdbcType=DECIMAL}, 
+      #{incomeNew,jdbcType=DECIMAL}, #{accountWebStatus,jdbcType=INTEGER}, #{accountUserStatus,jdbcType=INTEGER}, 
+      #{accountType,jdbcType=VARCHAR}, #{expend,jdbcType=DECIMAL}, #{expendOld,jdbcType=DECIMAL}, 
+      #{expendNew,jdbcType=DECIMAL}, #{balance,jdbcType=DECIMAL}, #{balanceOld,jdbcType=DECIMAL}, 
+      #{balanceNew,jdbcType=DECIMAL}, #{balanceCash,jdbcType=DECIMAL}, #{balanceCashOld,jdbcType=DECIMAL}, 
+      #{balanceCashNew,jdbcType=DECIMAL}, #{balanceFrost,jdbcType=DECIMAL}, #{balanceFrostOld,jdbcType=DECIMAL}, 
+      #{balanceFrostNew,jdbcType=DECIMAL}, #{frost,jdbcType=DECIMAL}, #{frostOld,jdbcType=DECIMAL}, 
+      #{frostNew,jdbcType=DECIMAL}, #{repay,jdbcType=DECIMAL}, #{repayNew,jdbcType=DECIMAL}, 
+      #{repayOld,jdbcType=DECIMAL}, #{await,jdbcType=DECIMAL}, #{awaitOld,jdbcType=DECIMAL}, 
+      #{awaitNew,jdbcType=DECIMAL}, #{toUserid,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, 
+      #{addtime,jdbcType=VARCHAR}, #{addip,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.AccountLog" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into huiyingdai_account_log
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="nid != null" >
+        nid,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="type != null" >
+        `type`,
+      </if>
+      <if test="total != null" >
+        total,
+      </if>
+      <if test="totalOld != null" >
+        total_old,
+      </if>
+      <if test="code != null" >
+        code,
+      </if>
+      <if test="codeType != null" >
+        code_type,
+      </if>
+      <if test="codeNid != null" >
+        code_nid,
+      </if>
+      <if test="borrowNid != null" >
+        borrow_nid,
+      </if>
+      <if test="money != null" >
+        money,
+      </if>
+      <if test="income != null" >
+        income,
+      </if>
+      <if test="incomeOld != null" >
+        income_old,
+      </if>
+      <if test="incomeNew != null" >
+        income_new,
+      </if>
+      <if test="accountWebStatus != null" >
+        account_web_status,
+      </if>
+      <if test="accountUserStatus != null" >
+        account_user_status,
+      </if>
+      <if test="accountType != null" >
+        account_type,
+      </if>
+      <if test="expend != null" >
+        expend,
+      </if>
+      <if test="expendOld != null" >
+        expend_old,
+      </if>
+      <if test="expendNew != null" >
+        expend_new,
+      </if>
+      <if test="balance != null" >
+        balance,
+      </if>
+      <if test="balanceOld != null" >
+        balance_old,
+      </if>
+      <if test="balanceNew != null" >
+        balance_new,
+      </if>
+      <if test="balanceCash != null" >
+        balance_cash,
+      </if>
+      <if test="balanceCashOld != null" >
+        balance_cash_old,
+      </if>
+      <if test="balanceCashNew != null" >
+        balance_cash_new,
+      </if>
+      <if test="balanceFrost != null" >
+        balance_frost,
+      </if>
+      <if test="balanceFrostOld != null" >
+        balance_frost_old,
+      </if>
+      <if test="balanceFrostNew != null" >
+        balance_frost_new,
+      </if>
+      <if test="frost != null" >
+        frost,
+      </if>
+      <if test="frostOld != null" >
+        frost_old,
+      </if>
+      <if test="frostNew != null" >
+        frost_new,
+      </if>
+      <if test="repay != null" >
+        repay,
+      </if>
+      <if test="repayNew != null" >
+        repay_new,
+      </if>
+      <if test="repayOld != null" >
+        repay_old,
+      </if>
+      <if test="await != null" >
+        await,
+      </if>
+      <if test="awaitOld != null" >
+        await_old,
+      </if>
+      <if test="awaitNew != null" >
+        await_new,
+      </if>
+      <if test="toUserid != null" >
+        to_userid,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="addtime != null" >
+        addtime,
+      </if>
+      <if test="addip != null" >
+        addip,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="nid != null" >
+        #{nid,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="total != null" >
+        #{total,jdbcType=DECIMAL},
+      </if>
+      <if test="totalOld != null" >
+        #{totalOld,jdbcType=DECIMAL},
+      </if>
+      <if test="code != null" >
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="codeType != null" >
+        #{codeType,jdbcType=VARCHAR},
+      </if>
+      <if test="codeNid != null" >
+        #{codeNid,jdbcType=VARCHAR},
+      </if>
+      <if test="borrowNid != null" >
+        #{borrowNid,jdbcType=VARCHAR},
+      </if>
+      <if test="money != null" >
+        #{money,jdbcType=DECIMAL},
+      </if>
+      <if test="income != null" >
+        #{income,jdbcType=DECIMAL},
+      </if>
+      <if test="incomeOld != null" >
+        #{incomeOld,jdbcType=DECIMAL},
+      </if>
+      <if test="incomeNew != null" >
+        #{incomeNew,jdbcType=DECIMAL},
+      </if>
+      <if test="accountWebStatus != null" >
+        #{accountWebStatus,jdbcType=INTEGER},
+      </if>
+      <if test="accountUserStatus != null" >
+        #{accountUserStatus,jdbcType=INTEGER},
+      </if>
+      <if test="accountType != null" >
+        #{accountType,jdbcType=VARCHAR},
+      </if>
+      <if test="expend != null" >
+        #{expend,jdbcType=DECIMAL},
+      </if>
+      <if test="expendOld != null" >
+        #{expendOld,jdbcType=DECIMAL},
+      </if>
+      <if test="expendNew != null" >
+        #{expendNew,jdbcType=DECIMAL},
+      </if>
+      <if test="balance != null" >
+        #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="balanceOld != null" >
+        #{balanceOld,jdbcType=DECIMAL},
+      </if>
+      <if test="balanceNew != null" >
+        #{balanceNew,jdbcType=DECIMAL},
+      </if>
+      <if test="balanceCash != null" >
+        #{balanceCash,jdbcType=DECIMAL},
+      </if>
+      <if test="balanceCashOld != null" >
+        #{balanceCashOld,jdbcType=DECIMAL},
+      </if>
+      <if test="balanceCashNew != null" >
+        #{balanceCashNew,jdbcType=DECIMAL},
+      </if>
+      <if test="balanceFrost != null" >
+        #{balanceFrost,jdbcType=DECIMAL},
+      </if>
+      <if test="balanceFrostOld != null" >
+        #{balanceFrostOld,jdbcType=DECIMAL},
+      </if>
+      <if test="balanceFrostNew != null" >
+        #{balanceFrostNew,jdbcType=DECIMAL},
+      </if>
+      <if test="frost != null" >
+        #{frost,jdbcType=DECIMAL},
+      </if>
+      <if test="frostOld != null" >
+        #{frostOld,jdbcType=DECIMAL},
+      </if>
+      <if test="frostNew != null" >
+        #{frostNew,jdbcType=DECIMAL},
+      </if>
+      <if test="repay != null" >
+        #{repay,jdbcType=DECIMAL},
+      </if>
+      <if test="repayNew != null" >
+        #{repayNew,jdbcType=DECIMAL},
+      </if>
+      <if test="repayOld != null" >
+        #{repayOld,jdbcType=DECIMAL},
+      </if>
+      <if test="await != null" >
+        #{await,jdbcType=DECIMAL},
+      </if>
+      <if test="awaitOld != null" >
+        #{awaitOld,jdbcType=DECIMAL},
+      </if>
+      <if test="awaitNew != null" >
+        #{awaitNew,jdbcType=DECIMAL},
+      </if>
+      <if test="toUserid != null" >
+        #{toUserid,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="addtime != null" >
+        #{addtime,jdbcType=VARCHAR},
+      </if>
+      <if test="addip != null" >
+        #{addip,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.AccountLogExample" resultType="java.lang.Integer" >
+    select count(*) from huiyingdai_account_log
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update huiyingdai_account_log
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.nid != null" >
+        nid = #{record.nid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.type != null" >
+        `type` = #{record.type,jdbcType=VARCHAR},
+      </if>
+      <if test="record.total != null" >
+        total = #{record.total,jdbcType=DECIMAL},
+      </if>
+      <if test="record.totalOld != null" >
+        total_old = #{record.totalOld,jdbcType=DECIMAL},
+      </if>
+      <if test="record.code != null" >
+        code = #{record.code,jdbcType=VARCHAR},
+      </if>
+      <if test="record.codeType != null" >
+        code_type = #{record.codeType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.codeNid != null" >
+        code_nid = #{record.codeNid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.borrowNid != null" >
+        borrow_nid = #{record.borrowNid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.money != null" >
+        money = #{record.money,jdbcType=DECIMAL},
+      </if>
+      <if test="record.income != null" >
+        income = #{record.income,jdbcType=DECIMAL},
+      </if>
+      <if test="record.incomeOld != null" >
+        income_old = #{record.incomeOld,jdbcType=DECIMAL},
+      </if>
+      <if test="record.incomeNew != null" >
+        income_new = #{record.incomeNew,jdbcType=DECIMAL},
+      </if>
+      <if test="record.accountWebStatus != null" >
+        account_web_status = #{record.accountWebStatus,jdbcType=INTEGER},
+      </if>
+      <if test="record.accountUserStatus != null" >
+        account_user_status = #{record.accountUserStatus,jdbcType=INTEGER},
+      </if>
+      <if test="record.accountType != null" >
+        account_type = #{record.accountType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.expend != null" >
+        expend = #{record.expend,jdbcType=DECIMAL},
+      </if>
+      <if test="record.expendOld != null" >
+        expend_old = #{record.expendOld,jdbcType=DECIMAL},
+      </if>
+      <if test="record.expendNew != null" >
+        expend_new = #{record.expendNew,jdbcType=DECIMAL},
+      </if>
+      <if test="record.balance != null" >
+        balance = #{record.balance,jdbcType=DECIMAL},
+      </if>
+      <if test="record.balanceOld != null" >
+        balance_old = #{record.balanceOld,jdbcType=DECIMAL},
+      </if>
+      <if test="record.balanceNew != null" >
+        balance_new = #{record.balanceNew,jdbcType=DECIMAL},
+      </if>
+      <if test="record.balanceCash != null" >
+        balance_cash = #{record.balanceCash,jdbcType=DECIMAL},
+      </if>
+      <if test="record.balanceCashOld != null" >
+        balance_cash_old = #{record.balanceCashOld,jdbcType=DECIMAL},
+      </if>
+      <if test="record.balanceCashNew != null" >
+        balance_cash_new = #{record.balanceCashNew,jdbcType=DECIMAL},
+      </if>
+      <if test="record.balanceFrost != null" >
+        balance_frost = #{record.balanceFrost,jdbcType=DECIMAL},
+      </if>
+      <if test="record.balanceFrostOld != null" >
+        balance_frost_old = #{record.balanceFrostOld,jdbcType=DECIMAL},
+      </if>
+      <if test="record.balanceFrostNew != null" >
+        balance_frost_new = #{record.balanceFrostNew,jdbcType=DECIMAL},
+      </if>
+      <if test="record.frost != null" >
+        frost = #{record.frost,jdbcType=DECIMAL},
+      </if>
+      <if test="record.frostOld != null" >
+        frost_old = #{record.frostOld,jdbcType=DECIMAL},
+      </if>
+      <if test="record.frostNew != null" >
+        frost_new = #{record.frostNew,jdbcType=DECIMAL},
+      </if>
+      <if test="record.repay != null" >
+        repay = #{record.repay,jdbcType=DECIMAL},
+      </if>
+      <if test="record.repayNew != null" >
+        repay_new = #{record.repayNew,jdbcType=DECIMAL},
+      </if>
+      <if test="record.repayOld != null" >
+        repay_old = #{record.repayOld,jdbcType=DECIMAL},
+      </if>
+      <if test="record.await != null" >
+        await = #{record.await,jdbcType=DECIMAL},
+      </if>
+      <if test="record.awaitOld != null" >
+        await_old = #{record.awaitOld,jdbcType=DECIMAL},
+      </if>
+      <if test="record.awaitNew != null" >
+        await_new = #{record.awaitNew,jdbcType=DECIMAL},
+      </if>
+      <if test="record.toUserid != null" >
+        to_userid = #{record.toUserid,jdbcType=INTEGER},
+      </if>
+      <if test="record.remark != null" >
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.addtime != null" >
+        addtime = #{record.addtime,jdbcType=VARCHAR},
+      </if>
+      <if test="record.addip != null" >
+        addip = #{record.addip,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update huiyingdai_account_log
+    set id = #{record.id,jdbcType=INTEGER},
+      nid = #{record.nid,jdbcType=VARCHAR},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      `type` = #{record.type,jdbcType=VARCHAR},
+      total = #{record.total,jdbcType=DECIMAL},
+      total_old = #{record.totalOld,jdbcType=DECIMAL},
+      code = #{record.code,jdbcType=VARCHAR},
+      code_type = #{record.codeType,jdbcType=VARCHAR},
+      code_nid = #{record.codeNid,jdbcType=VARCHAR},
+      borrow_nid = #{record.borrowNid,jdbcType=VARCHAR},
+      money = #{record.money,jdbcType=DECIMAL},
+      income = #{record.income,jdbcType=DECIMAL},
+      income_old = #{record.incomeOld,jdbcType=DECIMAL},
+      income_new = #{record.incomeNew,jdbcType=DECIMAL},
+      account_web_status = #{record.accountWebStatus,jdbcType=INTEGER},
+      account_user_status = #{record.accountUserStatus,jdbcType=INTEGER},
+      account_type = #{record.accountType,jdbcType=VARCHAR},
+      expend = #{record.expend,jdbcType=DECIMAL},
+      expend_old = #{record.expendOld,jdbcType=DECIMAL},
+      expend_new = #{record.expendNew,jdbcType=DECIMAL},
+      balance = #{record.balance,jdbcType=DECIMAL},
+      balance_old = #{record.balanceOld,jdbcType=DECIMAL},
+      balance_new = #{record.balanceNew,jdbcType=DECIMAL},
+      balance_cash = #{record.balanceCash,jdbcType=DECIMAL},
+      balance_cash_old = #{record.balanceCashOld,jdbcType=DECIMAL},
+      balance_cash_new = #{record.balanceCashNew,jdbcType=DECIMAL},
+      balance_frost = #{record.balanceFrost,jdbcType=DECIMAL},
+      balance_frost_old = #{record.balanceFrostOld,jdbcType=DECIMAL},
+      balance_frost_new = #{record.balanceFrostNew,jdbcType=DECIMAL},
+      frost = #{record.frost,jdbcType=DECIMAL},
+      frost_old = #{record.frostOld,jdbcType=DECIMAL},
+      frost_new = #{record.frostNew,jdbcType=DECIMAL},
+      repay = #{record.repay,jdbcType=DECIMAL},
+      repay_new = #{record.repayNew,jdbcType=DECIMAL},
+      repay_old = #{record.repayOld,jdbcType=DECIMAL},
+      await = #{record.await,jdbcType=DECIMAL},
+      await_old = #{record.awaitOld,jdbcType=DECIMAL},
+      await_new = #{record.awaitNew,jdbcType=DECIMAL},
+      to_userid = #{record.toUserid,jdbcType=INTEGER},
+      remark = #{record.remark,jdbcType=VARCHAR},
+      addtime = #{record.addtime,jdbcType=VARCHAR},
+      addip = #{record.addip,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.AccountLog" >
+    update huiyingdai_account_log
+    <set >
+      <if test="nid != null" >
+        nid = #{nid,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        `type` = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="total != null" >
+        total = #{total,jdbcType=DECIMAL},
+      </if>
+      <if test="totalOld != null" >
+        total_old = #{totalOld,jdbcType=DECIMAL},
+      </if>
+      <if test="code != null" >
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="codeType != null" >
+        code_type = #{codeType,jdbcType=VARCHAR},
+      </if>
+      <if test="codeNid != null" >
+        code_nid = #{codeNid,jdbcType=VARCHAR},
+      </if>
+      <if test="borrowNid != null" >
+        borrow_nid = #{borrowNid,jdbcType=VARCHAR},
+      </if>
+      <if test="money != null" >
+        money = #{money,jdbcType=DECIMAL},
+      </if>
+      <if test="income != null" >
+        income = #{income,jdbcType=DECIMAL},
+      </if>
+      <if test="incomeOld != null" >
+        income_old = #{incomeOld,jdbcType=DECIMAL},
+      </if>
+      <if test="incomeNew != null" >
+        income_new = #{incomeNew,jdbcType=DECIMAL},
+      </if>
+      <if test="accountWebStatus != null" >
+        account_web_status = #{accountWebStatus,jdbcType=INTEGER},
+      </if>
+      <if test="accountUserStatus != null" >
+        account_user_status = #{accountUserStatus,jdbcType=INTEGER},
+      </if>
+      <if test="accountType != null" >
+        account_type = #{accountType,jdbcType=VARCHAR},
+      </if>
+      <if test="expend != null" >
+        expend = #{expend,jdbcType=DECIMAL},
+      </if>
+      <if test="expendOld != null" >
+        expend_old = #{expendOld,jdbcType=DECIMAL},
+      </if>
+      <if test="expendNew != null" >
+        expend_new = #{expendNew,jdbcType=DECIMAL},
+      </if>
+      <if test="balance != null" >
+        balance = #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="balanceOld != null" >
+        balance_old = #{balanceOld,jdbcType=DECIMAL},
+      </if>
+      <if test="balanceNew != null" >
+        balance_new = #{balanceNew,jdbcType=DECIMAL},
+      </if>
+      <if test="balanceCash != null" >
+        balance_cash = #{balanceCash,jdbcType=DECIMAL},
+      </if>
+      <if test="balanceCashOld != null" >
+        balance_cash_old = #{balanceCashOld,jdbcType=DECIMAL},
+      </if>
+      <if test="balanceCashNew != null" >
+        balance_cash_new = #{balanceCashNew,jdbcType=DECIMAL},
+      </if>
+      <if test="balanceFrost != null" >
+        balance_frost = #{balanceFrost,jdbcType=DECIMAL},
+      </if>
+      <if test="balanceFrostOld != null" >
+        balance_frost_old = #{balanceFrostOld,jdbcType=DECIMAL},
+      </if>
+      <if test="balanceFrostNew != null" >
+        balance_frost_new = #{balanceFrostNew,jdbcType=DECIMAL},
+      </if>
+      <if test="frost != null" >
+        frost = #{frost,jdbcType=DECIMAL},
+      </if>
+      <if test="frostOld != null" >
+        frost_old = #{frostOld,jdbcType=DECIMAL},
+      </if>
+      <if test="frostNew != null" >
+        frost_new = #{frostNew,jdbcType=DECIMAL},
+      </if>
+      <if test="repay != null" >
+        repay = #{repay,jdbcType=DECIMAL},
+      </if>
+      <if test="repayNew != null" >
+        repay_new = #{repayNew,jdbcType=DECIMAL},
+      </if>
+      <if test="repayOld != null" >
+        repay_old = #{repayOld,jdbcType=DECIMAL},
+      </if>
+      <if test="await != null" >
+        await = #{await,jdbcType=DECIMAL},
+      </if>
+      <if test="awaitOld != null" >
+        await_old = #{awaitOld,jdbcType=DECIMAL},
+      </if>
+      <if test="awaitNew != null" >
+        await_new = #{awaitNew,jdbcType=DECIMAL},
+      </if>
+      <if test="toUserid != null" >
+        to_userid = #{toUserid,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="addtime != null" >
+        addtime = #{addtime,jdbcType=VARCHAR},
+      </if>
+      <if test="addip != null" >
+        addip = #{addip,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.AccountLog" >
+    update huiyingdai_account_log
+    set nid = #{nid,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=INTEGER},
+      `type` = #{type,jdbcType=VARCHAR},
+      total = #{total,jdbcType=DECIMAL},
+      total_old = #{totalOld,jdbcType=DECIMAL},
+      code = #{code,jdbcType=VARCHAR},
+      code_type = #{codeType,jdbcType=VARCHAR},
+      code_nid = #{codeNid,jdbcType=VARCHAR},
+      borrow_nid = #{borrowNid,jdbcType=VARCHAR},
+      money = #{money,jdbcType=DECIMAL},
+      income = #{income,jdbcType=DECIMAL},
+      income_old = #{incomeOld,jdbcType=DECIMAL},
+      income_new = #{incomeNew,jdbcType=DECIMAL},
+      account_web_status = #{accountWebStatus,jdbcType=INTEGER},
+      account_user_status = #{accountUserStatus,jdbcType=INTEGER},
+      account_type = #{accountType,jdbcType=VARCHAR},
+      expend = #{expend,jdbcType=DECIMAL},
+      expend_old = #{expendOld,jdbcType=DECIMAL},
+      expend_new = #{expendNew,jdbcType=DECIMAL},
+      balance = #{balance,jdbcType=DECIMAL},
+      balance_old = #{balanceOld,jdbcType=DECIMAL},
+      balance_new = #{balanceNew,jdbcType=DECIMAL},
+      balance_cash = #{balanceCash,jdbcType=DECIMAL},
+      balance_cash_old = #{balanceCashOld,jdbcType=DECIMAL},
+      balance_cash_new = #{balanceCashNew,jdbcType=DECIMAL},
+      balance_frost = #{balanceFrost,jdbcType=DECIMAL},
+      balance_frost_old = #{balanceFrostOld,jdbcType=DECIMAL},
+      balance_frost_new = #{balanceFrostNew,jdbcType=DECIMAL},
+      frost = #{frost,jdbcType=DECIMAL},
+      frost_old = #{frostOld,jdbcType=DECIMAL},
+      frost_new = #{frostNew,jdbcType=DECIMAL},
+      repay = #{repay,jdbcType=DECIMAL},
+      repay_new = #{repayNew,jdbcType=DECIMAL},
+      repay_old = #{repayOld,jdbcType=DECIMAL},
+      await = #{await,jdbcType=DECIMAL},
+      await_old = #{awaitOld,jdbcType=DECIMAL},
+      await_new = #{awaitNew,jdbcType=DECIMAL},
+      to_userid = #{toUserid,jdbcType=INTEGER},
+      remark = #{remark,jdbcType=VARCHAR},
+      addtime = #{addtime,jdbcType=VARCHAR},
+      addip = #{addip,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

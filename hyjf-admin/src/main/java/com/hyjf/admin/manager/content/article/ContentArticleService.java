@@ -1,0 +1,61 @@
+package com.hyjf.admin.manager.content.article;
+
+import java.util.List;
+
+import com.hyjf.mybatis.model.auto.ContentArticle;
+
+public interface ContentArticleService {
+
+    /**
+     * 获取文章列表列表
+     * 
+     * @return
+     */
+    public List<ContentArticle> getRecordList(ContentArticle contentArticle, int limitStart, int limitEnd);
+
+    /**
+     * 获取单个文章列表维护
+     * 
+     * @return
+     */
+    public ContentArticle getRecord(Integer record);
+
+    /**
+     * 根据主键判断文章列表中数据是否存在
+     * 
+     * @return
+     */
+    public boolean isExistsRecord(ContentArticle record);
+
+    /**
+     * 文章列表插入
+     * 
+     * @param record
+     */
+    public void insertRecord(ContentArticle record);
+
+    /**
+     * 文章列表更新
+     * 
+     * @param record
+     */
+    public void updateRecord(ContentArticle record);
+    
+    /**
+     * 配置删除
+     * 
+     * @param record
+     */
+    public void deleteRecord(List<Integer> recordList);
+
+    /**
+     * 根据条件查询数据
+     * 
+     * @param ContentArticle
+     * @param i
+     * @param j
+     * @return
+     */
+    public List<ContentArticle> selectRecordList(ContentArticleBean form, int limitStart, int limitEnd);
+
+}

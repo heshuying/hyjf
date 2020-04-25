@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.InviteInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.InviteInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="invite_user" property="inviteUser" jdbcType="INTEGER" />
+    <result column="invite_by_user" property="inviteByUser" jdbcType="INTEGER" />
+    <result column="group_code" property="groupCode" jdbcType="VARCHAR" />
+    <result column="recommend_source" property="recommendSource" jdbcType="INTEGER" />
+    <result column="recommend_count" property="recommendCount" jdbcType="INTEGER" />
+    <result column="send_flag" property="sendFlag" jdbcType="INTEGER" />
+    <result column="tender_status" property="tenderStatus" jdbcType="INTEGER" />
+    <result column="send_time" property="sendTime" jdbcType="INTEGER" />
+    <result column="add_time" property="addTime" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+    <result column="del_flg" property="delFlg" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, invite_user, invite_by_user, group_code, recommend_source, recommend_count, send_flag, 
+    tender_status, send_time, add_time, update_time, del_flg
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.InviteInfoExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_invite_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_invite_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_invite_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.InviteInfoExample" >
+    delete from hyjf_invite_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.InviteInfo" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_invite_info (invite_user, invite_by_user, group_code, 
+      recommend_source, recommend_count, send_flag, 
+      tender_status, send_time, add_time, 
+      update_time, del_flg)
+    values (#{inviteUser,jdbcType=INTEGER}, #{inviteByUser,jdbcType=INTEGER}, #{groupCode,jdbcType=VARCHAR}, 
+      #{recommendSource,jdbcType=INTEGER}, #{recommendCount,jdbcType=INTEGER}, #{sendFlag,jdbcType=INTEGER}, 
+      #{tenderStatus,jdbcType=INTEGER}, #{sendTime,jdbcType=INTEGER}, #{addTime,jdbcType=INTEGER}, 
+      #{updateTime,jdbcType=INTEGER}, #{delFlg,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.InviteInfo" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_invite_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="inviteUser != null" >
+        invite_user,
+      </if>
+      <if test="inviteByUser != null" >
+        invite_by_user,
+      </if>
+      <if test="groupCode != null" >
+        group_code,
+      </if>
+      <if test="recommendSource != null" >
+        recommend_source,
+      </if>
+      <if test="recommendCount != null" >
+        recommend_count,
+      </if>
+      <if test="sendFlag != null" >
+        send_flag,
+      </if>
+      <if test="tenderStatus != null" >
+        tender_status,
+      </if>
+      <if test="sendTime != null" >
+        send_time,
+      </if>
+      <if test="addTime != null" >
+        add_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="delFlg != null" >
+        del_flg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="inviteUser != null" >
+        #{inviteUser,jdbcType=INTEGER},
+      </if>
+      <if test="inviteByUser != null" >
+        #{inviteByUser,jdbcType=INTEGER},
+      </if>
+      <if test="groupCode != null" >
+        #{groupCode,jdbcType=VARCHAR},
+      </if>
+      <if test="recommendSource != null" >
+        #{recommendSource,jdbcType=INTEGER},
+      </if>
+      <if test="recommendCount != null" >
+        #{recommendCount,jdbcType=INTEGER},
+      </if>
+      <if test="sendFlag != null" >
+        #{sendFlag,jdbcType=INTEGER},
+      </if>
+      <if test="tenderStatus != null" >
+        #{tenderStatus,jdbcType=INTEGER},
+      </if>
+      <if test="sendTime != null" >
+        #{sendTime,jdbcType=INTEGER},
+      </if>
+      <if test="addTime != null" >
+        #{addTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="delFlg != null" >
+        #{delFlg,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.InviteInfoExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_invite_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_invite_info
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.inviteUser != null" >
+        invite_user = #{record.inviteUser,jdbcType=INTEGER},
+      </if>
+      <if test="record.inviteByUser != null" >
+        invite_by_user = #{record.inviteByUser,jdbcType=INTEGER},
+      </if>
+      <if test="record.groupCode != null" >
+        group_code = #{record.groupCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.recommendSource != null" >
+        recommend_source = #{record.recommendSource,jdbcType=INTEGER},
+      </if>
+      <if test="record.recommendCount != null" >
+        recommend_count = #{record.recommendCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.sendFlag != null" >
+        send_flag = #{record.sendFlag,jdbcType=INTEGER},
+      </if>
+      <if test="record.tenderStatus != null" >
+        tender_status = #{record.tenderStatus,jdbcType=INTEGER},
+      </if>
+      <if test="record.sendTime != null" >
+        send_time = #{record.sendTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.addTime != null" >
+        add_time = #{record.addTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.delFlg != null" >
+        del_flg = #{record.delFlg,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_invite_info
+    set id = #{record.id,jdbcType=INTEGER},
+      invite_user = #{record.inviteUser,jdbcType=INTEGER},
+      invite_by_user = #{record.inviteByUser,jdbcType=INTEGER},
+      group_code = #{record.groupCode,jdbcType=VARCHAR},
+      recommend_source = #{record.recommendSource,jdbcType=INTEGER},
+      recommend_count = #{record.recommendCount,jdbcType=INTEGER},
+      send_flag = #{record.sendFlag,jdbcType=INTEGER},
+      tender_status = #{record.tenderStatus,jdbcType=INTEGER},
+      send_time = #{record.sendTime,jdbcType=INTEGER},
+      add_time = #{record.addTime,jdbcType=INTEGER},
+      update_time = #{record.updateTime,jdbcType=INTEGER},
+      del_flg = #{record.delFlg,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.InviteInfo" >
+    update hyjf_invite_info
+    <set >
+      <if test="inviteUser != null" >
+        invite_user = #{inviteUser,jdbcType=INTEGER},
+      </if>
+      <if test="inviteByUser != null" >
+        invite_by_user = #{inviteByUser,jdbcType=INTEGER},
+      </if>
+      <if test="groupCode != null" >
+        group_code = #{groupCode,jdbcType=VARCHAR},
+      </if>
+      <if test="recommendSource != null" >
+        recommend_source = #{recommendSource,jdbcType=INTEGER},
+      </if>
+      <if test="recommendCount != null" >
+        recommend_count = #{recommendCount,jdbcType=INTEGER},
+      </if>
+      <if test="sendFlag != null" >
+        send_flag = #{sendFlag,jdbcType=INTEGER},
+      </if>
+      <if test="tenderStatus != null" >
+        tender_status = #{tenderStatus,jdbcType=INTEGER},
+      </if>
+      <if test="sendTime != null" >
+        send_time = #{sendTime,jdbcType=INTEGER},
+      </if>
+      <if test="addTime != null" >
+        add_time = #{addTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="delFlg != null" >
+        del_flg = #{delFlg,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.InviteInfo" >
+    update hyjf_invite_info
+    set invite_user = #{inviteUser,jdbcType=INTEGER},
+      invite_by_user = #{inviteByUser,jdbcType=INTEGER},
+      group_code = #{groupCode,jdbcType=VARCHAR},
+      recommend_source = #{recommendSource,jdbcType=INTEGER},
+      recommend_count = #{recommendCount,jdbcType=INTEGER},
+      send_flag = #{sendFlag,jdbcType=INTEGER},
+      tender_status = #{tenderStatus,jdbcType=INTEGER},
+      send_time = #{sendTime,jdbcType=INTEGER},
+      add_time = #{addTime,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=INTEGER},
+      del_flg = #{delFlg,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

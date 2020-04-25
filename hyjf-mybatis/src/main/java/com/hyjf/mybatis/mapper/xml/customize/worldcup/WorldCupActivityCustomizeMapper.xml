@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.worldcup.WorldCupActivityCustomizeMapper">
+    <select id="countRecordBySearchCon" resultType="java.lang.Integer" parameterType="java.util.Map">
+        SELECT
+        count(1)
+        FROM
+        hyjf_guessing_winning gw
+        LEFT JOIN huiyingdai_users u ON gw.user_id = u.user_id
+        LEFT JOIN hyjf_world_team_match wtm ON gw.guessing_match_id = wtm.id
+        LEFT JOIN hyjf_world_cup_team wct ON gw.user_match_team_id = wct.id
+        where 1=1
+        <if test="userName != null and userName != ''">
+            and u.username = #{userName}
+        </if>
+        <if test="mobile != null and mobile != ''">
+            and u.mobile = #{mobile}
+        </if>
+    </select>
+
+    <select id="getRecordList" resultType="com.hyjf.mybatis.model.customize.worldcup.GuessingActivitieCustomize" parameterType="java.util.Map">
+        SELECT
+        u.username ,gw.true_name as trueName,INSERT(u.mobile, 4, 4, '****') AS mobile,wtm.batch_name as batchName,wct.team_name as teamName,gw.guessing_match_result as guessingMatchResult,
+        gw.guessing_match_num as guessingMatchNum,gw.guessing_field_num as guessingFieldNum,gw.guessing_rankings as guessingRankings,FROM_UNIXTIME(gw.guessing_time, '%Y-%m-%d %H:%i:%s') as time,
+        wtm.match_result as matchResult
+        FROM
+        hyjf_guessing_winning gw
+        LEFT JOIN huiyingdai_users u ON gw.user_id = u.user_id
+        LEFT JOIN hyjf_world_team_match wtm ON gw.guessing_match_id = wtm.id
+        LEFT JOIN hyjf_world_cup_team wct ON gw.user_match_team_id = wct.id
+        where 1=1
+        <if test="userName != null and userName != ''">
+            and u.username = #{userName}
+        </if>
+        <if test="mobile != null and mobile != ''">
+            and u.mobile = #{mobile}
+        </if>
+        ORDER BY gw.guessing_field_num desc,gw.guessing_time asc
+        <if test="limitStart != null and limitEnd != null">
+            LIMIT #{limitStart} , #{limitEnd}
+        </if>
+    </select>
+
+    <select id="countChampionRecordBySearchCon" resultType="java.lang.Integer" parameterType="java.util.Map">
+        SELECT
+        count(1)
+        FROM
+        hyjf_guessing_champion gc
+        LEFT JOIN huiyingdai_users u ON gc.user_id = u.user_id
+        LEFT JOIN hyjf_world_cup_team wct ON gc.guessing_champion_id = wct.id
+        <if test="userName != null and userName != ''">
+            and u.username = #{userName}
+        </if>
+        <if test="mobile != null and mobile != ''">
+            and u.mobile = #{mobile}
+        </if>
+    </select>
+    <select id="getChampionRecordList" resultType="com.hyjf.mybatis.model.customize.worldcup.GuessingActivitieCustomize" parameterType="java.util.Map">
+        SELECT
+        u.username ,gc.true_name as trueName,INSERT(u.mobile, 4, 4, '****') AS mobile,
+        wct.team_name as teamName ,gc.team_win_num as guessingMatchNum,
+        FROM_UNIXTIME(gc.vote_time, '%Y-%m-%d %H:%i:%s') as time
+        FROM
+        hyjf_guessing_champion gc
+        LEFT JOIN huiyingdai_users u ON gc.user_id = u.user_id
+        LEFT JOIN hyjf_world_cup_team wct ON gc.guessing_champion_id = wct.id
+        where 1=1
+        <if test="userName != null and userName != ''">
+            and u.username = #{userName}
+        </if>
+        <if test="mobile != null and mobile != ''">
+            and u.mobile = #{mobile}
+        </if>
+        ORDER BY gc.vote_time desc
+        <if test="limitStart != null and limitEnd != null">
+            LIMIT #{limitStart} , #{limitEnd}
+        </if>
+    </select>
+    <select id="getWorldCupTeamSelect" resultType="com.hyjf.mybatis.model.auto.WorldCupTeam" >
+        SELECT
+        wct.id ,wct.team_groupings as teamGroupings,wct.team_name as teamName,
+        wct.team_number as teamNumber
+        FROM
+        hyjf_world_cup_team wct
+    </select>
+
+    <select id="getWorldTeamMatchList" resultType="com.hyjf.mybatis.model.customize.worldcup.WorldTeamMatchCustomize" >
+        SELECT
+        wtm.id ,wtm.match_team as matchTeam,wtm.match_type as matchType,
+        wtm.home_match_team as homeMatchTeam,wtm.visiting_match_team as visitingMatchTeam,
+        wtm.batch_name as batchName,FROM_UNIXTIME(wtm.match_time, '%Y-%m-%d %H:%i:%s') as time,  wtm.match_result as  matchResult,
+        wtm.win_team_id as winTeamId
+        FROM
+        hyjf_world_team_match wtm
+        order by match_time asc
+    </select>
+
+
+    <select id="getByUserId" resultType="com.hyjf.mybatis.model.auto.UsersInfo">
+        SELECT * FROM huiyingdai_users_info WHERE user_id = #{userId} limit 1
+
+    </select>
+
+    <select id="getHjhPlanListByUserId" resultType="java.util.HashMap" parameterType="java.util.Map">
+       SELECT
+        t2.plan_nid planNid,
+        t2.plan_name PlanName,
+        FROM_UNIXTIME(t1.add_time, '%Y-%m-%d') entryPlanTime,
+        t2.lock_period lockPeriod,
+        t1.accede_account accedeAccount
+        FROM hyjf_hjh_accede t1
+			LEFT JOIN hyjf_hjh_plan t2 ON t1.plan_nid = t2.plan_nid
+			WHERE 1=1
+			<if test="userId != null ">
+				and t1.user_id = #{userId}
+	        </if>
+			<if test="startTime != null and endTime != null">
+				AND t1.add_time BETWEEN #{startTime} AND #{endTime}
+	        </if>
+			<if test="account != null ">
+				AND t1.accede_account >= #{account}
+	        </if>
+			<if test="flag != null ">
+				AND t1.invite_user_id > 0
+	        </if>
+				AND t2.is_month = 1
+            order by t1.add_time DESC
+    </select>
+    <select id="getFirstHjhPlanListByUserId" resultType="java.util.HashMap" parameterType="java.util.Map">
+       SELECT
+        t2.plan_nid planNid,
+        t2.plan_name PlanName,
+        FROM_UNIXTIME(t1.add_time, '%Y-%m-%d') entryPlanTime,
+        t2.lock_period lockPeriod,
+        t1.accede_account accedeAccount
+        FROM hyjf_hjh_accede t1
+			LEFT JOIN hyjf_hjh_plan t2 ON t1.plan_nid = t2.plan_nid
+			WHERE 1=1
+			<if test="userId != null ">
+				and t1.user_id = #{userId}
+	        </if>
+			<if test="startTime != null and endTime != null">
+				AND t1.add_time BETWEEN #{startTime} AND #{endTime}
+	        </if>
+			<if test="account != null ">
+				AND t1.accede_account >= #{account}
+	        </if>
+			<if test="flag != null ">
+				AND t1.invite_user_id > 0
+	        </if>
+				AND t2.is_month = 1
+            order by t1.add_time ASC
+    </select>
+    <select id="getspreadUser" resultType="java.lang.Integer" parameterType="java.util.Map">
+      		SELECT user_id
+      		FROM huiyingdai_spreads_users
+			WHERE 1=1
+			<if test="userId != null ">
+				and spreads_userid = #{userId}
+	        </if>
+			<if test="startTime != null and endTime != null">
+				AND ADDTIME BETWEEN #{startTime} AND #{endTime}
+	        </if>
+
+    </select>
+    <select id="getUserdChance" resultType="java.lang.Integer" >
+      		SELECT COUNT(id) FROM hyjf_guessing_winning WHERE user_id = #{userId}
+
+    </select>
+    <select id="getMatchChance" resultType="java.lang.Integer" parameterType="java.util.Map">
+      		SELECT COUNT(id)
+      		FROM hyjf_guessing_winning
+			WHERE 1=1
+			<if test="userId != null ">
+				and user_id = #{userId}
+	        </if>
+			<if test="guessingMatchId != null">
+				AND guessing_match_id = #{guessingMatchId}
+	        </if>
+			<if test="guessingFieldNum != null">
+				AND guessing_field_num = #{guessingFieldNum}
+	        </if>
+			<if test="guessingMatchResult != null">
+				AND guessing_match_result = #{guessingMatchResult}
+	        </if>
+
+    </select>
+    <select id="getChanceNum" resultType="java.lang.Integer" >
+				SELECT ranking FROM(
+				SELECT userId,@rownum:=@rownum+1 AS ranking FROM (			
+						SELECT g.true_name AS userName,MAX(g.guessing_field_num) GuessNum,r.*,g.user_id userId
+						FROM (SELECT @rownum:=0  ) r ,hyjf_guessing_winning g,huiyingdai_users u
+						WHERE u.user_id = g.user_id
+						GROUP BY g.user_id
+						ORDER BY GuessNum DESC,g.guessing_time ASC 
+						 LIMIT 10
+					 ) a
+				) b WHERE b.userId = #{userId}
+	
+    </select>
+
+    <select id="getHjhPlanByUserId" resultType="java.util.HashMap" parameterType="java.util.Map">
+        SELECT
+        t2.plan_nid planNid,
+        t2.plan_name PlanName,
+        FROM_UNIXTIME(t1.add_time, '%Y-%m-%d') entryPlanTime,
+        t2.lock_period lockPeriod,
+        t1.accede_account accedeAccount
+        FROM hyjf_hjh_accede t1
+        LEFT JOIN hyjf_hjh_plan t2 ON t1.plan_nid = t2.plan_nid
+        WHERE 1=1
+        <if test="userId != null ">
+            and t1.user_id = #{userId}
+        </if>
+        <if test="startTime != null and endTime != null">
+            AND t1.add_time BETWEEN #{startTime} AND #{endTime}
+        </if>
+        <if test="account != null ">
+            AND t1.accede_account >= #{account}
+        </if>
+        AND t2.is_month = 1 AND t1.invite_user_id > 0
+
+    </select>
+
+    <update id="updateIsEliminateById"  >
+	   UPDATE hyjf_world_cup_team SET is_eliminate = 0 WHERE id = #{teamId}
+  	</update>
+    <update id="updateGuessWin"  parameterType="java.util.Map">
+	   UPDATE hyjf_guessing_winning a SET a.guessing_match_result = 1
+	   WHERE guessing_match_id = #{guessingMatchId}  and user_match_team_id = #{userMatchTeamId}
+  	</update>
+    <update id="updateGuessWinNum"  parameterType="java.util.Map">
+	    update hyjf_guessing_winning a 
+			inner join (select user_id, max(guessing_field_num)+1 as guessing_num from hyjf_guessing_winning g 
+			group by user_id ) gw on  gw.user_id=a.user_id
+			set a.guessing_field_num=gw.guessing_num
+			where a.guessing_match_id=#{guessingMatchId} and a.user_match_team_id=#{userMatchTeamId} 
+  	</update>
+    <update id="updateGuessLose"  parameterType="java.util.Map">
+	   UPDATE hyjf_guessing_winning SET guessing_match_result = 2
+	   WHERE guessing_match_id = #{guessingMatchId}  and user_match_team_id <![CDATA[<>]]> #{userMatchTeamId}
+  	</update>
+    <update id="updateChampion">
+	  UPDATE hyjf_guessing_champion SET team_win_num = team_win_num + 1 WHERE guessing_champion_id = #{winTeamId}
+  	</update>
+	  	<resultMap id="ReturnBaseResultMap" type="com.hyjf.mybatis.model.auto.WorldTeamMatch" >
+	    <id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="match_team" property="matchTeam" jdbcType="TINYINT" />
+	    <result column="match_type" property="matchType" jdbcType="TINYINT" />
+	    <result column="home_match_team" property="homeMatchTeam" jdbcType="INTEGER" />
+	    <result column="visiting_match_team" property="visitingMatchTeam" jdbcType="INTEGER" />
+	    <result column="batch_name" property="batchName" jdbcType="VARCHAR" />
+	    <result column="match_time" property="matchTime" jdbcType="INTEGER" />
+	    <result column="match_result" property="matchResult" jdbcType="VARCHAR" />
+	    <result column="win_team_id" property="winTeamId" jdbcType="INTEGER" />
+	    <result column="create_time" property="createTime" jdbcType="INTEGER" />
+	  </resultMap>
+  	<select id="getWorldTeam" resultMap="ReturnBaseResultMap" parameterType="java.util.Map">
+      		SELECT * FROM hyjf_world_team_match
+			WHERE 1=1
+			<if test="matchTeam != null">				
+				AND match_team = #{matchTeam}
+	        </if>
+			<if test="matchType != null">				
+				AND match_type = #{matchType}
+	        </if>
+			LIMIT 1
+
+    </select>
+
+    <select id="getWorldCupTeamSelected" resultType="com.hyjf.mybatis.model.customize.worldcup.WorldTeamCustomize" >
+        SELECT
+        wtm.home_match_team as homeId,wtm.visiting_match_team as visitedId ,wct.team_logo as homeLogo,
+        wctt.team_logo as visitedLogo,wct.team_name as homeName,wctt.team_name as visitedName,wtm.match_result as matchResult
+        FROM
+        hyjf_world_team_match wtm
+        LEFT JOIN hyjf_world_cup_team wct on wtm.home_match_team=wct.id
+        LEFT JOIN hyjf_world_cup_team wctt on wtm.visiting_match_team=wctt.id
+        where wtm.match_type=1;
+    </select>
+    <select id="getChampionLogo" resultType="com.hyjf.mybatis.model.auto.WorldCupTeam" parameterType="java.lang.Integer">
+        SELECT t2.id as id,t2.team_name as teamName,t2.team_logo as teamLogo 
+		FROM hyjf_guessing_champion t1
+		LEFT JOIN hyjf_world_cup_team t2 ON t1.guessing_champion_id = t2.id
+		WHERE 1=1
+			
+			and t1.user_id = #{userId}
+
+		LIMIT 1
+    </select>
+    <select id="getWorldCupTeamResultCount" resultType="java.lang.Integer">
+        select count(id) from hyjf_world_team_match
+        WHERE match_type = 1 and win_team_id is not NULL;
+    </select>
+    <select id="countTeamMatch" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM hyjf_world_team_match
+    </select>
+    <select id="isGuessing" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT COUNT(*) FROM hyjf_guessing_winning WHERE user_id = #{userId}
+    </select>
+    <select id="findIsOver" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT COUNT(*) FROM hyjf_world_team_match WHERE match_type = #{matchType} AND win_team_id IS NULL 
+    </select>
+    <select id="selectByExample" resultMap="ReturnBaseResultMap">
+        SELECT * FROM hyjf_world_team_match WHERE win_team_id IS NULL 
+    </select>
+
+</mapper>

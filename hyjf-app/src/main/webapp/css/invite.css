@@ -1,0 +1,157 @@
+* {
+	margin: 0;
+	padding: 0
+}
+
+img {
+	max-width: 100%;
+}
+
+.invite-bg {
+	background: #7ac0fa;
+	font-family: "microsoft yahei";
+	color: #333333;
+}
+
+.invite-active img {
+	display: block;
+	width: 100%;
+}
+
+.invite-cont {
+	width: 10.51rem;
+	position: absolute;
+	top: 2.40rem;
+	left: 0;
+	right: 0;
+	margin: auto;
+	letter-spacing: 1px;
+}
+
+.invite-cont .copy {
+	width: 100%;
+	height: 2.21rem;
+	background: url(../images/invite/copy.png) no-repeat center;
+	background-size: 100%;
+	padding: 0.45rem 0.7rem;
+	box-sizing: border-box;
+	-webkit-border-radius: border-box;
+	-moz-border-radius: border-box;
+}
+
+.invite-cont .copy .copy-btn {
+	display: block;
+	float: left;
+	width: 2.6rem;
+	height: 0.7rem;
+	line-height: 0.7rem;
+	text-decoration: none;
+	background: #f9bb00;
+	color: #ffffff;
+	font-size: 0.30rem;
+	text-align: center;
+	border-radius: 5px;
+}
+
+.invite-cont .copy .copy-num {
+	display: block;
+	float: right;
+	font-size: 0.76rem;
+	color: #28a7e1;
+	line-height: 0.74rem;
+}
+
+.invite-cont .copy p {
+	width: 100%;
+	font-size: 0.3rem;
+	margin-top: 0.20rem;
+	float: left;
+	letter-spacing: 0;
+}
+
+.down {
+	margin-top: 0.20rem;
+}
+
+.down-left {
+	display: block;
+	float: left;
+	width: 2.80rem;
+}
+
+.down-right {
+	display: block;
+	float: right;
+	width: 7.53rem;
+}
+
+.down-btn {
+	display: block;
+	text-decoration: none;
+	color: #fff;
+	text-align: center;
+	width: 2.40rem;
+	height: 0.65rem;
+	line-height: 0.65rem;
+	background: #fd6d6d;
+	border-radius: 5px;
+	font-size: 0.28rem;
+	margin: 0 auto;
+}
+
+.down .down-right span {
+	display: block;
+	width: 100%;
+	height: 1.50rem;
+	background: #cfecea;
+	font-size: 0.25rem;
+	padding: 0.42rem 0.4rem;
+	box-sizing: border-box;
+	-webkit-border-radius: border-box;
+	-moz-border-radius: border-box;
+	word-wrap: break-word;
+	line-height: 0.35rem;
+}
+
+.invite-cont .text {
+	font-size: 0.30rem;
+	margin-top: 0.25rem;
+}
+
+.invite-cont .text .colorred {
+	color: #f6671b;
+}
+
+.clear {
+	clear: both;
+}
+
+.invite-position {
+	position: relative;
+	width: 100%;
+}
+
+.unload-cont>a {
+	display: block;
+	margin: 0 auto;
+}
+
+.unload-cont p {
+	font-size: 0.30rem;
+	margin-top: 0.15rem;
+	text-align: center;
+}
+
+.unload-cont .colorred {
+	color: #fd6d6d;
+	text-decoration: none;
+}
+
+.button {
+	margin-top: 0.3rem
+}
+
+.down-left-div {
+	width: 1.50rem;
+	margin: 0 auto;
+}

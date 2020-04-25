@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.apiweb.GetCardCustomizeMapper">
+	<resultMap id="borrowTenderInfo" type="com.hyjf.mybatis.model.customize.apiweb.BorrowTenderInfoCustomize">
+		<result column="account" property="tenderAccount" />
+		<result column="user_id" property="userId" />
+		<result column="addtime" property="addtime" />
+	</resultMap>
+	<select id="getBorrowTender" resultMap="borrowTenderInfo" parameterType="java.util.Map">
+		SELECT
+			t.account,
+			t.user_id,
+			t.addtime
+		FROM
+			huiyingdai_borrow_tender t
+		INNER JOIN huiyingdai_borrow b ON t.borrow_nid = b.borrow_nid
+		LEFT JOIN huiyingdai_borrow_project_type p ON b.project_type = p.borrow_cd
+		WHERE
+			t.nid = #{tenderNid}
+		AND p.borrow_project_type = 'HZT'
+		AND p.borrow_class NOT IN ('ZXH', 'RTB')
+	</select>
+</mapper>

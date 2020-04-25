@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.htj.DebtBorrowFullCustomizeMapper">
+
+	<sql id="Select_Clause">
+		b.id,
+		b.borrow_nid,
+		b.`name` AS borrow_name,
+		b.borrow_user_name AS username,
+		b.account,
+		CONCAT(b.borrow_apr, '%') borrow_apr,
+		CASE WHEN borrow_style = 'endday' THEN CONCAT(b.borrow_period, '天') ELSE CONCAT(b.borrow_period, '个月') END borrow_period,
+		b.borrow_account_yes AS borrow_account_yes,
+		CASE WHEN b.borrow_service IS NULL OR b.borrow_service = '' THEN '' ELSE b.borrow_service END service_scale,
+		CASE WHEN b.borrow_full_time IS NOT NULL AND b.borrow_full_time != '' THEN FROM_UNIXTIME( b.borrow_full_time, '%Y-%m-%d %H:%i:%s' ) ELSE FROM_UNIXTIME(b.verify_time + (borrow_valid_time * 24 * 60 * 60), '%Y-%m-%d %H:%i:%s') END AS over_time,
+		b.addtime,
+	</sql>
+
+	<sql id="Where_Other_Clause">
+		<if test="borrowNidSrch != null and borrowNidSrch != ''">
+			AND b.borrow_nid LIKE CONCAT('%', #{borrowNidSrch}, '%')
+		</if>
+		<if test="borrowNameSrch != null and borrowNameSrch != ''">
+			AND b.`name` LIKE CONCAT('%', #{borrowNameSrch}, '%')
+		</if>
+		<if test="usernameSrch != null and usernameSrch != ''">
+			AND b.borrow_user_name LIKE CONCAT('%', #{usernameSrch}, '%')
+		</if>
+		<if test="timeStartSrch != null and timeStartSrch != ''">
+			AND FROM_UNIXTIME( b.addtime, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+		</if>
+		<if test="timeEndSrch != null and timeEndSrch != ''">
+			AND FROM_UNIXTIME( b.addtime, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+		</if>
+	</sql>
+
+	<sql id="Where_Clause">
+		<where>
+			 ( b.`status` = 1 
+			 	AND 
+			 	  ( 
+			 	      ( b.reverify_status = 0 AND b.borrow_account_yes <![CDATA[>=]]> b.account ) 
+			 	  OR 
+			 	      ( b.verify_time + ( borrow_valid_time * 24 * 60 *60 ) <![CDATA[<]]> UNIX_TIMESTAMP(NOW()) ) 
+			 	  ) 
+			  )
+			<include refid="Where_Other_Clause" />
+		</where>
+	</sql>
+
+	<sql id="Where_Union_Clause">
+		<where>
+			 b.`status` = 3 AND repay_full_status = 0
+			<include refid="Where_Other_Clause" />
+		</where>
+	</sql>
+
+	<select id="countBorrowFull" resultType="java.lang.Long" parameterType="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowCommonCustomize">
+		SELECT
+		  COUNT(1)
+	  	FROM ( 	
+			SELECT
+	      	  <include refid="Select_Clause" />
+			  '' AS `status`
+			FROM
+				hyjf_debt_borrow b
+			<include refid="Where_Clause" />
+			UNION 
+			SELECT
+	          <include refid="Select_Clause" />
+			  ba.`status`
+			FROM
+				hyjf_debt_borrow b
+			INNER JOIN hyjf_debt_apicron ba ON ba.borrow_nid = b.borrow_nid AND ba.api_type = 0 AND ( ba.`status` = '0' OR ba.`status` = '2' OR ba.`status` = '9' )
+			<include refid="Where_Union_Clause" />
+	    ) b
+	</select>
+
+	<resultMap id="selectBorrowFullListMap" type="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowFullCustomize">
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<result column="account_flag" property="accountFlag" jdbcType="VARCHAR" />
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="status_name" property="statusName" jdbcType="VARCHAR" />
+		<result column="borrow_account_yes" property="borrowAccountYes" jdbcType="VARCHAR" />
+		<result column="service_scale" property="serviceScale" jdbcType="VARCHAR" />
+		<result column="over_time" property="overTime" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectBorrowFullList" resultMap="selectBorrowFullListMap" parameterType="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowCommonCustomize">
+		SELECT
+	    	borrow_nid,
+	    	borrow_name,
+	    	username,
+	    	account AS account,
+	    	borrow_apr,
+	    	borrow_period,
+	    	borrow_account_yes AS borrow_account_yes,
+	    	CASE WHEN borrow_account_yes <![CDATA[>]]> account THEN 1 ELSE 0 END AS account_flag,
+	    	service_scale AS service_scale,
+	    	over_time,
+	    	addtime,
+	    	`status`
+	  	FROM ( 	
+			SELECT
+	      	  <include refid="Select_Clause" />
+			  '' AS `status`
+			FROM
+				hyjf_debt_borrow b
+			<include refid="Where_Clause" />
+			UNION 
+			SELECT
+	          <include refid="Select_Clause" />
+			  ba.`status`
+			FROM
+				hyjf_debt_borrow b
+			INNER JOIN hyjf_debt_apicron ba ON ba.borrow_nid = b.borrow_nid AND ba.api_type = 0 AND ( ba.`status` = '0' OR ba.`status` = '2' OR ba.`status` = '9' )
+			<include refid="Where_Union_Clause" />
+	    ) b
+		ORDER BY
+		  b.addtime DESC, b.id DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<resultMap id="selectFullListMap" type="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowFullCustomize">
+		<result column="investor" property="investor" jdbcType="VARCHAR" />
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<result column="investment_amount" property="investmentAmount" jdbcType="VARCHAR" />
+		<result column="loan_amount" property="loanAmount" jdbcType="VARCHAR" />
+		<result column="service_charge" property="serviceCharge" jdbcType="VARCHAR" />
+		<result column="operating_deck" property="operatingDeck" jdbcType="VARCHAR" />
+		<result column="operating_time" property="operatingTime" jdbcType="VARCHAR" />
+		
+	</resultMap>
+	<select id="selectFullList" resultMap="selectFullListMap" parameterType="java.lang.String">
+		SELECT
+		  b.borrow_nid AS investor,
+		  bt.user_name AS username,
+		  FORMAT(bt.account, 2) AS investment_amount,
+		  FORMAT(bt.account - bt.loan_fee, 2) AS loan_amount,
+		  FORMAT(bt.loan_fee, 2) AS service_charge,
+		  pa.`name` AS operating_deck,
+		  FROM_UNIXTIME( bt.create_time, '%Y-%m-%d %H:%i:%s' ) AS operating_time
+		FROM
+		  hyjf_debt_borrow b
+		  INNER  JOIN hyjf_debt_invest bt ON bt.borrow_nid = b.borrow_nid
+		  LEFT JOIN hyjf_param_name pa ON pa.name_class = 'CLIENT' AND pa.name_cd = bt.client
+		WHERE
+		    b.borrow_nid = #{borrowNid}
+		    AND bt.status <![CDATA[<>]]> 4
+		ORDER BY 
+		   bt.create_time DESC, bt.id DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	
+	<resultMap id="selectFullInfoMap" type="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowFullCustomize">
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<result column="borrow_style_name" property="borrowStyleName" jdbcType="VARCHAR" />
+		<result column="borrow_valid_time" property="borrowValidTime" jdbcType="VARCHAR" />
+		<result column="borrow_manager_scale" property="managerScale" jdbcType="VARCHAR" />
+		<result column="borrow_service_scale" property="serviceScale" jdbcType="VARCHAR" />
+		<result column="borrow_manager_scale_end" property="managerScaleEnd" jdbcType="VARCHAR" />
+		<result column="ontime" property="ontime" jdbcType="VARCHAR" />
+		<result column="over_time" property="overTime" jdbcType="VARCHAR" />
+		<result column="borrow_account_yes" property="borrowAccountYes" jdbcType="VARCHAR" />
+		<result column="project_type" property="projectType" jdbcType="VARCHAR" />
+		<result column="project_type_name" property="projectTypeName" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectFullInfo" resultMap="selectFullInfoMap" parameterType="java.lang.String">
+		SELECT
+		  b.borrow_nid,
+		  b.`name` AS borrow_name,
+		  b.borrow_user_name AS username,
+		  FORMAT(b.account, 2) AS account,
+		  CASE WHEN borrow_style = 'endday' THEN CONCAT(b.borrow_period, '天') ELSE CONCAT(b.borrow_period, '个月') END borrow_period,
+		  CONCAT(b.borrow_apr, '%') borrow_apr,
+		  b.borrow_style,
+		  bs.`name` AS borrow_style_name,
+		  b.borrow_valid_time,
+		  b.service_fee_rate AS borrow_service_scale,
+		  b.manage_fee_rate AS borrow_manager_scale,
+		  b.borrow_manager_scale_end AS borrow_manager_scale_end,
+		  CASE WHEN verify_time IS NOT NULL AND verify_time != '0' THEN FROM_UNIXTIME( b.verify_time, '%Y-%m-%d %H:%i:%s' )  ELSE '' END AS ontime,
+		  CASE WHEN b.borrow_full_time IS NOT NULL AND b.borrow_full_time != '' THEN FROM_UNIXTIME( b.borrow_full_time, '%Y-%m-%d %H:%i:%s' ) ELSE FROM_UNIXTIME(b.verify_time + (borrow_valid_time * 24 * 60 * 60), '%Y-%m-%d %H:%i:%s') END AS over_time,
+		  FORMAT(b.borrow_account_yes, 2) AS borrow_account_yes,
+		  b.project_type,
+		  bpt.borrow_name AS project_type_name
+		FROM
+		  hyjf_debt_borrow b
+			LEFT JOIN huiyingdai_users u ON b.user_id = u.user_id
+			LEFT JOIN huiyingdai_users_info ui ON u.user_id = ui.user_id
+			LEFT JOIN huiyingdai_borrow_style bs ON bs.nid = b.borrow_style
+			LEFT JOIN huiyingdai_borrow_project_type bpt ON bpt.borrow_cd = CAST(b.project_type AS CHAR)
+		WHERE
+		    b.borrow_nid = #{borrowNid}
+	</select>	
+	
+	
+	<resultMap id="sumMap" type="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowFullCustomize">
+		<result column="investment_amount" property="investmentAmount" jdbcType="VARCHAR" />
+		<result column="loan_amount" property="loanAmount" jdbcType="VARCHAR" />
+		<result column="service_charge" property="serviceCharge" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="sumAmount" resultMap="sumMap" parameterType="java.lang.String">
+		SELECT
+		  FORMAT(SUM(bt.account), 2) AS investment_amount,
+		  FORMAT(SUM(bt.account) - SUM(bt.loan_fee), 2) AS loan_amount,
+		  FORMAT(SUM(bt.loan_fee), 2) AS service_charge
+		FROM
+		  hyjf_debt_invest bt
+		WHERE
+		    bt.borrow_nid = #{borrowNid}
+		    AND bt.status <![CDATA[<>]]> 4
+	</select>
+	
+	
+	<resultMap id="selectAutoFullListMap" type="com.hyjf.mybatis.model.auto.DebtBorrowWithBLOBs">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="borrow_full_time" property="borrowFullTime" jdbcType="INTEGER" />
+		<result column="user_id" property="userId" jdbcType="INTEGER" />
+	</resultMap>
+	<select id="selectAutoFullList" resultMap="selectAutoFullListMap" parameterType="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowCommonCustomize">
+		SELECT
+			b.id,
+			b.borrow_nid,
+			b.borrow_full_time,
+			b.user_id
+		FROM
+			hyjf_debt_borrow b
+		WHERE
+		     ( b.`status` = 1 
+			 	AND 
+			 	  ( 
+			 	      ( b.reverify_time = '0' AND b.borrow_account_yes <![CDATA[=]]> b.account )  
+			 	  ) 
+			  )
+		ORDER BY
+		  b.addtime DESC
+	</select>
+	
+	<select id="selectFeeMapByParams"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT
+		hbfnc.man_charge_cd,
+		hbfnc.man_charge_rate,
+		hbfnc.return_rate
+		FROM
+			huiyingdai_borrow_finman_new_charge hbfnc 
+		LEFT JOIN
+			huiyingdai_borrow_project_type hbpt ON hbfnc.project_type=hbpt.borrow_class
+		WHERE
+			hbfnc.status = 0
+			and hbfnc.man_charge_time=#{borrowPeriod}
+			<if test="borrowStyle != null and borrowStyle == 'endday'">
+				and hbfnc.man_charge_time_type=#{borrowStyle}
+			</if>
+			<if test="borrowStyle != null and borrowStyle != 'endday'">
+				and hbfnc.man_charge_time_type='month'
+			</if>
+			and hbpt.borrow_cd=#{projectType}
+		ORDER BY
+					hbfnc.create_time
+				LIMIT 1
+			
+	</select>
+	
+	<!-- 根据计划编号检索是否有清算中的计划 -->
+	<select id="countDebtInvestListByBorrowNid" resultType="java.lang.Integer" parameterType="java.util.HashMap" >
+		SELECT
+			COUNT(1)
+		FROM
+			hyjf_debt_invest hdi
+		LEFT JOIN hyjf_debt_plan hdp on hdp.debt_plan_nid = hdi.plan_nid
+		WHERE hdp.debt_plan_status = 6
+		and hdi.borrow_nid = #{borrow_nid}
+	</select>
+</mapper>

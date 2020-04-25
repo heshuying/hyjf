@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	id="WebApp_ID" version="2.5">
+	<display-name>hyjf-app</display-name>
+
+	<!-- 读取spring配置文件 -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			classpath:conf/spring.xml;
+			classpath:conf/spring-mybatis.xml;
+			classpath:conf/spring-rabbitmq-sender.xml
+		</param-value>
+	</context-param>
+	<listener>
+    	<listener-class>
+    		org.springframework.web.context.ContextLoaderListener
+    	</listener-class>
+    </listener>
+    
+    <listener>   
+     <listener-class>com.hyjf.app.listener.SignInitListener</listener-class>   
+    </listener>  
+
+	<listener>
+		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+	</listener>
+
+    <!-- Listener for Tiles -->
+	<listener>
+		<listener-class>org.apache.tiles.extras.complete.CompleteAutoloadTilesListener</listener-class>
+	</listener>
+
+ 
+
+	<!-- 设计路径变量值 -->
+	<context-param>
+		<param-name>webAppRootKey</param-name>
+		<param-value>hyjf-app</param-value>
+	</context-param>
+
+	<!-- 字符集过滤器 -->
+	<filter>
+		<description>字符集过滤器</description>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<description>字符集编码</description>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!-- 跨域过滤器 -->
+<!-- 	<filter> -->
+<!-- 		<filter-name>cors</filter-name> -->
+<!-- 		<filter-class>com.hyjf.web.filter.HyjfCORSFilter</filter-class> -->
+<!-- 	</filter> -->
+
+<!-- 	<filter-mapping> -->
+<!-- 		<filter-name>cors</filter-name> -->
+<!-- 		<url-pattern>/*</url-pattern> -->
+<!-- 	</filter-mapping> -->
+	<!-- XSS过滤器 -->
+	<filter>
+		<filter-name>XSSFilter</filter-name>
+		<filter-class>com.hyjf.app.filter.HyjfXSSFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>XSSFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- springMVC核心配置 -->
+	<servlet>
+		<servlet-name>spring</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>
+				classpath:conf/spring-mvc.xml;
+			</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>spring</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+ 	<!-- 错误跳转页面 -->
+	 <error-page>
+       <error-code>404</error-code>
+       <location>/jsp/error.jsp</location>
+    </error-page>
+    <error-page>
+       <error-code>500</error-code>
+       <location>/jsp/error.jsp</location>
+    </error-page>
+    
+</web-app>

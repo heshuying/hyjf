@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.SmsOntimeMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.SmsOntime" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="channel_type" property="channelType" jdbcType="VARCHAR" />
+    <result column="starttime" property="starttime" jdbcType="INTEGER" />
+    <result column="endtime" property="endtime" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="open_account" property="openAccount" jdbcType="INTEGER" />
+    <result column="add_money_count" property="addMoneyCount" jdbcType="DECIMAL" />
+    <result column="add_time_begin" property="addTimeBegin" jdbcType="VARCHAR" />
+    <result column="add_time_end" property="addTimeEnd" jdbcType="VARCHAR" />
+    <result column="re_time_begin" property="reTimeBegin" jdbcType="VARCHAR" />
+    <result column="re_time_end" property="reTimeEnd" jdbcType="VARCHAR" />
+    <result column="ip" property="ip" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="create_user_id" property="createUserId" jdbcType="INTEGER" />
+    <result column="create_user_name" property="createUserName" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.hyjf.mybatis.model.auto.SmsOntimeWithBLOBs" extends="BaseResultMap" >
+    <result column="mobile" property="mobile" jdbcType="LONGVARCHAR" />
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, channel_type, starttime, endtime, `status`, open_account, add_money_count, add_time_begin, 
+    add_time_end, re_time_begin, re_time_end, ip, remark, create_user_id, create_user_name, 
+    create_time
+  </sql>
+  <sql id="Blob_Column_List" >
+    mobile, content
+  </sql>
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.hyjf.mybatis.model.auto.SmsOntimeExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from hyjf_sms_ontime
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.SmsOntimeExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_sms_ontime
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from hyjf_sms_ontime
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_sms_ontime
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.SmsOntimeExample" >
+    delete from hyjf_sms_ontime
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.SmsOntimeWithBLOBs" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_sms_ontime (channel_type, starttime, endtime, 
+      `status`, open_account, add_money_count, 
+      add_time_begin, add_time_end, re_time_begin, 
+      re_time_end, ip, remark, 
+      create_user_id, create_user_name, create_time, 
+      mobile, content)
+    values (#{channelType,jdbcType=VARCHAR}, #{starttime,jdbcType=INTEGER}, #{endtime,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER}, #{openAccount,jdbcType=INTEGER}, #{addMoneyCount,jdbcType=DECIMAL}, 
+      #{addTimeBegin,jdbcType=VARCHAR}, #{addTimeEnd,jdbcType=VARCHAR}, #{reTimeBegin,jdbcType=VARCHAR}, 
+      #{reTimeEnd,jdbcType=VARCHAR}, #{ip,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
+      #{createUserId,jdbcType=INTEGER}, #{createUserName,jdbcType=VARCHAR}, #{createTime,jdbcType=INTEGER}, 
+      #{mobile,jdbcType=LONGVARCHAR}, #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.SmsOntimeWithBLOBs" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_sms_ontime
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="channelType != null" >
+        channel_type,
+      </if>
+      <if test="starttime != null" >
+        starttime,
+      </if>
+      <if test="endtime != null" >
+        endtime,
+      </if>
+      <if test="status != null" >
+        `status`,
+      </if>
+      <if test="openAccount != null" >
+        open_account,
+      </if>
+      <if test="addMoneyCount != null" >
+        add_money_count,
+      </if>
+      <if test="addTimeBegin != null" >
+        add_time_begin,
+      </if>
+      <if test="addTimeEnd != null" >
+        add_time_end,
+      </if>
+      <if test="reTimeBegin != null" >
+        re_time_begin,
+      </if>
+      <if test="reTimeEnd != null" >
+        re_time_end,
+      </if>
+      <if test="ip != null" >
+        ip,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+      <if test="createUserName != null" >
+        create_user_name,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="channelType != null" >
+        #{channelType,jdbcType=VARCHAR},
+      </if>
+      <if test="starttime != null" >
+        #{starttime,jdbcType=INTEGER},
+      </if>
+      <if test="endtime != null" >
+        #{endtime,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="openAccount != null" >
+        #{openAccount,jdbcType=INTEGER},
+      </if>
+      <if test="addMoneyCount != null" >
+        #{addMoneyCount,jdbcType=DECIMAL},
+      </if>
+      <if test="addTimeBegin != null" >
+        #{addTimeBegin,jdbcType=VARCHAR},
+      </if>
+      <if test="addTimeEnd != null" >
+        #{addTimeEnd,jdbcType=VARCHAR},
+      </if>
+      <if test="reTimeBegin != null" >
+        #{reTimeBegin,jdbcType=VARCHAR},
+      </if>
+      <if test="reTimeEnd != null" >
+        #{reTimeEnd,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null" >
+        #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=INTEGER},
+      </if>
+      <if test="createUserName != null" >
+        #{createUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.SmsOntimeExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_sms_ontime
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_sms_ontime
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.channelType != null" >
+        channel_type = #{record.channelType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.starttime != null" >
+        starttime = #{record.starttime,jdbcType=INTEGER},
+      </if>
+      <if test="record.endtime != null" >
+        endtime = #{record.endtime,jdbcType=INTEGER},
+      </if>
+      <if test="record.status != null" >
+        `status` = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.openAccount != null" >
+        open_account = #{record.openAccount,jdbcType=INTEGER},
+      </if>
+      <if test="record.addMoneyCount != null" >
+        add_money_count = #{record.addMoneyCount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.addTimeBegin != null" >
+        add_time_begin = #{record.addTimeBegin,jdbcType=VARCHAR},
+      </if>
+      <if test="record.addTimeEnd != null" >
+        add_time_end = #{record.addTimeEnd,jdbcType=VARCHAR},
+      </if>
+      <if test="record.reTimeBegin != null" >
+        re_time_begin = #{record.reTimeBegin,jdbcType=VARCHAR},
+      </if>
+      <if test="record.reTimeEnd != null" >
+        re_time_end = #{record.reTimeEnd,jdbcType=VARCHAR},
+      </if>
+      <if test="record.ip != null" >
+        ip = #{record.ip,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remark != null" >
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createUserId != null" >
+        create_user_id = #{record.createUserId,jdbcType=INTEGER},
+      </if>
+      <if test="record.createUserName != null" >
+        create_user_name = #{record.createUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.mobile != null" >
+        mobile = #{record.mobile,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.content != null" >
+        content = #{record.content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map" >
+    update hyjf_sms_ontime
+    set id = #{record.id,jdbcType=INTEGER},
+      channel_type = #{record.channelType,jdbcType=VARCHAR},
+      starttime = #{record.starttime,jdbcType=INTEGER},
+      endtime = #{record.endtime,jdbcType=INTEGER},
+      `status` = #{record.status,jdbcType=INTEGER},
+      open_account = #{record.openAccount,jdbcType=INTEGER},
+      add_money_count = #{record.addMoneyCount,jdbcType=DECIMAL},
+      add_time_begin = #{record.addTimeBegin,jdbcType=VARCHAR},
+      add_time_end = #{record.addTimeEnd,jdbcType=VARCHAR},
+      re_time_begin = #{record.reTimeBegin,jdbcType=VARCHAR},
+      re_time_end = #{record.reTimeEnd,jdbcType=VARCHAR},
+      ip = #{record.ip,jdbcType=VARCHAR},
+      remark = #{record.remark,jdbcType=VARCHAR},
+      create_user_id = #{record.createUserId,jdbcType=INTEGER},
+      create_user_name = #{record.createUserName,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=INTEGER},
+      mobile = #{record.mobile,jdbcType=LONGVARCHAR},
+      content = #{record.content,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_sms_ontime
+    set id = #{record.id,jdbcType=INTEGER},
+      channel_type = #{record.channelType,jdbcType=VARCHAR},
+      starttime = #{record.starttime,jdbcType=INTEGER},
+      endtime = #{record.endtime,jdbcType=INTEGER},
+      `status` = #{record.status,jdbcType=INTEGER},
+      open_account = #{record.openAccount,jdbcType=INTEGER},
+      add_money_count = #{record.addMoneyCount,jdbcType=DECIMAL},
+      add_time_begin = #{record.addTimeBegin,jdbcType=VARCHAR},
+      add_time_end = #{record.addTimeEnd,jdbcType=VARCHAR},
+      re_time_begin = #{record.reTimeBegin,jdbcType=VARCHAR},
+      re_time_end = #{record.reTimeEnd,jdbcType=VARCHAR},
+      ip = #{record.ip,jdbcType=VARCHAR},
+      remark = #{record.remark,jdbcType=VARCHAR},
+      create_user_id = #{record.createUserId,jdbcType=INTEGER},
+      create_user_name = #{record.createUserName,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.SmsOntimeWithBLOBs" >
+    update hyjf_sms_ontime
+    <set >
+      <if test="channelType != null" >
+        channel_type = #{channelType,jdbcType=VARCHAR},
+      </if>
+      <if test="starttime != null" >
+        starttime = #{starttime,jdbcType=INTEGER},
+      </if>
+      <if test="endtime != null" >
+        endtime = #{endtime,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        `status` = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="openAccount != null" >
+        open_account = #{openAccount,jdbcType=INTEGER},
+      </if>
+      <if test="addMoneyCount != null" >
+        add_money_count = #{addMoneyCount,jdbcType=DECIMAL},
+      </if>
+      <if test="addTimeBegin != null" >
+        add_time_begin = #{addTimeBegin,jdbcType=VARCHAR},
+      </if>
+      <if test="addTimeEnd != null" >
+        add_time_end = #{addTimeEnd,jdbcType=VARCHAR},
+      </if>
+      <if test="reTimeBegin != null" >
+        re_time_begin = #{reTimeBegin,jdbcType=VARCHAR},
+      </if>
+      <if test="reTimeEnd != null" >
+        re_time_end = #{reTimeEnd,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null" >
+        ip = #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=INTEGER},
+      </if>
+      <if test="createUserName != null" >
+        create_user_name = #{createUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.hyjf.mybatis.model.auto.SmsOntimeWithBLOBs" >
+    update hyjf_sms_ontime
+    set channel_type = #{channelType,jdbcType=VARCHAR},
+      starttime = #{starttime,jdbcType=INTEGER},
+      endtime = #{endtime,jdbcType=INTEGER},
+      `status` = #{status,jdbcType=INTEGER},
+      open_account = #{openAccount,jdbcType=INTEGER},
+      add_money_count = #{addMoneyCount,jdbcType=DECIMAL},
+      add_time_begin = #{addTimeBegin,jdbcType=VARCHAR},
+      add_time_end = #{addTimeEnd,jdbcType=VARCHAR},
+      re_time_begin = #{reTimeBegin,jdbcType=VARCHAR},
+      re_time_end = #{reTimeEnd,jdbcType=VARCHAR},
+      ip = #{ip,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      create_user_id = #{createUserId,jdbcType=INTEGER},
+      create_user_name = #{createUserName,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=INTEGER},
+      mobile = #{mobile,jdbcType=LONGVARCHAR},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.SmsOntime" >
+    update hyjf_sms_ontime
+    set channel_type = #{channelType,jdbcType=VARCHAR},
+      starttime = #{starttime,jdbcType=INTEGER},
+      endtime = #{endtime,jdbcType=INTEGER},
+      `status` = #{status,jdbcType=INTEGER},
+      open_account = #{openAccount,jdbcType=INTEGER},
+      add_money_count = #{addMoneyCount,jdbcType=DECIMAL},
+      add_time_begin = #{addTimeBegin,jdbcType=VARCHAR},
+      add_time_end = #{addTimeEnd,jdbcType=VARCHAR},
+      re_time_begin = #{reTimeBegin,jdbcType=VARCHAR},
+      re_time_end = #{reTimeEnd,jdbcType=VARCHAR},
+      ip = #{ip,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      create_user_id = #{createUserId,jdbcType=INTEGER},
+      create_user_name = #{createUserName,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

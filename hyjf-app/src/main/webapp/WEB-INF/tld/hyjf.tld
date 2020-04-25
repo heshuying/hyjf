@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE taglib PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN" "http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+<taglib>
+	<tlib-version>1.0</tlib-version>
+	<jsp-version>1.2</jsp-version>
+	<short-name>hyjf</short-name>
+	<uri>/hyjf-tags</uri>
+	<display-name>自定义标签</display-name>
+	<!-- 自定义菜单标签 -->
+	<tag>
+		<name>message</name>
+		<tag-class>com.hyjf.tlds.MessageTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>key</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>
+		<attribute>
+			<name>message</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>
+	</tag>
+	<tag>
+		<name>validmessage</name>
+		<tag-class>com.hyjf.tlds.ValidMessageTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>key</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>
+		<attribute>
+			<name>message</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>
+		<attribute>
+			<name>label</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>
+		<attribute>
+			<name>params</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>
+	</tag>
+	
+	<!-- 自定义左侧菜单标签 -->
+	<tag>
+		<name>main-menu</name>
+		<tag-class>com.hyjf.tlds.MainMenuTag</tag-class>
+		<body-content>jsp</body-content>
+		<display-name>功能菜单标签</display-name>
+		<small-icon>icon</small-icon>
+		<attribute>
+			<name>urlPrefix</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>URL前缀</description>
+		</attribute>
+	</tag>
+	<!-- 自定义分页标签 -->
+	<tag>
+		<name>paginator</name>
+		<tag-class>com.hyjf.tlds.PaginatorTag</tag-class>
+		<body-content>jsp</body-content>
+		<display-name>自定义分页栏标签</display-name>
+		<small-icon>icon</small-icon>
+		<attribute>
+			<name>id</name>
+			<rtexprvalue>true</rtexprvalue>
+			<description>分页栏ID</description>
+		</attribute>
+		<attribute>
+			<name>hidden</name>
+			<rtexprvalue>true</rtexprvalue>
+			<description>分页页码Hidden的ID, 无本参数时, 分页栏必须罢于form中</description>
+		</attribute>
+		<attribute>
+			<name>action</name>
+			<rtexprvalue>true</rtexprvalue>
+			<description>分页Form的Action属性</description>
+		</attribute>
+		<attribute>
+			<name>paginatorValue</name>
+			<rtexprvalue>true</rtexprvalue>
+			<description>当前在第几页</description>
+		</attribute>
+		<attribute>
+			<name>paginator</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>翻页用</description>
+		</attribute>
+	</tag>
+	<!-- 自定义时间标签 -->
+	<tag>
+		<name>date</name>
+		<tag-class>com.hyjf.tlds.DateTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>value</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>
+	</tag>
+	<tag>
+		<name>datetime</name>
+		<tag-class>com.hyjf.tlds.DateTimeTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>value</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>
+	</tag>
+	
+	
+</taglib>

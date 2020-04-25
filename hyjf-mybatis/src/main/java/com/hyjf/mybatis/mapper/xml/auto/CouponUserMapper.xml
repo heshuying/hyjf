@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.CouponUserMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.CouponUser" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="coupon_code" property="couponCode" jdbcType="VARCHAR" />
+    <result column="coupon_user_code" property="couponUserCode" jdbcType="VARCHAR" />
+    <result column="coupon_group_code" property="couponGroupCode" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="activity_id" property="activityId" jdbcType="INTEGER" />
+    <result column="coupon_source" property="couponSource" jdbcType="INTEGER" />
+    <result column="used_flag" property="usedFlag" jdbcType="INTEGER" />
+    <result column="read_flag" property="readFlag" jdbcType="INTEGER" />
+    <result column="end_time" property="endTime" jdbcType="INTEGER" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="audit_content" property="auditContent" jdbcType="VARCHAR" />
+    <result column="delete_content" property="deleteContent" jdbcType="VARCHAR" />
+    <result column="audit_user" property="auditUser" jdbcType="VARCHAR" />
+    <result column="audit_time" property="auditTime" jdbcType="INTEGER" />
+    <result column="add_time" property="addTime" jdbcType="INTEGER" />
+    <result column="add_user" property="addUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+    <result column="attribute" property="attribute" jdbcType="INTEGER" />
+    <result column="channel" property="channel" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, coupon_code, coupon_user_code, coupon_group_code, user_id, activity_id, coupon_source, 
+    used_flag, read_flag, end_time, content, audit_content, delete_content, audit_user, 
+    audit_time, add_time, add_user, update_time, update_user, del_flag, `attribute`, 
+    channel
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.CouponUserExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_coupon_user
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_coupon_user
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_coupon_user
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.CouponUserExample" >
+    delete from hyjf_coupon_user
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.CouponUser" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_coupon_user (coupon_code, coupon_user_code, coupon_group_code, 
+      user_id, activity_id, coupon_source, 
+      used_flag, read_flag, end_time, 
+      content, audit_content, delete_content, 
+      audit_user, audit_time, add_time, 
+      add_user, update_time, update_user, 
+      del_flag, `attribute`, channel
+      )
+    values (#{couponCode,jdbcType=VARCHAR}, #{couponUserCode,jdbcType=VARCHAR}, #{couponGroupCode,jdbcType=VARCHAR}, 
+      #{userId,jdbcType=INTEGER}, #{activityId,jdbcType=INTEGER}, #{couponSource,jdbcType=INTEGER}, 
+      #{usedFlag,jdbcType=INTEGER}, #{readFlag,jdbcType=INTEGER}, #{endTime,jdbcType=INTEGER}, 
+      #{content,jdbcType=VARCHAR}, #{auditContent,jdbcType=VARCHAR}, #{deleteContent,jdbcType=VARCHAR}, 
+      #{auditUser,jdbcType=VARCHAR}, #{auditTime,jdbcType=INTEGER}, #{addTime,jdbcType=INTEGER}, 
+      #{addUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=INTEGER}, #{updateUser,jdbcType=VARCHAR}, 
+      #{delFlag,jdbcType=INTEGER}, #{attribute,jdbcType=INTEGER}, #{channel,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.CouponUser" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_coupon_user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="couponCode != null" >
+        coupon_code,
+      </if>
+      <if test="couponUserCode != null" >
+        coupon_user_code,
+      </if>
+      <if test="couponGroupCode != null" >
+        coupon_group_code,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="activityId != null" >
+        activity_id,
+      </if>
+      <if test="couponSource != null" >
+        coupon_source,
+      </if>
+      <if test="usedFlag != null" >
+        used_flag,
+      </if>
+      <if test="readFlag != null" >
+        read_flag,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="auditContent != null" >
+        audit_content,
+      </if>
+      <if test="deleteContent != null" >
+        delete_content,
+      </if>
+      <if test="auditUser != null" >
+        audit_user,
+      </if>
+      <if test="auditTime != null" >
+        audit_time,
+      </if>
+      <if test="addTime != null" >
+        add_time,
+      </if>
+      <if test="addUser != null" >
+        add_user,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="delFlag != null" >
+        del_flag,
+      </if>
+      <if test="attribute != null" >
+        `attribute`,
+      </if>
+      <if test="channel != null" >
+        channel,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="couponCode != null" >
+        #{couponCode,jdbcType=VARCHAR},
+      </if>
+      <if test="couponUserCode != null" >
+        #{couponUserCode,jdbcType=VARCHAR},
+      </if>
+      <if test="couponGroupCode != null" >
+        #{couponGroupCode,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="activityId != null" >
+        #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="couponSource != null" >
+        #{couponSource,jdbcType=INTEGER},
+      </if>
+      <if test="usedFlag != null" >
+        #{usedFlag,jdbcType=INTEGER},
+      </if>
+      <if test="readFlag != null" >
+        #{readFlag,jdbcType=INTEGER},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=INTEGER},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="auditContent != null" >
+        #{auditContent,jdbcType=VARCHAR},
+      </if>
+      <if test="deleteContent != null" >
+        #{deleteContent,jdbcType=VARCHAR},
+      </if>
+      <if test="auditUser != null" >
+        #{auditUser,jdbcType=VARCHAR},
+      </if>
+      <if test="auditTime != null" >
+        #{auditTime,jdbcType=INTEGER},
+      </if>
+      <if test="addTime != null" >
+        #{addTime,jdbcType=INTEGER},
+      </if>
+      <if test="addUser != null" >
+        #{addUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="attribute != null" >
+        #{attribute,jdbcType=INTEGER},
+      </if>
+      <if test="channel != null" >
+        #{channel,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.CouponUserExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_coupon_user
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_coupon_user
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.couponCode != null" >
+        coupon_code = #{record.couponCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.couponUserCode != null" >
+        coupon_user_code = #{record.couponUserCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.couponGroupCode != null" >
+        coupon_group_code = #{record.couponGroupCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.activityId != null" >
+        activity_id = #{record.activityId,jdbcType=INTEGER},
+      </if>
+      <if test="record.couponSource != null" >
+        coupon_source = #{record.couponSource,jdbcType=INTEGER},
+      </if>
+      <if test="record.usedFlag != null" >
+        used_flag = #{record.usedFlag,jdbcType=INTEGER},
+      </if>
+      <if test="record.readFlag != null" >
+        read_flag = #{record.readFlag,jdbcType=INTEGER},
+      </if>
+      <if test="record.endTime != null" >
+        end_time = #{record.endTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.content != null" >
+        content = #{record.content,jdbcType=VARCHAR},
+      </if>
+      <if test="record.auditContent != null" >
+        audit_content = #{record.auditContent,jdbcType=VARCHAR},
+      </if>
+      <if test="record.deleteContent != null" >
+        delete_content = #{record.deleteContent,jdbcType=VARCHAR},
+      </if>
+      <if test="record.auditUser != null" >
+        audit_user = #{record.auditUser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.auditTime != null" >
+        audit_time = #{record.auditTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.addTime != null" >
+        add_time = #{record.addTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.addUser != null" >
+        add_user = #{record.addUser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateUser != null" >
+        update_user = #{record.updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.delFlag != null" >
+        del_flag = #{record.delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="record.attribute != null" >
+        `attribute` = #{record.attribute,jdbcType=INTEGER},
+      </if>
+      <if test="record.channel != null" >
+        channel = #{record.channel,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_coupon_user
+    set id = #{record.id,jdbcType=INTEGER},
+      coupon_code = #{record.couponCode,jdbcType=VARCHAR},
+      coupon_user_code = #{record.couponUserCode,jdbcType=VARCHAR},
+      coupon_group_code = #{record.couponGroupCode,jdbcType=VARCHAR},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      activity_id = #{record.activityId,jdbcType=INTEGER},
+      coupon_source = #{record.couponSource,jdbcType=INTEGER},
+      used_flag = #{record.usedFlag,jdbcType=INTEGER},
+      read_flag = #{record.readFlag,jdbcType=INTEGER},
+      end_time = #{record.endTime,jdbcType=INTEGER},
+      content = #{record.content,jdbcType=VARCHAR},
+      audit_content = #{record.auditContent,jdbcType=VARCHAR},
+      delete_content = #{record.deleteContent,jdbcType=VARCHAR},
+      audit_user = #{record.auditUser,jdbcType=VARCHAR},
+      audit_time = #{record.auditTime,jdbcType=INTEGER},
+      add_time = #{record.addTime,jdbcType=INTEGER},
+      add_user = #{record.addUser,jdbcType=VARCHAR},
+      update_time = #{record.updateTime,jdbcType=INTEGER},
+      update_user = #{record.updateUser,jdbcType=VARCHAR},
+      del_flag = #{record.delFlag,jdbcType=INTEGER},
+      `attribute` = #{record.attribute,jdbcType=INTEGER},
+      channel = #{record.channel,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.CouponUser" >
+    update hyjf_coupon_user
+    <set >
+      <if test="couponCode != null" >
+        coupon_code = #{couponCode,jdbcType=VARCHAR},
+      </if>
+      <if test="couponUserCode != null" >
+        coupon_user_code = #{couponUserCode,jdbcType=VARCHAR},
+      </if>
+      <if test="couponGroupCode != null" >
+        coupon_group_code = #{couponGroupCode,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="activityId != null" >
+        activity_id = #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="couponSource != null" >
+        coupon_source = #{couponSource,jdbcType=INTEGER},
+      </if>
+      <if test="usedFlag != null" >
+        used_flag = #{usedFlag,jdbcType=INTEGER},
+      </if>
+      <if test="readFlag != null" >
+        read_flag = #{readFlag,jdbcType=INTEGER},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=INTEGER},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="auditContent != null" >
+        audit_content = #{auditContent,jdbcType=VARCHAR},
+      </if>
+      <if test="deleteContent != null" >
+        delete_content = #{deleteContent,jdbcType=VARCHAR},
+      </if>
+      <if test="auditUser != null" >
+        audit_user = #{auditUser,jdbcType=VARCHAR},
+      </if>
+      <if test="auditTime != null" >
+        audit_time = #{auditTime,jdbcType=INTEGER},
+      </if>
+      <if test="addTime != null" >
+        add_time = #{addTime,jdbcType=INTEGER},
+      </if>
+      <if test="addUser != null" >
+        add_user = #{addUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=INTEGER},
+      </if>
+      <if test="attribute != null" >
+        `attribute` = #{attribute,jdbcType=INTEGER},
+      </if>
+      <if test="channel != null" >
+        channel = #{channel,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.CouponUser" >
+    update hyjf_coupon_user
+    set coupon_code = #{couponCode,jdbcType=VARCHAR},
+      coupon_user_code = #{couponUserCode,jdbcType=VARCHAR},
+      coupon_group_code = #{couponGroupCode,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=INTEGER},
+      activity_id = #{activityId,jdbcType=INTEGER},
+      coupon_source = #{couponSource,jdbcType=INTEGER},
+      used_flag = #{usedFlag,jdbcType=INTEGER},
+      read_flag = #{readFlag,jdbcType=INTEGER},
+      end_time = #{endTime,jdbcType=INTEGER},
+      content = #{content,jdbcType=VARCHAR},
+      audit_content = #{auditContent,jdbcType=VARCHAR},
+      delete_content = #{deleteContent,jdbcType=VARCHAR},
+      audit_user = #{auditUser,jdbcType=VARCHAR},
+      audit_time = #{auditTime,jdbcType=INTEGER},
+      add_time = #{addTime,jdbcType=INTEGER},
+      add_user = #{addUser,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=INTEGER},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      del_flag = #{delFlag,jdbcType=INTEGER},
+      `attribute` = #{attribute,jdbcType=INTEGER},
+      channel = #{channel,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

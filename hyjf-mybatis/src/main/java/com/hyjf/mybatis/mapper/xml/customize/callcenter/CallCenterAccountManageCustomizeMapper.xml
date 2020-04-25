@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.callcenter.CallCenterAccountManageCustomizeMapper">
+	<resultMap id="accountInfoMapResult"
+		type="com.hyjf.mybatis.model.customize.callcenter.CallCenterAccountManageCustomize">
+		<result column="id" property="id" />
+		<result column="user_id" property="userId" /> <!-- 用户id -->
+		<result column="total" property="total" /> <!-- 资金总额 -->
+		<result column="income" property="income" /> <!-- 收入 -->
+		<result column="expend" property="expend" /> <!-- 支出 -->
+		<result column="balance" property="balance" /> <!-- 可用金额 -->
+		<result column="balance_cash" property="balanceCash" /> <!-- 可提现 -->
+		<result column="balance_frost" property="balanceFrost" /> <!-- 不可提现 -->
+		<result column="frost" property="frost" /> <!-- 冻结金额 -->
+		<result column="await" property="await" /> <!-- 待收金额 -->
+		<result column="repay" property="repay" /> <!-- 待还金额 -->
+		<result column="frost_cash" property="frostCash" /> <!-- 提现冻结金额 -->
+		<result column="is_update" property="isUpdate" />
+		<result column="isok" property="isok" />
+		<result column="rec_money" property="recMoney" /> <!-- 待返金额汇总 -->
+		<result column="fee" property="fee" /> <!-- 待返手续费汇总 -->
+		<result column="in_money" property="inMoney" /> <!-- 新出借金额汇总 -->
+		<result column="in_money_flag" property="inMoneyFlag" />
+		<result column="truename" property="truename" /> <!-- 真实姓名 -->
+		<result column="username" property="username" /> <!-- 用户名 -->
+		<result column="mobile" property="mobile" /> <!-- 手机号 -->
+		<result column="user_attribute" property="userAttribute" /> <!-- 用户属性（当前） -->
+		<result column="roleid" property="roleid" /> <!-- 角色 -->
+		<result column="user_region_name" property="userRegionName" /> <!-- 用户所属一级分部（当前）-->
+		<result column="user_branch_name" property="userBranchName" /> <!-- 用户所属二级分部（当前） -->
+		<result column="user_department_name" property="userDepartmentName" /> <!-- 用户所属三级分部（当前） -->
+		<result column="referrer_name" property="referrerName" jdbcType="VARCHAR" /> <!-- 推荐人用户名（当前） -->
+		<result column="referrer_true_name" property="referrerTrueName" jdbcType="VARCHAR" /><!-- 推荐人姓名（当前） -->
+		<result column="referrer_region_name" property="referrerRegionName" jdbcType="VARCHAR" /><!-- 推荐人所属一级分部（当前） -->
+		<result column="referrer_branch_name" property="referrerBranchName" jdbcType="VARCHAR" /><!-- 推荐人所属二级分部（当前） -->
+		<result column="referrer_department_name" property="referrerDepartmentName" jdbcType="VARCHAR" /><!-- 推荐人所属三级分部（当前） -->
+		<result column="regionName" property="regionName" /> <!-- 大区 -->
+		<result column="branchName" property="branchName" /> <!-- 分公司  -->
+		<result column="departmentName" property="departmentName" /> <!-- 部门  -->
+		<result column="plan_balance" property="planBalance" /> <!-- 计划账户余额  -->
+		<result column="plan_frost" property="planFrost" /> <!-- 计划账户冻结金额  -->
+		<result column="balance_total" property="balanceTotal"/><!-- 总可用金额 -->
+		<result column="frost_total" property="frostTotal"/><!-- 总冻结金额 -->
+	</resultMap>
+
+	<sql id="where-all-page-condition">
+		<if test="userId != null and userId != 0">
+			AND t.user_id = #{userId}
+		</if>
+		<if test="total != null">
+			AND t.total = #{total}
+		</if>
+		<if test="income != null">
+			AND t.income = #{income}
+		</if>
+		<if test="expend != null">
+			AND t.expend = #{expend}
+		</if>
+		<if test="balance != null">
+			AND t.balance = #{balance}
+		</if>
+		<if test="balanceCash != null">
+			AND t.balance_cash = #{balanceCash}
+		</if>
+		<if test="balanceFrost != null">
+			AND t.balance_frost = #{balanceFrost}
+		</if>
+		<if test="frost != null">
+			AND t.frost = #{frost}
+		</if>
+		<if test="await != null">
+			AND t.await = #{await}
+		</if>
+		<if test="repay != null">
+			AND t.repay = #{repay}
+		</if>
+		<if test="frostCash != null">
+			AND t.frost_cash = #{frostCash}
+		</if>
+	<!-- 	<if test="isUpdate != null">
+			AND a.is_update = #{isUpdate}
+		</if>
+		<if test="isok != null">
+			AND a.isok = #{isok}
+		</if> -->
+		<if test="recMoney != null">
+			AND t.rec_money = #{recMoney}
+		</if>
+		<if test="fee != null">
+			AND t.fee = #{fee}
+		</if>
+	<!-- 	<if test="inMoney != null">
+			AND a.in_money = #{inMoney}
+		</if>
+		<if test="inMoneyFlag != null">
+			AND a.in_money_flag = #{inMoneyFlag}
+		</if> -->
+		<if test="truename != null and truename != ''">
+			AND t.truename LIKE CONCAT('%', #{truename}, '%')
+		</if>
+		<if test="username != null and username != ''">
+			AND t.username LIKE CONCAT('%', #{username}, '%')
+		</if>
+		<if test="userTypeSearche != null and userTypeSearche==1">
+			AND ( t.balance!=t.balance_cash OR t.frost!=t.balance_frost )
+		</if>
+
+		<if test="combotreeListSrch != null and combotreeListSrch != ''">
+			AND od.id in
+			<foreach collection="combotreeListSrch" open="(" close=")" separator="," item="dep">
+				#{dep}
+			</foreach>
+		</if>
+
+	</sql>
+
+	<select id="queryAccountInfos" resultMap="accountInfoMapResult"
+		parameterType="com.hyjf.mybatis.model.customize.callcenter.CallCenterAccountManageCustomize">
+		select t.*,
+		      	`od3`.`name` AS `regionName`,
+				`od2`.`name` AS `branchName`,
+				`od`.`name` AS `departmentName`,
+		CASE WHEN t.user_attribute = '1' THEN `od6`.`name` ELSE `od3`.`name` END `user_region_name`,
+		CASE WHEN t.user_attribute = '1' THEN `od5`.`name` ELSE `od2`.`name` END `user_branch_name`,
+		CASE WHEN t.user_attribute = '1' THEN `od4`.`name` ELSE `od`.`name`  END `user_department_name`,
+		`od6`.`name` AS `referrer_region_name`,
+		`od5`.`name` AS `referrer_branch_name`,
+		`od4`.`name` AS `referrer_department_name`
+		from (SELECT
+			a.user_id,
+			u.username,
+			ui2.truename AS referrer_true_name,
+			u.mobile,
+			CASE  ui.role_id
+           WHEN 1 THEN '出借人'
+           WHEN 2 THEN '借款人'
+        END AS roleid ,
+         ui.attribute AS user_attribute,
+			ui.truename,
+			spu.username AS referrer_name,	
+			a.total,
+			a.balance,
+			a.frost,
+			a.await,
+			a.repay,
+			a.rec_money,
+			a.fee,
+			a.in_money,
+			a.balance_cash,
+			a.balance_frost,
+			a.id,
+			CASE WHEN ui.attribute = 2 OR ui.attribute = 3 THEN a.user_id ELSE su.spreads_userid END AS hyd_id,
+			su.spreads_userid,
+			IFNULL(a.plan_balance,0) as plan_balance,
+			IFNULL(a.plan_frost,0) as plan_frost,
+			IFNULL(a.balance,0) + IFNULL(a.plan_balance,0) as balance_total,
+			IFNULL(a.frost,0) + IFNULL(a.plan_frost,0) as frost_total
+		FROM
+			huiyingdai_account a
+		LEFT JOIN huiyingdai_users u ON a.user_id = u.user_id
+		LEFT JOIN huiyingdai_users_info ui ON a.user_id = ui.user_id
+		LEFT JOIN huiyingdai_spreads_users su ON a.user_id = su.user_id
+		LEFT JOIN huiyingdai_users_info ui2 ON ui2.user_id = su.spreads_userid
+		LEFT JOIN huiyingdai_users spu ON spu.user_id = su.spreads_userid
+		) t
+		LEFT JOIN `hyjf_crm`.`oa_users` `ou` ON `ou`.hyd_id = t.hyd_id AND ou.user_status IN ('E','Q1','Q11','Q2','Q21')
+		LEFT JOIN `hyjf_crm`.`oa_department` `od` ON `od`.`id` = `ou`.`departmentid` AND `od`.id IS NOT NULL
+		LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+		LEFT JOIN `hyjf_crm`.`oa_department` `od3` ON `od3`.`id` = `od2`.`parentid`
+		LEFT JOIN `hyjf_crm`.`oa_users` `ou1` ON `ou1`.hyd_id = t.spreads_userid AND ou1.user_status IN ('E','Q1','Q11','Q2','Q21')
+		LEFT JOIN `hyjf_crm`.`oa_department` `od4` ON `od4`.`id` = `ou1`.`departmentid` AND `od4`.id IS NOT NULL
+		LEFT JOIN `hyjf_crm`.`oa_department` `od5` ON `od5`.`id` = `od4`.`parentid`
+		LEFT JOIN `hyjf_crm`.`oa_department` `od6` ON `od6`.`id` = `od5`.`parentid`
+		WHERE
+			1 = 1
+		<include refid="where-all-page-condition"/>
+		ORDER BY t.user_id DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+
+</mapper>
+

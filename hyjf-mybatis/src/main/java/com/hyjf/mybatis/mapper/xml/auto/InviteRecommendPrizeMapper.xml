@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.InviteRecommendPrizeMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.InviteRecommendPrize" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="prize_group" property="prizeGroup" jdbcType="VARCHAR" />
+    <result column="prize_count" property="prizeCount" jdbcType="INTEGER" />
+    <result column="used_recommend_count" property="usedRecommendCount" jdbcType="INTEGER" />
+    <result column="prize_type" property="prizeType" jdbcType="INTEGER" />
+    <result column="prize_kind" property="prizeKind" jdbcType="INTEGER" />
+    <result column="prize_send_flag" property="prizeSendFlag" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="add_time" property="addTime" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+    <result column="del_flg" property="delFlg" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, user_id, prize_group, prize_count, used_recommend_count, prize_type, prize_kind, 
+    prize_send_flag, remark, add_time, update_time, del_flg
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.InviteRecommendPrizeExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_invite_recommend_prize
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_invite_recommend_prize
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_invite_recommend_prize
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.InviteRecommendPrizeExample" >
+    delete from hyjf_invite_recommend_prize
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.InviteRecommendPrize" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_invite_recommend_prize (user_id, prize_group, prize_count, 
+      used_recommend_count, prize_type, prize_kind, 
+      prize_send_flag, remark, add_time, 
+      update_time, del_flg)
+    values (#{userId,jdbcType=INTEGER}, #{prizeGroup,jdbcType=VARCHAR}, #{prizeCount,jdbcType=INTEGER}, 
+      #{usedRecommendCount,jdbcType=INTEGER}, #{prizeType,jdbcType=INTEGER}, #{prizeKind,jdbcType=INTEGER}, 
+      #{prizeSendFlag,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, #{addTime,jdbcType=INTEGER}, 
+      #{updateTime,jdbcType=INTEGER}, #{delFlg,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.InviteRecommendPrize" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_invite_recommend_prize
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="prizeGroup != null" >
+        prize_group,
+      </if>
+      <if test="prizeCount != null" >
+        prize_count,
+      </if>
+      <if test="usedRecommendCount != null" >
+        used_recommend_count,
+      </if>
+      <if test="prizeType != null" >
+        prize_type,
+      </if>
+      <if test="prizeKind != null" >
+        prize_kind,
+      </if>
+      <if test="prizeSendFlag != null" >
+        prize_send_flag,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="addTime != null" >
+        add_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="delFlg != null" >
+        del_flg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="prizeGroup != null" >
+        #{prizeGroup,jdbcType=VARCHAR},
+      </if>
+      <if test="prizeCount != null" >
+        #{prizeCount,jdbcType=INTEGER},
+      </if>
+      <if test="usedRecommendCount != null" >
+        #{usedRecommendCount,jdbcType=INTEGER},
+      </if>
+      <if test="prizeType != null" >
+        #{prizeType,jdbcType=INTEGER},
+      </if>
+      <if test="prizeKind != null" >
+        #{prizeKind,jdbcType=INTEGER},
+      </if>
+      <if test="prizeSendFlag != null" >
+        #{prizeSendFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="addTime != null" >
+        #{addTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="delFlg != null" >
+        #{delFlg,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.InviteRecommendPrizeExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_invite_recommend_prize
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_invite_recommend_prize
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.prizeGroup != null" >
+        prize_group = #{record.prizeGroup,jdbcType=VARCHAR},
+      </if>
+      <if test="record.prizeCount != null" >
+        prize_count = #{record.prizeCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.usedRecommendCount != null" >
+        used_recommend_count = #{record.usedRecommendCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.prizeType != null" >
+        prize_type = #{record.prizeType,jdbcType=INTEGER},
+      </if>
+      <if test="record.prizeKind != null" >
+        prize_kind = #{record.prizeKind,jdbcType=INTEGER},
+      </if>
+      <if test="record.prizeSendFlag != null" >
+        prize_send_flag = #{record.prizeSendFlag,jdbcType=INTEGER},
+      </if>
+      <if test="record.remark != null" >
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.addTime != null" >
+        add_time = #{record.addTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.delFlg != null" >
+        del_flg = #{record.delFlg,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_invite_recommend_prize
+    set id = #{record.id,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      prize_group = #{record.prizeGroup,jdbcType=VARCHAR},
+      prize_count = #{record.prizeCount,jdbcType=INTEGER},
+      used_recommend_count = #{record.usedRecommendCount,jdbcType=INTEGER},
+      prize_type = #{record.prizeType,jdbcType=INTEGER},
+      prize_kind = #{record.prizeKind,jdbcType=INTEGER},
+      prize_send_flag = #{record.prizeSendFlag,jdbcType=INTEGER},
+      remark = #{record.remark,jdbcType=VARCHAR},
+      add_time = #{record.addTime,jdbcType=INTEGER},
+      update_time = #{record.updateTime,jdbcType=INTEGER},
+      del_flg = #{record.delFlg,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.InviteRecommendPrize" >
+    update hyjf_invite_recommend_prize
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="prizeGroup != null" >
+        prize_group = #{prizeGroup,jdbcType=VARCHAR},
+      </if>
+      <if test="prizeCount != null" >
+        prize_count = #{prizeCount,jdbcType=INTEGER},
+      </if>
+      <if test="usedRecommendCount != null" >
+        used_recommend_count = #{usedRecommendCount,jdbcType=INTEGER},
+      </if>
+      <if test="prizeType != null" >
+        prize_type = #{prizeType,jdbcType=INTEGER},
+      </if>
+      <if test="prizeKind != null" >
+        prize_kind = #{prizeKind,jdbcType=INTEGER},
+      </if>
+      <if test="prizeSendFlag != null" >
+        prize_send_flag = #{prizeSendFlag,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="addTime != null" >
+        add_time = #{addTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="delFlg != null" >
+        del_flg = #{delFlg,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.InviteRecommendPrize" >
+    update hyjf_invite_recommend_prize
+    set user_id = #{userId,jdbcType=INTEGER},
+      prize_group = #{prizeGroup,jdbcType=VARCHAR},
+      prize_count = #{prizeCount,jdbcType=INTEGER},
+      used_recommend_count = #{usedRecommendCount,jdbcType=INTEGER},
+      prize_type = #{prizeType,jdbcType=INTEGER},
+      prize_kind = #{prizeKind,jdbcType=INTEGER},
+      prize_send_flag = #{prizeSendFlag,jdbcType=INTEGER},
+      remark = #{remark,jdbcType=VARCHAR},
+      add_time = #{addTime,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=INTEGER},
+      del_flg = #{delFlg,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

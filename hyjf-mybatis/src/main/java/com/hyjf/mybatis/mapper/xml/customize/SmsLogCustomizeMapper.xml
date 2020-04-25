@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.SmsLogCustomizeMapper">
+
+	<select id="queryLog" resultType="com.hyjf.mybatis.model.customize.SmsLogCustomize" parameterType="com.hyjf.mybatis.model.customize.SmsLogCustomize">
+	select l.id,l.mobile,l.type,l.content,l.`status`,l.is_display AS isDisplay,FROM_UNIXTIME(l.posttime,'%Y-%m-%d %H:%i:%s') AS postString from huiyingdai_sms_log l
+	<where>
+		<if test="mobile != null" >
+			AND l.mobile LIKE CONCAT('%', #{mobile}, '%')
+		</if>
+		<if test="type != null" >
+			AND l.type LIKE CONCAT('%', #{type}, '%')
+		</if>
+		<if test="status != 2" >
+			AND l.`status` = #{status,jdbcType=INTEGER}
+		</if>
+		<if test="post_time_begin!= null" >
+			AND l.posttime  <![CDATA[>=]]> #{post_time_begin,jdbcType=INTEGER}
+		</if>
+		<if test="post_time_end!= null" >
+			AND l.posttime  <![CDATA[<=]]> #{post_time_end,jdbcType=INTEGER}
+		</if>
+		<if test="initStar!= null" >
+			AND l.id  <![CDATA[>]]> #{initStar,jdbcType=INTEGER}
+		</if>
+		<if test="initEnd!= null" >
+			AND l.id  <![CDATA[<=]]> #{initEnd,jdbcType=INTEGER}
+		</if>
+	</where>
+	<choose>
+		<when test="rowrank != null and rowrank =='asc'">
+			ORDER BY l.id asc
+		</when>
+		<otherwise>
+			ORDER BY l.id desc
+		</otherwise>
+	</choose>
+
+	<if test="limitStart >= 0" >
+		LIMIT #{limitStart} , #{limitEnd}
+	</if>
+</select>
+
+	<select id="queryInitSmsCount" resultType="com.hyjf.mybatis.model.customize.SmsLogCustomize" parameterType="com.hyjf.mybatis.model.customize.SmsLogCustomize">
+			SELECT  SUM(contentSize) contentSize,deptName,deptId,postString from(
+			<![CDATA[
+			select
+			FROM_UNIXTIME(l.posttime,'%Y-%m-%d') AS postString,
+			od.`name` deptName,od.id deptId,
+			case  when char_length(content)<=70 THEN 1
+			WHEN char_length(content)>70 THEN 1+ceil((char_length(content)-70)/67)
+			else '0' END contentSize
+			from
+			huiyingdai_sms_log l
+			left join
+			mysql.help_topic b
+			on b.help_topic_id < (length(l.mobile) - length(replace(l.mobile,',',''))+1)
+			LEFT JOIN huiyingdai_users hu
+			on l.mobile = hu.mobile
+			LEFT JOIN huiyingdai_users_info hui
+			ON hu.user_id = hui.user_id
+			LEFT JOIN  hyjf_crm.oa_users ou
+			ON hu.user_id = ou.hyd_id
+			LEFT JOIN hyjf_crm.oa_department od
+			ON ou.departmentid = od.id
+			where od.id is not NULL
+			AND FROM_UNIXTIME(l.posttime,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT(#{initStar},'%Y-%m-%d %H:%i:%s' ) AND FROM_UNIXTIME(l.posttime,'%Y-%m-%d %H:%i:%s')<= DATE_FORMAT(#{initEnd},'%Y-%m-%d %H:%i:%s' )
+			]]>
+
+		) t1
+			GROUP BY deptName,deptId,postString
+		UNION
+			SELECT  SUM(contentSize) contentSize,deptName,deptId,postString from(
+			<![CDATA[
+			select
+			FROM_UNIXTIME(l.posttime,'%Y-%m-%d') AS postString,
+			'其他' deptName,'0' deptId,
+			case  when char_length(content)<=70 THEN 1
+			WHEN char_length(content)>70 THEN 1+ceil((char_length(content)-70)/67)
+			else '0' END contentSize
+			from
+			huiyingdai_sms_log l
+			left join
+			mysql.help_topic b
+			on b.help_topic_id < (length(l.mobile) - length(replace(l.mobile,',',''))+1)
+
+			LEFT JOIN huiyingdai_users hu
+			on l.mobile = hu.mobile
+			LEFT JOIN huiyingdai_users_info hui
+			ON hu.user_id = hui.user_id
+			LEFT JOIN  hyjf_crm.oa_users ou
+			ON hu.user_id = ou.hyd_id
+			LEFT JOIN hyjf_crm.oa_department od
+			ON ou.departmentid = od.id
+			where od.id is  NULL
+			AND FROM_UNIXTIME(l.posttime,'%Y-%m-%d %H:%i:%s') >= DATE_FORMAT(#{initStar},'%Y-%m-%d %H:%i:%s' ) AND FROM_UNIXTIME(l.posttime,'%Y-%m-%d %H:%i:%s')<= DATE_FORMAT(#{initEnd},'%Y-%m-%d %H:%i:%s' )
+			]]>
+			) t1
+			GROUP BY deptName,deptId,postString
+	</select>
+	<select id="sumContent" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.SmsLogCustomize">
+		select  sum(contentSize) from (
+		<![CDATA[
+		select
+		case  when char_length(content)<=70 THEN 1
+		WHEN char_length(content)>70 THEN 1+ceil((char_length(content)-70)/67)
+		else '0' END contentSize
+		from
+		huiyingdai_sms_log l
+		left join
+		mysql.help_topic b
+		on b.help_topic_id < (length(l.mobile) - length(replace(l.mobile,',',''))+1)
+		]]>
+		<where>
+			<if test="mobile != null" >
+				AND l.mobile LIKE CONCAT('%', #{mobile}, '%')
+			</if>
+			<if test="type != null" >
+				AND l.type LIKE CONCAT('%', #{type}, '%')
+			</if>
+			<if test="status != 2" >
+				AND l.`status` = #{status,jdbcType=INTEGER}
+			</if>
+			<if test="post_time_begin!= null" >
+				AND l.posttime  <![CDATA[>=]]> #{post_time_begin,jdbcType=INTEGER}
+			</if>
+			<if test="post_time_end!= null" >
+				AND l.posttime  <![CDATA[<=]]> #{post_time_end,jdbcType=INTEGER}
+			</if>
+			<if test="deptId!= null" >
+				AND  od.id = #{deptId}
+			</if>
+		</where>
+		) tt
+	</select>
+
+	<select id="queryLogCount" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.SmsLogCustomize">
+
+		select count(1) from huiyingdai_sms_log l
+		<where>
+			<if test="mobile != null" >
+				AND l.mobile LIKE CONCAT('%', #{mobile}, '%')
+			</if>
+			<if test="type != null" >
+				AND l.type LIKE CONCAT('%', #{type}, '%')
+			</if>
+			<if test="status != 2" >
+				AND l.`status` = #{status,jdbcType=INTEGER}
+			</if>
+			<if test="post_time_begin!= null" >
+				AND l.posttime  <![CDATA[>=]]> #{post_time_begin,jdbcType=INTEGER}
+			</if>
+			<if test="post_time_end!= null" >
+				AND l.posttime  <![CDATA[<=]]> #{post_time_end,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+
+
+
+	<select id="queryTime" resultType="com.hyjf.mybatis.model.customize.SmsOntimeCustomize" parameterType="com.hyjf.mybatis.model.customize.SmsOntimeCustomize">
+		select l.id,l.mobile,l.channel_type channelType,l.content,l.`status`,
+		case when endtime=0 then '' else FROM_UNIXTIME(l.endtime,'%Y-%m-%d %H:%i:%s') end AS postString ,
+		l.add_money_count addMoneyCount,
+		l.add_time_begin addTimeBegin,
+		l.add_time_end addTimeEnd,
+		l.re_time_begin reTimeBegin,
+		l.re_time_end reTimeEnd,
+		l.open_account openAccount
+		from hyjf_sms_ontime l
+		<where>
+		    <if test="mobile != null" >
+		      AND l.mobile LIKE CONCAT('%', #{mobile}, '%')
+		    </if>
+		    <if test="status != null " >
+		      AND l.`status` = #{status,jdbcType=INTEGER}
+		    </if>
+		    <if test="starttime!= null and starttime!=0" >
+		      AND l.endtime  <![CDATA[>=]]> #{starttime,jdbcType=INTEGER}
+		    </if>
+		    <if test="endtime!= null and endtime!=0" >
+		      AND l.endtime  <![CDATA[<=]]> #{endtime,jdbcType=INTEGER}
+		    </if>
+		</where>
+		ORDER BY l.id desc
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<select id="queryTimeCount" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.SmsOntimeCustomize">
+		select count(1) from hyjf_sms_ontime l
+		<where>
+		    <if test="mobile != null" >
+		      AND l.mobile LIKE CONCAT('%', #{mobile}, '%')
+		    </if>
+		    <if test="status != null " >
+		      AND l.`status` = #{status,jdbcType=INTEGER}
+		    </if>
+		    <if test="starttime!= null and starttime!=0" >
+		      AND l.endtime  <![CDATA[>=]]> #{starttime,jdbcType=INTEGER}
+		    </if>
+		    <if test="endtime!= null and endtime!=0" >
+		      AND l.endtime  <![CDATA[<=]]> #{endtime,jdbcType=INTEGER}
+		    </if>
+		</where>
+	</select>
+</mapper>

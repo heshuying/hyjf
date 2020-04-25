@@ -1,0 +1,34 @@
+*{margin:0;padding:0}
+body{font-family: "微软雅黑";}
+.travel-active>img{display: block;width:100%}
+.travel-active-annonce{background: #edd79e;color: #541a08;padding:0 5%;}
+.travel-active-annonce dl dd table{width:100%;text-align: center;}
+.travel-active-annonce dl dd table{border-width:1px 0px 0px 1px;border-color:#541a08;border-style: solid;}
+.travel-active-annonce dl dd table td{border-width:0px 1px 1px 0px;border-color:#541a08;border-style: solid;}
+.travel-go-invest img{margin:0 auto;display: block;}
+.travel-go-invest {background:#edd79e ;width:100%;}
+.bottom-message{width:100%;color:#ddb35a;text-align: center;background: #160703;}
+.travel-active-annonce dl{padding:10px 0}
+.travel-go-invest a{display: block;margin:0 auto}
+.travel-go-invest a img{width:100%}
+@media only screen and (max-width: 480px) {
+	.travel-active-annonce dl dd table{margin-top:10px}
+	.table-width{width:32px}
+	.travel-active-annonce dl dt{font-size: 16px;line-height: 35px;font-weight: 800;letter-spacing: 1px;}
+	.travel-active-annonce dl dd{font-size: 12px;line-height: 23px;word-break: break-word;}
+	.travel-table-title{font-size:14px;font-weight:600;padding:5px 0}
+	.travel-phone{font-size: 18px;font-weight:800}
+	.bottom-message{height:50px;line-height:50px;font-size: 16px;}
+	.travel-go-invest{padding-bottom: 30px;}
+	.travel-go-invest a{width:200px}
+}
+@media only screen and (min-width: 480px) {
+	.travel-active-annonce dl dd table{margin-top:10px}
+	.travel-active-annonce dl dt{font-size: 19px;line-height: 53px;font-weight: 800;letter-spacing: 1px;}
+	.travel-active-annonce dl dd{font-size: 16px;line-height: 35px;word-break: break-word;letter-spacing: 1px;}
+	.travel-table-title{font-size:16px;font-weight:600;padding:10px 0}
+	.travel-phone{font-size: 24px;font-weight:800}
+	.bottom-message{height:65px;line-height:65px;font-size: 20px;}
+	.travel-go-invest{padding-bottom: 50px;}
+	.travel-go-invest a{width:280px}
+}

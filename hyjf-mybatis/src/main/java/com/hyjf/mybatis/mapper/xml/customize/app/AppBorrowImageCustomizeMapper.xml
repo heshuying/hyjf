@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.app.AppBorrowImageCustomizeMapper">
+	<resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.customize.app.AppBorrowImageCustomize">
+		<result column="type_type" property="typeType" jdbcType="CHAR" />
+		<result column="type_name" property="typeName" jdbcType="CHAR" />
+		<result column="type_logo" property="typeLogo" jdbcType="CHAR" />
+		<result column="notes" property="notes" jdbcType="CHAR" />
+		<result column="page_url" property="typeUrl" jdbcType="CHAR" />
+		<result column="page_type" property="pageType" jdbcType="CHAR" />
+		<result column="jump_name" property="jumpName" jdbcType="CHAR" />
+	</resultMap>
+	<select id="selectBorrowImageList" resultMap="BaseResultMap" parameterType="Map">
+		SELECT
+	abi.borrow_image AS type_type,
+	abi.borrow_image_title AS type_name,
+	CONCAT(
+		#{host},(
+			SELECT
+				borrow_image_url
+			FROM
+				hyjf_app_borrow_image
+			WHERE
+				borrow_image = abi.borrow_image
+			ORDER BY
+				borrow_image_realname DESC
+			LIMIT 1
+		)) AS type_logo,
+		abi.notes,
+		abi.page_type,
+		CONCAT(abi.page_url, '?sign=', #{sign}, '&amp;version=', #{version}) AS page_url,
+		abi.jump_name
+			FROM
+				hyjf_app_borrow_image abi
+			WHERE
+				 abi.STATUS = 0
+			AND (
+				(
+					abi.version <![CDATA[<=]]> #{version} and (abi.version_max is null or abi.version_max ='')) 
+					OR (
+						abi.version_max <![CDATA[>=]]> #{version} and (abi.version is null or abi.version ='')) 
+						OR (
+							abi.version_max <![CDATA[>=]]> #{version} and abi.version <![CDATA[<=]]>#{version}))
+							
+							ORDER BY
+								abi.sort ASC
+	</select>
+</mapper>

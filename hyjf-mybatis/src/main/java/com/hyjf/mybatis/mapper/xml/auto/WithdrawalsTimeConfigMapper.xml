@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.WithdrawalsTimeConfigMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.WithdrawalsTimeConfig" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="if_workingday" property="ifWorkingday" jdbcType="VARCHAR" />
+    <result column="withdrawals_start" property="withdrawalsStart" jdbcType="VARCHAR" />
+    <result column="withdrawals_end" property="withdrawalsEnd" jdbcType="VARCHAR" />
+    <result column="immediately_withdraw" property="immediatelyWithdraw" jdbcType="VARCHAR" />
+    <result column="quick_withdraw" property="quickWithdraw" jdbcType="VARCHAR" />
+    <result column="normal_withdraw" property="normalWithdraw" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="createuser" property="createuser" jdbcType="VARCHAR" />
+    <result column="updateuser" property="updateuser" jdbcType="VARCHAR" />
+    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="updatetime" property="updatetime" jdbcType="TIMESTAMP" />
+    <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, if_workingday, withdrawals_start, withdrawals_end, immediately_withdraw, quick_withdraw, 
+    normal_withdraw, `status`, `createuser`, updateuser, createtime, updatetime, remarks
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.WithdrawalsTimeConfigExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from huiyingdai_withdrawals_time_config
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from huiyingdai_withdrawals_time_config
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from huiyingdai_withdrawals_time_config
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.WithdrawalsTimeConfigExample" >
+    delete from huiyingdai_withdrawals_time_config
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.WithdrawalsTimeConfig" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into huiyingdai_withdrawals_time_config (if_workingday, withdrawals_start, withdrawals_end, 
+      immediately_withdraw, quick_withdraw, normal_withdraw, 
+      `status`, `createuser`, updateuser, 
+      createtime, updatetime, remarks
+      )
+    values (#{ifWorkingday,jdbcType=VARCHAR}, #{withdrawalsStart,jdbcType=VARCHAR}, #{withdrawalsEnd,jdbcType=VARCHAR}, 
+      #{immediatelyWithdraw,jdbcType=VARCHAR}, #{quickWithdraw,jdbcType=VARCHAR}, #{normalWithdraw,jdbcType=VARCHAR}, 
+      #{status,jdbcType=INTEGER}, #{createuser,jdbcType=VARCHAR}, #{updateuser,jdbcType=VARCHAR}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{updatetime,jdbcType=TIMESTAMP}, #{remarks,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.WithdrawalsTimeConfig" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into huiyingdai_withdrawals_time_config
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ifWorkingday != null" >
+        if_workingday,
+      </if>
+      <if test="withdrawalsStart != null" >
+        withdrawals_start,
+      </if>
+      <if test="withdrawalsEnd != null" >
+        withdrawals_end,
+      </if>
+      <if test="immediatelyWithdraw != null" >
+        immediately_withdraw,
+      </if>
+      <if test="quickWithdraw != null" >
+        quick_withdraw,
+      </if>
+      <if test="normalWithdraw != null" >
+        normal_withdraw,
+      </if>
+      <if test="status != null" >
+        `status`,
+      </if>
+      <if test="createuser != null" >
+        `createuser`,
+      </if>
+      <if test="updateuser != null" >
+        updateuser,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+      <if test="updatetime != null" >
+        updatetime,
+      </if>
+      <if test="remarks != null" >
+        remarks,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ifWorkingday != null" >
+        #{ifWorkingday,jdbcType=VARCHAR},
+      </if>
+      <if test="withdrawalsStart != null" >
+        #{withdrawalsStart,jdbcType=VARCHAR},
+      </if>
+      <if test="withdrawalsEnd != null" >
+        #{withdrawalsEnd,jdbcType=VARCHAR},
+      </if>
+      <if test="immediatelyWithdraw != null" >
+        #{immediatelyWithdraw,jdbcType=VARCHAR},
+      </if>
+      <if test="quickWithdraw != null" >
+        #{quickWithdraw,jdbcType=VARCHAR},
+      </if>
+      <if test="normalWithdraw != null" >
+        #{normalWithdraw,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createuser != null" >
+        #{createuser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateuser != null" >
+        #{updateuser,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.WithdrawalsTimeConfigExample" resultType="java.lang.Integer" >
+    select count(*) from huiyingdai_withdrawals_time_config
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update huiyingdai_withdrawals_time_config
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.ifWorkingday != null" >
+        if_workingday = #{record.ifWorkingday,jdbcType=VARCHAR},
+      </if>
+      <if test="record.withdrawalsStart != null" >
+        withdrawals_start = #{record.withdrawalsStart,jdbcType=VARCHAR},
+      </if>
+      <if test="record.withdrawalsEnd != null" >
+        withdrawals_end = #{record.withdrawalsEnd,jdbcType=VARCHAR},
+      </if>
+      <if test="record.immediatelyWithdraw != null" >
+        immediately_withdraw = #{record.immediatelyWithdraw,jdbcType=VARCHAR},
+      </if>
+      <if test="record.quickWithdraw != null" >
+        quick_withdraw = #{record.quickWithdraw,jdbcType=VARCHAR},
+      </if>
+      <if test="record.normalWithdraw != null" >
+        normal_withdraw = #{record.normalWithdraw,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null" >
+        `status` = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.createuser != null" >
+        `createuser` = #{record.createuser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateuser != null" >
+        updateuser = #{record.updateuser,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createtime != null" >
+        createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updatetime != null" >
+        updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.remarks != null" >
+        remarks = #{record.remarks,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update huiyingdai_withdrawals_time_config
+    set id = #{record.id,jdbcType=INTEGER},
+      if_workingday = #{record.ifWorkingday,jdbcType=VARCHAR},
+      withdrawals_start = #{record.withdrawalsStart,jdbcType=VARCHAR},
+      withdrawals_end = #{record.withdrawalsEnd,jdbcType=VARCHAR},
+      immediately_withdraw = #{record.immediatelyWithdraw,jdbcType=VARCHAR},
+      quick_withdraw = #{record.quickWithdraw,jdbcType=VARCHAR},
+      normal_withdraw = #{record.normalWithdraw,jdbcType=VARCHAR},
+      `status` = #{record.status,jdbcType=INTEGER},
+      `createuser` = #{record.createuser,jdbcType=VARCHAR},
+      updateuser = #{record.updateuser,jdbcType=VARCHAR},
+      createtime = #{record.createtime,jdbcType=TIMESTAMP},
+      updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
+      remarks = #{record.remarks,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.WithdrawalsTimeConfig" >
+    update huiyingdai_withdrawals_time_config
+    <set >
+      <if test="ifWorkingday != null" >
+        if_workingday = #{ifWorkingday,jdbcType=VARCHAR},
+      </if>
+      <if test="withdrawalsStart != null" >
+        withdrawals_start = #{withdrawalsStart,jdbcType=VARCHAR},
+      </if>
+      <if test="withdrawalsEnd != null" >
+        withdrawals_end = #{withdrawalsEnd,jdbcType=VARCHAR},
+      </if>
+      <if test="immediatelyWithdraw != null" >
+        immediately_withdraw = #{immediatelyWithdraw,jdbcType=VARCHAR},
+      </if>
+      <if test="quickWithdraw != null" >
+        quick_withdraw = #{quickWithdraw,jdbcType=VARCHAR},
+      </if>
+      <if test="normalWithdraw != null" >
+        normal_withdraw = #{normalWithdraw,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        `status` = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createuser != null" >
+        `createuser` = #{createuser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateuser != null" >
+        updateuser = #{updateuser,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatetime != null" >
+        updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remarks != null" >
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.WithdrawalsTimeConfig" >
+    update huiyingdai_withdrawals_time_config
+    set if_workingday = #{ifWorkingday,jdbcType=VARCHAR},
+      withdrawals_start = #{withdrawalsStart,jdbcType=VARCHAR},
+      withdrawals_end = #{withdrawalsEnd,jdbcType=VARCHAR},
+      immediately_withdraw = #{immediatelyWithdraw,jdbcType=VARCHAR},
+      quick_withdraw = #{quickWithdraw,jdbcType=VARCHAR},
+      normal_withdraw = #{normalWithdraw,jdbcType=VARCHAR},
+      `status` = #{status,jdbcType=INTEGER},
+      `createuser` = #{createuser,jdbcType=VARCHAR},
+      updateuser = #{updateuser,jdbcType=VARCHAR},
+      createtime = #{createtime,jdbcType=TIMESTAMP},
+      updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      remarks = #{remarks,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

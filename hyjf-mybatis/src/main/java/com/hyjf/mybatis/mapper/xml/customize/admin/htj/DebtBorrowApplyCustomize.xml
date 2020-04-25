@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.htj.DebtBorrowApplyCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+			<!-- 姓名 -->
+			<if test="nameSrch != null and nameSrch != ''">
+				AND loan.`name` LIKE CONCAT('%', #{nameSrch}, '%')
+			</if>
+			<!-- 审核状态 -->
+			<if test="stateSrch != null and stateSrch != ''">
+				AND loan.state = #{stateSrch}
+			</if>
+			<!-- 申请时间 -->
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND FROM_UNIXTIME( loan.addtime, '%Y-%m-%d' ) <![CDATA[>=]]> #{timeStartSrch}
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch != ''">
+				AND FROM_UNIXTIME( loan.addtime, '%Y-%m-%d' ) <![CDATA[<=]]> #{timeEndSrch}
+			</if>
+		</where>
+	</sql>
+	
+	<select id="countBorrowApply" resultType="java.lang.Long" parameterType="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowApplyCustomize">
+		SELECT
+		  COUNT(1)
+		FROM
+	      huiyingdai_loan loan
+		<include refid="Where_Clause" />
+	</select>
+	
+	<resultMap id="selectBorrowApplyListMap" type="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowApplyCustomize">
+		<!-- ID -->
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<!-- 姓名 -->
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<!-- 性别 -->
+		<result column="sex" property="sex" jdbcType="VARCHAR" />
+		<!-- 手机号 -->
+		<result column="tel" property="tel" jdbcType="VARCHAR" />
+		<!-- 所在地 -->
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<!-- 融资金额 -->
+		<result column="money" property="money" jdbcType="VARCHAR" />
+        <!-- 融资期限 -->
+		<result column="day" property="day" jdbcType="VARCHAR" />
+        <!-- 审核状态 -->
+		<result column="state" property="state" jdbcType="VARCHAR" />
+		<result column="state_name" property="stateName" jdbcType="VARCHAR" />
+        <!-- 申请时间 -->
+		<result column="addtime" property="addtime" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectBorrowApplyList" resultMap="selectBorrowApplyListMap" parameterType="com.hyjf.mybatis.model.customize.admin.htj.DebtBorrowApplyCustomize">
+		SELECT
+		  loan.id,
+		  loan.`name`,
+		  ns.`name` AS sex,
+		  loan.tel,
+		  CONCAT(loan.province, ' ', loan.city, ' ', loan.area) AS address,
+	  	  loan.money,
+		  loan.day,
+		  loan.state,
+		  n.`name` AS state_name,
+	      FROM_UNIXTIME( loan.addtime, '%Y-%m-%d %H:%i:%s' ) AS addtime
+		FROM
+	      huiyingdai_loan loan
+	      LEFT JOIN hyjf_param_name n ON n.name_cd = loan.state AND n.name_class = 'BORROW_APPLY_STATUS'
+	      LEFT JOIN hyjf_param_name ns ON ns.name_cd = loan.sex AND ns.name_class = 'SEX'
+	    <include refid="Where_Clause" />
+		  ORDER BY
+		    loan.addtime DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+</mapper>

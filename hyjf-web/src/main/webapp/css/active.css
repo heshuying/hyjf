@@ -1,0 +1,52 @@
+body,
+html {
+    padding: 0;
+    margin: 0;
+}
+*{
+	font-family: Helvetica, Arial, "Microsoft YaHei", "Hiragino Sans GB", "Heiti SC", "榛戜綋", sans-serif;
+}
+img{border:0;vertical-align:middle}
+.telInput{width:100%;height:100%;position:relative}
+.telInputImg img{display: block;width:100%}
+.telInputCont{text-align: center;}
+.inputError,.telInputCont input,.inputTel-btn{text-align: center;margin:0 auto;border-radius: 5px;padding:10px 15%;width:44%;
+display: block;}
+.inputTelNum{-webkit-appearance : none;appearance : none;-moz-appearance : none;-o-appearance : none;background:#FFFFFF;border: 1px solid #FFFFFF;outline: none;box-shadow: 0px 3px 2px #d1901d;}
+.telInputCont{width:100%;position: absolute;top:60%}.inputTel-btn{margin-top:20px;text-align:center;border:1px solid #fbda30;background: #fbda30;color:#532e1b;text-decoration: none;}
+.appActive{width: 100%;height:100%}
+.appActive-top img{display: block;width:100%}
+.appActive-ban{background:#fdebaf;padding: 30px 20px;}
+.appActive-ban p{line-height:30px;color: #532E1B;}
+.appActive-ban h3{font-weight: normal;margin-bottom:10px}
+@media only screen and (max-width:480px) {
+	.inputTel-txt{font-size:10px}
+	.appActive-ban p{font-size:12px}
+	.appActive-ban h3{font-size: 16px;}
+	.inputError,.telInputCont input,.inputTel-btn{font-size:14px;}
+}
+@media only screen and (min-width:480px) and (max-width:640px) {
+	.inputTel-txt{font-size:16px}
+	.appActive-ban p{font-size:18px}
+	.appActive-ban h3{font-size:22px}
+	.inputError,.telInputCont input,.inputTel-btn{font-size:20px;}
+}
+@media only screen and (min-width:640px) and (max-width:768px){
+	.inputTel-txt{font-size:16px}
+	.appActive-ban p{font-size:18px}
+	.appActive-ban h3{font-size:22px}
+	.inputError,.telInputCont input,.inputTel-btn{font-size:26px;}
+}
+@media only screen and (min-width:768px){
+	.inputTel-txt{font-size:16px}
+	.appActive-ban p{font-size:18px}
+	.appActive-ban h3{font-size:22px}
+	.inputError,.telInputCont input,.inputTel-btn{font-size:32px;}
+}
+.appActive-top{position: relative;}
+.appActive-top p{width:100%;position: absolute;top:68%}
+input[type="number"]::-webkit-inner-spin-button {-webkit-appearance: none;}
+input[type="number"]::-webkit-outer-spin-button {-webkit-appearance: none;}
+.inputError{color:#FFFFFF;background: rgba(0,0,0,0.8);}
+.errorTip{width:100%;position: fixed;top:40%;display: none;}
+.inputTel-txt{color:#FFFFFF;margin-top:20px}

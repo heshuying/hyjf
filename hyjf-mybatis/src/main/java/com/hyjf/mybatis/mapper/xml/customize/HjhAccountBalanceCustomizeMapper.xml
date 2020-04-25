@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.hyjf.mybatis.mapper.customize.HjhAccountBalanceCustomizeMapper">
+	<!--汇计划资本按天统计及预估表列表 -->
+	<resultMap id="selectHjhAccountBalanceMap" type="com.hyjf.mybatis.model.auto.HjhAccountBalance">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="date" property="date" jdbcType="DATE" />
+		<result column="invest_account" property="investAccount"
+			jdbcType="DECIMAL" />
+		<result column="credit_account" property="creditAccount"
+			jdbcType="DECIMAL" />
+		<result column="reinvest_account" property="reinvestAccount"
+			jdbcType="DECIMAL" />
+		<result column="add_account" property="addAccount" jdbcType="DECIMAL" />
+		<result column="create_user" property="createUser" jdbcType="INTEGER" />
+		<result column="create_time" property="createTime" jdbcType="INTEGER" />
+		<result column="update_user" property="updateUser" jdbcType="INTEGER" />
+		<result column="update_time" property="updateTime" jdbcType="INTEGER" />
+		<result column="del_flg" property="delFlg" jdbcType="TINYINT" />
+	</resultMap>
+	<select id="selectHjhAccountBalanceForActList" resultMap="selectHjhAccountBalanceMap"
+		parameterType="java.util.Date">
+		SELECT
+			DATE_FORMAT(#{date}, '%Y-%m-%d') `date`,
+			SUM(i_account) invest_account,
+			SUM(c_account) credit_account,
+			SUM(r_account) reinvest_account,
+			SUM(a_account) add_account,
+			flag flag
+		FROM
+			(
+				SELECT
+					SUM(bt.account) i_account,
+					0 c_account,
+					0 r_account,
+					0 a_account,
+					1 flag -- 原始
+				FROM
+					huiyingdai_borrow_tender bt
+				WHERE
+					bt.addtime BETWEEN UNIX_TIMESTAMP(#{date}) AND UNIX_TIMESTAMP(#{date}) + 86399
+				AND bt.accede_order_id IS NOT NULL
+			UNION ALL
+				SELECT
+					0 i_account,
+					SUM(hdct.assign_pay) c_account,
+					0 r_account,
+					0 a_account,
+					2 flag -- 债转
+				FROM
+					hyjf_hjh_debt_credit_tender hdct
+				WHERE
+					hdct.create_time BETWEEN UNIX_TIMESTAMP(#{date}) AND UNIX_TIMESTAMP(#{date}) + 86399
+			UNION ALL
+				SELECT
+					0 i_account,
+					0 c_account,
+					SUM(bt.account) r_account,
+					0 a_account,
+					3 flag -- 复投原始
+				FROM
+					huiyingdai_borrow_tender bt
+				WHERE
+					bt.addtime BETWEEN UNIX_TIMESTAMP(#{date}) AND UNIX_TIMESTAMP(#{date}) + 86399
+				AND bt.tender_type = 1
+				AND bt.accede_order_id IS NOT NULL
+			UNION ALL
+				SELECT
+					0 i_account,
+					0 c_account,
+					SUM(hdct.assign_pay) r_account,
+					0 a_account,
+					3 flag -- 复投债转
+				FROM
+					hyjf_hjh_debt_credit_tender hdct
+				WHERE
+					hdct.create_time BETWEEN UNIX_TIMESTAMP(#{date}) AND UNIX_TIMESTAMP(#{date}) + 86399
+				AND hdct.tender_type = 1
+			UNION ALL
+				SELECT
+					0 i_account,
+					0 c_account,
+					0 r_account,
+					SUM(ha.accede_account) a_account,
+					4 flag -- 加入计划
+				FROM
+					hyjf_hjh_accede ha
+				WHERE
+					ha.add_time BETWEEN UNIX_TIMESTAMP(#{date}) AND UNIX_TIMESTAMP(#{date}) + 86399
+		) t
+	</select>
+
+
+	<resultMap id="RM_HjhAccountBalance"
+		type="com.hyjf.mybatis.model.customize.HjhAccountBalanceCustomize">
+		<result property="id" column="id" />
+		<result property="date" column="date" />
+		<result property="investAccount" column="invest_account" />
+		<result property="creditAccount" column="credit_account" />
+		<result property="reinvestAccount" column="reinvest_account" />
+		<result property="addAccount" column="add_account" />
+		<result property="createUser" column="create_user" />
+		<result property="createTime" column="create_time" />
+		<result property="dataFormt" column="dataFormt" />
+		<result property="updateTime" column="update_time" />
+		<result property="delFlg" column="del_flg" />
+	</resultMap>
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="HjhAccountBalance_columns">
+	    <![CDATA[
+		id,date,invest_account,credit_account,reinvest_account,add_account,create_user,create_time,update_user,update_time,del_flg
+	    ]]>
+	</sql>
+
+	<!-- mysql 分页尾 -->
+	<sql id="pagination_Tail">
+		<if test="limitStart >= 0">
+			LIMIT #{limitStart} , #{limitEnd}
+		</if>
+	</sql>
+
+	<sql id="HjhAccountBalance_findPage_where">
+		<where>
+			<if test="idSer != null and idSer != ''">
+				AND HjhAccountBalance.id = #{idSer}
+			</if>
+			<if test="addTimeStart != null and addTimeStart != ''">
+				AND HjhAccountBalance.date &gt;= DATE_FORMAT(#{addTimeStart},'%Y-%m-%d')
+			</if>
+			<if test="addTimeEnd != null and addTimeEnd != ''">
+				AND HjhAccountBalance.date &lt;= DATE_FORMAT(#{addTimeEnd},'%Y-%m-%d')
+			</if>
+			<!-- <if test="dateSer != null and dateSer != ''"> AND HjhAccountBalance.date 
+				= #{dateSer} </if> -->
+			<if test="investAccountSer != null and investAccountSer != ''">
+				AND HjhAccountBalance.invest_account = #{investAccountSer}
+			</if>
+			<if test="creditAccountSer != null and creditAccountSer != ''">
+				AND HjhAccountBalance.credit_account = #{creditAccountSer}
+			</if>
+			<if test="reinvestAccountSer != null and reinvestAccountSer != ''">
+				AND HjhAccountBalance.reinvest_account = #{reinvestAccountSer}
+			</if>
+			<if test="addAccountSer != null and addAccountSer != ''">
+				AND HjhAccountBalance.add_account = #{addAccountSer}
+			</if>
+			<if test="createUserSer != null and createUserSer != ''">
+				AND HjhAccountBalance.create_user = #{createUserSer}
+			</if>
+			<if test="createTimeSer != null and createTimeSer != ''">
+				AND HjhAccountBalance.create_time = #{createTimeSer}
+			</if>
+			<if test="updateUserSer != null and updateUserSer != ''">
+				AND HjhAccountBalance.update_user = #{updateUserSer}
+			</if>
+			<if test="updateTimeSer != null and updateTimeSer != ''">
+				AND HjhAccountBalance.update_time = #{updateTimeSer}
+			</if>
+			<if test="delFlgSer != null and delFlgSer != ''">
+				AND HjhAccountBalance.del_flg = #{delFlgSer}
+			</if>
+		</where>
+	</sql>
+
+	<select id="getHjhAccountBalancecount" resultType="java.lang.Integer">
+		SELECT count(*) FROM hyjf_hjh_account_balance HjhAccountBalance
+		<include refid="HjhAccountBalance_findPage_where" />
+	</select>
+
+	<select id="getHjhAccountBalanceMonthCount" resultType="java.lang.Integer">
+		select count(1) from (SELECT sum(invest_account) FROM
+		hyjf_hjh_account_balance HjhAccountBalance group by
+		DATE_FORMAT(date,'%Y-%m')) dddd;
+	</select>
+	<select id="getHjhAccountBalanceMonthCountNew" resultType="java.lang.Integer" parameterType="java.lang.String">
+		select count(1) from (
+		SELECT sum(invest_account) 
+		FROM hyjf_hjh_account_balance HjhAccountBalance
+		 where date &gt;= STR_TO_DATE(#{addTimeStart},"%Y-%m-%d")AND date &lt;= STR_TO_DATE(#{addTimeEnd},"%Y-%m-%d") 
+		 group by DATE_FORMAT(date,'%Y-%m')
+		 ) ffff
+	</select>
+
+	<select id="getHjhAccountBalanceList" resultMap="RM_HjhAccountBalance">
+		 SELECT <include refid="HjhAccountBalance_columns" /> FROM hyjf_hjh_account_balance 
+			HjhAccountBalance
+		<include refid="HjhAccountBalance_findPage_where"/> 
+		<include refid="pagination_Tail"/> 
+
+	</select>
+
+	<select id="getHjhAccountBalanceMonthList" resultMap="RM_HjhAccountBalance">
+		select DATE_FORMAT(date,'%Y-%m')as dataFormt ,sum(invest_account) as
+		'investAccount',sum(credit_account) as 'creditAccount'
+		,sum(reinvest_account)as 'reinvestAccount',sum(add_account)as
+		'addAccount'
+		from hyjf_hjh_account_balance
+		group by DATE_FORMAT(date,'%Y-%m')
+		order by date desc
+		<include refid="pagination_Tail" />
+	</select>
+	<select id="getHjhAccountBalanceMonthListNew" resultMap="RM_HjhAccountBalance" parameterType="java.lang.String">
+		select DATE_FORMAT(date,'%Y-%m')as dataFormt ,sum(invest_account) as'investAccount',sum(credit_account) as 'creditAccount',sum(reinvest_account)as 'reinvestAccount',sum(add_account)as'addAccount'
+		from hyjf_hjh_account_balance
+		where date &gt;= STR_TO_DATE(#{addTimeStart},"%Y-%m-%d")AND date &lt;= STR_TO_DATE(#{addTimeEnd},"%Y-%m-%d") 
+		group by DATE_FORMAT(date,'%Y-%m')
+		order by date desc
+		<include refid="pagination_Tail" />
+	</select>
+
+	<select id="getHjhAccountBalancePage" resultMap="RM_HjhAccountBalance">
+		SELECT
+		<include refid="HjhAccountBalance_columns" />
+		FROM hyjf_hjh_account_balance HjhAccountBalance
+		<include refid="HjhAccountBalance_findPage_where" />
+		<include refid="pagination_Tail" />
+	</select>
+
+	<select id="getHjhAccountBalanceSum" resultMap="RM_HjhAccountBalance">
+		SELECT
+		sum(invest_account) AS 'investAccount',
+		sum(credit_account) AS 'creditAccount',
+		sum(reinvest_account) AS 'reinvestAccount',
+		sum(add_account) AS 'addAccount'
+		FROM
+		hyjf_hjh_account_balance HjhAccountBalance
+		<include refid="HjhAccountBalance_findPage_where" />
+		<include refid="pagination_Tail" />
+	</select>
+	<select id="getHjhAccountBalanceMonthSum" resultMap="RM_HjhAccountBalance">
+		select
+		sum(invest_account) as'investAccount',
+		sum(credit_account) as 'creditAccount',
+		sum(reinvest_account)as 'reinvestAccount',
+		sum(add_account)as'addAccount'
+		from hyjf_hjh_account_balance
+		where date &gt;= STR_TO_DATE(#{addTimeStart},"%Y-%m-%d")AND date &lt;= STR_TO_DATE(#{addTimeEnd},"%Y-%m-%d") 
+		group by DATE_FORMAT(date,'%Y-%m')
+		order by date desc
+		<include refid="pagination_Tail" />
+	</select>
+
+</mapper>

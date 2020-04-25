@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.PlanCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+			<if test="planNidSrch != null and planNidSrch != ''">
+				AND dp.debt_plan_nid LIKE CONCAT('%', #{planNidSrch}, '%')
+			</if>
+			<if test="planNameSrch != null and planNameSrch != ''">
+				AND dp.debt_plan_name LIKE CONCAT('%', #{planNameSrch}, '%')
+			</if>
+			<if test="planTypeSrch != null and planTypeSrch != ''">
+				AND dp.debt_plan_type LIKE CONCAT('%', #{planTypeSrch}, '%')
+			</if>
+			<if test="planStatusSrch != null and planStatusSrch != ''">
+				AND dp.debt_plan_status = #{planStatusSrch}
+			</if>
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND FROM_UNIXTIME( dp.create_time, '%Y-%m-%d' ) = #{timeStartSrch}
+			</if>
+		</where>
+	</sql>
+	
+	<select id="countPlan" resultType="java.lang.Long" parameterType="com.hyjf.mybatis.model.customize.PlanCommonCustomize">
+		  SELECT
+		    COUNT(1)
+		  FROM
+			hyjf_debt_plan dp
+		<include refid="Where_Clause" />
+	</select>
+
+	<resultMap id="selectPlanListMap" type="com.hyjf.mybatis.model.customize.PlanCustomize">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="debt_plan_nid" property="planNid" jdbcType="VARCHAR" />
+		<result column="debt_plan_name" property="planName" jdbcType="VARCHAR" />
+		<result column="debt_plan_type" property="planType" jdbcType="VARCHAR" />
+		<result column="debt_plan_type_name" property="planTypeName" jdbcType="VARCHAR" />
+		<result column="debt_lock_period" property="lockPeriod" jdbcType="VARCHAR" />
+		<result column="expect_apr" property="expectApr" jdbcType="VARCHAR" />
+		<result column="debt_plan_money" property="planMoney" jdbcType="VARCHAR" />
+		<result column="debt_plan_money_yes" property="planJoinMoney" jdbcType="VARCHAR" />
+		<result column="debt_plan_money_wait" property="planMoneyWait" jdbcType="VARCHAR" />
+		<result column="debt_plan_status" property="planStatus" jdbcType="VARCHAR" />
+		<result column="planStatusName" property="planStatusName" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectPlanList" resultMap="selectPlanListMap" parameterType="com.hyjf.mybatis.model.customize.PlanCommonCustomize">
+		SELECT
+			dp.id,
+			dp.debt_plan_nid,
+			dp.debt_plan_name,
+			dpt.debt_plan_type,
+			dpt.debt_plan_type_name,
+			dpt.debt_lock_period,
+			dp.expect_apr,
+			dp.debt_plan_money,
+			dp.debt_plan_money_yes,
+			dp.debt_plan_money_wait,
+			dp.debt_plan_status,
+			CASE
+		WHEN dp.debt_plan_status = 0 THEN
+			'发起中'
+		WHEN dp.debt_plan_status = 1 THEN
+			'待审核'
+		WHEN dp.debt_plan_status = 2 THEN
+			'审核不通过'
+		WHEN dp.debt_plan_status = 3 THEN
+			'待开放'
+		WHEN dp.debt_plan_status = 4 THEN
+			'募集中'
+		WHEN dp.debt_plan_status = 5 THEN
+			'募集完成'
+		WHEN dp.debt_plan_status = 6 THEN
+			'锁定中'
+		WHEN dp.debt_plan_status = 7 THEN
+			'清算中'
+		WHEN dp.debt_plan_status = 8 THEN
+			'清算完成'
+		WHEN dp.debt_plan_status = 9 THEN
+			'还款'
+		WHEN dp.debt_plan_status = 10 THEN
+			'还款中'
+		WHEN dp.debt_plan_status = 11 THEN
+			'还款完成'
+		ELSE
+			'其他'
+		END AS planStatusName,
+		 FROM_UNIXTIME(
+			dp.create_time,
+			'%Y-%m-%d %H:%i:%s'
+		) create_time
+		FROM
+			hyjf_debt_plan dp
+		LEFT JOIN hyjf_debt_plan_type dpt ON dp.debt_plan_type = dpt.debt_plan_type
+		<include refid="Where_Clause" />
+		ORDER BY
+		<if test="col != null and col != '' and sort != null and sort != ''">
+			${col} ${sort},
+		</if>
+		  dp.create_time DESC, dp.id DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+    <!-- 导出 -->
+	<resultMap id="exportPlanListMap" type="com.hyjf.mybatis.model.customize.PlanCommonCustomize">
+		<!-- 计划编号  --> 
+		<result column="debt_plan_nid" property="planNid" jdbcType="VARCHAR" />
+		<!-- 计划名称  --> 
+		<result column="debt_plan_name" property="planName" jdbcType="VARCHAR" />
+		<!-- 计划类型名称  --> 
+		<result column="debt_plan_type_name" property="planTypeName" jdbcType="VARCHAR" />
+		<!-- 计划金额--> 
+		<result column="debt_plan_money" property="planMoney" jdbcType="VARCHAR" />
+		<!-- 预期年化利率 --> 
+		<result column="expect_apr" property="expectApr" jdbcType="VARCHAR" />
+		<!-- 锁定期 --> 
+		<result column="debt_lock_period" property="lockPeriod" jdbcType="VARCHAR" />
+		<!-- 加入金额--> 
+		<result column="debt_plan_money_yes" property="planJoinMoney" jdbcType="VARCHAR" />
+		<!-- 计划余额--> 
+		<result column="debt_plan_money_wait" property="planMoneyWait" jdbcType="VARCHAR" />
+		<!-- 计划可使用金额--> 
+		<result column="debt_plan_balance" property="planBalance" jdbcType="VARCHAR" />
+		<!-- 计划冻结金额--> 
+		<result column="debt_plan_frost" property="planFrost" jdbcType="VARCHAR" />
+		<!-- 状态 --> 
+		<result column="planStatusName" property="planStatusName" jdbcType="VARCHAR" />
+		<!-- 发起时间 --> 
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="exportPlanList" resultMap="exportPlanListMap" parameterType="com.hyjf.mybatis.model.customize.PlanCommonCustomize">
+		SELECT
+			dp.debt_plan_nid,
+			dp.debt_plan_name,
+			dpt.debt_plan_type_name,
+			dpt.debt_lock_period,
+			dp.expect_apr,
+			dp.debt_plan_money,
+			dp.debt_plan_money_yes,
+			dp.debt_plan_money_wait,
+			dp.debt_plan_balance,
+			dp.debt_plan_frost,
+			CASE
+		WHEN dp.debt_plan_status = 0 THEN
+			'发起中'
+		WHEN dp.debt_plan_status = 1 THEN
+			'待审核'
+		WHEN dp.debt_plan_status = 2 THEN
+			'审核不通过'
+		WHEN dp.debt_plan_status = 3 THEN
+			'待开放'
+		WHEN dp.debt_plan_status = 4 THEN
+			'募集中'
+		WHEN dp.debt_plan_status = 5 THEN
+			'募集完成'
+		WHEN dp.debt_plan_status = 6 THEN
+			'锁定中'
+		WHEN dp.debt_plan_status = 7 THEN
+			'清算中'
+		WHEN dp.debt_plan_status = 8 THEN
+			'清算完成'
+		WHEN dp.debt_plan_status = 9 THEN
+			'还款'
+		WHEN dp.debt_plan_status = 10 THEN
+			'还款中'
+		WHEN dp.debt_plan_status = 11 THEN
+			'还款完成'
+		ELSE
+			'其他'
+		END AS planStatusName,
+		 FROM_UNIXTIME(
+			dp.create_time,
+			'%Y-%m-%d %H:%i:%s'
+		) create_time
+		FROM
+			hyjf_debt_plan dp
+		LEFT JOIN hyjf_debt_plan_type dpt ON dp.debt_plan_type = dpt.debt_plan_type
+		<include refid="Where_Clause" />
+		ORDER BY
+		<if test="col != null and col != '' and sort != null and sort != ''">
+			${col} ${sort},
+		</if>
+		  dp.create_time DESC, dp.id DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	<select id="getPlanPreNid" resultType="java.lang.String" parameterType="java.lang.String">
+		SELECT DISTINCT
+			MAX(b.debt_pre_plan_nid)
+		FROM
+			hyjf_debt_plan b
+		WHERE
+			b.debt_pre_plan_nid LIKE CONCAT('%', #{mmdd, jdbcType=VARCHAR}, '%')
+			AND b.show_status = 0
+	</select>
+	
+	<resultMap id="getDebtPlanBorrowListMap" type="com.hyjf.mybatis.model.customize.DebtPlanBorrowCustomize">
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="borrow_name" property="projectName" jdbcType="VARCHAR" />
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<result column="borrow_account_wait" property="borrowAccountWait" jdbcType="VARCHAR" />
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<result column="borrow_style_name" property="borrowStyle" jdbcType="VARCHAR" />
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="getDebtPlanBorrowList" resultMap="getDebtPlanBorrowListMap" parameterType="Map">
+		SELECT
+			DISTINCT
+			b.borrow_nid,
+			b.`name` AS borrow_name,
+			FORMAT(b.account, 2) AS account,
+			FORMAT(b.borrow_account_wait, 2) AS borrow_account_wait,
+			CASE WHEN b.borrow_style = 'endday' THEN CONCAT(b.borrow_period, '天') ELSE CONCAT(b.borrow_period, '个月') END borrow_period,
+			bs.`name` AS borrow_style_name,
+			CONCAT(b.borrow_apr, '%') AS borrow_apr
+		FROM
+			hyjf_debt_borrow b
+		LEFT JOIN 
+			huiyingdai_borrow_style bs ON bs.nid = b.borrow_style
+		LEFT JOIN 
+			hyjf_debt_plan_borrow pb ON pb.borrow_nid = b.borrow_nid
+		WHERE 
+			 ( b.`status` = 1 AND b.borrow_status = 1 AND b.borrow_account_yes <![CDATA[<]]> b.account AND b.verify_time + ( borrow_valid_time * 24 * 60 *60 ) <![CDATA[>]]> UNIX_TIMESTAMP( NOW() ) )
+		<if test="borrowNidSrch != null and borrowNidSrch != ''">
+			AND b.borrow_nid LIKE CONCAT('%', #{borrowNidSrch}, '%')
+		</if>
+		<if test="borrowStyleSrch != null and borrowStyleSrch != ''">
+			AND b.borrow_style = #{borrowStyleSrch}
+		</if>
+		
+		ORDER BY
+			b.borrow_plan_selected ASC,b.borrow_account_wait DESC , b.addtime DESC
+	</select>
+	
+	<select id="countDebtPlanBorrowList" resultType="java.lang.Integer" parameterType="Map">
+		SELECT
+			COUNT(*)
+		FROM
+			hyjf_debt_borrow b
+		LEFT JOIN 
+			huiyingdai_borrow_style bs ON bs.nid = b.borrow_style
+		<if test="debtPlanNidSrch != null and debtPlanNidSrch != ''">
+		LEFT JOIN 
+			hyjf_debt_plan_borrow pb ON pb.borrow_nid = b.borrow_nid
+		</if>
+		WHERE 
+			 ( b.`status` = 1 AND b.borrow_status = 1 AND b.borrow_account_yes <![CDATA[<]]> b.account AND b.verify_time + ( borrow_valid_time * 24 * 60 *60 ) <![CDATA[>]]> UNIX_TIMESTAMP( NOW() ) )
+		<if test="borrowNidSrch != null and borrowNidSrch != ''">
+			AND b.borrow_nid LIKE CONCAT('%', #{borrowNidSrch}, '%')
+		</if>
+		<if test="borrowStyleSrch != null and borrowStyleSrch != ''">
+			AND b.borrow_style = #{borrowStyleSrch}
+		</if>
+	</select>
+	<select id="getDebtPlanNidListByBorrowNid" resultType="java.lang.String" parameterType="Map">
+		SELECT
+			debt_plan_nid
+		FROM
+			hyjf_debt_plan_borrow b
+		WHERE
+		1=1 
+		<if test="borrowNid != null and borrowNid != ''">
+			AND b.borrow_nid = #{borrowNid}
+		</if>
+	</select>
+	<select id="getPlanIsSelected" resultType="java.lang.String" parameterType="Map">
+		SELECT
+			CASE WHEN b.debt_plan_nid IS NOT NULL THEN '1' ELSE '0' END
+		FROM
+			hyjf_debt_plan_borrow b
+		WHERE
+		1=1 
+		<if test="borrowNid != null and borrowNid != ''">
+			AND b.borrow_nid = #{borrowNid}
+		</if>
+		<if test="debtPlanNid != null and debtPlanNid != ''">
+			AND b.debt_plan_nid = #{debtPlanNid}
+		</if>
+	</select>
+	<!-- 根据计划编号检索该计划已关联的专属资产 -->
+	<resultMap id="selectDebtPlanBorrowListByDebtPlanNidMap" type="com.hyjf.mybatis.model.customize.DebtPlanBorrowCustomize">
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="borrow_name" property="projectName" jdbcType="VARCHAR" />
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<result column="borrow_account_wait" property="borrowAccountWait" jdbcType="VARCHAR" />
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<result column="borrow_style_name" property="borrowStyle" jdbcType="VARCHAR" />
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectDebtPlanBorrowListByDebtPlanNid" resultMap="selectDebtPlanBorrowListByDebtPlanNidMap" parameterType="Map">
+		SELECT
+			DISTINCT
+			b.borrow_nid,
+			b.`name` AS borrow_name,
+			FORMAT(b.account, 2) AS account,
+			FORMAT(b.borrow_account_wait, 2) AS borrow_account_wait,
+			CASE WHEN b.borrow_style = 'endday' THEN CONCAT(b.borrow_period, '天') ELSE CONCAT(b.borrow_period, '个月') END borrow_period,
+			bs.`name` AS borrow_style_name,
+			CONCAT(b.borrow_apr, '%') AS borrow_apr
+		FROM
+			hyjf_debt_plan_borrow pb
+		LEFT JOIN 
+			hyjf_debt_borrow b ON pb.borrow_nid = b.borrow_nid
+		LEFT JOIN 
+			huiyingdai_borrow_style bs ON bs.nid = b.borrow_style
+		WHERE 
+			 pb.type = 0
+		<if test="borrowNidSrch != null and borrowNidSrch != ''">
+			AND b.borrow_nid LIKE CONCAT('%', #{borrowNidSrch}, '%')
+		</if>
+		<if test="borrowStyleSrch != null and borrowStyleSrch != ''">
+			AND b.borrow_style = #{borrowStyleSrch}
+		</if>
+		<if test="debtPlanNidSrch != null and debtPlanNidSrch != ''">
+			AND pb.debt_plan_nid LIKE CONCAT('%', #{debtPlanNidSrch}, '%')
+		</if>
+		ORDER BY
+			b.borrow_plan_selected ASC,b.borrow_account_wait DESC , b.addtime DESC
+	</select>
+	
+	<select id="countDebtPlanBorrowListByDebtPlanNid" resultType="java.lang.Integer" parameterType="Map">
+		SELECT
+			COUNT(*)
+		FROM
+			hyjf_debt_plan_borrow pb
+		LEFT JOIN 
+			hyjf_debt_borrow b ON pb.borrow_nid = b.borrow_nid
+		LEFT JOIN 
+			huiyingdai_borrow_style bs ON bs.nid = b.borrow_style
+		WHERE 
+			pb.type = 0
+		<if test="borrowNidSrch != null and borrowNidSrch != ''">
+			AND b.borrow_nid LIKE CONCAT('%', #{borrowNidSrch}, '%')
+		</if>
+		<if test="borrowStyleSrch != null and borrowStyleSrch != ''">
+			AND b.borrow_style LIKE CONCAT('%', #{borrowStyleSrch}, '%')
+		</if>
+		<if test="debtPlanNidSrch != null and debtPlanNidSrch != ''">
+			AND pb.debt_plan_nid LIKE CONCAT('%', #{debtPlanNidSrch}, '%')
+		</if>
+	</select>
+	
+	<select id="countDebtPlanAmount" resultType="java.util.Map" parameterType="Map">
+		SELECT
+			sum(b.account) AS accountSum,
+			sum(b.borrow_account_wait) AS borrowAccountWaitSum
+		FROM
+			hyjf_debt_borrow b
+		LEFT JOIN 
+			huiyingdai_borrow_style bs ON bs.nid = b.borrow_style
+		WHERE 
+			 ( b.`status` = 1 AND b.borrow_status = 1 AND b.borrow_account_yes <![CDATA[<]]> b.account AND b.verify_time + ( borrow_valid_time * 24 * 60 *60 ) <![CDATA[>]]> UNIX_TIMESTAMP( NOW() ) )
+		<if test="borrowNidSrch != null and borrowNidSrch != ''">
+			AND b.borrow_nid LIKE CONCAT('%', #{borrowNidSrch}, '%')
+		</if>
+		<if test="borrowStyleSrch != null and borrowStyleSrch != ''">
+			AND b.borrow_style = #{borrowStyleSrch}
+		</if>
+	</select>
+	
+	<select id="getPlanAccountTotal" resultType="java.util.Map" parameterType="com.hyjf.mybatis.model.customize.PlanCommonCustomize">
+		SELECT
+			sum(b.debt_plan_money) AS planMoneySum,
+			sum(b.debt_plan_money_yes) AS planJoinMoneySum,
+			sum(b.debt_plan_balance) AS planMoneyWaitSum
+		FROM
+			hyjf_debt_plan b
+		WHERE 
+			1=1
+		<if test="planNidSrch != null and planNidSrch != ''">
+			AND b.debt_plan_nid LIKE CONCAT('%', #{planNidSrch}, '%')
+		</if>
+		<if test="planNameSrch != null and planNameSrch != ''">
+			AND b.debt_plan_name LIKE CONCAT('%', #{planNameSrch}, '%')
+		</if>
+		<if test="planTypeSrch != null and planTypeSrch != ''">
+			AND b.debt_plan_type = #{planTypeSrch}
+		</if>
+		<if test="planStatusSrch != null and planStatusSrch != ''">
+			AND b.debt_plan_status = #{planStatusSrch}
+		</if>
+		<if test="createTime != null and createTime != ''">
+			AND FROM_UNIXTIME( b.create_time, '%Y-%m-%d' ) <![CDATA[=]]> #{createTime}
+		</if>
+	</select>
+	
+	
+	<!-- 检索已关联资产总计 -->
+	<select id="countDebtPlanBorrowListAmount" resultType="java.util.Map" parameterType="Map">
+		SELECT
+			sum(b.account) AS accountSum,
+			sum(b.borrow_account_wait) AS borrowAccountWaitSum
+		FROM
+			hyjf_debt_plan_borrow pb
+		LEFT JOIN 
+			hyjf_debt_borrow b ON pb.borrow_nid = b.borrow_nid
+		LEFT JOIN 
+			huiyingdai_borrow_style bs ON bs.nid = b.borrow_style
+		WHERE 
+			 pb.type = 0
+		<if test="borrowNidSrch != null and borrowNidSrch != ''">
+			AND b.borrow_nid LIKE CONCAT('%', #{borrowNidSrch}, '%')
+		</if>
+		<if test="borrowStyleSrch != null and borrowStyleSrch != ''">
+			AND b.borrow_style LIKE CONCAT('%', #{borrowStyleSrch}, '%')
+		</if>
+		<if test="debtPlanNidSrch != null and debtPlanNidSrch != ''">
+			AND pb.debt_plan_nid LIKE CONCAT('%', #{debtPlanNidSrch}, '%')
+		</if>
+		ORDER BY
+			borrowAccountWaitSum DESC
+	</select>
+</mapper>

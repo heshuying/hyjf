@@ -1,0 +1,628 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.web.htj.DebtPlanBorrowCustomizeMapper">
+	<resultMap id="DebtPlanBorrowDetailMap" type="com.hyjf.mybatis.model.customize.web.htj.DebtPlanBorrowDetailCustomize">
+		<!-- 项目编号-->
+		<id column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<!-- 项目大分类 projectType HZT 汇直投 HXF 汇消费  -->
+		<result column="project_type" property="projectType" jdbcType="VARCHAR" />
+		<!-- 项目大分类 projectType HZT 汇直投 HXF 汇消费  -->
+		<result column="type" property="type" jdbcType="VARCHAR" />
+		<!-- 项目大分类 projectType HZT 汇直投 HXF 汇消费  -->
+		<result column="type_name" property="typeName" jdbcType="VARCHAR" />
+		<!-- 项目名称 -->
+		<result column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<!-- 项目还款方式 -->
+		<result column="borrow_style" property="borrowStyle" jdbcType="VARCHAR" />
+		<!-- 授信额度 userCredit -->
+		<result column="user_credit" property="userCredit" jdbcType="VARCHAR" />
+		<!-- 合作机构 -->
+		<result column="measures_instit" property="measuresInstit" jdbcType="VARCHAR" />
+		<!-- 项目总额 account -->
+		<result column="borrow_account" property="borrowAccount" jdbcType="VARCHAR" />
+		<!-- 项目年化收益 -->
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<!-- 项目期限 borrowPeriod -->
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<!-- 项目期限 borrowPeriod -->
+		<result column="borrow_period_type" property="borrowPeriodType" jdbcType="VARCHAR" />
+		<!-- 可投金额 investAccount -->
+		<result column="invest_account" property="investAccount" jdbcType="VARCHAR" />
+		<!-- 项目区分 comOrPer 项目是个人项目还是企业项目 1企业 2个人  -->
+		<result column="com_or_per" property="comOrPer" jdbcType="VARCHAR" />
+		<!-- 预期收益 borrowInterest -->
+		<!-- <result column="borrow_interest" property="borrowInterest" jdbcType="VARCHAR" /> -->
+		<!-- 还款方式 -->
+		<result column="repay_style" property="repayStyle" jdbcType="VARCHAR" />
+		<!-- 项目进度 borrowSchedule -->
+		<result column="borrow_schedule" property="borrowSchedule" jdbcType="VARCHAR" />
+		<!-- 项目最小投资金额 -->
+		<result column="tender_account_min" property="tenderAccountMin" jdbcType="VARCHAR" />
+		<!-- 项目最大投资金额 -->
+		<result column="tender_account_max" property="tenderAccountMax" jdbcType="VARCHAR" />
+		<!-- 发标时间 sendTime -->
+		<result column="send_time" property="sendTime" jdbcType="VARCHAR" />
+		<!-- 满标时间 fullTime -->
+		<result column="full_time" property="fullTime" jdbcType="VARCHAR" />
+		<!-- 项目结束时间  endTime-->
+		<result column="borrow_end_time" property="endTime" jdbcType="VARCHAR" />
+		<!-- 定时发标时间 onTime -->
+		<result column="on_time" property="onTime" jdbcType="VARCHAR" />
+		<!-- 定时发标时间戳 time -->
+		<result column="time" property="time" jdbcType="VARCHAR" />
+		<!-- 项目状态 status 10 定时发标 11投资中 12复审中 13 还款中 14 已还款 15 已流标 -->
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<!-- 倍增金额  increaseMoney-->	
+		<result column="increase_money" property="increaseMoney" jdbcType="VARCHAR" />
+		<!-- 加息券 interestCoupon -->
+		<result column="interest_coupon" property="interestCoupon" jdbcType="VARCHAR" />
+		<!-- 体验金 tasteMoney -->
+		<result column="taste_money" property="tasteMoney" jdbcType="VARCHAR" />
+		<!-- 预约状态 bookingStatus 预约状态 0初始 1预约中 2预约结束-->
+		<result column="booking_status" property="bookingStatus" jdbcType="VARCHAR" />
+		<result column="booking_begin_time" property="bookingBeginTime" jdbcType="INTEGER" />
+		<result column="booking_end_time" property="bookingEndTime" jdbcType="INTEGER" />
+		<result column="on_appoint_time" property="onAppointTime" jdbcType="VARCHAR" />
+		<!--预约标等待预约金额 borrowAccountWaitAppoint -->
+		<result column="borrow_account_wait_appoint" property="borrowAccountWaitAppoint" jdbcType="DECIMAL" />
+		<!-- 预约进度 borrowAccountScaleAppoint -->
+		<result column="borrow_account_scale_appoint" property="borrowAccountScaleAppoint" jdbcType="DECIMAL" />
+		<!-- 信用等级-->
+		<result column="borrow_level" property="borrowLevel" jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- 查询相应的项目的公共部分 -->
+	<select id="selectDebtPlanBorrowDetail" resultMap="DebtPlanBorrowDetailMap" parameterType="Map">
+		SELECT
+			hydb.borrow_nid,
+			hydbpt.borrow_project_type AS project_type,
+			hydbpt.borrow_cd AS type,
+			hydbpt.borrow_name AS type_name,
+			hydb.`name` AS borrow_name,
+			hydb.borrow_style,
+			CASE
+				WHEN hydb.company_or_personal = 2 THEN
+					(
+						SELECT
+							m.credit
+						FROM
+							hyjf_debt_users_info m
+						WHERE
+							m.borrow_nid = hydb.borrow_nid
+					)
+				ELSE
+					(
+						SELECT
+							u.credit
+						FROM
+							hyjf_debt_company_info u
+						WHERE
+							u.borrow_nid = hydb.borrow_nid
+					)
+			END AS user_credit,
+			hydb.borrow_measures_instit AS measures_instit,
+			hydb.account AS borrow_account,
+			hydb.borrow_apr,
+			hydb.borrow_period,
+			CASE WHEN hydb.borrow_style = 'endday' THEN '天' ELSE '个月' END AS borrow_period_type,
+			hydb.borrow_account_wait AS invest_account,
+			hydb.company_or_personal AS com_or_per,
+			<!-- hydb.repay_account_interest AS borrow_interest, -->
+			hydbs.`name` AS repay_style,
+			hydb.borrow_account_scale AS borrow_schedule,
+			hydb.booking_status,
+			hydb.booking_begin_time,
+			hydb.booking_end_time,
+			hydb.borrow_account_wait_appoint,
+			hydb.borrow_account_scale_appoint,
+			hydb.tender_account_min,
+			hydb.tender_account_max,
+			CASE 
+				WHEN hydb.`status` = 0 AND hydb.verify_status =1 
+					THEN FROM_UNIXTIME( hydb.ontime, '%Y-%m-%d %H:%i:%s' )
+				ELSE 
+					FROM_UNIXTIME(
+					hydb.verify_time,
+					'%Y-%m-%d %H:%i:%s'
+					)
+			END AS send_time,
+			FROM_UNIXTIME(
+				hydb.borrow_full_time,
+				'%Y-%m-%d %H:%i:%s'
+			) AS full_time,
+			FROM_UNIXTIME(
+				(hydb.verify_time + hydb.borrow_valid_time * 24 * 60 * 60),
+				'%Y-%m-%d %H:%i:%s'
+			) AS borrow_end_time,
+			CASE 
+				WHEN hydb.`status` = 0 AND hydb.verify_status =1 
+					THEN FROM_UNIXTIME( hydb.ontime, '%Y-%m-%d %H:%i:%s' )
+			ELSE ''
+			END AS on_time,
+			CASE 
+				WHEN hydb.`status` = 0 AND hydb.booking_status =0 
+					THEN FROM_UNIXTIME( 	hydb.booking_begin_time, '%Y-%m-%d %H:%i:%s' )
+			ELSE ''
+			END AS on_appoint_time,
+			CASE 
+				WHEN hydb.`status` = 0 AND hydb.verify_status =1 
+					THEN hydb.ontime
+			ELSE ''
+			END AS time,
+			CASE
+				WHEN hydb.`status` = 0
+				AND hydb.verify_status = 1 THEN
+					'10'
+				WHEN hydb.`status` = 1
+				AND hydb.borrow_status = 1
+				AND hydb.borrow_account_yes <![CDATA[<]]> hydb.account
+				AND (
+					hydb.verify_time + (
+						hydb.borrow_valid_time * 24 * 60 * 60
+					) > UNIX_TIMESTAMP(NOW())
+				) THEN
+					'11'
+				WHEN hydb.`status` = 1
+				AND hydb.reverify_time = '0'
+				AND (
+					(
+						hydb.reverify_status = 0
+						AND hydb.borrow_account_yes >= hydb.account
+					)
+					OR (
+						hydb.verify_time + (
+							hydb.borrow_valid_time * 24 * 60 * 60
+						) <![CDATA[<]]> UNIX_TIMESTAMP(NOW())
+					)
+				) THEN
+					'12'
+				WHEN hydb.`status` = 3
+				AND hydb.repay_full_status = 0 THEN
+					'13'
+				WHEN hydb.`status` = 3
+				AND hydb.repay_full_status = 1 THEN
+					'14'
+				<!-- WHEN hydb.`status` = 2 THEN
+					'15' -->
+				ELSE
+					''
+				END AS `status`,
+				hydb.borrow_increase_money increase_money,
+				hydb.borrow_interest_coupon interest_coupon,
+				hydb.borrow_taste_money taste_money,
+				hydb.borrow_level
+			FROM
+			hyjf_debt_borrow hydb
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		LEFT JOIN huiyingdai_borrow_style hydbs ON hydbs.nid = hydb.borrow_style
+		WHERE
+			(
+				hydbpt.borrow_project_type = 'HZT'
+				OR hydbpt.borrow_project_type = 'HXF'
+			)
+		AND (
+			(
+				(
+					hydb.`status` = 0
+					AND (hydb.verify_status = 1)
+					AND (
+						EXISTS (
+							SELECT
+								1
+							FROM
+								hyjf_debt_bail bb
+							WHERE
+								bb.borrow_nid = hydb.borrow_nid
+						)
+					)
+				)
+			)
+			OR (
+				hydb.`status` = 1
+				AND hydb.borrow_status = 1
+				AND hydb.borrow_account_yes <![CDATA[<]]> hydb.account
+				AND hydb.verify_time + (borrow_valid_time * 24 * 60 * 60) > UNIX_TIMESTAMP(NOW())
+			)
+			OR (
+				hydb.`status` = 1
+				AND hydb.reverify_time = '0'
+				AND (
+					(
+						hydb.reverify_status = 0
+						AND hydb.borrow_account_yes >= hydb.account
+					)
+					OR (
+						hydb.verify_time + (
+							hydb.borrow_valid_time * 24 * 60 * 60
+						) <![CDATA[<]]> UNIX_TIMESTAMP(NOW())
+					)
+				)
+			)
+			OR (
+				hydb.`status` = 3
+				AND hydb.repay_full_status = 0
+			)
+			OR (
+				hydb.`status` = 3
+				AND hydb.repay_full_status = 1
+			)
+			<!-- OR (hydb.`status` = 2) -->
+		)
+		AND hydb.borrow_nid =#{borrowNid,jdbcType=VARCHAR}
+	</select>
+	
+	
+	<!-- 查询相应的项目的公共部分 -->
+	<select id="selectDebtPlanBorrowPreview" resultMap="DebtPlanBorrowDetailMap" parameterType="Map">
+		SELECT
+			hydb.borrow_nid,
+			hydbpt.borrow_project_type AS project_type,
+			hydbpt.borrow_cd AS type,
+			hydbpt.borrow_name AS type_name,
+			hydb.`name` AS borrow_name,
+			hydb.borrow_style,
+			CASE
+				WHEN hydb.company_or_personal = 2 THEN
+					(
+						SELECT
+							m.credit
+						FROM
+							hyjf_debt_users_info m
+						WHERE
+							m.borrow_nid = hydb.borrow_nid
+					)
+				ELSE
+					(
+						SELECT
+							u.credit
+						FROM
+							hyjf_debt_company_info u
+						WHERE
+							u.borrow_nid = hydb.borrow_nid
+					)
+			END AS user_credit,
+			hydb.borrow_measures_instit AS measures_instit,
+			hydb.account AS borrow_account,
+			hydb.borrow_apr,
+			hydb.borrow_period,
+			CASE WHEN hydb.borrow_style = 'endday' THEN '天' ELSE '个月' END AS borrow_period_type,
+			hydb.borrow_account_wait AS invest_account,
+			hydb.company_or_personal AS com_or_per,
+			<!-- hydb.repay_account_interest AS borrow_interest, -->
+			hydbs.`name` AS repay_style,
+			hydb.borrow_account_scale AS borrow_schedule,
+			hydb.tender_account_min,
+			hydb.tender_account_max,
+			CASE 
+				WHEN hydb.`status` = 0 AND hydb.verify_status =1 
+					THEN FROM_UNIXTIME( hydb.ontime, '%Y-%m-%d %H:%i:%s' )
+				ELSE 
+					FROM_UNIXTIME(
+					hydb.verify_time,
+					'%Y-%m-%d %H:%i:%s'
+					)
+			END AS send_time,
+			FROM_UNIXTIME(
+				hydb.borrow_full_time,
+				'%Y-%m-%d %H:%i:%s'
+			) AS full_time,
+			FROM_UNIXTIME(
+				(hydb.verify_time + hydb.borrow_valid_time * 24 * 60 * 60),
+				'%Y-%m-%d %H:%i:%s'
+			) AS borrow_end_time,
+			CASE 
+				WHEN hydb.`status` = 0 AND hydb.verify_status =1 
+					THEN FROM_UNIXTIME( hydb.ontime, '%Y-%m-%d %H:%i:%s' )
+			ELSE ''
+			END AS on_time,
+			CASE 
+				WHEN hydb.`status` = 0 AND hydb.verify_status =1 
+					THEN hydb.ontime
+			ELSE ''
+			END AS time,
+			CASE
+				WHEN hydb.`status` = 0
+				AND hydb.verify_status = 1 THEN
+					'10'
+				WHEN hydb.`status` = 1
+				AND hydb.borrow_status = 1
+				AND hydb.borrow_account_yes <![CDATA[<]]> hydb.account
+				AND (
+					hydb.verify_time + (
+						hydb.borrow_valid_time * 24 * 60 * 60
+					) > UNIX_TIMESTAMP(NOW())
+				) THEN
+					'11'
+				WHEN hydb.`status` = 1
+				AND hydb.reverify_time = '0'
+				AND (
+					(
+						hydb.reverify_status = 0
+						AND hydb.borrow_account_yes >= hydb.account
+					)
+					OR (
+						hydb.verify_time + (
+							hydb.borrow_valid_time * 24 * 60 * 60
+						) <![CDATA[<]]> UNIX_TIMESTAMP(NOW())
+					)
+				) THEN
+					'12'
+				WHEN hydb.`status` = 3
+				AND hydb.repay_full_status = 0 THEN
+					'13'
+				WHEN hydb.`status` = 3
+				AND hydb.repay_full_status = 1 THEN
+					'14'
+				<!-- WHEN hydb.`status` = 2 THEN
+					'15' -->
+				ELSE
+					''
+				END AS `status`,
+				hydb.borrow_increase_money increase_money,
+				hydb.borrow_interest_coupon interest_coupon,
+				hydb.borrow_taste_money taste_money
+			FROM
+			hyjf_debt_borrow hydb
+		LEFT JOIN huiyingdai_borrow_project_type hydbpt ON hydbpt.borrow_cd = hydb.project_type
+		LEFT JOIN huiyingdai_borrow_style hydbs ON hydbs.nid = hydb.borrow_style
+		WHERE
+			1=1 
+		AND hydb.borrow_nid =#{borrowNid,jdbcType=VARCHAR}
+	</select>
+	
+	<resultMap id="DebtPlanBorrowHzcDetailMap" type="com.hyjf.mybatis.model.customize.web.htj.DebtPlanBorrowHzcDetailCustomize">
+		<!-- 项目名称 borrowName-->
+		<id column="borrow_name" property="borrowName" jdbcType="VARCHAR" />
+		<!-- 所在地区 borrowAddress  -->
+		<result column="borrow_address" property="borrowAddress" jdbcType="VARCHAR" />
+		<!-- 项目类型 borrowType -->
+		<result column="borrow_type" property="borrowType" jdbcType="VARCHAR" />
+		<!-- 预估价值 guarantyValue -->
+		<result column="guaranty_value" property="guarantyValue" jdbcType="VARCHAR" />
+		<!-- 权属类别 ownershipCategory -->
+		<result column="ownership_category" property="ownershipCategory" jdbcType="VARCHAR" />
+		<!-- 资产成因 assetOrigin -->
+		<result column="asset_origin" property="assetOrigin" jdbcType="VARCHAR" />
+		<!-- 附件信息 attachmentInfo -->
+		<result column="attachment_info" property="attachmentInfo" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="searchDebtPlanBorrowHzcDetail" resultMap="DebtPlanBorrowHzcDetailMap" parameterType="String">
+		SELECT
+			hydb.disposal_project_name AS borrow_name,
+			hydb.disposal_area AS borrow_address,
+			hydb.disposal_project_type AS borrow_type,
+			hydb.disposal_predictive_value AS guaranty_value,
+			hydb.disposal_ownership_category AS ownership_category,
+			hydb.disposal_asset_origin AS asset_origin,
+			hydb.disposal_attachment_info AS attachment_info
+		FROM
+			hyjf_debt_borrow hydb
+		WHERE
+			hydb.borrow_nid =#{borrowNid,jdbcType=VARCHAR}
+	</select>
+	<resultMap id="DebtPlanBorrowHzcDisposalPlanMap" type="com.hyjf.mybatis.model.customize.web.htj.DebtPlanBorrowHzcDisposalPlanCustomize">
+		<!-- 售价预估 priceEstimate-->
+		<id column="price_estimate" property="priceEstimate" jdbcType="VARCHAR" />
+		<!-- 处置周期 disposalPeriod  -->
+		<result column="disposal_period" property="disposalPeriod" jdbcType="VARCHAR" />
+		<!-- 处置渠道 disposalChannel -->
+		<result column="disposal_channel" property="disposalChannel" jdbcType="VARCHAR" />
+		<!-- 处置预案 disposalPlan -->
+		<result column="disposal_plan" property="disposalPlan" jdbcType="VARCHAR" />
+		<!-- 备注说明 remark -->
+		<!-- <result column="remark" property="remark" jdbcType="VARCHAR" /> -->
+	</resultMap>
+	<select id="searchDebtPlanBorrowHzcDisposalPlan" resultMap="DebtPlanBorrowHzcDisposalPlanMap" parameterType="String">
+		SELECT
+			hydb.disposal_price_estimate AS price_estimate,
+			hydb.disposal_period,
+			hydb.disposal_channel,
+			<!-- hydb.disposal_note AS remark, -->
+			hydb.disposal_result AS disposal_plan
+		FROM
+			hyjf_debt_borrow hydb
+		WHERE
+			hydb.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+	</select>
+	<resultMap id="DebtPlanBorrowPersonDetailMap" type="com.hyjf.mybatis.model.customize.web.htj.DebtPlanBorrowPersonDetailCustomize">
+		<!-- 项目描述 borrowContents-->
+		<id column="borrow_contents" property="borrowContents" jdbcType="VARCHAR" />
+		<!-- 年龄 age   -->
+		<result column="age" property="age" jdbcType="VARCHAR" />
+		<!-- 性别 sex -->
+		<result column="sex" property="sex" jdbcType="VARCHAR" />
+		<!-- 婚姻状况 maritalStatus -->
+		<result column="merry" property="maritalStatus" jdbcType="VARCHAR" />
+		<!-- 工作城市 workingCity -->
+		<result column="working_city" property="workingCity" jdbcType="VARCHAR" />
+		<!-- 财务状况 -->
+		<result column="account_contents" property="accountContents" jdbcType="VARCHAR" />
+		<!-- 岗位类别-->
+		<result column="position" property="position" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectDebtPlanBorrowPersonDetail" resultMap="DebtPlanBorrowPersonDetailMap" parameterType="String">
+		SELECT
+			hydb.borrow_contents,
+			hydbm.old AS age,
+			pnr.`name` AS sex,
+			pna.`name` AS merry,
+			CONCAT(hydbm.pro, hydbm.city) AS working_city,
+			hydb.account_contents,
+			hydbm.position
+		FROM
+			hyjf_debt_borrow hydb
+		LEFT JOIN hyjf_debt_users_info hydbm ON hydbm.borrow_nid = hydb.borrow_nid
+		LEFT JOIN hyjf_param_name pnr ON cast(hydbm.sex AS CHAR) = pnr.name_cd AND pnr.name_class = 'SEX_TYPE'
+		LEFT JOIN hyjf_param_name pna ON cast(hydbm.merry AS CHAR) = pna.name_cd AND pna.name_class = 'MERRY_STATUS'
+		WHERE
+			hydb.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+		AND hydb.company_or_personal = 2
+	</select>
+	<resultMap id="DebtPlanBorrowCompanyDetailMap" type="com.hyjf.mybatis.model.customize.web.htj.DebtPlanBorrowCompanyDetailCustomize">
+		<!-- 项目描述 borrowContents -->
+		<id column="borrow_contents" property="borrowContents" jdbcType="VARCHAR" />
+		<!-- 所在地区 borrowAddress -->
+		<result column="borrow_address" property="borrowAddress" jdbcType="VARCHAR" />
+		<!-- 所属行业 borrowIndustry -->
+		<result column="borrow_industry" property="borrowIndustry" jdbcType="VARCHAR" />
+		<!-- 注册资本 borrowCapital -->
+		<result column="reg_captial" property="regCaptial" jdbcType="VARCHAR" />
+		<!-- 注册时间 registTime -->
+		<result column="regist_time" property="registTime" jdbcType="VARCHAR" />
+		<!-- 财务状况 -->
+		<result column="account_contents" property="accountContents" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectDebtPlanBorrowCompanyDetail" resultMap="DebtPlanBorrowCompanyDetailMap" parameterType="String">
+		SELECT
+			hydb.borrow_contents,
+			CONCAT(
+				hydbu.province,
+				hydbu.city,
+				hydbu.area
+			) AS borrow_address,
+			hydbu.industry AS borrow_industry,
+			hydbu.reg_captial,
+			hydbu.com_reg_time AS regist_time,
+			hydb.account_contents
+		FROM
+			hyjf_debt_borrow hydb
+		LEFT JOIN hyjf_debt_company_info hydbu ON hydb.borrow_nid = hydbu.`borrow_nid`
+		WHERE
+			hydb.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+		AND hydb.company_or_personal = 1
+	</select>
+	
+	<resultMap id="DebtPlanBorrowAuthenInfoMap" type="com.hyjf.mybatis.model.customize.web.htj.DebtPlanBorrowAuthenInfoCustomize">
+		<!-- 证件名称 identifyDocument -->
+		<id column="authen_name" property="authenName" jdbcType="VARCHAR" />
+		<!-- 认证时间 identifyTime -->
+		<result column="authen_time" property="authenTime" jdbcType="VARCHAR" />
+		<!-- 认证状态 identifyStatus -->
+		<result column="authen_status" property="authenStatus" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="searchDebtPlanBorrowAuthenInfo" resultMap="DebtPlanBorrowAuthenInfoMap" parameterType="String">
+		SELECT
+			bca.authen_name,
+			bca.authen_time,
+			'0' AS authen_status
+		FROM
+			hyjf_debt_company_authen bca
+		WHERE
+			bca.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+		ORDER BY
+			bca.authen_sort_key ASC
+	</select>
+	<resultMap id="DebtPlanBorrowRiskControlMap" type="com.hyjf.mybatis.model.customize.web.htj.DebtPlanBorrowRiskControlCustomize">
+		<!-- 合作机构 partner -->
+		<id column="partner" property="partner" jdbcType="VARCHAR" />
+		<!-- 机构介绍 agencyIntroduction -->
+		<result column="agency_introduction" property="agencyIntroduction" jdbcType="VARCHAR" />
+		<!-- 操作流程 operatingProcess -->
+		<result column="operating_process" property="operatingProcess" jdbcType="VARCHAR" />
+		<!-- 风控措施 controlMeasures -->
+		<result column="control_measures" property="controlMeasures" jdbcType="VARCHAR" />
+		<!-- 抵押物信息 controlMort -->
+		<result column="control_mort" property="controlMort" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectDebtPlanBorrowRiskControl" resultMap="DebtPlanBorrowRiskControlMap" parameterType="String">
+		SELECT
+			hydb.borrow_measures_instit AS partner,
+			hydb.borrow_company_instruction AS agency_introduction,
+			hydb.borrow_operating_process AS operating_process,
+			hydb.borrow_measures_mea AS control_measures,
+			hydb.borrow_measures_mort AS control_mort
+		FROM
+			hyjf_debt_borrow hydb
+		WHERE
+			hydb.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+	</select>
+	<resultMap id="DebtPlanBorrowMortgageMap" type="com.hyjf.mybatis.model.customize.web.htj.DebtPlanBorrowMortgageCustomize">
+		<!-- 房产类型 propertyType -->
+		<id column="property_type" property="propertyType" jdbcType="VARCHAR" />
+		<!-- 建筑面积 grossArea -->
+		<result column="gross_area" property="grossArea" jdbcType="VARCHAR" />
+		<!-- 抵押价值 guarantyValue -->
+		<result column="guaranty_value" property="guarantyValue" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectDebtPlanBorrowMortgageList" resultMap="DebtPlanBorrowMortgageMap" parameterType="String">
+		SELECT
+			pn.`name` AS property_type,
+			bh.houses_area AS gross_area,
+			bh.houses_toprice AS guaranty_value
+		FROM
+			hyjf_debt_house_info bh
+		LEFT JOIN hyjf_param_name pn ON bh.houses_type = pn.name_cd
+		AND pn.name_class = 'HOUSES_TYPE'
+		WHERE
+			bh.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+	</select>
+	<resultMap id="DebtPlanBorrowVehiclePledgeMap" type="com.hyjf.mybatis.model.customize.web.htj.DebtPlanBorrowVehiclePledgeCustomize">
+		<!-- 车辆品牌 vehicleBrand -->
+		<id column="vehicle_brand" property="vehicleBrand" jdbcType="VARCHAR" />
+		<!-- 型号 vehicleModel -->
+		<result column="vehicle_model" property="vehicleModel" jdbcType="VARCHAR" />
+		<!-- 评估价（元）evaluationPrice -->
+		<result column="evaluation_price" property="evaluationPrice" jdbcType="VARCHAR" />
+		<!-- 评估价（元）evaluationPrice -->
+		<result column="place" property="place" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectDebtPlanBorrowVehiclePledgeList" resultMap="DebtPlanBorrowVehiclePledgeMap" parameterType="String">
+		SELECT
+			bc.brand AS vehicle_brand,
+			bc.model AS vehicle_model,
+			bc.toprice AS evaluation_price,
+			bc.place
+		FROM
+			hyjf_debt_car_info bc
+		WHERE
+			bc.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+	</select>
+	<resultMap id="DebtPlanBorrowInvestMap" type="com.hyjf.mybatis.model.customize.web.WebProjectInvestListCustomize">
+		<id column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="vip_id" property="vipId" jdbcType="VARCHAR" />
+		<result column="vip_level" property="vipLevel" jdbcType="VARCHAR" />
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<result column="invest_time" property="investTime" jdbcType="VARCHAR" />
+		<result column="client" property="client" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectDebtPlanBorrowInvestList" resultMap="DebtPlanBorrowInvestMap" parameterType="Map">
+		SELECT
+			CONCAT(substring(hydu.username,1,1),'**') AS user_name,
+			IFNULL(hydui.vip_id,0) vip_id,
+			IFNULL(hvi.vip_level,0) vip_level,
+			SUBSTRING(FORMAT(hydbt.account,4),1,LENGTH(FORMAT(hydbt.account,4))-2) AS account,
+			pnrp.`name` AS client,
+			from_unixtime(
+					hydbt.create_time,
+					'%Y-%m-%d %H:%i:%s'
+				) AS invest_time
+			FROM hyjf_debt_invest hydbt
+			LEFT JOIN huiyingdai_users hydu ON hydbt.user_id = hydu.user_id
+			LEFT JOIN hyjf_param_name pnrp ON cast(hydbt.client AS CHAR) = pnrp.name_cd AND pnrp.name_class = 'CLIENT'
+			LEFT JOIN huiyingdai_users_info hydui ON hydu.user_id=hydui.user_id
+			LEFT JOIN hyjf_vip_info hvi ON hydui.vip_id=hvi.id
+		<where>
+			hydbt.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+		</where>
+		ORDER BY hydbt.create_time DESC
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	<select id="countDebtPlanBorrowInvestRecordTotal" resultType="java.lang.Integer" parameterType="Map">
+		SELECT
+			COUNT(hydbt.id)
+			FROM hyjf_debt_invest hydbt
+			LEFT JOIN huiyingdai_users hydu ON hydbt.user_id = hydu.user_id
+		<where>
+			hydbt.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="searchDebtPlanBorrowFiles" resultType="java.lang.String" parameterType="java.lang.String">
+		SELECT
+			b.files
+		FROM
+			hyjf_debt_borrow b
+		WHERE
+			b.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+	</select>
+</mapper>

@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.AppPushManageMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.AppPushManage" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="jump_type" property="jumpType" jdbcType="TINYINT" />
+    <result column="jump_content" property="jumpContent" jdbcType="TINYINT" />
+    <result column="jump_url" property="jumpUrl" jdbcType="VARCHAR" />
+    <result column="order" property="order" jdbcType="TINYINT" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="time_start" property="timeStart" jdbcType="INTEGER" />
+    <result column="time_end" property="timeEnd" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+    <result column="add_admin" property="addAdmin" jdbcType="INTEGER" />
+    <result column="thumb" property="thumb" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.hyjf.mybatis.model.auto.AppPushManage" extends="BaseResultMap" >
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, title, jump_type, jump_content, jump_url, `order`, `status`, time_start, time_end, 
+    create_time, update_time, add_admin, thumb
+  </sql>
+  <sql id="Blob_Column_List" >
+    content
+  </sql>
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.hyjf.mybatis.model.auto.AppPushManageExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from hyjf_app_push_manage
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.AppPushManageExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_app_push_manage
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from hyjf_app_push_manage
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_app_push_manage
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.AppPushManageExample" >
+    delete from hyjf_app_push_manage
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.AppPushManage" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_app_push_manage (title, jump_type, jump_content, 
+      jump_url, `order`, `status`, 
+      time_start, time_end, create_time, 
+      update_time, add_admin, thumb, 
+      content)
+    values (#{title,jdbcType=VARCHAR}, #{jumpType,jdbcType=TINYINT}, #{jumpContent,jdbcType=TINYINT}, 
+      #{jumpUrl,jdbcType=VARCHAR}, #{order,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, 
+      #{timeStart,jdbcType=INTEGER}, #{timeEnd,jdbcType=INTEGER}, #{createTime,jdbcType=INTEGER}, 
+      #{updateTime,jdbcType=INTEGER}, #{addAdmin,jdbcType=INTEGER}, #{thumb,jdbcType=VARCHAR}, 
+      #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.AppPushManage" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_app_push_manage
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="jumpType != null" >
+        jump_type,
+      </if>
+      <if test="jumpContent != null" >
+        jump_content,
+      </if>
+      <if test="jumpUrl != null" >
+        jump_url,
+      </if>
+      <if test="order != null" >
+        `order`,
+      </if>
+      <if test="status != null" >
+        `status`,
+      </if>
+      <if test="timeStart != null" >
+        time_start,
+      </if>
+      <if test="timeEnd != null" >
+        time_end,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="addAdmin != null" >
+        add_admin,
+      </if>
+      <if test="thumb != null" >
+        thumb,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="jumpType != null" >
+        #{jumpType,jdbcType=TINYINT},
+      </if>
+      <if test="jumpContent != null" >
+        #{jumpContent,jdbcType=TINYINT},
+      </if>
+      <if test="jumpUrl != null" >
+        #{jumpUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="order != null" >
+        #{order,jdbcType=TINYINT},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="timeStart != null" >
+        #{timeStart,jdbcType=INTEGER},
+      </if>
+      <if test="timeEnd != null" >
+        #{timeEnd,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="addAdmin != null" >
+        #{addAdmin,jdbcType=INTEGER},
+      </if>
+      <if test="thumb != null" >
+        #{thumb,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.AppPushManageExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_app_push_manage
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_app_push_manage
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.title != null" >
+        title = #{record.title,jdbcType=VARCHAR},
+      </if>
+      <if test="record.jumpType != null" >
+        jump_type = #{record.jumpType,jdbcType=TINYINT},
+      </if>
+      <if test="record.jumpContent != null" >
+        jump_content = #{record.jumpContent,jdbcType=TINYINT},
+      </if>
+      <if test="record.jumpUrl != null" >
+        jump_url = #{record.jumpUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.order != null" >
+        `order` = #{record.order,jdbcType=TINYINT},
+      </if>
+      <if test="record.status != null" >
+        `status` = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.timeStart != null" >
+        time_start = #{record.timeStart,jdbcType=INTEGER},
+      </if>
+      <if test="record.timeEnd != null" >
+        time_end = #{record.timeEnd,jdbcType=INTEGER},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.addAdmin != null" >
+        add_admin = #{record.addAdmin,jdbcType=INTEGER},
+      </if>
+      <if test="record.thumb != null" >
+        thumb = #{record.thumb,jdbcType=VARCHAR},
+      </if>
+      <if test="record.content != null" >
+        content = #{record.content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map" >
+    update hyjf_app_push_manage
+    set id = #{record.id,jdbcType=INTEGER},
+      title = #{record.title,jdbcType=VARCHAR},
+      jump_type = #{record.jumpType,jdbcType=TINYINT},
+      jump_content = #{record.jumpContent,jdbcType=TINYINT},
+      jump_url = #{record.jumpUrl,jdbcType=VARCHAR},
+      `order` = #{record.order,jdbcType=TINYINT},
+      `status` = #{record.status,jdbcType=TINYINT},
+      time_start = #{record.timeStart,jdbcType=INTEGER},
+      time_end = #{record.timeEnd,jdbcType=INTEGER},
+      create_time = #{record.createTime,jdbcType=INTEGER},
+      update_time = #{record.updateTime,jdbcType=INTEGER},
+      add_admin = #{record.addAdmin,jdbcType=INTEGER},
+      thumb = #{record.thumb,jdbcType=VARCHAR},
+      content = #{record.content,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_app_push_manage
+    set id = #{record.id,jdbcType=INTEGER},
+      title = #{record.title,jdbcType=VARCHAR},
+      jump_type = #{record.jumpType,jdbcType=TINYINT},
+      jump_content = #{record.jumpContent,jdbcType=TINYINT},
+      jump_url = #{record.jumpUrl,jdbcType=VARCHAR},
+      `order` = #{record.order,jdbcType=TINYINT},
+      `status` = #{record.status,jdbcType=TINYINT},
+      time_start = #{record.timeStart,jdbcType=INTEGER},
+      time_end = #{record.timeEnd,jdbcType=INTEGER},
+      create_time = #{record.createTime,jdbcType=INTEGER},
+      update_time = #{record.updateTime,jdbcType=INTEGER},
+      add_admin = #{record.addAdmin,jdbcType=INTEGER},
+      thumb = #{record.thumb,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.AppPushManage" >
+    update hyjf_app_push_manage
+    <set >
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="jumpType != null" >
+        jump_type = #{jumpType,jdbcType=TINYINT},
+      </if>
+      <if test="jumpContent != null" >
+        jump_content = #{jumpContent,jdbcType=TINYINT},
+      </if>
+      <if test="jumpUrl != null" >
+        jump_url = #{jumpUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="order != null" >
+        `order` = #{order,jdbcType=TINYINT},
+      </if>
+      <if test="status != null" >
+        `status` = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="timeStart != null" >
+        time_start = #{timeStart,jdbcType=INTEGER},
+      </if>
+      <if test="timeEnd != null" >
+        time_end = #{timeEnd,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="addAdmin != null" >
+        add_admin = #{addAdmin,jdbcType=INTEGER},
+      </if>
+      <if test="thumb != null" >
+        thumb = #{thumb,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.hyjf.mybatis.model.auto.AppPushManage" >
+    update hyjf_app_push_manage
+    set title = #{title,jdbcType=VARCHAR},
+      jump_type = #{jumpType,jdbcType=TINYINT},
+      jump_content = #{jumpContent,jdbcType=TINYINT},
+      jump_url = #{jumpUrl,jdbcType=VARCHAR},
+      `order` = #{order,jdbcType=TINYINT},
+      `status` = #{status,jdbcType=TINYINT},
+      time_start = #{timeStart,jdbcType=INTEGER},
+      time_end = #{timeEnd,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=INTEGER},
+      add_admin = #{addAdmin,jdbcType=INTEGER},
+      thumb = #{thumb,jdbcType=VARCHAR},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.AppPushManage" >
+    update hyjf_app_push_manage
+    set title = #{title,jdbcType=VARCHAR},
+      jump_type = #{jumpType,jdbcType=TINYINT},
+      jump_content = #{jumpContent,jdbcType=TINYINT},
+      jump_url = #{jumpUrl,jdbcType=VARCHAR},
+      `order` = #{order,jdbcType=TINYINT},
+      `status` = #{status,jdbcType=TINYINT},
+      time_start = #{timeStart,jdbcType=INTEGER},
+      time_end = #{timeEnd,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=INTEGER},
+      add_admin = #{addAdmin,jdbcType=INTEGER},
+      thumb = #{thumb,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

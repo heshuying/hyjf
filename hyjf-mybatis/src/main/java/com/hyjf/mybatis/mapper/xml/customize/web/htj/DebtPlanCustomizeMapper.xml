@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.web.htj.DebtPlanCustomizeMapper">
+
+	 <sql id="Where_Clause">
+		<where>
+			dp.debt_plan_status <![CDATA[<>]]> 0
+			AND dp.debt_plan_status <![CDATA[<>]]> 1
+			AND dp.debt_plan_status <![CDATA[<>]]> 2
+			AND dp.debt_plan_status <![CDATA[<>]]> 12
+			AND (dp.show_status is NULL  or dp.show_status=0)
+		</where>
+	</sql>
+	<resultMap id="DebtPlanMap" type="com.hyjf.mybatis.model.customize.web.htj.DebtPlanCustomize">
+		<id column="plan_nid" property="planNid" jdbcType="VARCHAR" />
+		<result column="plan_name" property="planName" jdbcType="VARCHAR" />
+		<result column="plan_apr" property="planApr" jdbcType="VARCHAR" />
+		<result column="plan_period" property="planPeriod" jdbcType="VARCHAR" />
+		<result column="plan_account" property="planAccount" jdbcType="VARCHAR" />
+		<result column="plan_schedule" property="planSchedule" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="buy_begin_time" property="buyBeginTime" jdbcType="VARCHAR" />
+		<result column="coupon_config" property="couponConfig" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectDebtPlanList" resultMap="DebtPlanMap" parameterType="Map">
+		SELECT
+			dp.debt_plan_nid AS plan_nid,
+			dp.debt_plan_name AS plan_name,
+			dp.expect_apr AS plan_apr,
+			dp.debt_lock_period AS plan_period,
+			FORMAT(dp.debt_plan_money , 2)  AS plan_account,
+			dp.debt_plan_account_scale AS plan_schedule,
+			CASE
+			WHEN dp.debt_plan_status = 3 THEN
+				0
+			WHEN dp.debt_plan_status = 4 THEN
+				1
+			WHEN dp.debt_plan_status = 5
+				OR dp.debt_plan_status = 6
+				OR dp.debt_plan_status = 7
+				OR dp.debt_plan_status = 8
+				OR dp.debt_plan_status = 9
+				OR dp.debt_plan_status = 10 THEN
+				2
+			ELSE
+				3
+			END AS `status`,
+			dp.buy_begin_time,
+			dp.coupon_config coupon_config
+		FROM
+			hyjf_debt_plan dp
+		<include refid="Where_Clause" />
+		ORDER BY
+			dp.debt_plan_status ASC,
+			CASE
+				WHEN dp.debt_plan_status = 3 AND dp.buy_begin_time IS NOT NULL AND LENGTH(trim(dp.buy_begin_time)) <![CDATA[>]]> 1 
+				THEN
+					dp.buy_begin_time
+			END ASC,
+			CASE
+				WHEN dp.debt_plan_status = 4
+				THEN dp.debt_plan_account_scale 
+			END DESC,
+			CASE
+				WHEN dp.debt_plan_status = 5
+				THEN dp.plan_lock_time  
+			END DESC,
+			CASE
+				WHEN dp.debt_plan_status = 6
+				THEN dp.plan_lock_time
+			END DESC,
+			CASE
+				WHEN dp.debt_plan_status = 7
+				THEN dp.plan_lock_time
+			END DESC,
+			CASE
+				WHEN dp.debt_plan_status = 8
+				THEN dp.plan_lock_time
+			END DESC,
+			CASE
+				WHEN dp.debt_plan_status = 9
+				THEN dp.plan_lock_time
+			END DESC,
+			CASE
+				WHEN dp.debt_plan_status = 10
+				THEN dp.plan_lock_time
+			END DESC,
+			CASE
+				WHEN dp.debt_plan_status = 11
+				THEN dp.plan_lock_time
+			END DESC
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	
+	<select id="queryDebtPlanRecordTotal" resultType="java.lang.Integer" parameterType="Map">
+		SELECT
+			COUNT(dp.debt_plan_nid) 
+		FROM
+			hyjf_debt_plan dp
+		<include refid="Where_Clause" />
+	</select>
+
+	
+	<resultMap id="DebtPlanDetailMap" type="com.hyjf.mybatis.model.customize.web.htj.DebtPlanDetailCustomize">
+		<id column="plan_nid" property="planNid" jdbcType="VARCHAR" />
+		<result column="plan_name" property="planName" jdbcType="VARCHAR" />
+		<result column="plan_account" property="planAccount" jdbcType="VARCHAR" />
+		<result column="plan_apr" property="planApr" jdbcType="VARCHAR" />
+		<result column="plan_period" property="planPeriod" jdbcType="VARCHAR" />
+		<result column="plan_account_wait" property="planAccountWait" jdbcType="VARCHAR" />
+		<result column="debt_quit_period" property="debtQuitPeriod" jdbcType="VARCHAR" />
+		<result column="debt_plan_status" property="planStatus" jdbcType="VARCHAR" />
+		<result column="buy_begin_time_format" property="buyBeginTimeFormat" jdbcType="VARCHAR" />
+		<result column="buy_end_time_format" property="buyEndTimeFormat" jdbcType="VARCHAR" />
+		<result column="full_expire_time_format" property="fullExpireTimeFormat" jdbcType="VARCHAR" />
+		<result column="liquidate_fact_time_format" property="liquidateFactTimeFormat" jdbcType="VARCHAR" />
+		<result column="buy_begin_time" property="buyBeginTime" jdbcType="VARCHAR" />
+		<result column="timer" property="timer" jdbcType="VARCHAR" />
+		<result column="buy_end_time" property="buyEndTime" jdbcType="VARCHAR" />
+		<result column="fullExpireTime" property="fullExpireTime" jdbcType="VARCHAR" />
+		<result column="liquidateFactTime" property="liquidateFactTime" jdbcType="VARCHAR" />
+		<result column="coupon_config" property="couponConfig" jdbcType="VARCHAR" />
+		<result column="debt_min_investment" property="debtMinInvestment" jdbcType="VARCHAR" />
+		<result column="debt_investment_increment" property="debtInvestmentIncrement" jdbcType="VARCHAR" />
+		<result column="debt_max_investment" property="debtMaxInvestment" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="selectPlanLanLiquidationDetail" resultMap="DebtPlanDetailMap" parameterType="Map">
+		SELECT
+			dp.debt_plan_nid AS plan_nid,
+			FORMAT(dp.debt_plan_money/10000, 0) AS plan_account,
+			dp.expect_apr AS plan_apr,
+			dp.debt_lock_period AS plan_period,
+			dp.debt_plan_money_wait AS plan_account_wait,
+			dp.debt_quit_period,
+			dp.debt_plan_status,
+			IF(dp.buy_begin_time=0,'待定',FROM_UNIXTIME(
+				dp.buy_begin_time,
+				'%m月%d日 %H:%i'
+			)) buy_begin_time_format,
+			IF(dp.buy_end_time=0,'待定',FROM_UNIXTIME(
+				dp.buy_end_time,
+				'%m月%d日 %H:%i'
+			)) buy_end_time_format,
+			IF(dp.full_expire_time=0,'待定',FROM_UNIXTIME(
+				dp.full_expire_time,
+				'%m月%d日 %H:%i'
+			)) full_expire_time_format,
+			IF(dp.liquidate_fact_time=0,'待定',FROM_UNIXTIME(
+				dp.liquidate_fact_time,
+				'%Y年%m月%d日 %H:%i:%s'
+			)) liquidate_fact_time_format,
+			FROM_UNIXTIME(
+				dp.buy_begin_time,
+				'%Y-%m-%d %H:%i:%s'
+			) AS buy_begin_time,
+			FROM_UNIXTIME(
+				dp.buy_end_time,
+				'%Y-%m-%d %H:%i:%s'
+			) AS buy_end_time,
+			FROM_UNIXTIME(
+				dp.full_expire_time,
+				'%Y-%m-%d %H:%i:%s'
+			) AS fullExpireTime,
+			FROM_UNIXTIME(
+				dp.liquidate_fact_time,
+				'%Y-%m-%d %H:%i:%s'
+			) AS liquidateFactTime
+			
+		FROM
+			hyjf_debt_plan dp
+		WHERE
+			dp.debt_plan_nid = #{planNid,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectDebtPlanDetail" resultMap="DebtPlanDetailMap" parameterType="Map">
+		SELECT
+			dp.debt_plan_nid AS plan_nid,
+			dp.debt_plan_name AS plan_name,
+			dp.debt_plan_money AS plan_account,
+			dp.expect_apr AS plan_apr,
+			dp.debt_lock_period AS plan_period,
+			dp.debt_plan_money_wait AS plan_account_wait,
+			dp.debt_quit_period,
+			
+			CASE
+			WHEN dp.debt_plan_status = 3 THEN
+				0
+			WHEN dp.debt_plan_status = 4 THEN
+				1
+			WHEN dp.debt_plan_status = 5
+				OR dp.debt_plan_status = 6
+				OR dp.debt_plan_status = 7
+				OR dp.debt_plan_status = 8
+				OR dp.debt_plan_status = 9
+				OR dp.debt_plan_status = 10 THEN
+				2
+			ELSE
+				3
+			END AS `debt_plan_status`,
+			
+			IF(dp.buy_begin_time=0,'待定',FROM_UNIXTIME(
+				dp.buy_begin_time,
+				'%m月%d日 %H:%i'
+			)) buy_begin_time_format,
+			IF(dp.buy_end_time=0,'待定',FROM_UNIXTIME(
+				dp.buy_end_time,
+				'%m月%d日 %H:%i'
+			)) buy_end_time_format,
+			IF(dp.full_expire_time=0,'待定',FROM_UNIXTIME(
+				dp.full_expire_time,
+				'%m月%d日 %H:%i'
+			)) full_expire_time_format,
+			IF(dp.liquidate_fact_time=0,'待定',FROM_UNIXTIME(
+				dp.liquidate_fact_time,
+				'%Y年%m月%d日'
+			)) liquidate_fact_time_format,
+			FROM_UNIXTIME(
+				dp.buy_begin_time,
+				'%Y-%m-%d %H:%i:%s'
+			) AS buy_begin_time,
+			dp.buy_begin_time AS timer,
+			FROM_UNIXTIME(
+				dp.buy_end_time,
+				'%Y-%m-%d %H:%i:%s'
+			) AS buy_end_time,
+			FROM_UNIXTIME(
+				dp.full_expire_time,
+				'%Y-%m-%d %H:%i:%s'
+			) AS fullExpireTime,
+			FROM_UNIXTIME(
+				dp.liquidate_fact_time,
+				'%Y-%m-%d %H:%i:%s'
+			) AS liquidateFactTime,
+			dp.coupon_config coupon_config,
+			dp.debt_min_investment debt_min_investment,
+			dp.debt_investment_increment debt_investment_increment,
+			dp.debt_max_investment debt_max_investment
+		FROM
+			hyjf_debt_plan dp
+		WHERE
+			dp.debt_plan_nid = #{planNid,jdbcType=VARCHAR}
+	</select>
+	 <resultMap id="DebtPlanIntroduceMap" type="com.hyjf.mybatis.model.customize.web.htj.DebtPlanIntroduceCustomize">
+		<id column="plan_name" property="planName" jdbcType="VARCHAR" />
+		<result column="plan_concept" property="planConcept" jdbcType="LONGVARCHAR" />
+		<result column="plan_principle" property="planTheory" jdbcType="LONGVARCHAR" />
+		<result column="debt_min_investment" property="planAccedeMinAccount" jdbcType="VARCHAR" />
+		<result column="debt_investment_increment" property="planAccedeIncreaseAccount" jdbcType="VARCHAR" />
+		<result column="debt_max_investment" property="planAccedeMaxAccount" jdbcType="VARCHAR" />
+		<result column="debt_lock_period" property="planLockPeriod" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectDebtPlanIntroduce" resultMap="DebtPlanIntroduceMap" parameterType="Map">
+		SELECT
+			dp.debt_plan_name AS plan_name,
+			dp.plan_concept ,
+			dp.plan_principle,
+			dp.debt_min_investment,
+			dp.debt_investment_increment,
+			dp.debt_max_investment,
+			dp.debt_lock_period
+		FROM
+			hyjf_debt_plan dp
+		WHERE
+			dp.debt_plan_nid = #{planNid,jdbcType=VARCHAR}
+	</select>
+		
+	<resultMap id="DebtPlanRiskControlMap" type="com.hyjf.mybatis.model.customize.web.htj.DebtPlanRiskControlCustomize">
+		<result column="safeguard_measures" property="controlMeasures" jdbcType="LONGVARCHAR" />
+		<result column="margin_measures" property="controlBail" jdbcType="LONGVARCHAR" />
+	</resultMap>
+	<select id="selectDebtPlanRiskControl" resultMap="DebtPlanRiskControlMap" parameterType="Map">
+		SELECT
+			dp.safeguard_measures,
+			dp.margin_measures
+		FROM
+			hyjf_debt_plan dp
+		WHERE
+			dp.debt_plan_nid = #{planNid,jdbcType=VARCHAR}
+	</select>
+	
+	<resultMap id="DebtPlanQuestionMap" type="com.hyjf.mybatis.model.customize.web.htj.DebtPlanQuestionCustomize">
+		<result column="remark" property="question" jdbcType="LONGVARCHAR" />
+	</resultMap>
+	<select id="selectDebtPlanQuestion" resultMap="DebtPlanQuestionMap" parameterType="Map">
+		SELECT
+			hdpc.remark
+		FROM
+			hyjf_debt_plan dp
+			left Join  hyjf_debt_plan_config hdpc on hdpc.debt_plan_type=dp.debt_plan_type
+		WHERE
+			dp.debt_plan_nid = #{planNid,jdbcType=VARCHAR}
+	</select>
+	
+
+	<resultMap id="DebtPlanAccedeMap" type="com.hyjf.mybatis.model.customize.web.htj.DebtPlanAccedeCustomize">
+		<id column="user_id" property="userId" jdbcType="VARCHAR" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="accede_account" property="accedeAccount" jdbcType="VARCHAR" />
+		<result column="create_time" property="accedeTime" jdbcType="VARCHAR" />
+		<result column="client" property="client" jdbcType="VARCHAR" />
+		<result column="vip_id" property="vipId" jdbcType="VARCHAR" />
+		<result column="vip_value" property="vipLevel" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectPlanAccedeList" resultMap="DebtPlanAccedeMap" parameterType="Map">
+			SELECT
+				dpa.user_id,
+				CASE WHEN LENGTH(dpa.user_name)<![CDATA[>]]>1
+					THEN 
+					CONCAT(SUBSTR(dpa.user_name,1,1),'**')
+					ELSE
+					dpa.user_name
+					END user_name,
+				dpa.accede_account,
+				FROM_UNIXTIME(
+				dpa.create_time,
+				'%Y-%m-%d %H:%i:%s'
+				) AS create_time, 
+				IFNULL(hui.vip_id,0) vip_id,
+				hui.vip_value,
+				hpn.`name` client
+			FROM
+				hyjf_debt_plan_accede dpa
+			LEFT JOIN huiyingdai_users_info hui ON hui.user_id = dpa.user_id
+			LEFT JOIN hyjf_param_name hpn ON dpa.client=hpn.name_cd AND hpn.name_class='CLIENT'
+			WHERE dpa.plan_nid=#{planNid}
+		ORDER BY
+			dpa.create_time DESC
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	<select id="countPlanAccedeRecordTotal" resultType="java.lang.Integer" parameterType="Map">
+		SELECT
+			COUNT(1) 
+		FROM
+			hyjf_debt_plan_accede 
+		WHERE plan_nid=#{planNid}
+	</select>
+	<select id="selectPlanAccedeSum" resultType="java.lang.Long" parameterType="Map">
+		SELECT
+			sum(accede_account) accedeSum
+		FROM
+			hyjf_debt_plan_accede 
+		WHERE plan_nid=#{planNid}
+	</select>
+	<resultMap id="PlanBorrowMap" type="com.hyjf.mybatis.model.customize.web.htj.DebtPlanBorrowCustomize">
+		<id column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<result column="name" property="borrowStyleName" jdbcType="VARCHAR" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectPlanBorrowList" resultMap="PlanBorrowMap" parameterType="Map">
+			SELECT
+				db.borrow_nid,
+				db.borrow_apr,
+				CASE WHEN db.borrow_style = 'endday' THEN CONCAT(db.borrow_period, '天') ELSE CONCAT(db.borrow_period, '个月') END borrow_period,
+				hbs.name
+			FROM
+				hyjf_debt_plan_borrow dpb
+			LEFT JOIN hyjf_debt_borrow db ON db.borrow_nid = dpb.borrow_nid
+			LEFT JOIN huiyingdai_borrow_style  hbs ON hbs.nid=db.borrow_style
+			WHERE dpb.debt_plan_nid=#{planNid}
+			AND dpb.del_flag=0
+			ORDER BY
+			db.borrow_apr DESC
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	<select id="countPlanBorrowRecordTotal" resultType="java.lang.Integer" parameterType="Map">
+			SELECT
+				count(1)
+			FROM
+				hyjf_debt_plan_borrow dpb
+			WHERE dpb.debt_plan_nid=#{planNid} AND dpb.del_flag=0
+	</select> 
+	<select id="selectPlanBorrowListLast" resultMap="PlanBorrowMap" parameterType="Map">
+			SELECT
+				db.borrow_nid,
+				db.borrow_apr,
+				CASE WHEN db.borrow_style = 'endday' THEN CONCAT(db.borrow_period, '天') ELSE CONCAT(db.borrow_period, '个月') END borrow_period,
+				hbs.name
+			FROM
+				hyjf_debt_plan_borrow dpb
+			LEFT JOIN hyjf_debt_borrow db ON db.borrow_nid = dpb.borrow_nid
+			LEFT JOIN huiyingdai_borrow_style  hbs ON hbs.nid=db.borrow_style
+			WHERE dpb.debt_plan_nid=#{planNid}
+			AND dpb.del_flag=0
+			AND db.repay_last_time <![CDATA[>]]> #{lastPlanLiqTime}
+			ORDER BY
+			db.borrow_apr DESC
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	<select id="countPlanBorrowRecordTotalLast" resultType="java.lang.Integer" parameterType="Map">
+			SELECT
+				count(1)
+			FROM
+				hyjf_debt_plan_borrow dpb
+				LEFT JOIN hyjf_debt_borrow db ON db.borrow_nid = dpb.borrow_nid
+			WHERE dpb.debt_plan_nid=#{planNid}
+			AND dpb.del_flag=0
+			AND db.repay_last_time <![CDATA[>]]> #{lastPlanLiqTime}
+	</select> 
+	
+	<select id="selectPlanBorrowListCredit" resultMap="PlanBorrowMap" parameterType="Map">
+		(SELECT
+				dpb.borrow_nid,
+					case when dpb.type=0
+				then (SELECT borrow_apr FROM  hyjf_debt_borrow WHERE borrow_nid = dpb.borrow_nid)
+					ELSE
+						(SELECT actual_apr FROM  hyjf_debt_credit WHERE credit_nid = dpb.borrow_nid)
+					END
+					borrow_apr,
+					case when dpb.type=0
+				then (SELECT CASE WHEN borrow_style = 'endday' THEN CONCAT(borrow_period, '天') ELSE CONCAT(borrow_period, '个月') END FROM  hyjf_debt_borrow WHERE borrow_nid = dpb.borrow_nid)
+					ELSE
+						(SELECT CONCAT(credit_term, '天') FROM  hyjf_debt_credit WHERE credit_nid = dpb.borrow_nid)
+					END
+				 borrow_period,
+					case when dpb.type=0
+				then (SELECT hbs.name FROM  hyjf_debt_borrow b LEFT JOIN huiyingdai_borrow_style  hbs ON hbs.nid=b.borrow_style WHERE borrow_nid = dpb.borrow_nid)
+					ELSE
+						(SELECT hbs.name FROM  hyjf_debt_credit hbc LEFT JOIN  hyjf_debt_borrow hb ON hbc.borrow_nid=hb.borrow_nid LEFT JOIN huiyingdai_borrow_style  hbs ON hbs.nid=hb.borrow_style WHERE hbc.credit_nid = dpb.borrow_nid)
+					END name,
+				case when dpb.type=0
+				then 0 
+				else 1
+				end  type
+			FROM
+				hyjf_debt_plan_borrow dpb
+			WHERE dpb.debt_plan_nid=#{planNid}
+			ORDER BY
+			db.borrow_apr DESC)
+UNION ALL 
+(SELECT
+				hdc.credit_nid borrow_nid,
+				hdc.actual_apr borrow_apr,
+				CONCAT(hdc.credit_term, '天') borrow_period,
+				hbs.name,
+				1 type
+			FROM
+				hyjf_debt_credit hdc
+			LEFT JOIN hyjf_debt_borrow db ON db.borrow_nid = hdc.borrow_nid
+			LEFT JOIN huiyingdai_borrow_style  hbs ON hbs.nid=db.borrow_style
+			WHERE ${isShow}=1
+				  AND hdc.plan_nid <![CDATA[<>]]> #{planNid}
+				  AND del_flag=0
+				  AND credit_status=0
+				  AND hdc.credit_nid not in 
+								  (SELECT
+										borrow_nid
+								FROM
+									hyjf_debt_plan_borrow 
+								WHERE debt_plan_nid=#{planNid} AND type=1)
+				 AND hdc.actual_apr <![CDATA[>=]]> #{apr}
+			ORDER BY
+			hdc.actual_apr DESC LIMIT #{TopCount})
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	<select id="countPlanBorrowRecordTotalCredit" resultType="java.lang.Integer" parameterType="Map">
+			SELECT (SELECT
+							count(1)
+						FROM
+							hyjf_debt_plan_borrow dpb
+						WHERE dpb.debt_plan_nid=#{planNid}
+					)+
+			(SELECT
+						count(1)
+						FROM
+							hyjf_debt_credit hdc
+						WHERE  ${isShow}=1
+						  AND hdc.plan_nid <![CDATA[<>]]> #{planNid}
+						  AND del_flag=0
+						  AND credit_status=0
+						  AND hdc.credit_nid not in 
+										  (SELECT
+												borrow_nid
+										FROM
+											hyjf_debt_plan_borrow 
+										WHERE debt_plan_nid=#{planNid} AND type=1)
+						 AND hdc.actual_apr <![CDATA[>=]]> #{apr}
+						LIMIT #{TopCount}) 
+			from DUAL
+	</select> 
+	
+	<update id="updateByDebtPlanId"  parameterType="Map">
+		UPDATE hyjf_debt_plan
+		SET debt_plan_money_yes = debt_plan_money_yes + #{account},
+			debt_plan_money_wait=debt_plan_money_wait - #{account},
+			debt_plan_account_scale=TRUNCATE(((debt_plan_money_yes)/debt_plan_money)*100,2),
+		accede_times=IFNULL(accede_times,0)+1,
+		debt_plan_balance=debt_plan_balance+#{account}
+		WHERE id=#{planId}
+	</update> 
+	
+	<update id="updateOfFullPlan"  parameterType="Map">
+		UPDATE hyjf_debt_plan hdp
+		SET hdp.full_expire_time=UNIX_TIMESTAMP(NOW()),
+				hdp.debt_plan_status=5,
+				hdp.liquidate_should_time=UNIX_TIMESTAMP(DATE_ADD(DATE_ADD(NOW(),INTERVAL hdp.debt_lock_period MONTH),INTERVAL 1 DAY)),
+				hdp.plan_lock_time=UNIX_TIMESTAMP(NOW()),
+				hdp.repay_time_last=UNIX_TIMESTAMP(DATE_ADD(DATE_ADD(NOW(),INTERVAL hdp.debt_lock_period MONTH),INTERVAL hdp.debt_quit_period DAY)),
+				hdp.commission_status=0,
+				hdp.repay_account_all=(SELECT SUM(repay_account) FROM hyjf_debt_plan_accede WHERE plan_nid=hdp.debt_plan_nid),
+				hdp.repay_account_interest=(SELECT SUM(repay_interest) FROM hyjf_debt_plan_accede WHERE plan_nid=hdp.debt_plan_nid),
+				hdp.repay_account_capital=(SELECT SUM(repay_capital) FROM hyjf_debt_plan_accede WHERE plan_nid=hdp.debt_plan_nid),
+				hdp.repay_account_wait=(SELECT SUM(repay_account_wait) FROM hyjf_debt_plan_accede WHERE plan_nid=hdp.debt_plan_nid),
+				hdp.repay_account_interest_wait=(SELECT SUM(repay_interest_wait) FROM hyjf_debt_plan_accede WHERE plan_nid=hdp.debt_plan_nid),
+				hdp.repay_account_capital_wait=(SELECT SUM(repay_capital_wait) FROM hyjf_debt_plan_accede WHERE plan_nid=hdp.debt_plan_nid)
+		WHERE id=#{planId}
+	</update>
+	
+	<select id="searchInvestData" resultMap="InvestData" >
+		SELECT
+			count(*) AS total_record,
+			FORMAT(sum(dpa.accede_account) , 2) AS total_account, 
+			FORMAT(sum(dpa.repay_interest_yes) , 2) AS total_interest
+		FROM
+			hyjf_debt_plan_accede dpa
+	</select>						
+	<resultMap id="InvestData" type="com.hyjf.mybatis.model.customize.web.htj.DebtPlanInvestDataCustomize">
+		<result column="total_record" property="totalJoinNum" jdbcType="VARCHAR" />
+		<result column="total_account" property="totalAmount" jdbcType="VARCHAR" />
+		<result column="total_interest" property="totalEarnAmount" jdbcType="VARCHAR" />
+	</resultMap> 
+	
+</mapper>

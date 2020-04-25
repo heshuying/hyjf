@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.ListActServiceCustomizeMapper">
+	<resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.ActdecListedFour" >
+	    <id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="user_id" property="userId" jdbcType="INTEGER" />
+	    <result column="user_mobile" property="userMobile" jdbcType="CHAR" />
+	    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+	    <result column="user_ture_name" property="userTureName" jdbcType="VARCHAR" />
+	    <result column="cover_user_id" property="coverUserId" jdbcType="INTEGER" />
+	    <result column="cover_user_mobile" property="coverUserMobile" jdbcType="VARCHAR" />
+	    <result column="cover_user_name" property="coverUserName" jdbcType="VARCHAR" />
+	    <result column="cover_user_ture_name" property="coverUserTureName" jdbcType="VARCHAR" />
+	    <result column="cumulative" property="cumulative" jdbcType="INTEGER" />
+	    <result column="whether" property="whether" jdbcType="TINYINT" />
+	    <result column="registration_time" property="registrationTime" jdbcType="INTEGER" />
+	    <result column="open_time" property="openTime" jdbcType="INTEGER" />
+	    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+	    <result column="create_time" property="createTime" jdbcType="INTEGER" />
+	    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+	    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+	    <result column="del_flg" property="delFlg" jdbcType="TINYINT" />
+  	</resultMap>
+	<!-- 根据用户id获取投资金额 -->
+	<select id="selectActdecListed" resultMap="BaseResultMap">
+		SELECT
+			cover_user_name AS cover_user_name,
+			sum(cumulative) AS cumulative 
+		FROM
+			hyjf_actdec_listed_four 
+		WHERE
+			cover_user_name IS NOT NULL 
+		GROUP BY
+			cover_user_name 
+		ORDER BY
+			sum(cumulative) DESC,max(create_time)
+			LIMIT 100
+	</select>
+	<select id="selectActdecListedTwo" resultMap="BaseResultMap">
+			SELECT
+			cover_user_name as cover_user_name,
+			count(user_id) as user_id
+		FROM
+			hyjf_actdec_listed_four where cover_user_name is not null 
+		GROUP BY
+			cover_user_name
+		order by
+			count(user_id) DESC,max(create_time)
+		LIMIT 100
+		
+	</select>
+
+</mapper>

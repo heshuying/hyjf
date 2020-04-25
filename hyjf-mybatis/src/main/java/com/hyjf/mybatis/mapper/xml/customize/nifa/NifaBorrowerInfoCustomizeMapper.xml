@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.nifa.NifaBorrowerInfoCustomizeMapper" >
+    <select id="selectBorrowUsersCount" resultType="java.lang.Integer" parameterType="java.lang.String">
+        SELECT
+            count(1)
+        FROM
+            huiyingdai_borrow_users hbu
+        INNER JOIN huiyingdai_borrow hb ON hb.borrow_nid = hbu.borrow_nid
+        WHERE
+            hb.`status` IN (2, 3, 4, 5)
+        AND hbu.username = #{username}
+    </select>
+
+    <select id="selectBorrowManInfoCount" resultType="java.lang.Integer" parameterType="java.lang.String">
+        SELECT
+            count(1)
+        FROM
+            huiyingdai_borrow_maninfo hbm
+        INNER JOIN huiyingdai_borrow hb ON hb.borrow_nid = hbm.borrow_nid
+        WHERE
+            hb.`status` IN (2, 3, 4, 5)
+        AND hbm.`name` = #{username}
+    </select>
+
+    <select id="selectBankFromAccountBank" resultType="java.lang.String" parameterType="java.lang.Integer">
+        SELECT
+            hydbc.`name`
+        FROM
+            huiyingdai_users hydu
+        INNER JOIN huiyingdai_account_bank hyduab ON hydu.user_id = hyduab.user_id
+        LEFT JOIN huiyingdai_bank_config hydbc ON hydbc.`code` = hyduab.bank
+        WHERE
+            hydu.user_id = #{userId}
+    </select>
+
+    <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.customize.nifa.NifaTenderUserInfoCustomize" >
+        <result column="user_id" property="userId" jdbcType="INTEGER" />
+        <result column="loan_fee" property="loanFee" jdbcType="DECIMAL" />
+        <result column="account" property="account" jdbcType="DECIMAL" />
+        <result column="idcard" property="idcard" jdbcType="VARCHAR" />
+    </resultMap>
+    <select id="selectTenderUserInfoByBorrowNid" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT
+            hbt.user_id,
+            hbt.loan_fee,
+            hbt.account,
+            hui.idcard
+        FROM
+            huiyingdai_borrow_tender hbt
+        INNER JOIN huiyingdai_users_info hui ON hbt.user_id = hui.user_id
+        WHERE
+            hbt.borrow_nid = #{borrowNid}
+    </select>
+</mapper>

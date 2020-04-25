@@ -1,0 +1,2403 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.PlanLockCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+			<if test="planNidSrch != null and planNidSrch != ''">
+				AND dpa.plan_nid LIKE CONCAT('%', #{planNidSrch}, '%') 
+			</if>
+			<if test="userId != null and userId != ''">
+				AND dpa.user_id = #{userId}
+			</if>
+			<if test="accedeOrderId != null and accedeOrderId != ''">
+				AND dpa.accede_order_id LIKE CONCAT('%', #{accedeOrderId}, '%')  
+			</if>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND dpa.accede_order_id LIKE CONCAT('%', #{planOrderId}, '%')   
+			</if>
+			<if test="userName != null and userName != ''">
+				AND dpa.user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="repayStatus != null and repayStatus != '1' and repayStatus != '' and repayStatus != '20'">
+				AND dpa.status = #{repayStatus} AND dp.debt_plan_status in (5,6,7,8,9,10,11,12)
+			</if>
+			<if test="repayStatus != null and repayStatus == '1'">
+				AND dpa.status in (0,1,2,3) AND dp.debt_plan_status in (5,6,7,8,9,10,11,12)
+			</if>
+			<if test="repayStatus != null and repayStatus == '20'">
+				AND dp.debt_plan_status in (5,6,7,8,9,10,11,12)
+			</if>
+			<!-- 计划状态 0 发起中；1 待审核；2审核不通过；3待开放；4募集中；5锁定中；6清算中；7清算完成，8未还款，9还款中，10还款完成  -->
+			<if test="status != null and status != 5 and status != '5' and status != '30'  and status != 30">
+				AND dp.debt_plan_status = #{status}
+			</if>
+			<if test="status != null and (status == 5 or status == '5')">
+				AND dp.debt_plan_status in (5,6,7,8,9,10)
+			</if>
+			<if test="status != null and ( status == 30 or status == '30' )">
+				AND dp.debt_plan_status in (7,8,9,10,11)
+			</if>
+			<if test="planWaitMoneyMin != null and planWaitMoneyMin != ''">
+				AND dpa.accede_account <![CDATA[>]]> #{planWaitMoneyMin}
+			</if>
+			<if test="planWaitMoneyMax != null and planWaitMoneyMax != ''">
+				AND dpa.accede_account <![CDATA[<=]]> #{planWaitMoneyMax}
+			</if>
+			<if test="joinTimeStart != null and joinTimeStart != ''">
+				AND FROM_UNIXTIME( dpa.create_time, '%Y-%m-%d' ) <![CDATA[>=]]>  #{joinTimeStart}
+			</if>
+			<if test="joinTimeEnd != null and joinTimeEnd != ''">
+				AND FROM_UNIXTIME( dpa.create_time, '%Y-%m-%d' ) <![CDATA[<=]]>  #{joinTimeEnd}
+			</if>
+			<if test="liquidateFactTimeStart != null and liquidateFactTimeStart != ''">
+				AND FROM_UNIXTIME( dp.liquidate_fact_time, '%Y-%m-%d' ) <![CDATA[>=]]>  #{liquidateFactTimeStart}
+			</if>
+			<if test="liquidateFactTimeEnd != null and liquidateFactTimeEnd != ''">
+				AND FROM_UNIXTIME( dp.liquidate_fact_time, '%Y-%m-%d' ) <![CDATA[<=]]>  #{liquidateFactTimeEnd}
+			</if>
+			<if test="liquidateShouldTime != null and liquidateShouldTime != ''">
+				AND FROM_UNIXTIME( dp.liquidate_should_time, '%Y-%m-%d' ) <![CDATA[>=]]>  #{liquidateShouldTime}
+			</if>
+			<if test="liquidateShouldTimeEnd != null and liquidateShouldTimeEnd != ''">
+				AND FROM_UNIXTIME( dp.liquidate_should_time, '%Y-%m-%d' ) <![CDATA[<=]]>  #{liquidateShouldTimeEnd}
+			</if>
+			<if test="repayTimeStart != null and repayTimeStart != ''">
+				AND DATE_FORMAT( DATE_ADD( FROM_UNIXTIME( dp.liquidate_should_time, '%Y-%m-%d' ),INTERVAL dp.debt_quit_period-1 DAY ),'%Y-%m-%d') <![CDATA[>=]]>  #{repayTimeStart}
+			</if>
+			<if test="repayTimeEnd != null and repayTimeEnd != ''">
+				AND DATE_FORMAT( DATE_ADD( FROM_UNIXTIME( dp.liquidate_should_time, '%Y-%m-%d' ),INTERVAL dp.debt_quit_period-1 DAY ),'%Y-%m-%d') <![CDATA[<=]]>  #{repayTimeEnd}
+			</if>
+		</where>
+	</sql>
+	
+	<sql id="Where_Clause_Invest">
+		<where>
+			AND  hdd.status=1
+			<if test="planNidSrch != null and planNidSrch != ''">
+				AND hdd.plan_nid = #{planNidSrch}
+			</if>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND hdd.plan_order_id LIKE CONCAT('%', #{planOrderId}, '%')
+			</if>
+			<if test="userName != null and userName != ''">
+				 AND hdd.user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="repayType != null and repayType != ''">
+				AND hdd.borrow_style =#{repayType}
+			</if>
+		</where>
+	</sql>
+	<sql id="Where_Clause_Invest_NEW">
+		<where>
+			AND  hdd.status=1 AND   (hdd.repay_period=1  or (hdd.order_type=1 AND hdd.repay_period=(SELECT repay_period FROM hyjf_debt_detail WHERE order_id=hdd.order_id  and status=1 ORDER BY repay_period ASC LIMIT 1)))
+			<if test="planNidSrch != null and planNidSrch != ''">
+				AND hdd.plan_nid = #{planNidSrch}
+			</if>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND hdd.plan_order_id LIKE CONCAT('%', #{planOrderId}, '%')
+			</if>
+			<if test="userName != null and userName != ''">
+				 AND hdd.user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="repayType != null and repayType != ''">
+				AND hdd.borrow_style =#{repayType}
+			</if>
+		</where>
+	</sql>
+	<sql id="Where_Clause_Credit">
+		<where>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND  hdct.assign_plan_order_id LIKE CONCAT('%', #{planOrderId}, '%')
+			</if>
+			<if test="userName != null and userName != ''">
+				AND hdct.user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="repayType != null and repayType != ''">
+				AND hb.borrow_style =#{repayType}
+			</if>
+		</where>
+	</sql>
+	
+	<sql id="Where_Clause_Invest_Credit">
+		<where>
+					AND hdi.status=0
+			<if test="planNidSrch != null and planNidSrch != ''">
+				AND hdi.plan_nid LIKE CONCAT('%', #{planNidSrch}, '%')
+			</if>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND hdi.plan_order_id LIKE CONCAT('%', #{planOrderId}, '%')
+			</if>
+			<if test="orderId != null and orderId != ''">
+				AND hdi.order_id LIKE CONCAT('%', #{orderId}, '%')
+			</if>
+			<if test="userName != null and userName != ''">
+				 AND hdi.user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="borrowNid != null and borrowNid != ''">
+				 AND hdi.borrow_nid LIKE CONCAT('%', #{borrowNid}, '%')
+			</if>
+			<if test="projectType != null and projectType != ''">
+				AND hb.project_type =#{projectType}
+			</if>
+			<if test="investTimeStart != null and investTimeStart != ''">
+				AND FROM_UNIXTIME( hdi.create_time, '%Y-%m-%d' ) <![CDATA[>=]]>  #{investTimeStart}
+			</if>
+			<if test="investTimeEnd != null and investTimeEnd != ''">
+				AND FROM_UNIXTIME( hdi.create_time, '%Y-%m-%d' ) <![CDATA[<=]]>  #{investTimeEnd}
+			</if>
+		</where>
+	</sql>
+	<sql id="Where_Clause_Invest_Credit_NEW">
+		<where>
+			AND  hdd.status=1 AND   (hdd.repay_period=1  or (hdd.order_type=1 AND hdd.repay_period=(SELECT repay_period FROM hyjf_debt_detail WHERE order_id=hdd.order_id  and status=1 ORDER BY repay_period ASC LIMIT 1)))
+			<if test="planNidSrch != null and planNidSrch != ''">
+				AND hdd.plan_nid LIKE CONCAT('%', #{planNidSrch}, '%')
+			</if>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND hdd.plan_order_id LIKE CONCAT('%', #{planOrderId}, '%')
+			</if>
+			<if test="orderId != null and orderId != ''">
+				AND hdd.order_id LIKE CONCAT('%', #{orderId}, '%')
+			</if>
+			<if test="userName != null and userName != ''">
+				 AND hdd.user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="borrowNid != null and borrowNid != ''">
+				 AND hb.borrow_nid LIKE CONCAT('%', #{borrowNid}, '%')
+			</if>
+			<if test="projectType != null and projectType != ''">
+				AND hb.project_type =#{projectType}
+			</if>
+			<if test="investTimeStart != null and investTimeStart != ''">
+				AND FROM_UNIXTIME( hdd.create_time, '%Y-%m-%d' ) <![CDATA[>=]]>  #{investTimeStart}
+			</if>
+			<if test="investTimeEnd != null and investTimeEnd != ''">
+				AND FROM_UNIXTIME( hdd.create_time, '%Y-%m-%d' ) <![CDATA[<=]]>  #{investTimeEnd}
+			</if>
+		</where>
+	</sql>
+	<sql id="Where_Clause_Credit_Credit">
+		<where>
+					AND hdct.status=0
+			<if test="planNidSrch != null and planNidSrch != ''">
+				AND hdct.assign_plan_nid LIKE CONCAT('%', #{planNidSrch}, '%')
+			</if>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND  hdct.assign_plan_order_id LIKE CONCAT('%', #{planOrderId}, '%')
+			</if>
+			<if test="orderId != null and orderId != ''">
+				AND hdct.assign_order_id LIKE CONCAT('%', #{orderId}, '%')
+			</if>
+			<if test="userName != null and userName != ''">
+				AND hdct.user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="borrowNid != null and borrowNid != ''">
+				 AND hb.borrow_nid LIKE CONCAT('%', #{borrowNid}, '%')
+			</if>
+			<if test="projectType != null and projectType != ''">
+				AND hb.project_type =#{projectType}
+			</if>
+			<if test="investTimeStart != null and investTimeStart != ''">
+				AND FROM_UNIXTIME( hdct.create_time, '%Y-%m-%d' ) <![CDATA[>=]]>  #{investTimeStart}
+			</if>
+			<if test="investTimeEnd != null and investTimeEnd != ''">
+				AND FROM_UNIXTIME( hdct.create_time, '%Y-%m-%d' ) <![CDATA[<=]]>  #{investTimeEnd}
+			</if>
+		</where>
+	</sql>
+	
+	<select id="countPlanAccede" resultType="java.lang.Long" parameterType="com.hyjf.mybatis.model.customize.PlanCommonCustomize">
+	    SELECT SUM(record_count) FROM(
+		  SELECT
+		    COUNT(1) AS record_count
+		  FROM
+			hyjf_debt_plan_accede dpa
+			left join hyjf_debt_plan dp on dpa.plan_nid=dp.debt_plan_nid
+		<include refid="Where_Clause" />
+		union all
+		
+			SELECT
+				count(1) AS record_count
+			FROM
+				hyjf_borrow_tender_cpn cpn
+			INNER JOIN hyjf_debt_plan dp ON cpn.borrow_nid = dp.debt_plan_nid
+			LEFT JOIN hyjf_coupon_tender hct ON hct.order_id = cpn.nid
+			LEFT JOIN hyjf_coupon_user hcu ON hcu.id = hct.coupon_grant_id
+			LEFT JOIN hyjf_coupon_config hcc ON hcc.coupon_code = hcu.coupon_code
+			LEFT JOIN hyjf_coupon_recover hcr ON hcr.tender_id = cpn.nid
+		WHERE
+			cpn.tender_type = 2
+				<if test="userId != null and userId != ''">
+			AND cpn.user_id = #{userId}
+		</if>
+		<if test="planNidSrch != null and planNidSrch != ''">
+			AND dp.debt_plan_nid LIKE CONCAT('%', #{planNidSrch}, '%') 
+		</if>
+		<!-- 计划状态 0 发起中；1 待审核；2审核不通过；3待开放；4募集中；5锁定中；6清算中；7清算完成，8未还款，9还款中，10还款完成  -->
+		<if test="status != null and (status == 4 or status == '4')">
+			AND dp.debt_plan_status = #{status}
+		</if>
+		<if test="status != null and (status == 5 or status == '5')">
+			AND hcr.recover_status = 0
+		</if>
+		<if test="status != null and (status == 11 or status == '11')">
+			AND hcr.recover_status = 1
+		</if>
+
+			) TEMP_TABLE
+		
+	</select>
+	
+	<select id="countPlanAccedeForAdmin" resultType="java.lang.Long" parameterType="com.hyjf.mybatis.model.customize.PlanCommonCustomize">
+		  SELECT
+		    COUNT(1) AS record_count
+		  FROM
+			hyjf_debt_plan_accede dpa
+			left join hyjf_debt_plan dp on dpa.plan_nid=dp.debt_plan_nid
+		<include refid="Where_Clause" />
+	</select>
+	
+
+<select id="planLockSumMap" resultType="java.util.HashMap" parameterType="com.hyjf.mybatis.model.customize.PlanCommonCustomize">
+		  SELECT
+		    sum(dpa.accede_account) joinMoney,
+			sum(dpa.accede_balance) orderMoney,
+			sum(dpa.accede_frost) frostMoney,
+			sum(dpa.repay_interest_yes) ardMoney,
+			 sum(dpa.repay_capital) repayCapital,
+			 sum(dpa.repay_capital_yes) repayCapitalYes,
+			 sum(dpa.repay_interest) repayInterest,
+			 sum(dpa.repay_interest_wait) repayInterestWait,
+			 sum(dpa.repay_account) repayAccount, 
+			 sum(dpa.service_fee) serviceFeeRate,
+			 sum(dpa.repay_interest_yes) repayInterestFact,
+			sum(dpa.repay_account_yes) repayAccountFact
+		  FROM
+			hyjf_debt_plan_accede dpa
+			left join hyjf_debt_plan dp on dpa.plan_nid=dp.debt_plan_nid
+		<include refid="Where_Clause" />
+	</select>
+	<resultMap id="selectPlanListMap" type="com.hyjf.mybatis.model.customize.PlanLockCustomize">
+		<result column="liquidate_fact_time" property="liquidateFactTime" jdbcType="VARCHAR" />
+		<result column="liquidate_should_time" property="liquidateShouldTime" jdbcType="VARCHAR" />
+		<result column="repay_time" property="repayTime" jdbcType="VARCHAR" />
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="debt_plan_status" property="debtPlanStatus" jdbcType="VARCHAR" />
+		<result column="debt_lock_period" property="debtLockPeriod" jdbcType="VARCHAR" />
+		<result column="debt_quit_period" property="debtQuitPeriod" jdbcType="VARCHAR" />
+		<result column="expect_apr" property="expectApr" jdbcType="VARCHAR" />
+		<result column="accede_order_id" property="accedeOrderId" jdbcType="VARCHAR" />
+		<result column="freeze_order_id" property="freezeOrderId" jdbcType="VARCHAR" />
+		<result column="debt_plan_nid" property="debtPlanNid" jdbcType="VARCHAR" />
+		<result column="debt_plan_name" property="debtPlanName" jdbcType="VARCHAR" />
+		<result column="user_id" property="userId" jdbcType="VARCHAR" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="accede_account" property="accedeAccount" jdbcType="VARCHAR" />
+		<result column="accede_balance" property="accedeBalance" jdbcType="VARCHAR" />
+		<result column="accede_frost" property="accedeFrost" jdbcType="VARCHAR" />
+		<!-- 已派息  -->
+		<result column="money" property="money" jdbcType="VARCHAR" />
+		<result column="factApr" property="factApr" jdbcType="VARCHAR" />
+		<result column="cycle_times" property="cycleTimes" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="create_time_day" property="createTimeDay" jdbcType="VARCHAR" />
+		<result column="create_time_fen" property="createTimeFen" jdbcType="VARCHAR" />
+		<result column="repay_account" property="repayAccount" jdbcType="VARCHAR" />
+		<result column="repay_account_wait" property="repayAccountWait" jdbcType="VARCHAR" />
+		<result column="repay_account_yes" property="repayAccountYes" jdbcType="VARCHAR" />
+		<result column="repay_time" property="repayTime" jdbcType="VARCHAR" />
+		<result column="repay_capital" property="repayCapital" jdbcType="VARCHAR" />
+		<result column="repay_capital_yes" property="repayCapitalYes" jdbcType="VARCHAR" />
+		<result column="repay_interest" property="repayInterest" jdbcType="VARCHAR" />
+		<result column="repay_interest_wait" property="repayInterestWait" jdbcType="VARCHAR" />
+		<result column="repay_interest_yes" property="repayInterestYes" jdbcType="VARCHAR" />
+		<result column="repay_account_fact" property="repayAccountFact" jdbcType="VARCHAR" />
+		<result column="repay_interest_fact" property="repayInterestFact" jdbcType="VARCHAR" />
+		<result column="service_fee" property="serviceFee" jdbcType="VARCHAR" />
+		<result column="service_fee_rate" property="serviceFeeRate" jdbcType="VARCHAR" />
+		<result column="expire_fair_value" property="expireFairValue" jdbcType="VARCHAR" />
+		<result column="liquidates_repay_frost" property="liquidatesRepayFrost" jdbcType="VARCHAR" />
+		<result column="last_repay_time" property="lastRepayTime" jdbcType="VARCHAR" />
+		<result column="tender_type" property="tenderType" jdbcType="VARCHAR" />
+		<result column="coupon_type" property="couponType" jdbcType="VARCHAR" />
+		<result column="coupon_user_code" property="couponUserCode" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectPlanAccedeList" resultMap="selectPlanListMap" parameterType="com.hyjf.mybatis.model.customize.PlanCommonCustomize">
+		SELECT
+			case when dp.liquidate_fact_time=0 then 0 else FROM_UNIXTIME(
+				dp.liquidate_fact_time,
+				'%Y-%m-%d'
+			) end liquidate_fact_time,
+			case when dp.liquidate_should_time=0 then 0 else  FROM_UNIXTIME(
+				dp.liquidate_should_time,
+				'%Y-%m-%d'
+			) end liquidate_should_time,
+			FROM_UNIXTIME(
+				dp.repay_time,
+				'%Y-%m-%d'
+			) repay_time,
+			DATE_FORMAT(
+			DATE_ADD(
+			FROM_UNIXTIME(
+				dp.liquidate_should_time,
+				'%Y-%m-%d'
+					),INTERVAL dp.debt_quit_period-1 DAY
+					),'%Y-%m-%d'
+					) last_repay_time,
+			dp.debt_lock_period,
+			dp.debt_quit_period,
+			dp.expect_apr,
+			dp.debt_plan_status,
+			dpa.id,
+			dpa.accede_order_id,
+			dpa.freeze_order_id,
+			dpa.plan_nid debt_plan_nid,
+			dp.debt_plan_name debt_plan_name,
+			dpa.user_id,
+			dpa.user_name,
+			dpa.accede_account,
+			dpa.accede_balance,
+			dpa.accede_frost,
+			dpa.repay_account,
+			dpa.liquidates_repay_frost,
+			dpa.service_fee,
+			dpa.service_fee_rate,
+			dpa.repay_account_yes  repay_account_fact,
+			dpa.repay_account_wait,
+			dpa.repay_account_yes,
+			dpa.repay_capital,
+			dpa.repay_capital_yes,
+			dpa.repay_interest,
+			dpa.repay_interest_yes  repay_interest_fact,
+			dpa.repay_interest_wait,
+			dpa.repay_interest_yes,
+			dpa.cycle_times,
+			dpa.status,
+			dpa.expire_fair_value,
+			IFNULL(dpa.repay_interest_yes,0.00)  money,
+				IFNULL(TRUNCATE (
+				(
+					(
+						SELECT
+							SUM(CASE WHEN hb.borrow_style='end'
+		 THEN 
+			TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait* 
+					datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+					datediff(FROM_UNIXTIME(hb.repay_last_time,'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d')) ,2)
+		WHEN hb.borrow_style='endday'
+		THEN 
+			TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait* 
+					datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+					 hb.borrow_period,2)	
+		ELSE 
+	 			TRUNCATE (	(SELECT sum(repay_capital_wait) FROM hyjf_debt_detail WHERE order_id=hdd.order_id  and status=1) + IFNULL((SELECT SUM(repay_interest_wait) FROM hyjf_debt_detail   WHERE  order_id=hdd.order_id AND late_days!=0  and status=1),0) +
+						hdd.repay_interest_wait*
+										datediff(DATE_FORMAT(NOW(),'%Y-%m-%d'),
+															DATE_FORMAT(DATE_SUB(FROM_UNIXTIME(hdd.repay_time),INTERVAL 1 MONTH),'%Y-%m-%d'))/
+														ABS(datediff(DATE_FORMAT(DATE_SUB(FROM_UNIXTIME(hdd.repay_time),INTERVAL 1 MONTH),'%Y-%m-%d'),
+																FROM_UNIXTIME(hdd.repay_time,'%Y-%m-%d')))
+											
+					,2)
+		END  +IF(hdd.repay_status=0,hdd.late_interest+hdd.delay_interest -hdd.late_interest_assigned-hdd.delay_interest_assigned,0) )
+						FROM
+							hyjf_debt_detail hdd
+						LEFT JOIN hyjf_debt_borrow hb ON hdd.borrow_nid = hb.borrow_nid
+						WHERE
+							hdd. STATUS = 1
+						AND hdd.plan_order_id = dpa.accede_order_id
+						AND plan_nid = dpa.plan_nid
+						AND
+						((	hb.borrow_style <![CDATA[<>]]> 'end' and hb.borrow_style <![CDATA[<>]]> 'endday'	AND	DATE_FORMAT(FROM_UNIXTIME(hdd.repay_time),'%Y-%m-%d') <![CDATA[>=]]> DATE_FORMAT(NOW(),'%Y-%m-%d')
+						AND 	DATE_FORMAT(DATE_SUB(FROM_UNIXTIME(hdd.repay_time),INTERVAL 1 MONTH),'%Y-%m-%d') <![CDATA[<]]> DATE_FORMAT(NOW(),'%Y-%m-%d'))
+				OR 		(	hb.borrow_style = 'end' or hb.borrow_style = 'endday'	)  )
+					) + dpa.accede_frost + dpa.accede_balance+dpa.liquidates_credit_frost+dpa.liquidates_repay_frost+dpa.service_fee - dpa.accede_account
+				) / dpa.accede_account * 360 / datediff(DATE_FORMAT(NOW(),'%Y-%m-%d'),FROM_UNIXTIME(dp.plan_lock_time,'%Y-%m-%d'))* 100,
+				2
+			),0) factApr,
+			FROM_UNIXTIME(
+				dpa.create_time,
+				'%Y-%m-%d %H:%i:%s'
+			) create_time,
+			FROM_UNIXTIME(
+				dpa.create_time,
+				'%Y-%m-%d'
+			) create_time_day,
+			FROM_UNIXTIME(
+				dpa.create_time,
+				'%Y-%m-%d %H:%i'
+			) create_time_fen,
+			'1' AS tender_type,
+			'' AS coupon_type,
+			'' AS coupon_user_code
+		
+		FROM
+			hyjf_debt_plan_accede dpa
+		left join hyjf_debt_plan dp on dpa.plan_nid=dp.debt_plan_nid
+		<include refid="Where_Clause" />
+		
+	union
+		SELECT
+			CASE
+		WHEN dp.liquidate_fact_time = 0 THEN
+			0
+		ELSE
+			FROM_UNIXTIME(
+				dp.liquidate_fact_time,
+				'%Y-%m-%d'
+			)
+		END liquidate_fact_time,
+		 CASE
+		WHEN dp.liquidate_should_time = 0 THEN
+			0
+		ELSE
+			FROM_UNIXTIME(
+				dp.liquidate_should_time,
+				'%Y-%m-%d'
+			)
+		END liquidate_should_time,
+		FROM_UNIXTIME(IFNULL(hcr.recover_yestime,hcr.recover_time), '%Y-%m-%d') repay_time,
+		FROM_UNIXTIME(hcr.recover_time,'%Y-%m-%d') AS last_repay_time,
+		 dp.debt_lock_period,
+		 dp.debt_quit_period,
+		 IF(hcc.coupon_type = 2,IFNULL(hcc.coupon_quota,'0'),dp.expect_apr) AS expect_apr,
+		 dp.debt_plan_status,
+		 cpn.id,
+		 cpn.nid AS accede_order_id,
+		 '' AS freeze_order_id,
+		 dp.debt_plan_nid AS debt_plan_nid,
+		 dp.debt_plan_name debt_plan_name,
+		 cpn.user_id,
+		 '' AS user_name,
+		 cpn.account AS accede_account,
+		 '' AS accede_balance,
+		 '' AS accede_frost,
+		 '' AS repay_account,
+		 '' AS liquidates_repay_frost,
+		 '' AS service_fee,
+		 '' AS service_fee_rate,
+		 '' AS repay_account_fact,
+		 cpn.recover_account_all AS repay_account_wait,
+		 cpn.recover_account_yes AS repay_account_yes,
+		 '' AS repay_capital,
+		 '' AS repay_capital_yes,
+		 '' AS repay_interest,
+		 '' AS repay_interest_fact,
+		 '' AS repay_interest_wait,
+		 cpn.recover_account_interest_yes AS repay_interest_yes,
+		 '' AS cycle_times,
+		 '' AS STATUS,
+		 '' AS expire_fair_value,
+		 '' AS money,
+		 '' AS factApr,
+		 FROM_UNIXTIME(
+			cpn.addtime,
+			'%Y-%m-%d %H:%i:%s'
+		) create_time,
+		 FROM_UNIXTIME(cpn.addtime, '%Y-%m-%d') create_time_day,
+		 FROM_UNIXTIME(
+			cpn.addtime,
+			'%Y-%m-%d %H:%i'
+		) create_time_fen,
+		'2' AS tender_type,
+		CASE hcc.coupon_type
+		WHEN 1 THEN
+			'体验金'
+		WHEN 2 THEN
+			'加息券'
+		WHEN 3 THEN
+			'代金券'
+		END AS coupon_type,
+		hcu.coupon_user_code
+		FROM
+			hyjf_borrow_tender_cpn cpn
+		INNER JOIN hyjf_debt_plan dp ON cpn.borrow_nid = dp.debt_plan_nid
+		LEFT JOIN hyjf_coupon_tender hct ON hct.order_id = cpn.nid
+		LEFT JOIN hyjf_coupon_user hcu ON hcu.id = hct.coupon_grant_id
+		LEFT JOIN hyjf_coupon_config hcc ON hcc.coupon_code = hcu.coupon_code
+		LEFT JOIN hyjf_coupon_recover hcr ON hcr.tender_id = cpn.nid
+		WHERE
+			cpn.tender_type = 2
+		<if test="userId != null and userId != ''">
+			AND cpn.user_id = #{userId}
+		</if>
+		<if test="planNidSrch != null and planNidSrch != ''">
+			AND dp.debt_plan_nid LIKE CONCAT('%', #{planNidSrch}, '%') 
+		</if>
+		<!-- 计划状态 0 发起中；1 待审核；2审核不通过；3待开放；4募集中；5锁定中；6清算中；7清算完成，8未还款，9还款中，10还款完成  -->
+		<if test="status != null and (status == 4 or status == '4')">
+			AND dp.debt_plan_status = #{status}
+		</if>
+		<if test="status != null and (status == 5 or status == '5')">
+			AND hcr.recover_status = 0
+		</if>
+		<if test="status != null and (status == 11 or status == '11')">
+			AND hcr.recover_status = 1
+		</if>
+		
+		ORDER BY
+		<if test="col != null and col != '' and sort != null and sort != ''">
+			${col} ${sort},
+		</if>
+		  create_time DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<select id="selectPlanAccedeListForAdmin" resultMap="selectPlanListMap" parameterType="com.hyjf.mybatis.model.customize.PlanCommonCustomize">
+		SELECT
+			case when dp.liquidate_fact_time=0 then 0 else FROM_UNIXTIME(
+				dp.liquidate_fact_time,
+				'%Y-%m-%d'
+			) end liquidate_fact_time,
+			case when dp.liquidate_should_time=0 then 0 else  FROM_UNIXTIME(
+				dp.liquidate_should_time,
+				'%Y-%m-%d'
+			) end liquidate_should_time,
+			FROM_UNIXTIME(
+				dp.repay_time,
+				'%Y-%m-%d'
+			) repay_time,
+			DATE_FORMAT(
+			DATE_ADD(
+			FROM_UNIXTIME(
+				dp.liquidate_should_time,
+				'%Y-%m-%d'
+					),INTERVAL dp.debt_quit_period-1 DAY
+					),'%Y-%m-%d'
+					) last_repay_time,
+			dp.debt_lock_period,
+			dp.debt_quit_period,
+			dp.expect_apr,
+			dp.debt_plan_status,
+			dpa.id,
+			dpa.accede_order_id,
+			dpa.freeze_order_id,
+			dpa.plan_nid debt_plan_nid,
+			dp.debt_plan_name debt_plan_name,
+			dpa.user_id,
+			dpa.user_name,
+			dpa.accede_account,
+			dpa.accede_balance,
+			dpa.accede_frost,
+			dpa.repay_account,
+			dpa.liquidates_repay_frost,
+			dpa.service_fee,
+			dpa.service_fee_rate,
+			dpa.repay_account_yes  repay_account_fact,
+			dpa.repay_account_wait,
+			dpa.repay_account_yes,
+			dpa.repay_capital,
+			dpa.repay_capital_yes,
+			dpa.repay_interest,
+			dpa.repay_interest_yes  repay_interest_fact,
+			dpa.repay_interest_wait,
+			dpa.repay_interest_yes,
+			dpa.cycle_times,
+			dpa.status,
+			dpa.expire_fair_value,
+			IFNULL(dpa.repay_interest_yes,0.00)  money,
+				IFNULL(TRUNCATE (
+				(
+					(
+						SELECT
+							SUM(CASE WHEN hb.borrow_style='end'
+		 THEN 
+			TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait* 
+					datediff(DATE_FORMAT(NOW(),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+					datediff(FROM_UNIXTIME(hb.repay_last_time,'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d')) ,2)
+		WHEN hb.borrow_style='endday'
+		THEN 
+			TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait* 
+					datediff(DATE_FORMAT(NOW(),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+					 hb.borrow_period,2)	
+		ELSE 
+	 			TRUNCATE (	(SELECT sum(repay_capital_wait) FROM hyjf_debt_detail WHERE order_id=hdd.order_id  and status=1) + IFNULL((SELECT SUM(repay_interest_wait) FROM hyjf_debt_detail   WHERE  order_id=hdd.order_id AND late_days!=0  and status=1),0) +
+						hdd.repay_interest_wait*
+										datediff(DATE_FORMAT(NOW(),'%Y-%m-%d'),
+															DATE_FORMAT(DATE_SUB(FROM_UNIXTIME(hdd.repay_time),INTERVAL 1 MONTH),'%Y-%m-%d'))/
+														ABS(datediff(DATE_FORMAT(DATE_SUB(FROM_UNIXTIME(hdd.repay_time),INTERVAL 1 MONTH),'%Y-%m-%d'),
+																FROM_UNIXTIME(hdd.repay_time,'%Y-%m-%d')))
+											
+					,2)
+		END )
+						FROM
+							hyjf_debt_detail hdd
+						LEFT JOIN hyjf_debt_borrow hb ON hdd.borrow_nid = hb.borrow_nid
+						WHERE
+							hdd. STATUS = 1
+						AND hdd.plan_order_id = dpa.accede_order_id
+						AND plan_nid = dpa.plan_nid
+						AND
+						((	hb.borrow_style <![CDATA[<>]]> 'end' and hb.borrow_style <![CDATA[<>]]> 'endday'	AND	DATE_FORMAT(FROM_UNIXTIME(hdd.repay_time),'%Y-%m-%d') <![CDATA[>=]]> DATE_FORMAT(NOW(),'%Y-%m-%d')
+						AND 	DATE_FORMAT(DATE_SUB(FROM_UNIXTIME(hdd.repay_time),INTERVAL 1 MONTH),'%Y-%m-%d') <![CDATA[<]]> DATE_FORMAT(NOW(),'%Y-%m-%d'))
+				OR 		(	hb.borrow_style = 'end' or hb.borrow_style = 'endday'	)  )
+					) + dpa.accede_frost + dpa.accede_balance+dpa.liquidates_credit_frost+dpa.liquidates_repay_frost+dpa.service_fee - dpa.accede_account
+				) / dpa.accede_account * 360 / datediff(DATE_FORMAT(NOW(),'%Y-%m-%d'),FROM_UNIXTIME(dp.plan_lock_time,'%Y-%m-%d'))* 100,
+				2
+			),0) factApr,
+			FROM_UNIXTIME(
+				dpa.create_time,
+				'%Y-%m-%d %H:%i:%s'
+			) create_time,
+			FROM_UNIXTIME(
+				dpa.create_time,
+				'%Y-%m-%d'
+			) create_time_day,
+			FROM_UNIXTIME(
+				dpa.create_time,
+				'%Y-%m-%d %H:%i'
+			) create_time_fen,
+			'1' AS tender_type,
+			'' AS coupon_type,
+			'' AS coupon_user_code
+		
+		FROM
+			hyjf_debt_plan_accede dpa
+		left join hyjf_debt_plan dp on dpa.plan_nid=dp.debt_plan_nid
+		<include refid="Where_Clause" />
+		
+		ORDER BY
+		<if test="col != null and col != '' and sort != null and sort != ''">
+			${col} ${sort},
+		</if>
+		  create_time DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	<select id="selectPlanCountMap" resultType="java.util.HashMap" parameterType="java.lang.String">
+			SELECT
+			(
+				SELECT
+					COUNT(1)
+				FROM
+					hyjf_debt_plan_accede
+				WHERE
+					plan_nid = #{value}
+			) accedeCount,
+			(
+				SELECT
+					count(1)
+				FROM
+					hyjf_debt_invest
+				WHERE
+					plan_nid = #{value}
+				AND status <![CDATA[<>]]>  3
+				AND status <![CDATA[<>]]>  0
+			) investCount,
+			(
+				SELECT
+					count(1)
+				FROM
+					hyjf_debt_credit_tender
+				WHERE
+					assign_plan_nid = #{value}
+				AND STATUS <![CDATA[<>]]>  1
+			) creditTenderCount,
+			IFNULL(
+				(
+					SELECT
+						SUM(repay_capital_wait)
+					FROM
+						hyjf_debt_invest
+					WHERE
+						plan_nid = #{value}
+					AND status <![CDATA[<>]]>  3
+					AND status <![CDATA[<>]]>  0
+				),
+				0.00
+			) account,
+			IFNULL(
+				(
+					SELECT
+						SUM(assign_capital)
+					FROM
+						hyjf_debt_credit_tender
+					WHERE
+						assign_plan_nid = #{value}
+					AND STATUS <![CDATA[<>]]> 1
+				),
+				0.00
+			) creditCapital,
+			IFNULL(
+				(
+					SELECT
+						SUM(assign_pay)
+					FROM
+						hyjf_debt_credit_tender
+					WHERE
+						assign_plan_nid = #{value}
+						AND STATUS <![CDATA[<>]]> 1
+				),0.00
+			) assignPay
+		FROM
+			DUAL
+	</select>
+	<select id="selectPlanCreditCountMap" resultType="java.util.HashMap" parameterType="java.lang.String">
+				
+					SELECT 	IFNULL((select sum(liquidates_credit_frost) from hyjf_debt_plan_accede where plan_nid=#{value}),0) creditAccountAssigned,
+					IFNULL((select sum(liquidates_repay_frost) from hyjf_debt_plan_accede where plan_nid=#{value}),0) RepayFrost,
+				(SELECT COUNT(1) 
+				FROM
+					hyjf_debt_credit hdc
+				WHERE
+					hdc.del_flag=0
+					AND hdc.plan_nid = #{value}
+				) creditCount,
+				(SELECT IFNULL(sum(hdc.credit_service_fee),0)
+				FROM
+					hyjf_debt_credit hdc
+				WHERE
+					hdc.del_flag=0
+					AND hdc.plan_nid = #{value}
+					) creditFee,
+				(SELECT IFNULL(sum(hdc.credit_capital_wait),0)
+				FROM
+					hyjf_debt_credit hdc
+				WHERE
+					hdc.del_flag=0
+					AND hdc.plan_nid = #{value}
+					AND hdc.credit_status=0
+					AND hdc.repay_status = 0
+					) creditCapital
+					from  dual
+	
+	</select>
+	
+	<update id="updateCycleTimesZero" parameterType="java.lang.String">
+	UPDATE hyjf_debt_plan_accede
+	SET cycle_times = 0,status=0 
+	WHERE
+		accede_order_id = #{value}
+	</update>
+  
+  <!--可投列表  -->
+  <resultMap id="selectPlanInvestListMap" type="com.hyjf.mybatis.model.customize.PlanInvestCustomize">
+		<result column="plan_order_id" property="planOrderId" jdbcType="VARCHAR" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="order_id" property="orderId" jdbcType="VARCHAR" />
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="name" property="borrowStyleName" jdbcType="VARCHAR" />
+		<result column="nid" property="borrowStyle" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<result column="hold_days" property="holdDays" jdbcType="VARCHAR" />
+		<result column="surplus_days" property="surplusDays" jdbcType="VARCHAR" />
+		<result column="fair_value" property="fairValue" jdbcType="VARCHAR" />
+		<result column="expire_fair_value" property="expireFairValue" jdbcType="VARCHAR" />
+		<result column="credit_nid" property="creditNid" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectPlanInvestList" resultMap="selectPlanInvestListMap" parameterType="com.hyjf.mybatis.model.customize.PlanCommonCustomize">
+		SELECT 	
+		hdd.plan_order_id,
+			hdd.user_name,
+			hdd.order_id,
+			hdd.borrow_nid,
+			hbs.name,
+			hbs.nid,
+			hdd.repay_status status,
+			hb.borrow_apr,
+			hdd.account,
+			CASE
+			WHEN DATEDIFF(NOW(),
+						FROM_UNIXTIME(hb.recover_last_time)) <![CDATA[<]]> 0 
+						and hdd.repay_capital_wait=0
+			THEN
+				0
+			WHEN hdd.repay_status=1	and  hb.repay_full_status =1 AND hdd.advance_status = 0
+			THEN
+				DATEDIFF(FROM_UNIXTIME(hdd.repay_action_time),
+				FROM_UNIXTIME(hb.recover_last_time))
+			WHEN hdd.repay_status=1	and  hb.repay_full_status =1	AND hdd.advance_status in (2,3)
+			THEN
+				DATEDIFF(FROM_UNIXTIME(hdd.repay_time),
+				FROM_UNIXTIME(hb.recover_last_time))
+				WHEN hdd.repay_status=1	and  hb.repay_full_status =1	AND hdd.advance_status =1
+			THEN
+				DATEDIFF(FROM_UNIXTIME(hdd.repay_action_time),
+				FROM_UNIXTIME(hb.recover_last_time))
+			ELSE
+			DATEDIFF(NOW(),
+				FROM_UNIXTIME(hb.recover_last_time))
+			END hold_days,
+			
+			CASE WHEN DATEDIFF(NOW(),
+				FROM_UNIXTIME(hb.recover_last_time)) <![CDATA[<]]> 0
+					and hdd.repay_capital_wait=0
+		 	 THEN
+				CASE WHEN hb.borrow_style='endday'
+					THEN    
+					hb.borrow_period
+					ELSE
+						DATEDIFF( DATE_ADD(FROM_UNIXTIME(hb.recover_last_time),INTERVAL hb.borrow_period MONTH),
+						FROM_UNIXTIME(hb.recover_last_time))
+					END	
+			WHEN hdd.repay_status=1	and  hb.repay_full_status =1	
+			THEN
+				0
+			ELSE
+				CASE WHEN hb.borrow_style='endday'
+					THEN    
+							DATEDIFF( DATE_ADD(FROM_UNIXTIME(hb.recover_last_time),INTERVAL hb.borrow_period DAY),
+							NOW())
+					ELSE
+						DATEDIFF( DATE_ADD(FROM_UNIXTIME(hb.recover_last_time),INTERVAL hb.borrow_period MONTH),
+						NOW())
+					END
+			END surplus_days,
+	CASE WHEN hb.borrow_style='end'
+		 THEN 
+			TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait* 
+					datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+					datediff(FROM_UNIXTIME(hb.repay_last_time,'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))+IF(hdd.repay_status=0,hdd.late_interest+hdd.delay_interest -hdd.late_interest_assigned-hdd.delay_interest_assigned,0) ,2)
+		WHEN hb.borrow_style='endday'
+		THEN 
+			TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait* 
+					datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+					 hb.borrow_period+IF(hdd.repay_status=0,hdd.late_interest+hdd.delay_interest -hdd.late_interest_assigned-hdd.delay_interest_assigned,0),2)	
+		ELSE 
+	 			TRUNCATE (	(SELECT sum(repay_capital_wait) FROM hyjf_debt_detail WHERE order_id=hdd.order_id  and status=1) + IFNULL((SELECT SUM(repay_interest_wait) FROM hyjf_debt_detail   WHERE  order_id=hdd.order_id AND late_days!=0  and status=1),0) +
+						hdd.repay_interest_wait*
+										datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),
+															DATE_FORMAT(DATE_SUB(FROM_UNIXTIME(hdd.repay_time),INTERVAL 1 MONTH),'%Y-%m-%d'))/
+														ABS(datediff(DATE_FORMAT(DATE_SUB(FROM_UNIXTIME(hdd.repay_time),INTERVAL 1 MONTH),'%Y-%m-%d'),
+																FROM_UNIXTIME(hdd.repay_time,'%Y-%m-%d')))+IF(hdd.repay_status=0,hdd.late_interest+hdd.delay_interest-hdd.late_interest_assigned-hdd.delay_interest_assigned ,0)
+											
+					,2)
+		END fair_value,
+		hdd.expire_fair_value,
+		hdd.credit_nid
+	 FROM hyjf_debt_detail hdd
+	LEFT JOIN hyjf_debt_borrow hb ON hdd.borrow_nid = hb.borrow_nid
+	LEFT JOIN huiyingdai_borrow_style hbs ON hb.borrow_style = hbs.nid
+			<include refid="Where_Clause_Invest" />
+		ORDER BY account DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<select id="countPlanInvest" resultType="java.lang.Long" parameterType="com.hyjf.mybatis.model.customize.PlanCommonCustomize">
+		SELECT
+			count(1)
+			 FROM hyjf_debt_detail hdd
+			LEFT JOIN hyjf_debt_borrow hb ON hdd.borrow_nid = hb.borrow_nid
+			LEFT JOIN huiyingdai_borrow_style hbs ON hb.borrow_style = hbs.nid
+			<include refid="Where_Clause_Invest" />
+	</select>
+	
+	<select id="planInvestSumMap" resultType="java.util.HashMap" parameterType="com.hyjf.mybatis.model.customize.PlanCommonCustomize">
+			SELECT 	
+				sum(hdd.account) accountSum,
+			SUM(CASE WHEN hb.borrow_style='end' 
+				 THEN 
+					TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait* 
+							datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+							datediff(FROM_UNIXTIME(hb.repay_last_time,'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d')) +IF(hdd.repay_status=0,hdd.late_interest+hdd.delay_interest-hdd.late_interest_assigned-hdd.delay_interest_assigned ,0),2)
+						WHEN hb.borrow_style='endday'
+						THEN 
+							TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait* 
+									datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+									 hb.borrow_period+IF(hdd.repay_status=0,hdd.late_interest+hdd.delay_interest-hdd.late_interest_assigned-hdd.delay_interest_assigned ,0),2)	
+				ELSE 
+			 			TRUNCATE (	(SELECT sum(repay_capital_wait) FROM hyjf_debt_detail WHERE order_id=hdd.order_id  and status=1)+ IFNULL((SELECT SUM(repay_interest_wait) FROM hyjf_debt_detail   WHERE  order_id=hdd.order_id AND late_days!=0  and status=1),0) +
+								hdd.repay_interest_wait*
+												datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),
+																	DATE_FORMAT(DATE_SUB(FROM_UNIXTIME(hdd.repay_time),INTERVAL 1 MONTH),'%Y-%m-%d'))/
+																ABS(datediff(DATE_FORMAT(DATE_SUB(FROM_UNIXTIME(hdd.repay_time),INTERVAL 1 MONTH),'%Y-%m-%d'),
+																		FROM_UNIXTIME(hdd.repay_time,'%Y-%m-%d')))+IF(hdd.repay_status=0,hdd.late_interest+hdd.delay_interest -hdd.late_interest_assigned-hdd.delay_interest_assigned,0)	
+							,2)
+				END ) fairValueSum 
+			 FROM hyjf_debt_detail hdd
+			LEFT JOIN hyjf_debt_borrow hb ON hdd.borrow_nid = hb.borrow_nid
+			LEFT JOIN huiyingdai_borrow_style hbs ON hb.borrow_style = hbs.nid
+				<include refid="Where_Clause_Invest" />
+	</select>
+	<select id="selectPlanInvestListNew" resultMap="selectPlanInvestListMap" parameterType="com.hyjf.mybatis.model.customize.CreditDetailCustomize">
+			SELECT 	
+			hdd.plan_order_id,
+			hdd.user_name,
+			hdd.order_id,
+			hdd.borrow_nid,
+			hbs.name,
+			hbs.nid,
+			hdd.repay_status status,
+			hb.borrow_apr,
+			CASE WHEN hb.borrow_style='end' or hb.borrow_style='endday'
+				THEN  hdd.repay_capital_wait
+			ELSE 
+				(SELECT SUM(account) from hyjf_debt_detail WHERE order_id=hdd.order_id and repay_status=0  and status=1)
+			END	account,
+			hdd.repay_period,
+			CASE
+			WHEN DATEDIFF(NOW(),
+						FROM_UNIXTIME(hb.recover_last_time)) <![CDATA[<]]> 0 
+						and hdd.repay_capital_wait=0
+			THEN
+				0
+			WHEN hdd.repay_status=1	and  hb.repay_full_status =1	AND hdd.advance_status = 0
+			THEN
+				DATEDIFF(FROM_UNIXTIME(hdd.repay_action_time),
+				FROM_UNIXTIME(hb.recover_last_time))
+			WHEN hdd.repay_status=1	and  hb.repay_full_status =1	AND hdd.advance_status in (2,3)
+			THEN
+				DATEDIFF(FROM_UNIXTIME(hdd.repay_time),
+				FROM_UNIXTIME(hb.recover_last_time))
+			WHEN hdd.repay_status=1	and  hb.repay_full_status =1	AND hdd.advance_status =1
+			THEN
+				DATEDIFF(FROM_UNIXTIME(hdd.repay_action_time),
+				FROM_UNIXTIME(hb.recover_last_time))
+			ELSE
+			DATEDIFF(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),
+				FROM_UNIXTIME(hb.recover_last_time))
+			END hold_days,
+			
+			CASE WHEN DATEDIFF(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),
+				FROM_UNIXTIME(hb.recover_last_time)) <![CDATA[<]]> 0
+					and hdd.repay_capital_wait=0
+		 	 THEN
+					CASE WHEN hb.borrow_style='endday'
+					THEN    
+						DATEDIFF( DATE_ADD(FROM_UNIXTIME(hb.recover_last_time),INTERVAL hb.borrow_period DAY),
+						FROM_UNIXTIME(hb.recover_last_time))
+					ELSE
+						DATEDIFF( DATE_ADD(FROM_UNIXTIME(hb.recover_last_time),INTERVAL hb.borrow_period MONTH),
+						FROM_UNIXTIME(hb.recover_last_time))
+					END	
+			WHEN hdd.repay_status=1	and hb.repay_full_status =1
+			THEN
+				0
+			ELSE
+				CASE WHEN hb.borrow_style='endday'
+					THEN    
+							DATEDIFF( DATE_ADD(FROM_UNIXTIME(hb.recover_last_time),INTERVAL hb.borrow_period DAY),
+							IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()))
+					ELSE
+						DATEDIFF( DATE_ADD(FROM_UNIXTIME(hb.recover_last_time),INTERVAL hb.borrow_period MONTH),
+						IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()))
+					END
+			END surplus_days,
+	CASE WHEN hb.borrow_style='end'
+		 THEN 
+			TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait* 
+					datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+					datediff(FROM_UNIXTIME(hb.repay_last_time,'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))  ,2)
+		WHEN hb.borrow_style='endday'
+		THEN 
+			TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait* 
+					datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+					 hb.borrow_period,2)	
+		ELSE 
+				TRUNCATE ( (SELECT sum(repay_capital_wait) FROM hyjf_debt_detail WHERE order_id=hdd.order_id  and status=1) + 
+				IFNULL((SELECT SUM(repay_interest_wait) FROM hyjf_debt_detail   WHERE  order_id=hdd.order_id AND late_days!=0  and status=1),0) +
+						(SELECT	repay_interest_wait	FROM	hyjf_debt_detail	WHERE
+													order_id = hdd.order_id
+													AND repay_status=0 
+													 and status=1
+														ORDER BY repay_period ASC LIMIT 1
+											 ) *
+										datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),
+															DATE_FORMAT(DATE_SUB(FROM_UNIXTIME((SELECT 
+																								repay_time FROM 
+																								hyjf_debt_detail
+																							WHERE
+																								order_id = hdd.order_id AND repay_status=0   and status=1
+																							ORDER BY repay_period ASC LIMIT 1)),INTERVAL 1 MONTH),'%Y-%m-%d'))/
+														ABS(datediff(DATE_FORMAT(DATE_SUB(FROM_UNIXTIME((SELECT 
+																								repay_time FROM 
+																								hyjf_debt_detail
+																							WHERE
+																								order_id = hdd.order_id AND repay_status=0  and status=1
+																							ORDER BY repay_period ASC LIMIT 1)),INTERVAL 1 MONTH),'%Y-%m-%d'),
+																FROM_UNIXTIME((SELECT 
+																								repay_time FROM 
+																								hyjf_debt_detail
+																							WHERE
+																								order_id = hdd.order_id AND repay_status=0  and status=1
+																							ORDER BY repay_period ASC LIMIT 1),'%Y-%m-%d')))
+											
+					,2)
+		END +IF(hdd.repay_status=0,hdd.late_interest+hdd.delay_interest-hdd.late_interest_assigned-hdd.delay_interest_assigned,0) fair_value,
+			CASE WHEN hb.borrow_style='end' or hb.borrow_style='endday'
+				THEN hdd.expire_fair_value
+			ELSE 
+				(SELECT SUM(expire_fair_value) from hyjf_debt_detail WHERE order_id=hdd.order_id and status=1)
+			END expire_fair_value,
+		hdd.credit_nid
+	 FROM hyjf_debt_detail hdd
+	LEFT JOIN hyjf_debt_borrow hb ON hdd.borrow_nid = hb.borrow_nid
+	LEFT JOIN huiyingdai_borrow_style hbs ON hb.borrow_style = hbs.nid
+			<include refid="Where_Clause_Invest_NEW" />
+		ORDER BY account DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<select id="countPlanInvestNew" resultType="java.lang.Long" parameterType="com.hyjf.mybatis.model.customize.PlanCommonCustomize">
+		SELECT
+			count(1)
+			 FROM hyjf_debt_detail hdd
+			LEFT JOIN hyjf_debt_borrow hb ON hdd.borrow_nid = hb.borrow_nid
+			LEFT JOIN huiyingdai_borrow_style hbs ON hb.borrow_style = hbs.nid
+			<include refid="Where_Clause_Invest_NEW" />
+	</select>
+	
+	<select id="planInvestSumMapNew" resultType="java.util.HashMap" parameterType="com.hyjf.mybatis.model.customize.PlanCommonCustomize">
+			SELECT 	
+				sum(CASE WHEN hb.borrow_style='end'  or  hb.borrow_style='endday'
+				THEN hdd.repay_capital_wait
+				ELSE 
+				(SELECT SUM(account) from hyjf_debt_detail WHERE order_id=hdd.order_id  and repay_status=0  and status=1)
+			END ) accountSum,
+			SUM(CASE WHEN hb.borrow_style='end'
+				 THEN 
+					TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait* 
+							datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+							datediff(FROM_UNIXTIME(hb.repay_last_time,'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d')) ,2)
+				WHEN hb.borrow_style='endday'
+				THEN 
+					TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait* 
+							datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+							 hb.borrow_period,2)	
+				ELSE 
+			 				TRUNCATE ( (SELECT sum(repay_capital_wait) FROM hyjf_debt_detail WHERE order_id=hdd.order_id  and status=1) + 
+				IFNULL((SELECT SUM(repay_interest_wait) FROM hyjf_debt_detail   WHERE  order_id=hdd.order_id AND late_days!=0  and status=1),0) +
+						(SELECT	repay_interest_wait	FROM	hyjf_debt_detail	WHERE
+													order_id = hdd.order_id
+													AND repay_status=0  and status=1
+														ORDER BY repay_period ASC LIMIT 1
+											 ) *
+										datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),
+															DATE_FORMAT(DATE_SUB(FROM_UNIXTIME((SELECT 
+																								repay_time FROM 
+																								hyjf_debt_detail
+																							WHERE
+																								order_id = hdd.order_id AND repay_status=0  and status=1
+																							ORDER BY repay_period ASC LIMIT 1)),INTERVAL 1 MONTH),'%Y-%m-%d'))/
+														ABS(datediff(DATE_FORMAT(DATE_SUB(FROM_UNIXTIME((SELECT 
+																								repay_time FROM 
+																								hyjf_debt_detail
+																							WHERE
+																								order_id = hdd.order_id AND repay_status=0  and status=1
+																							ORDER BY repay_period ASC LIMIT 1)),INTERVAL 1 MONTH),'%Y-%m-%d'),
+																FROM_UNIXTIME((SELECT 
+																								repay_time FROM 
+																								hyjf_debt_detail
+																							WHERE
+																								order_id = hdd.order_id AND repay_status=0  and status=1
+																							ORDER BY repay_period ASC LIMIT 1),'%Y-%m-%d')))
+											
+					,2)
+				END  +IF(hdd.repay_status=0,hdd.late_interest+hdd.delay_interest -hdd.late_interest_assigned-hdd.delay_interest_assigned,0) ) fairValueSum ,
+				(SELECT
+						sum(expire_fair_value)
+					FROM
+						hyjf_debt_detail hydd
+					where 1=1 
+			<if test="planNidSrch != null and planNidSrch != ''">
+				AND hydd.plan_nid = #{planNidSrch}
+			</if>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND hydd.plan_order_id LIKE CONCAT('%', #{planOrderId}, '%')
+			</if>
+			<if test="userName != null and userName != ''">
+				 AND hydd.user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="repayType != null and repayType != ''">
+				AND hydd.borrow_style =#{repayType}
+			</if>
+					
+				) AS expireFairValueSum
+			 FROM hyjf_debt_detail hdd
+			LEFT JOIN hyjf_debt_borrow hb ON hdd.borrow_nid = hb.borrow_nid
+			LEFT JOIN huiyingdai_borrow_style hbs ON hb.borrow_style = hbs.nid
+				<include refid="Where_Clause_Invest_NEW" />
+		</select>
+	<select id="DebtLoanSumMap" resultType="java.util.HashMap" parameterType="com.hyjf.mybatis.model.customize.PlanCommonCustomize">
+			 SELECT 
+			 sum(loan_capital) loanCapitalSum, 
+			 sum(loan_interest) loanInterestSum ,
+			 sum(loan_account) loanAccountSum,
+			 sum(repay_account_yes) repayAccountSum
+			 from  hyjf_debt_loan
+			 where 1=1
+			  <if test="planNidSrch != null and planNidSrch != ''">
+				AND plan_nid=#{planNidSrch}
+			</if>
+			 <if test="planOrderId != null and planOrderId != ''">
+				AND plan_order_id LIKE CONCAT('%', #{planOrderId}, '%')
+			</if>
+			 <if test="userName != null and userName != ''">
+				AND user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			 <if test="borrowNid != null and borrowNid != ''">
+				AND borrow_nid LIKE CONCAT('%', #{borrowNid}, '%')
+			</if>
+			 <if test="borrowNid != null and borrowNid != ''">
+				AND borrow_nid LIKE CONCAT('%', #{borrowNid}, '%')
+			</if>
+			 <if test="repayStatus != null and repayStatus != ''">
+				AND repay_status=#{repayStatus}
+			</if>
+			 <if test="repayTimeStart != null and repayTimeStart != ''">
+				AND repay_time <![CDATA[>=]]> #{repayTimeStart}
+			</if>
+			 <if test="repayTimeEnd != null and repayTimeEnd != ''">
+				AND repay_time <![CDATA[<=]]> #{repayTimeEnd}
+			</if>
+	</select>
+	
+	
+	
+	
+	 
+  <!--可投列表  -->
+  <resultMap id="selectCreditInvestListMap" type="com.hyjf.mybatis.model.customize.PlanInvestCustomize">
+		<result column="plan_nid" property="planNid" jdbcType="VARCHAR" />
+		<result column="plan_order_id" property="planOrderId" jdbcType="VARCHAR" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="order_id" property="orderId" jdbcType="VARCHAR" />
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="borrowTypeName" property="borrowTypeName" jdbcType="VARCHAR" />
+		<result column="name" property="borrowStyleName" jdbcType="VARCHAR" />
+		<result column="nid" property="borrowStyle" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<result column="hold_days" property="holdDays" jdbcType="VARCHAR" />
+		<result column="surplus_days" property="surplusDays" jdbcType="VARCHAR" />
+		<result column="fair_value" property="fairValue" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="credit_nid" property="creditNid" jdbcType="VARCHAR" />
+		<result column="delay_days" property="delayDays" jdbcType="VARCHAR" />
+		<result column="delay_interest" property="delayInterest" jdbcType="VARCHAR" />
+		<result column="late_days" property="lateDays" jdbcType="VARCHAR" />
+		<result column="late_interest" property="lateInterest" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectCreditInvestList" resultMap="selectCreditInvestListMap" parameterType="com.hyjf.mybatis.model.customize.CreditDetailCustomize">
+		SELECT
+				hdi.plan_nid,
+			hdi.plan_order_id,
+			hdi.user_name,
+			hdi.order_id,
+			hdi.borrow_nid,
+			hbpt.borrow_name borrowTypeName,
+			hbs.name,
+			hbs.nid,
+			hdi.status,
+			hb.borrow_apr,
+			hdi.account,
+			FROM_UNIXTIME( hdi.create_time, '%Y-%m-%d' ) create_time,
+		 	hb.borrow_period,
+		 	"" credit_nid
+		FROM
+			hyjf_debt_invest hdi
+		LEFT JOIN hyjf_debt_borrow hb ON hdi.borrow_nid = hb.borrow_nid
+		LEFT JOIN huiyingdai_borrow_project_type hbpt ON hbpt.borrow_cd = hb.project_type
+		LEFT JOIN huiyingdai_borrow_style hbs ON hb.borrow_style = hbs.nid
+		<include refid="Where_Clause_Invest_Credit" />
+		
+		ORDER BY create_time DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<select id="countCreditInvest" resultType="java.lang.Long" parameterType="com.hyjf.mybatis.model.customize.CreditDetailCustomize">
+		select (SELECT
+				count(1)
+		FROM
+			hyjf_debt_invest hdi
+		LEFT JOIN hyjf_debt_borrow hb ON hdi.borrow_nid = hb.borrow_nid
+		LEFT JOIN huiyingdai_borrow_project_type hbpt ON hbpt.borrow_cd = hb.project_type
+		LEFT JOIN huiyingdai_borrow_style hbs ON hb.borrow_style = hbs.nid
+		<include refid="Where_Clause_Invest_Credit" />
+		)
+		+
+		(
+			SELECT 
+			count(1)
+		FROM
+			hyjf_debt_credit_tender hdct
+		LEFT JOIN hyjf_debt_borrow hb ON hdct.borrow_nid = hb.borrow_nid
+		LEFT JOIN huiyingdai_borrow_project_type hbpt ON hbpt.borrow_cd = hb.project_type
+		LEFT JOIN huiyingdai_borrow_style hbs ON hb.borrow_style = hbs.nid
+		<include refid="Where_Clause_Credit_Credit" />
+		) from dual
+	</select>
+	
+	<select id="countCreditInvestNew" resultType="java.lang.Long" parameterType="com.hyjf.mybatis.model.customize.CreditDetailCustomize">
+		 SELECT
+			count(1)
+		 FROM hyjf_debt_detail hdd
+	LEFT JOIN hyjf_debt_borrow hb ON hdd.borrow_nid = hb.borrow_nid
+	LEFT JOIN huiyingdai_borrow_project_type hbpt ON hbpt.borrow_cd = hb.project_type
+			<include refid="Where_Clause_Invest_Credit_NEW" />
+	</select>
+	<select id="selectCreditInvestListNew" resultMap="selectCreditInvestListMap" parameterType="com.hyjf.mybatis.model.customize.CreditDetailCustomize">
+		 SELECT 	hdd.plan_nid,
+			hdd.plan_order_id,
+			hdd.user_name,
+			hdd.order_id,
+			hdd.borrow_nid,
+			hbpt.borrow_name borrowTypeName,
+			hb.borrow_apr,
+			hdd.repay_status status,
+			hdd.credit_nid,
+			CASE WHEN hb.borrow_style='end' or hb.borrow_style='endday'
+			THEN  hdd.repay_capital_wait
+			ELSE 
+				(SELECT SUM(account) from hyjf_debt_detail WHERE order_id=hdd.order_id  and repay_status=0 and status=1)
+			END	account,
+			CASE
+			WHEN DATEDIFF(NOW(),
+						FROM_UNIXTIME(hb.recover_last_time)) <![CDATA[<]]> 0 
+						and hdd.repay_capital_wait=0
+			THEN
+				0
+			WHEN hdd.repay_status=1	and  hb.repay_full_status =1	AND hdd.advance_status = 0
+			THEN
+				DATEDIFF(FROM_UNIXTIME(hdd.repay_action_time),
+				FROM_UNIXTIME(hb.recover_last_time))
+			WHEN hdd.repay_status=1	and  hb.repay_full_status =1	AND hdd.advance_status in (2,3)
+			THEN
+				DATEDIFF(FROM_UNIXTIME(hdd.repay_time),
+				FROM_UNIXTIME(hb.recover_last_time))
+				WHEN hdd.repay_status=1	and  hb.repay_full_status =1	AND hdd.advance_status =1
+			THEN
+				DATEDIFF(FROM_UNIXTIME(hdd.repay_action_time),
+				FROM_UNIXTIME(hb.recover_last_time))
+			ELSE
+			DATEDIFF(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),
+				FROM_UNIXTIME(hb.recover_last_time))
+			END hold_days,
+			
+			CASE WHEN DATEDIFF(NOW(),
+				FROM_UNIXTIME(hb.recover_last_time)) <![CDATA[<]]> 0
+					and hdd.repay_capital_wait=0
+		 	 THEN
+		 			CASE WHEN hb.borrow_style='endday'
+					THEN    
+						hb.borrow_period
+					ELSE
+						DATEDIFF( DATE_ADD(FROM_UNIXTIME(hb.recover_last_time),INTERVAL hb.borrow_period MONTH),
+						FROM_UNIXTIME(hb.recover_last_time))
+					END	
+			WHEN hdd.repay_status=1	and  hb.repay_full_status =1
+			THEN
+				0
+			ELSE
+				CASE WHEN hb.borrow_style='endday'
+					THEN    
+							DATEDIFF( DATE_ADD(FROM_UNIXTIME(hb.recover_last_time),INTERVAL hb.borrow_period DAY),
+							IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()))
+					ELSE
+						DATEDIFF( DATE_ADD(FROM_UNIXTIME(hb.recover_last_time),INTERVAL hb.borrow_period MONTH),
+						IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()))
+					END
+			END surplus_days,
+	CASE WHEN hb.borrow_style='end' 
+		 THEN 
+			TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait * 
+					datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+					datediff(FROM_UNIXTIME(hb.repay_last_time,'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))+IF(hdd.repay_status=0,hdd.late_interest+hdd.delay_interest -hdd.late_interest_assigned-hdd.delay_interest_assigned,0),2)
+		WHEN hb.borrow_style='endday'
+				THEN 
+					TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait* 
+							datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+							 hb.borrow_period+IF(hdd.repay_status=0,hdd.late_interest+hdd.delay_interest-hdd.late_interest_assigned-hdd.delay_interest_assigned ,0),2)
+		ELSE 
+	 		TRUNCATE ( (SELECT sum(repay_capital_wait) FROM hyjf_debt_detail WHERE order_id=hdd.order_id  and status=1) + 
+				IFNULL((SELECT SUM(repay_interest_wait) FROM hyjf_debt_detail   WHERE  order_id=hdd.order_id AND late_days!=0  and status=1),0) +
+						(SELECT	repay_interest_wait	FROM	hyjf_debt_detail	WHERE
+													order_id = hdd.order_id
+													AND repay_status=0  and status=1
+														ORDER BY repay_period ASC LIMIT 1
+											 ) *
+										datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),
+															DATE_FORMAT(DATE_SUB(FROM_UNIXTIME((SELECT 
+																								repay_time FROM 
+																								hyjf_debt_detail
+																							WHERE
+																								order_id = hdd.order_id AND repay_status=0  and status=1
+																							ORDER BY repay_period ASC LIMIT 1)),INTERVAL 1 MONTH),'%Y-%m-%d'))/
+														ABS(datediff(DATE_FORMAT(DATE_SUB(FROM_UNIXTIME((SELECT 
+																								repay_time FROM 
+																								hyjf_debt_detail
+																							WHERE
+																								order_id = hdd.order_id AND repay_status=0  and status=1
+																							ORDER BY repay_period ASC LIMIT 1)),INTERVAL 1 MONTH),'%Y-%m-%d'),
+																FROM_UNIXTIME((SELECT 
+																								repay_time FROM 
+																								hyjf_debt_detail
+																							WHERE
+																								order_id = hdd.order_id AND repay_status=0  and status=1
+																							ORDER BY repay_period ASC LIMIT 1),'%Y-%m-%d')))+IF(hdd.repay_status=0,hdd.late_interest+hdd.delay_interest-hdd.late_interest_assigned-hdd.delay_interest_assigned ,0)
+											
+					,2)
+		END fair_value ,
+		FROM_UNIXTIME( hdd.create_time, '%Y-%m-%d' ) create_time,
+		hdd.delay_days,
+		hdd.delay_interest,
+		hdd.late_days,
+		hdd.late_interest
+	 FROM hyjf_debt_detail hdd
+	LEFT JOIN hyjf_debt_borrow hb ON hdd.borrow_nid = hb.borrow_nid
+	LEFT JOIN huiyingdai_borrow_project_type hbpt ON hbpt.borrow_cd = hb.project_type
+			<include refid="Where_Clause_Invest_Credit_NEW" />
+		ORDER BY create_time DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	<select id="creditInvestSumMap" resultType="java.util.HashMap" parameterType="com.hyjf.mybatis.model.customize.PlanCommonCustomize"> 
+			 SELECT  sum(hdi.account) accountSum
+	 	FROM
+			hyjf_debt_invest hdi
+		LEFT JOIN hyjf_debt_borrow hb ON hdi.borrow_nid = hb.borrow_nid
+			<include refid="Where_Clause_Invest_Credit" /> 
+	</select>
+	<select id="creditInvestSumMapNew" resultType="java.util.HashMap" parameterType="com.hyjf.mybatis.model.customize.CreditDetailCustomize"> 
+			 SELECT  sum(CASE WHEN hb.borrow_style='end'
+		 THEN 
+			TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait* 
+					datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+					datediff(FROM_UNIXTIME(hb.repay_last_time,'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d')) +IF(hdd.repay_status=0,hdd.late_interest+hdd.delay_interest-hdd.late_interest_assigned-hdd.delay_interest_assigned ,0),2)
+		WHEN hb.borrow_style='endday'
+			THEN 
+			TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait* 
+					datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+					 hb.borrow_period+IF(hdd.repay_status=0,hdd.late_interest+hdd.delay_interest-hdd.late_interest_assigned-hdd.delay_interest_assigned ,0),2)	
+		ELSE 
+	 			TRUNCATE ( (SELECT sum(repay_capital_wait) FROM hyjf_debt_detail WHERE order_id=hdd.order_id and status=1) + 
+				IFNULL((SELECT SUM(repay_interest_wait) FROM hyjf_debt_detail   WHERE  order_id=hdd.order_id AND late_days!=0 and status=1),0) +
+						(SELECT	repay_interest_wait	FROM	hyjf_debt_detail	WHERE
+													order_id = hdd.order_id
+													AND repay_status=0  and status=1
+														ORDER BY repay_period ASC LIMIT 1
+											 ) *
+										datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),
+															DATE_FORMAT(DATE_SUB(FROM_UNIXTIME((SELECT 
+																								repay_time FROM 
+																								hyjf_debt_detail
+																							WHERE
+																								order_id = hdd.order_id AND repay_status=0  and status=1
+																							ORDER BY repay_period ASC LIMIT 1)),INTERVAL 1 MONTH),'%Y-%m-%d'))/
+														ABS(datediff(DATE_FORMAT(DATE_SUB(FROM_UNIXTIME((SELECT 
+																								repay_time FROM 
+																								hyjf_debt_detail
+																							WHERE
+																								order_id = hdd.order_id AND repay_status=0  and status=1
+																							ORDER BY repay_period ASC LIMIT 1)),INTERVAL 1 MONTH),'%Y-%m-%d'),
+																FROM_UNIXTIME((SELECT 
+																								repay_time FROM 
+																								hyjf_debt_detail
+																							WHERE
+																								order_id = hdd.order_id AND repay_status=0  and status=1
+																							ORDER BY repay_period ASC LIMIT 1),'%Y-%m-%d')))+IF(hdd.repay_status=0,hdd.late_interest+hdd.delay_interest-hdd.late_interest_assigned-hdd.delay_interest_assigned ,0)
+											
+					,2)
+		END ) fairValueSum
+	 FROM hyjf_debt_detail hdd
+	LEFT JOIN hyjf_debt_borrow hb ON hdd.borrow_nid = hb.borrow_nid
+	LEFT JOIN huiyingdai_borrow_project_type hbpt ON hbpt.borrow_cd = hb.project_type
+			<include refid="Where_Clause_Invest_Credit_NEW" /> 
+	</select>
+	
+	<select id="countLoanDetail" resultType="java.lang.Long" parameterType="com.hyjf.mybatis.model.customize.PlanCommonCustomize">
+				select 	(
+				SELECT
+					count(1)
+				FROM
+					hyjf_debt_loan hdl
+				LEFT JOIN hyjf_debt_borrow hdb ON hdl.borrow_nid = hdb.borrow_nid
+				WHERE
+					hdb.borrow_style <![CDATA[<>]]> 'month'
+				AND hdb.borrow_style <![CDATA[<>]]> 'endmonth'
+				AND hdb.borrow_style <![CDATA[<>]]> 'principal'
+				AND hdl.loan_capital-hdl.credit_amount <![CDATA[<>]]> 0
+			<if test="planNidSrch != null and planNidSrch != ''">
+				AND hdl.plan_nid LIKE CONCAT('%', #{planNidSrch}, '%')
+			</if>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND hdl.plan_order_id LIKE CONCAT('%', #{planOrderId}, '%')
+			</if>
+			<if test="userName != null and userName != ''">
+				AND hdl.user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="orderId != null and orderId != ''">
+				AND hdl.invest_order_id LIKE CONCAT('%', #{orderId}, '%')
+			</if>
+			<if test="repayStatus != null and repayStatus != ''">
+				AND hdl.repay_status = #{repayStatus}
+			</if>
+			<if test="borrowNid != null and borrowNid != ''">
+				AND hdl.borrow_nid  LIKE CONCAT('%', #{borrowNid}, '%')
+			</if>
+			<if test="repayTimeStart != null and repayTimeStart != ''">
+				AND FROM_UNIXTIME( hdl.repay_time, '%Y-%m-%d' ) <![CDATA[>]]>  #{repayTimeStart}
+			</if>
+			<if test="repayTimeEnd != null and repayTimeEnd != ''">
+				AND FROM_UNIXTIME( hdl.repay_time, '%Y-%m-%d' ) <![CDATA[<=]]>  #{repayTimeEnd}
+			</if>
+			)
+				+
+				(
+					SELECT
+						count(1)
+					FROM
+						hyjf_debt_loan_detail hdld
+					WHERE
+						hdld.loan_capital-hdld.credit_amount <![CDATA[<>]]> 0
+			<if test="planNidSrch != null and planNidSrch != ''">
+				AND hdld.plan_nid LIKE CONCAT('%', #{planNidSrch}, '%')
+			</if>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND hdld.plan_order_id LIKE CONCAT('%', #{planOrderId}, '%')
+			</if>
+			<if test="userName != null and userName != ''">
+				AND hdld.user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="orderId != null and orderId != ''">
+				AND hdld.invest_order_id LIKE CONCAT('%', #{orderId}, '%')
+			</if>
+			<if test="repayStatus != null and repayStatus != ''">
+				AND hdld.repay_status = #{repayStatus}
+			</if>
+			<if test="borrowNid != null and borrowNid != ''">
+				AND hdld.borrow_nid  LIKE CONCAT('%', #{borrowNid}, '%')
+			</if>
+			<if test="repayTimeStart != null and repayTimeStart != ''">
+				AND FROM_UNIXTIME( hdld.repay_time, '%Y-%m-%d' ) <![CDATA[>]]>  #{repayTimeStart}
+			</if>
+			<if test="repayTimeEnd != null and repayTimeEnd != ''">
+				AND FROM_UNIXTIME( hdld.repay_time, '%Y-%m-%d' ) <![CDATA[<=]]>  #{repayTimeEnd}
+			</if>
+				)
+			+
+				(
+					SELECT
+						count(1)
+				FROM
+					hyjf_debt_credit_tender hdct
+					where 1=1
+			<if test="planNidSrch != null and planNidSrch != ''">
+				AND hdct.assign_plan_nid LIKE CONCAT('%', #{planNidSrch}, '%')
+			</if>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND hdct.assign_plan_order_id LIKE CONCAT('%', #{planOrderId}, '%')
+			</if>
+			<if test="userName != null and userName != ''">
+				AND hdct.user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="orderId != null and orderId != ''">
+				AND hdct.assign_order_id LIKE CONCAT('%', #{orderId}, '%')
+			</if>
+			<if test="repayStatus != null and repayStatus != ''">
+				AND hdct.status = #{repayStatus}
+			</if>
+			<if test="borrowNid != null and borrowNid != ''">
+				AND hdct.borrow_nid  LIKE CONCAT('%', #{borrowNid}, '%')
+			</if>
+			<if test="repayTimeStart != null and repayTimeStart != ''">
+				AND FROM_UNIXTIME( hdct.assign_repay_next_time, '%Y-%m-%d' ) <![CDATA[>=]]>  #{repayTimeStart}
+			</if>
+			<if test="repayTimeEnd != null and repayTimeEnd != ''">
+				AND FROM_UNIXTIME( hdct.assign_repay_next_time, '%Y-%m-%d' ) <![CDATA[<=]]>  #{repayTimeEnd}
+			</if>
+				) as count from dual;
+	</select>
+	<select id="countLoanDetailNew" resultType="java.lang.Long" parameterType="com.hyjf.mybatis.model.customize.PlanCommonCustomize">
+				SELECT
+					count(1)
+				FROM
+					hyjf_debt_detail hdd
+				WHERE
+					 hdd.status=1
+			<if test="planNidSrch != null and planNidSrch != ''">
+				AND hdd.plan_nid LIKE CONCAT('%', #{planNidSrch}, '%')
+			</if>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND hdd.plan_order_id LIKE CONCAT('%', #{planOrderId}, '%')
+			</if>
+			<if test="userName != null and userName != ''">
+				AND hdd.user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="orderId != null and orderId != ''">
+				AND hdd.order_id LIKE CONCAT('%', #{orderId}, '%')
+			</if>
+			<if test="repayStatus != null and repayStatus != ''">
+				AND hdd.repay_status = #{repayStatus}
+			</if>
+			<if test="borrowNid != null and borrowNid != ''">
+				AND hdd.borrow_nid  LIKE CONCAT('%', #{borrowNid}, '%')
+			</if>
+			<if test="repayTimeStart != null and repayTimeStart != ''">
+				AND FROM_UNIXTIME( hdd.repay_time, '%Y-%m-%d' ) <![CDATA[>=]]>  #{repayTimeStart}
+			</if>
+			<if test="repayTimeEnd != null and repayTimeEnd != ''">
+				AND FROM_UNIXTIME( hdd.repay_time, '%Y-%m-%d' ) <![CDATA[<=]]>  #{repayTimeEnd}
+			</if>
+	</select>
+	<select id="selectLoanDetailList" resultType="java.util.HashMap" parameterType="com.hyjf.mybatis.model.customize.PlanCommonCustomize">
+				(
+				SELECT
+					hdl.plan_nid planNid,
+					hdl.plan_order_id planOrderId,
+					hdl.user_name userName,
+					hdl.invest_order_id investOrderId,
+					hdl.borrow_nid borrowNid,
+					hdl.repay_period repayPeriod,
+					hdl.loan_capital-hdl.credit_amount loanCapital,
+					hdl.loan_interest-hdl.credit_interest_amount loanInterest,
+					hdl.loan_account-hdl.credit_amount-hdl.credit_interest_amount loanAccount,
+					hdl.repay_account_yes repayAccountYes,
+					hdl.repay_status repayStatus,
+					hdl.repay_time repayTime
+				FROM
+					hyjf_debt_loan hdl
+				LEFT JOIN hyjf_debt_borrow hdb ON hdl.borrow_nid = hdb.borrow_nid
+				WHERE
+					hdb.borrow_style <![CDATA[<>]]> 'month'
+				AND hdb.borrow_style <![CDATA[<>]]> 'endmonth'
+				AND hdb.borrow_style <![CDATA[<>]]> 'principal'
+				AND hdl.loan_capital-hdl.credit_amount <![CDATA[<>]]> 0
+			<if test="planNidSrch != null and planNidSrch != ''">
+				AND hdl.plan_nid LIKE CONCAT('%', #{planNidSrch}, '%')
+			</if>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND hdl.plan_order_id LIKE CONCAT('%', #{planOrderId}, '%')
+			</if>
+			<if test="userName != null and userName != ''">
+				AND hdl.user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="orderId != null and orderId != ''">
+				AND hdl.invest_order_id LIKE CONCAT('%', #{orderId}, '%')
+			</if>
+			<if test="repayStatus != null and repayStatus != ''">
+				AND hdl.repay_status = #{repayStatus}
+			</if>
+			<if test="borrowNid != null and borrowNid != ''">
+				AND hdl.borrow_nid  LIKE CONCAT('%', #{borrowNid}, '%')
+			</if>
+			<if test="repayTimeStart != null and repayTimeStart != ''">
+				AND FROM_UNIXTIME( hdl.repay_time, '%Y-%m-%d' ) <![CDATA[>=]]>  #{repayTimeStart}
+			</if>
+			<if test="repayTimeEnd != null and repayTimeEnd != ''">
+				AND FROM_UNIXTIME( hdl.repay_time, '%Y-%m-%d' ) <![CDATA[<=]]>  #{repayTimeEnd}
+			</if>
+			)
+			UNION ALL
+				(
+					SELECT
+						hdld.plan_nid planNid,
+						hdld.plan_order_id planOrderId,
+						hdld.user_name userName,
+						hdld.invest_order_id investOrderId,
+						hdld.borrow_nid borrowNid,
+						hdld.repay_period repayPeriod,
+						hdld.loan_capital-hdld.credit_amount loanCapital,
+						hdld.loan_interest-hdld.credit_interest_amount loanInterest,
+						hdld.loan_account-hdld.credit_amount-hdld.credit_interest_amount loanAccount,
+						hdld.repay_account_yes repayAccountYes,
+						hdld.repay_status repayStatus,
+						hdld.repay_time repayTime
+					FROM
+						hyjf_debt_loan_detail hdld
+					WHERE
+						hdld.loan_capital-hdld.credit_amount <![CDATA[<>]]> 0
+			<if test="planNidSrch != null and planNidSrch != ''">
+				AND hdld.plan_nid LIKE CONCAT('%', #{planNidSrch}, '%')
+			</if>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND hdld.plan_order_id LIKE CONCAT('%', #{planOrderId}, '%')
+			</if>
+			<if test="userName != null and userName != ''">
+				AND hdld.user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="orderId != null and orderId != ''">
+				AND hdld.invest_order_id LIKE CONCAT('%', #{orderId}, '%')
+			</if>
+			<if test="repayStatus != null and repayStatus != ''">
+				AND hdld.repay_status = #{repayStatus}
+			</if>
+			<if test="borrowNid != null and borrowNid != ''">
+				AND hdld.borrow_nid  LIKE CONCAT('%', #{borrowNid}, '%')
+			</if>
+			<if test="repayTimeStart != null and repayTimeStart != ''">
+				AND FROM_UNIXTIME( hdld.repay_time, '%Y-%m-%d' ) <![CDATA[>=]]>  #{repayTimeStart}
+			</if>
+			<if test="repayTimeEnd != null and repayTimeEnd != ''">
+				AND FROM_UNIXTIME( hdld.repay_time, '%Y-%m-%d' ) <![CDATA[<=]]>  #{repayTimeEnd}
+			</if>
+				)
+			UNION ALL
+				(
+					SELECT
+						hdct.assign_plan_nid planNid,
+						hdct.assign_plan_order_id planOrderId,
+						hdct.user_name userName,
+						hdct.assign_order_id investOrderId,
+						hdct.borrow_nid borrowNid,
+						hdct.repay_period repayPeriod,
+						hdct.assign_capital loanCapital,
+						hdct.assign_interest loanInterest,
+						hdct.assign_account loanAccount,
+						hdct.assign_repay_account repayAccountYes,
+						CASE
+					WHEN hdct.status = 1 THEN
+						2
+					ELSE
+						0
+					END repayStatus,
+					FROM_UNIXTIME(
+						hdct.assign_repay_next_time,
+						'%Y-%m-%d %H:%i:%s'
+					) repayTime
+				FROM
+					hyjf_debt_credit_tender hdct
+					where 1=1
+			<if test="planNidSrch != null and planNidSrch != ''">
+				AND hdct.assign_plan_nid LIKE CONCAT('%', #{planNidSrch}, '%')
+			</if>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND hdct.assign_plan_order_id LIKE CONCAT('%', #{planOrderId}, '%')
+			</if>
+			<if test="userName != null and userName != ''">
+				AND hdct.user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="orderId != null and orderId != ''">
+				AND hdct.assign_order_id LIKE CONCAT('%', #{orderId}, '%')
+			</if>
+			<if test="repayStatus != null and repayStatus != ''">
+				AND hdct.status = #{repayStatus}
+			</if>
+			<if test="borrowNid != null and borrowNid != ''">
+				AND hdct.borrow_nid  LIKE CONCAT('%', #{borrowNid}, '%')
+			</if>
+			<if test="repayTimeStart != null and repayTimeStart != ''">
+				AND FROM_UNIXTIME( hdct.assign_repay_next_time, '%Y-%m-%d' ) <![CDATA[>=]]>  #{repayTimeStart}
+			</if>
+			<if test="repayTimeEnd != null and repayTimeEnd != ''">
+				AND FROM_UNIXTIME( hdct.assign_repay_next_time, '%Y-%m-%d' ) <![CDATA[<=]]>  #{repayTimeEnd}
+			</if>
+				)
+	</select>
+	<select id="selectLoanDetailListNew" resultType="java.util.HashMap" parameterType="com.hyjf.mybatis.model.customize.PlanCommonCustomize">
+				SELECT
+					hdd.plan_nid planNid,
+					hdd.plan_order_id planOrderId,
+					hdd.user_name userName,
+					hdd.order_id investOrderId,
+					hdd.borrow_nid borrowNid,
+					hdd.repay_period repayPeriod,
+					hdd.loan_capital loanCapital,
+					hdd.loan_interest loanInterest,
+					hdd.loan_interest+hdd.loan_capital loanAccount,
+					hdd.repay_capital_wait repayCapitalWait,
+					hdd.repay_interest_wait repayInterestWait,
+					hdd.repay_interest_wait + hdd.repay_capital_wait repayAccountWait ,
+					CASE WHEN hdd.repay_capital_yes+hdd.repay_interest_yes > 0 THEN hdd.repay_capital_yes+hdd.repay_interest_yes
+					ELSE 0 END repayAccountYes,
+					hdd.repay_capital_yes repayCapitalYes,
+					hdd.repay_interest_yes repayInterestYes,
+					FROM_UNIXTIME(hdd.repay_action_time, '%Y-%m-%d' ) repayActionTime,
+					hdd.service_fee serviceFee,
+					hdd.repay_status repayStatus,
+					FROM_UNIXTIME(hdd.repay_time, '%Y-%m-%d' ) repayTime,
+					hdd.order_type orderType,
+					hdd.expire_fair_value expireFairValue,
+					hdd.delay_days,
+					hdd.delay_interest,
+					hdd.late_days,
+					hdd.late_interest
+				FROM
+					hyjf_debt_detail hdd
+				WHERE
+				  hdd.status=1
+			<if test="planNidSrch != null and planNidSrch != ''">
+				AND hdd.plan_nid LIKE CONCAT('%', #{planNidSrch}, '%')
+			</if>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND hdd.plan_order_id LIKE CONCAT('%', #{planOrderId}, '%')
+			</if>
+			<if test="userName != null and userName != ''">
+				AND hdd.user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="orderId != null and orderId != ''">
+				AND hdd.order_id LIKE CONCAT('%', #{orderId}, '%')
+			</if>
+			<if test="repayStatus != null and repayStatus != ''">
+				AND hdd.repay_status = #{repayStatus}
+			</if>
+			<if test="borrowNid != null and borrowNid != ''">
+				AND hdd.borrow_nid  LIKE CONCAT('%', #{borrowNid}, '%')
+			</if>
+			<if test="repayTimeStart != null and repayTimeStart != ''">
+				AND FROM_UNIXTIME( hdd.repay_time, '%Y-%m-%d' ) <![CDATA[>=]]>  #{repayTimeStart}
+			</if>
+			<if test="repayTimeEnd != null and repayTimeEnd != ''">
+				AND FROM_UNIXTIME( hdd.repay_time, '%Y-%m-%d' ) <![CDATA[<=]]>  #{repayTimeEnd}
+			</if>
+		<if test="limitStart !=null and limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	<select id="LoanDeailSumMap" resultType="java.util.HashMap" parameterType="com.hyjf.mybatis.model.customize.PlanCommonCustomize">
+				select sum(loanCapital) loanCapitalSum,sum(loanInterest) loanInterestSum,
+						sum(loanAccount) loanAccountSum,sum(repayAccountYes) repayAccountSum 
+						from (
+				(
+				SELECT
+					sum(hdl.loan_capital-hdl.credit_amount) loanCapital,
+					sum(hdl.loan_interest-hdl.credit_interest_amount) loanInterest,
+					sum(hdl.loan_account-hdl.credit_amount-hdl.credit_interest_amount) loanAccount,
+					sum(hdl.repay_account_yes) repayAccountYes
+				FROM
+					hyjf_debt_loan hdl
+				LEFT JOIN hyjf_debt_borrow hdb ON hdl.borrow_nid = hdb.borrow_nid
+				WHERE
+					hdb.borrow_style <![CDATA[<>]]> 'month'
+				AND hdb.borrow_style <![CDATA[<>]]> 'endmonth'
+				AND hdb.borrow_style <![CDATA[<>]]> 'principal'
+				AND hdl.loan_capital-hdl.credit_amount <![CDATA[<>]]> 0
+			<if test="planNidSrch != null and planNidSrch != ''">
+				AND hdl.plan_nid LIKE CONCAT('%', #{planNidSrch}, '%')
+			</if>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND hdl.plan_order_id LIKE CONCAT('%', #{planOrderId}, '%')
+			</if>
+			<if test="userName != null and userName != ''">
+				AND hdl.user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="orderId != null and orderId != ''">
+				AND hdl.invest_order_id LIKE CONCAT('%', #{orderId}, '%')
+			</if>
+			<if test="repayStatus != null and repayStatus != ''">
+				AND hdl.repay_status = #{repayStatus}
+			</if>
+			<if test="borrowNid != null and borrowNid != ''">
+				AND hdl.borrow_nid  LIKE CONCAT('%', #{borrowNid}, '%')
+			</if>
+			<if test="repayTimeStart != null and repayTimeStart != ''">
+				AND FROM_UNIXTIME( hdl.repay_time, '%Y-%m-%d' ) <![CDATA[>=]]>  #{repayTimeStart}
+			</if>
+			<if test="repayTimeEnd != null and repayTimeEnd != ''">
+				AND FROM_UNIXTIME( hdl.repay_time, '%Y-%m-%d' ) <![CDATA[<=]]>  #{repayTimeEnd}
+			</if>
+			)
+			UNION ALL
+				(
+					SELECT
+						sum(hdld.loan_capital-hdld.credit_amount) loanCapital,
+						sum(hdld.loan_interest-hdld.credit_interest_amount) loanInterest,
+						sum(hdld.loan_account-hdld.credit_amount-hdld.credit_interest_amount) loanAccount,
+						sum(hdld.repay_account_yes) repayAccountYes
+					FROM
+						hyjf_debt_loan_detail hdld
+					WHERE
+						hdld.loan_capital-hdld.credit_amount <![CDATA[<>]]> 0
+			<if test="planNidSrch != null and planNidSrch != ''">
+				AND hdld.plan_nid LIKE CONCAT('%', #{planNidSrch}, '%')
+			</if>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND hdld.plan_order_id LIKE CONCAT('%', #{planOrderId}, '%')
+			</if>
+			<if test="userName != null and userName != ''">
+				AND hdld.user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="orderId != null and orderId != ''">
+				AND hdld.invest_order_id LIKE CONCAT('%', #{orderId}, '%')
+			</if>
+			<if test="repayStatus != null and repayStatus != ''">
+				AND hdld.repay_status = #{repayStatus}
+			</if>
+			<if test="borrowNid != null and borrowNid != ''">
+				AND hdld.borrow_nid  LIKE CONCAT('%', #{borrowNid}, '%')
+			</if>
+			<if test="repayTimeStart != null and repayTimeStart != ''">
+				AND FROM_UNIXTIME( hdld.repay_time, '%Y-%m-%d' ) <![CDATA[>=]]>  #{repayTimeStart}
+			</if>
+			<if test="repayTimeEnd != null and repayTimeEnd != ''">
+				AND FROM_UNIXTIME( hdld.repay_time, '%Y-%m-%d' ) <![CDATA[<=]]>  #{repayTimeEnd}
+			</if>
+				)
+			UNION ALL
+				(
+					SELECT
+						sum(hdct.assign_capital) loanCapital,
+						sum(hdct.assign_interest) loanInterest,
+						sum(hdct.assign_account) loanAccount,
+						sum(hdct.assign_repay_account) repayAccountYes
+				FROM
+					hyjf_debt_credit_tender hdct
+					where 1=1
+			<if test="planNidSrch != null and planNidSrch != ''">
+				AND hdct.assign_plan_nid LIKE CONCAT('%', #{planNidSrch}, '%')
+			</if>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND hdct.assign_plan_order_id LIKE CONCAT('%', #{planOrderId}, '%')
+			</if>
+			<if test="userName != null and userName != ''">
+				AND hdct.user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="orderId != null and orderId != ''">
+				AND hdct.assign_order_id LIKE CONCAT('%', #{orderId}, '%')
+			</if>
+			<if test="repayStatus != null and repayStatus != ''">
+				AND hdct.status = #{repayStatus}
+			</if>
+			<if test="borrowNid != null and borrowNid != ''">
+				AND hdct.borrow_nid  LIKE CONCAT('%', #{borrowNid}, '%')
+			</if>
+			<if test="repayTimeStart != null and repayTimeStart != ''">
+				AND FROM_UNIXTIME( hdct.assign_repay_next_time, '%Y-%m-%d' ) <![CDATA[>=]]>  #{repayTimeStart}
+			</if>
+			<if test="repayTimeEnd != null and repayTimeEnd != ''">
+				AND FROM_UNIXTIME( hdct.assign_repay_next_time, '%Y-%m-%d' ) <![CDATA[<=]]>  #{repayTimeEnd}
+			</if>
+				)
+				) a
+	</select>
+	<select id="LoanDeailSumMapNew" resultType="java.util.HashMap" parameterType="com.hyjf.mybatis.model.customize.PlanCommonCustomize">
+		SELECT
+			sum(hdd.loan_capital) loanCapitalSum,
+			sum(hdd.loan_interest) loanInterestSum,
+			sum(
+				hdd.loan_interest + hdd.loan_capital
+			) loanAccountSum,
+			sum(
+				CASE
+				WHEN hdd.repay_status = 1 THEN
+					hdd.repay_capital_yes + hdd.repay_interest_yes
+				ELSE
+					hdd.repay_capital_yes + hdd.repay_interest_yes
+				END
+			) repayAccountSum,
+			sum(hdd.service_fee) serviceFeeSum,
+			sum(hdd.expire_fair_value) fairValueSum
+		FROM
+			hyjf_debt_detail hdd
+		WHERE
+			hdd.`status` = 1
+			<if test="planNidSrch != null and planNidSrch != ''">
+				AND hdd.plan_nid LIKE CONCAT('%', #{planNidSrch}, '%')
+			</if>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND hdd.plan_order_id LIKE CONCAT('%', #{planOrderId}, '%')
+			</if>
+			<if test="userName != null and userName != ''">
+				AND hdd.user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="orderId != null and orderId != ''">
+				AND hdd.order_id LIKE CONCAT('%', #{orderId}, '%')
+			</if>
+			<if test="repayStatus != null and repayStatus != ''">
+				AND hdd.repay_status = #{repayStatus}
+			</if>
+			<if test="borrowNid != null and borrowNid != ''">
+				AND hdd.borrow_nid  LIKE CONCAT('%', #{borrowNid}, '%')
+			</if>
+			<if test="repayTimeStart != null and repayTimeStart != ''">
+				AND FROM_UNIXTIME( hdd.repay_time, '%Y-%m-%d' ) <![CDATA[>=]]>  #{repayTimeStart}
+			</if>
+			<if test="repayTimeEnd != null and repayTimeEnd != ''">
+				AND FROM_UNIXTIME( hdd.repay_time, '%Y-%m-%d' ) <![CDATA[<=]]>  #{repayTimeEnd}
+			</if>
+			
+	</select>
+	
+	<select id="selectPlanInfoSum" resultType="java.util.HashMap" parameterType="java.lang.String">
+			SELECT
+			IFNULL((
+				SELECT
+					sum(account)
+				FROM
+					hyjf_debt_invest
+				WHERE
+					plan_order_id = #{value}
+			),0) + IFNULL((
+				SELECT
+					sum(assign_pay)
+				FROM
+					hyjf_debt_credit_tender
+				WHERE
+					assign_plan_order_id = #{value}
+				AND STATUS = 0
+			),0) investSum
+		FROM
+			DUAL
+	</select>
+	
+	
+	 <!--可投列表  -->
+  <resultMap id="selectInvestListMap" type="com.hyjf.mybatis.model.customize.PlanInvestCustomize">
+		<result column="plan_nid" property="planNid" jdbcType="VARCHAR" />
+		<result column="plan_order_id" property="planOrderId" jdbcType="VARCHAR" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="order_id" property="orderId" jdbcType="VARCHAR" />
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<result column="borrowTypeName" property="borrowTypeName" jdbcType="VARCHAR" />
+		<result column="name" property="borrowStyleName" jdbcType="VARCHAR" />
+		<result column="nid" property="borrowStyle" jdbcType="VARCHAR" />
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<result column="account" property="account" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="hold_days" property="holdDays" jdbcType="VARCHAR" />
+		<result column="surplus_days" property="surplusDays" jdbcType="VARCHAR" />
+		<result column="fair_value" property="fairValue" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+		<result column="isDay" property="isDay" jdbcType="VARCHAR" />
+		<!-- A、项目最终一期还款时间大于（清算时间-3），则显示计划清算时间；B、项目最终一期还款时间小于等于（清算时间-3），则显示项目最终一期还款时间； -->
+			<result column="expectExitTime" property="expectExitTime" jdbcType="VARCHAR" />
+			<!-- 退出时间 -->
+			<result column="exitTime" property="exitTime" jdbcType="VARCHAR" />
+			<!-- 借款期限 -->
+			<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectInvestList" resultMap="selectInvestListMap" parameterType="java.util.HashMap"> 
+		 SELECT 	hdd.plan_nid,
+		hdd.plan_order_id,
+			hdd.user_name,
+			hdd.order_id,
+			hdd.borrow_nid,
+			hbpt.borrow_name borrowTypeName,
+			hb.borrow_apr,
+			hdd.repay_status status,
+			hdd.account,
+			CASE
+			WHEN DATEDIFF(NOW(),
+						FROM_UNIXTIME(hb.recover_last_time)) <![CDATA[<]]> 0 
+						and hdd.repay_capital_wait=0
+			THEN
+				0
+			WHEN hdd.repay_status=1	and  hb.repay_full_status =1 AND hdd.advance_status = 0
+			THEN
+				DATEDIFF(FROM_UNIXTIME(hdd.repay_action_time),
+				FROM_UNIXTIME(hb.recover_last_time))
+			WHEN hdd.repay_status=1	and  hb.repay_full_status =1	AND hdd.advance_status in (2,3)
+			THEN
+				DATEDIFF(FROM_UNIXTIME(hdd.repay_time),
+				FROM_UNIXTIME(hb.recover_last_time))
+				WHEN hdd.repay_status=1	and  hb.repay_full_status =1	AND hdd.advance_status =1
+			THEN
+				DATEDIFF(FROM_UNIXTIME(hdd.repay_action_time),
+				FROM_UNIXTIME(hb.recover_last_time))
+			ELSE
+			DATEDIFF(NOW(),
+				FROM_UNIXTIME(hb.recover_last_time))
+			END hold_days,
+			
+			CASE WHEN DATEDIFF(NOW(),
+				FROM_UNIXTIME(hb.recover_last_time)) <![CDATA[<]]> 0
+					and hdd.repay_capital_wait=0
+		 	 THEN
+					CASE WHEN hb.borrow_style='endday'
+					THEN    
+						hb.borrow_period
+					ELSE
+						DATEDIFF( DATE_ADD(FROM_UNIXTIME(hb.recover_last_time),INTERVAL hb.borrow_period MONTH),
+						FROM_UNIXTIME(hb.recover_last_time))
+					END	
+			WHEN hdd.repay_status=1	and  hb.repay_full_status =1
+			THEN
+				0
+			ELSE
+				CASE WHEN hb.borrow_style='endday'
+					THEN    
+							DATEDIFF( DATE_ADD(FROM_UNIXTIME(hb.recover_last_time),INTERVAL hb.borrow_period DAY),
+							NOW())
+					ELSE
+						DATEDIFF( DATE_ADD(FROM_UNIXTIME(hb.recover_last_time),INTERVAL hb.borrow_period MONTH),
+						NOW())
+					END
+			END surplus_days,
+	CASE WHEN hb.borrow_style='end'
+		 THEN 
+			TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait* 
+					datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+					datediff(FROM_UNIXTIME(hb.repay_last_time,'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))+IF(hdd.repay_status=0,hdd.late_interest+hdd.delay_interest -hdd.late_interest_assigned-hdd.delay_interest_assigned,0) ,2)
+		WHEN hb.borrow_style='endday'
+		THEN 
+			TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait* 
+					datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+					 hb.borrow_period+IF(hdd.repay_status=0,hdd.late_interest+hdd.delay_interest-hdd.late_interest_assigned-hdd.delay_interest_assigned ,0),2)	
+		ELSE 
+	 			TRUNCATE (	(SELECT sum(repay_capital_wait) FROM hyjf_debt_detail WHERE order_id=hdd.order_id and status=1)  + IFNULL((SELECT SUM(repay_interest_wait) FROM hyjf_debt_detail   WHERE  order_id=hdd.order_id AND late_days!=0  and status=1),0) +
+						hdd.repay_interest_wait*
+										datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),
+															DATE_FORMAT(DATE_SUB(FROM_UNIXTIME(hdd.repay_time),INTERVAL 1 MONTH),'%Y-%m-%d'))/
+															ABS(datediff(DATE_FORMAT(DATE_SUB(FROM_UNIXTIME(hdd.repay_time),INTERVAL 1 MONTH),'%Y-%m-%d'),
+																FROM_UNIXTIME(hdd.repay_time,'%Y-%m-%d')))+IF(hdd.repay_status=0,hdd.late_interest+hdd.delay_interest -hdd.late_interest_assigned-hdd.delay_interest_assigned,0)
+											
+					,2)
+		END fair_value ,
+		 case when hdd.order_type =0 then hdd.order_date else	FROM_UNIXTIME( hdd.create_time, '%Y-%m-%d' ) end create_time,
+		 	hb.borrow_period,
+			CASE
+			WHEN DATEDIFF(FROM_UNIXTIME(hdp.liquidate_should_time),
+						FROM_UNIXTIME(hb.repay_last_time)) <![CDATA[>]]> hdp.debt_quit_period 
+						and hb.repay_last_time <![CDATA[<>]]> 0
+			THEN
+				FROM_UNIXTIME(hb.repay_last_time, '%Y-%m-%d')
+			ELSE
+			FROM_UNIXTIME(hdp.liquidate_should_time, '%Y-%m-%d')
+			END expectExitTime,
+			 hdp.liquidate_fact_time   exitTime
+	 FROM hyjf_debt_detail hdd
+	LEFT JOIN hyjf_debt_borrow hb ON hdd.borrow_nid = hb.borrow_nid
+	LEFT JOIN huiyingdai_borrow_project_type hbpt ON hbpt.borrow_cd = hb.project_type
+	LEFT JOIN hyjf_debt_plan hdp ON hdp.debt_plan_nid = hdd.plan_nid
+			<include refid="Where_Clause_Invest_Borrow" />
+		ORDER BY hdd.create_time DESC
+	    <if test="limitStart !=null and limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<select id="selectInvestCreditList" resultMap="selectInvestListMap" parameterType="java.util.HashMap"> 
+		 SELECT 	hdi.plan_nid,
+			hdi.plan_order_id,
+			hdi.user_name,
+			hdi.order_id,
+			hdi.borrow_nid,
+			hbpt.borrow_name borrowTypeName,
+			hb.borrow_apr,
+			hdi.status,
+			hdi.account,
+			FROM_UNIXTIME( hdi.create_time, '%Y-%m-%d' ) create_time,
+		 	hb.borrow_period,
+			CASE
+			WHEN DATEDIFF(FROM_UNIXTIME(hdp.liquidate_should_time),
+						FROM_UNIXTIME(hb.repay_last_time)) <![CDATA[>]]> hdp.debt_quit_period 
+						and hb.repay_last_time <![CDATA[<>]]> 0
+			THEN
+				FROM_UNIXTIME(hb.repay_last_time, '%Y-%m-%d')
+			ELSE
+			FROM_UNIXTIME(hdp.liquidate_should_time, '%Y-%m-%d')
+			END expectExitTime,
+			 FROM_UNIXTIME(hdp.repay_time, '%Y-%m-%d')   exitTime,
+			 	 0 type,
+			 	 case when hb.borrow_style = 'endday'
+			 	 then 1 else 0 end isDay
+	 FROM hyjf_debt_invest hdi
+	LEFT JOIN hyjf_debt_borrow hb ON hdi.borrow_nid = hb.borrow_nid
+	LEFT JOIN huiyingdai_borrow_project_type hbpt ON hbpt.borrow_cd = hb.project_type
+	LEFT JOIN hyjf_debt_plan hdp ON hdp.debt_plan_nid = hdi.plan_nid
+			<include refid="Where_selectInvestCreditList" />
+		ORDER BY hdi.create_time DESC
+	    <if test="limitStart !=null and limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	<select id="selectCreditCreditList" resultMap="selectInvestListMap" parameterType="java.util.HashMap"> 
+	 SELECT 	hdct.assign_plan_nid plan_nid,
+			hdct.assign_plan_order_id plan_order_id,
+			hdct.user_name,
+			hdct.assign_order_id order_id,
+			hdct.credit_nid borrow_nid,
+			hbpt.borrow_name borrowTypeName,
+			hdc.actual_apr borrow_apr,
+			hdct.status,
+			hdct.assign_price account,
+			FROM_UNIXTIME( hdct.create_time, '%Y-%m-%d' ) create_time,
+		 	hdc.credit_term borrow_period,
+			CASE
+			WHEN DATEDIFF(FROM_UNIXTIME(hdp.liquidate_should_time),
+						FROM_UNIXTIME(hdc.credit_repay_end_time)) <![CDATA[>]]> hdp.debt_quit_period 
+						and hdc.credit_repay_end_time <![CDATA[<>]]> 0
+			THEN
+				FROM_UNIXTIME(hdc.credit_repay_end_time, '%Y-%m-%d')
+			ELSE
+			FROM_UNIXTIME(hdp.liquidate_should_time, '%Y-%m-%d')
+			END expectExitTime,
+			 FROM_UNIXTIME(hdp.liquidate_fact_time, '%Y-%m-%d')   exitTime,
+			 1 type,
+			 1 isDay
+	 FROM hyjf_debt_credit_tender hdct
+	LEFT JOIN hyjf_debt_credit hdc ON hdct.credit_nid = hdc.credit_nid
+	LEFT JOIN hyjf_debt_borrow hb ON hdct.borrow_nid = hb.borrow_nid
+	LEFT JOIN huiyingdai_borrow_project_type hbpt ON hbpt.borrow_cd = hb.project_type
+	LEFT JOIN hyjf_debt_plan hdp ON hdp.debt_plan_nid = hdct.assign_plan_nid
+			<include refid="Where_selectCreditCreditList" />
+		ORDER BY hdct.create_time DESC
+	    <if test="limitStart !=null and limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<select id="countInvest" resultType="java.lang.Long" parameterType="java.util.HashMap">
+		 SELECT
+			count(1)
+			 FROM hyjf_debt_detail hdd
+			LEFT JOIN hyjf_debt_borrow hb ON hdd.borrow_nid = hb.borrow_nid
+			LEFT JOIN huiyingdai_borrow_project_type hbpt ON hbpt.borrow_cd = hb.project_type
+			LEFT JOIN hyjf_debt_plan hdp ON hdp.debt_plan_nid = hdd.plan_nid
+			<include refid="Where_Clause_Invest_Borrow" />
+	</select>
+	<select id="selectInvestListNew" resultMap="selectInvestListMap" parameterType="java.util.HashMap"> 
+		 SELECT 	hdd.plan_nid,
+		hdd.plan_order_id,
+			hdd.user_name,
+			hdd.order_id,
+			hdd.borrow_nid,
+			hbpt.borrow_name borrowTypeName,
+			hb.borrow_apr,
+			hdd.repay_status status,
+			CASE WHEN hb.borrow_style='end' or hb.borrow_style='endday'
+		 THEN 
+			 hdd.repay_capital_wait
+		 ELSE
+		 (SELECT sum(account) from hyjf_debt_detail where order_id=hdd.order_id  and repay_status=0  and status=1)
+		  END account,
+			CASE
+			WHEN DATEDIFF(NOW(),
+						FROM_UNIXTIME(hb.recover_last_time)) <![CDATA[<]]> 0 
+						and hdd.repay_capital_wait=0
+			THEN
+				0
+			WHEN hdd.repay_status=1	and  hb.repay_full_status =1	AND hdd.advance_status = 0
+			THEN
+				DATEDIFF(FROM_UNIXTIME(hdd.repay_action_time),
+				FROM_UNIXTIME(hb.recover_last_time))
+			WHEN hdd.repay_status=1	and  hb.repay_full_status =1	AND hdd.advance_status in (2,3)
+			THEN
+				DATEDIFF(FROM_UNIXTIME(hdd.repay_time),
+				FROM_UNIXTIME(hb.recover_last_time))
+				WHEN hdd.repay_status=1	and  hb.repay_full_status =1	AND hdd.advance_status =1
+			THEN
+				DATEDIFF(FROM_UNIXTIME(hdd.repay_action_time),
+				FROM_UNIXTIME(hb.recover_last_time))
+			ELSE
+			DATEDIFF(NOW(),
+				FROM_UNIXTIME(hb.recover_last_time))
+			END hold_days,
+			
+			CASE WHEN DATEDIFF(NOW(),
+				FROM_UNIXTIME(hb.recover_last_time)) <![CDATA[<]]> 0
+					and hdd.repay_capital_wait=0
+		 	 THEN
+					CASE WHEN hb.borrow_style='endday'
+					THEN    
+						hb.borrow_period
+					ELSE
+						DATEDIFF( DATE_ADD(FROM_UNIXTIME(hb.recover_last_time),INTERVAL hb.borrow_period MONTH),
+						FROM_UNIXTIME(hb.recover_last_time))
+					END	
+			WHEN hdd.repay_status=1	and  hb.repay_full_status =1
+			THEN
+				0
+			ELSE
+				CASE WHEN hb.borrow_style='endday'
+					THEN    
+							DATEDIFF( DATE_ADD(FROM_UNIXTIME(hb.recover_last_time),INTERVAL hb.borrow_period DAY),
+							NOW())
+					ELSE
+						DATEDIFF( DATE_ADD(FROM_UNIXTIME(hb.recover_last_time),INTERVAL hb.borrow_period MONTH),
+						NOW())
+					END
+			END surplus_days,
+	CASE WHEN hb.borrow_style='end' 
+		 THEN 
+			TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait * 
+					datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+					datediff(FROM_UNIXTIME(hb.repay_last_time,'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))+IF(hdd.repay_status=0,hdd.late_interest+hdd.delay_interest -hdd.late_interest_assigned-hdd.delay_interest_assigned,0),2)
+		WHEN hb.borrow_style='endday'
+		THEN 
+			TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait* 
+					datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+					 hb.borrow_period+IF(hdd.repay_status=0,hdd.late_interest+hdd.delay_interest -hdd.late_interest_assigned-hdd.delay_interest_assigned,0),2)	
+		ELSE 
+	 		TRUNCATE ( (SELECT sum(repay_capital_wait) FROM hyjf_debt_detail WHERE order_id=hdd.order_id and status=1) + 
+				IFNULL((SELECT SUM(repay_interest_wait) FROM hyjf_debt_detail   WHERE  order_id=hdd.order_id AND late_days!=0 and status=1),0) +
+						hdd.repay_interest_wait*
+										datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),
+															DATE_FORMAT(DATE_SUB(FROM_UNIXTIME(hdd.repay_time),INTERVAL 1 MONTH),'%Y-%m-%d'))/
+														ABS(datediff(DATE_FORMAT(DATE_SUB(FROM_UNIXTIME(hdd.repay_time),INTERVAL 1 MONTH),'%Y-%m-%d'),
+																FROM_UNIXTIME(hdd.repay_time,'%Y-%m-%d')))+IF(hdd.repay_status=0,hdd.late_interest+hdd.delay_interest -hdd.late_interest_assigned-hdd.delay_interest_assigned,0)
+											
+					,2)
+		END fair_value ,
+		 case when hdd.order_type =0 then hdd.order_date else	FROM_UNIXTIME( hdd.create_time, '%Y-%m-%d' ) end create_time,
+		 	hb.borrow_period,
+			CASE
+			WHEN DATEDIFF(FROM_UNIXTIME(hdp.liquidate_should_time),
+						FROM_UNIXTIME(hb.repay_last_time)) <![CDATA[>]]> hdp.debt_quit_period 
+						and hb.repay_last_time <![CDATA[<>]]> 0
+			THEN
+				FROM_UNIXTIME(hb.repay_last_time, '%Y-%m-%d')
+			ELSE
+			FROM_UNIXTIME(hdp.liquidate_should_time, '%Y-%m-%d')
+			END expectExitTime,
+			 hdp.liquidate_fact_time   exitTime
+	 FROM hyjf_debt_detail hdd
+	LEFT JOIN hyjf_debt_borrow hb ON hdd.borrow_nid = hb.borrow_nid
+	LEFT JOIN huiyingdai_borrow_project_type hbpt ON hbpt.borrow_cd = hb.project_type
+	LEFT JOIN hyjf_debt_plan hdp ON hdp.debt_plan_nid = hdd.plan_nid
+			<include refid="Where_Clause_Invest_Borrow_NEW" />
+		ORDER BY hdd.create_time DESC
+	    <if test="limitStart !=null and limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+	
+	<select id="countInvestNew" resultType="java.lang.Long" parameterType="java.util.HashMap">
+		 SELECT
+			count(1)
+			 FROM hyjf_debt_detail hdd
+			LEFT JOIN hyjf_debt_borrow hb ON hdd.borrow_nid = hb.borrow_nid
+			LEFT JOIN huiyingdai_borrow_project_type hbpt ON hbpt.borrow_cd = hb.project_type
+			LEFT JOIN hyjf_debt_plan hdp ON hdp.debt_plan_nid = hdd.plan_nid
+			<include refid="Where_Clause_Invest_Borrow_NEW" />
+	</select>
+	
+		
+	<sql id="Where_Clause_Invest_Borrow">
+		<where>
+			<if test="type == null or type == ''">
+				AND hdd.status=1
+			</if>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND hdd.plan_order_id = #{planOrderId}
+			</if>
+			<if test="orderId != null and orderId != ''">
+				AND hdd.order_id= #{orderId}
+			</if>
+			<if test="status != null and (status == '11' or status == 11) ">
+				AND hdp.debt_plan_status = 11
+			</if>
+			<if test="status == null or status == '5' or status == 5">
+				AND hdp.debt_plan_status in (5,6,7,8,9,10,11)
+			</if>
+			<if test="type != null and type != ''">
+				AND hdd.source_type =#{type}
+			</if>
+		</where>
+	</sql>
+	<sql id="Where_selectCreditCreditList">
+		<where>
+			<if test="type == null or type == ''">
+				AND hdct.del_flag=1
+			</if>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND hdct.assign_plan_order_id = #{planOrderId}
+			</if>
+			<if test="orderId != null and orderId != ''">
+				AND hdct.assign_order_id= #{orderId}
+			</if>
+			<if test="status != null and (status == '11' or status == 11) ">
+				AND hdp.debt_plan_status = 11
+			</if>
+			<if test="status == null or status == '5' or status == 5">
+				AND hdp.debt_plan_status in (5,6,7,8,9,10,11)
+			</if>
+			<if test="type != null and type != ''">
+				AND type =#{type}
+			</if>
+		</where>
+	</sql>
+	<sql id="Where_selectInvestCreditList">
+		<where>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND hdi.plan_order_id = #{planOrderId}
+			</if>
+			<if test="orderId != null and orderId != ''">
+				AND hdi.order_id= #{orderId}
+			</if>
+			<if test="status != null and (status == '11' or status == 11) ">
+				AND hdp.debt_plan_status = 11
+			</if>
+			<if test="status == null or status == '5' or status == 5">
+				AND hdp.debt_plan_status in (5,6,7,8,9,10)
+			</if>
+			<if test="type != null and type != ''">
+				AND type =#{type}
+			</if>
+		</where>
+	</sql>
+	<sql id="Where_Clause_Invest_Borrow_NEW">
+		<where>
+			<if test="type == null or type == ''">
+				AND hdd.status=1 
+			</if>
+			<if test="planOrderId != null and planOrderId != ''">
+				AND hdd.plan_order_id = #{planOrderId}
+			</if>
+			<if test="orderId != null and orderId != ''">
+				AND hdd.order_id= #{orderId}
+			</if>
+			<if test="status != null and (status == '11' or status == 11) ">
+				AND hdp.debt_plan_status = 11
+			</if>
+			<if test="status == null or status == '5' or status == 5">
+				AND hdp.debt_plan_status in (5,6,7,8,9,10,11)
+			</if>
+			<if test="type != null and type != ''">
+				AND hdd.source_type =#{type} AND hdd.repay_period=1
+			</if>
+		</where>
+	</sql>
+	
+	<update id="updatePlanActualApr" parameterType="java.lang.String">
+	UPDATE hyjf_debt_plan hdp SET actual_apr=IFNULL(TRUNCATE (
+			(
+				(
+					SELECT
+						SUM(TRUNCATE (
+								CASE WHEN hb.borrow_style='end' 
+									 THEN 
+										TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait* 
+												datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+												datediff(FROM_UNIXTIME(hb.repay_last_time,'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d')) ,2)
+									WHEN hb.borrow_style='endday'
+									THEN 
+										TRUNCATE (	hdd.repay_capital_wait + hdd.repay_interest_wait* 
+												datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),'%Y-%m-%d'),FROM_UNIXTIME(hb.recover_last_time,'%Y-%m-%d'))/
+												 hb.borrow_period,2)	
+									ELSE 
+											TRUNCATE (	(SELECT sum(repay_capital_wait) FROM hyjf_debt_detail WHERE order_id=hdd.order_id  and status=1) + IFNULL((SELECT SUM(repay_interest_wait) FROM hyjf_debt_detail   WHERE  order_id=hdd.order_id AND late_days!=0),0) +
+													hdd.repay_interest_wait*
+																	datediff(DATE_FORMAT(IF(hdd.advance_status<![CDATA[<>]]>0,FROM_UNIXTIME(hb.repay_last_time),NOW()),'%Y-%m-%d'),'%Y-%m-%d'),
+																						DATE_FORMAT(DATE_SUB(FROM_UNIXTIME(hdd.repay_time),INTERVAL 1 MONTH),'%Y-%m-%d'))/
+																						ABS(datediff(DATE_FORMAT(DATE_SUB(FROM_UNIXTIME(hdd.repay_time),INTERVAL 1 MONTH),'%Y-%m-%d'),
+																							FROM_UNIXTIME(hdd.repay_time,'%Y-%m-%d')))
+																		
+												,2)
+									END 
+							,2) +IF(hdd.repay_status=0,hdd.late_interest+hdd.delay_interest -hdd.late_interest_assigned-hdd.delay_interest_assigned,0) )
+					FROM
+						hyjf_debt_detail hdd
+					LEFT JOIN hyjf_debt_borrow hb ON hdd.borrow_nid = hb.borrow_nid
+					WHERE
+						hdd. STATUS = 1
+					AND hdd.plan_nid = hdp.debt_plan_nid
+						AND
+						((	hb.borrow_style <![CDATA[<>]]> 'end' and hb.borrow_style <![CDATA[<>]]> 'endday'	AND	DATE_FORMAT(FROM_UNIXTIME(hdd.repay_time),'%Y-%m-%d') <![CDATA[>=]]> DATE_FORMAT(NOW(),'%Y-%m-%d')
+						AND 	DATE_FORMAT(DATE_SUB(FROM_UNIXTIME(hdd.repay_time),INTERVAL 1 MONTH),'%Y-%m-%d') <![CDATA[<]]> DATE_FORMAT(NOW(),'%Y-%m-%d')) or (hb.borrow_style = 'end' or hb.borrow_style = 'endday' ))
+				) + hdp.debt_plan_frost + hdp.debt_plan_balance+
+						IFNULL((select sum(liquidates_credit_frost+liquidates_repay_frost+service_fee) from hyjf_debt_plan_accede where plan_nid=hdp.debt_plan_nid),0) - hdp.debt_plan_money_yes
+			) / hdp.debt_plan_money_yes * 360 / 
+			datediff(DATE_FORMAT(NOW(),'%Y-%m-%d'),FROM_UNIXTIME(hdp.plan_lock_time,'%Y-%m-%d')) * 100,
+			2
+		),0)  WHERE debt_plan_nid=#{value}
+			</update>
+			
+			
+	<select id="sumPlanExpireFairValue" resultType="java.util.HashMap" parameterType="java.lang.String">
+		SELECT
+			IFNULL(SUM(hdpa.expire_fair_value),0) AS expireFairValue,
+			IFNULL(SUM(hdpa.liquidates_credit_frost),0) AS liquidatesCreditFrost ,
+			IFNULL(SUM(hdpa.liquidates_repay_frost), 0) AS liquidatesRepayFrost,
+			IFNULL(SUM(hdpa.service_fee), 0) AS serviceFee
+		FROM
+			hyjf_debt_plan_accede hdpa
+		WHERE
+			hdpa.plan_nid=#{value}
+	</select>
+</mapper>

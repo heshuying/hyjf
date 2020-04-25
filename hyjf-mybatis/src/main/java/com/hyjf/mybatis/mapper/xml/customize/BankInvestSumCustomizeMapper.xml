@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.BankInvestSumCustomizeMapper">
+	
+	<!-- 根据用户id查询用户汇直投的投资金额 -->
+	<select id="getHZTTenderAccountSum" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+		SELECT
+			IFNULL(SUM(t.account),0)
+		FROM
+			huiyingdai_borrow_tender t
+		INNER JOIN huiyingdai_borrow b ON t.borrow_nid = b.borrow_nid 
+		AND b.project_type <![CDATA[<>]]> 8
+		WHERE t.user_id = #{userId}
+	</select>
+	<!-- 根据用户id查询用户汇消费的投资金额 -->
+	<select id="getHXFTenderAccountSum" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+		SELECT
+			IFNULL(SUM(t.account),0)
+		FROM
+			huiyingdai_borrow_tender t
+		INNER JOIN huiyingdai_borrow b ON t.borrow_nid = b.borrow_nid 
+		AND b.project_type = 8
+		WHERE t.user_id = #{userId}
+	</select>
+	<!-- 根据用户id查询用户汇天利的投资金额 -->
+	<select id="getHTLTenderAccountSum" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+		SELECT
+			IFNULL(SUM(hpl.amount),0)
+		FROM
+			huiyingdai_product_list hpl
+		WHERE hpl.user_id = #{userId}
+	</select>
+	
+	<!-- 根据用户id查询用户汇添金的投资金额 -->
+	<select id="getHTJTenderAccountSum" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+		SELECT
+			IFNULL(SUM(hdpa.accede_account),0)
+		FROM
+			hyjf_debt_plan_accede hdpa
+		WHERE hdpa.user_id = #{userId}
+	</select>
+	
+	<!-- 根据用户id查询用户汇转让的投资金额 -->
+	<select id="getHZRTenderAccountSum" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+		SELECT
+			IFNULL(SUM(hct.assign_capital),0)
+		FROM
+			huiyingdai_credit_tender hct
+		WHERE hct.user_id = #{userId}
+	</select>
+	
+</mapper>

@@ -1,0 +1,331 @@
+body{
+	width:100%;
+	overflow:hidden;
+	touch-action:none;
+}
+.hide{ display:none;}
+.page{
+	width:100%;
+	height:100%;
+	position:absolute;
+	text-align:center;
+}
+.page .wrap{
+	/*height:500px;*/
+}
+.page-may-1-1{background: url(../img/report-8-bg.jpg) no-repeat;background-size: cover;-webkit-background-size: cover;}
+.page-july-1-1{background: url(../img/report-july-1.jpg) no-repeat;background-size: cover;-webkit-background-size: cover;}
+.page-aug-1-1{background: url(../img/report-aug-1-bg.jpg) no-repeat;background-size: cover;-webkit-background-size: cover;}
+.page-oct-1-1{background: url(../img/report-oct-1-bg.jpg) no-repeat;background-size: cover;-webkit-background-size: cover;}
+.page-nov-1-1{background: url(../img/report-nov-1-bg.jpg) no-repeat;background-size: cover;-webkit-background-size: cover;}
+.page-dec-1-1{background: url(../img/report-dec-1-bg.jpg?version=20171123) no-repeat;background-size: cover;-webkit-background-size: cover;}
+.page-3rd-1-1{background: url(../img/report-3rd-1-bg.png?version=20171123) no-repeat;background-size: cover;-webkit-background-size: cover;}
+.page-half-1-1{background: url(../img/report-half-1-bg.jpg) no-repeat;background-size: cover;-webkit-background-size: cover;}
+.page-2017-1th-1-1{background: url(../img/report20171th/report-2017-1th-1-1.png) no-repeat;background-size: cover;-webkit-background-size: cover;}
+.page-201704-1-1{background: url(../img/report201704/report-201704-1-bg.jpg) no-repeat;background-size: cover;-webkit-background-size: cover;}
+.page-201706-1-1{background: url(../img/report201706/report-201706-1-bg.jpg) no-repeat;background-size: cover;-webkit-background-size: cover;}
+.page-2-1{ background-color:#000000;}
+.page-2-2{ background-color:#000000;}
+.page-3-1{ background-color:#000000;}
+.page-3-2{ background-color:#000000;}
+.page-4-1{ background-color:#000000;}
+.page-4-2{ background-color:#000000;}
+.page-5-1{ background-color:#000000;}
+.page-6-1{ background-color:#000000;}
+.page-7-1{ background-color:#000000;}
+.page-8-1{ background-color:#000000;}
+.page-9-1{ background-color:#000000;}
+.page-10-1{ background-color:#000000;}
+.page-11-1{ background-color:#000000;}
+.page-12-1{ background-color:#000000;}
+.page-13-1{ background-color:#000000;}
+.page-14-1{ background-color:#000000;}
+.page-current{
+	z-index:1;
+}
+.page-1-1 .img_1 {
+	height:auto;width:248px;
+	position:absolute;
+	left:50%;
+	top:1%;
+	margin-left:-124px;
+}
+.page-1-1 .img_2 {
+	height:auto;width:185px;
+	position:absolute;
+	left:50%;
+	top:62%;
+	margin-left:-92px;
+}
+.page-1-1 .img_3 {
+	height:auto;width:25px;
+	position:absolute;
+	left:50%;
+	top:93%;
+	margin-left:-12px;
+}
+.page-2-1 .img_1 {
+	height:auto;width:158px;
+	position:absolute;
+	left:50%;
+	top:2%;
+	margin-left:-79px;
+	z-index:2;
+}
+.page-2-1 .img_2 {
+	height:auto;width:240px;
+	position:absolute;
+	left:50%;
+	top:28%;
+	margin-left:-120px;
+}
+.page-2-1 .img_3 {
+	height:auto;width:241px;
+	position:absolute;
+	left:50%;
+	top:36%;
+	margin-left:-120px;
+}
+.page-2-1 .img_4 {
+	height:auto;width:20px;
+	position:absolute;
+	left:50%;
+	top:87%;
+	margin-left:-10px;
+}
+.page-2-1 .img_5 {
+	height:auto;width:142px;
+	position:absolute;
+	left:50%;
+	top:82%;
+	margin-left:-71px;
+}
+.page-2-1 .img_6 {
+	height:auto;width:25px;
+	position:absolute;
+	left:50%;
+	top:92%;
+	margin-left:-12px;
+}
+.page-2-1 .img_7 {
+	height:auto;width:248px;
+	position:absolute;
+	left:50%;
+	top:8%;
+	margin-left:-110px;
+}
+.page-2-2 .img_1 {
+	height:auto;width:293px;
+	position:absolute;
+	left:50%;
+	top:5%;
+	margin-left:-146px;
+}
+.page-2-2 .img_2 {
+	height:auto;width:260px;
+	position:absolute;
+	left:50%;
+	top:75%;
+	margin-left:-130px;
+}
+.page-2-2 .img_3 {
+	height:auto;width:20px;
+	position:absolute;
+	left:50%;
+	top:87%;
+	margin-left:-10px;
+}
+.page-2-2 .img_6 {
+	height:auto;width:25px;
+	position:absolute;
+	left:50%;
+	top:92%;
+	margin-left:-12px;
+}
+.page-3-1 .img_1 {
+	height:auto;width:166px;
+	position:absolute;
+	left:50%;
+	top:2%;
+	margin-left:-86px;
+	z-index:2;
+}
+.page-3-1 .img_2 {
+	height:auto;width:250px;
+	position:absolute;
+	left:50%;
+	top:30%;
+	margin-left:-125px;
+}
+.page-3-1 .img_3 {
+	height:auto;width:172px;
+	position:absolute;
+	left:50%;
+	top:28%;
+	margin-left:-55px;
+}
+.page-3-1 .img_4 {
+	height:auto;width:20px;
+	position:absolute;
+	left:50%;
+	top:87%;
+	margin-left:-10px;
+}
+.page-3-1 .img_5 {
+	height:auto;width:142px;
+	position:absolute;
+	left:50%;
+	top:82%;
+	margin-left:-71px;
+}
+.page-3-1 .img_6 {
+	height:auto;width:25px;
+	position:absolute;
+	left:50%;
+	top:92%;
+	margin-left:-12px;
+}
+.page-3-1 .img_7 {
+	height:auto;width:248px;
+	position:absolute;
+	left:50%;
+	top:43%;
+	margin-left:-124px;
+}
+.page-3-2 .img_1 {
+	height:auto;width:296px;
+	position:absolute;
+	left:50%;
+	top:5%;
+	margin-left:-148px;
+}
+.page-3-2 .img_2 {
+	height:auto;width:260px;
+	position:absolute;
+	left:50%;
+	top:75%;
+	margin-left:-130px;
+}
+.page-3-2 .img_3 {
+	height:auto;width:20px;
+	position:absolute;
+	left:50%;
+	top:87%;
+	margin-left:-10px;
+}
+.page-3-2 .img_6 {
+	height:auto;width:25px;
+	position:absolute;
+	left:50%;
+	top:92%;
+	margin-left:-12px;
+}
+.page-4-1 .img_1 {
+	height:auto;width:162px;
+	position:absolute;
+	left:50%;
+	top:2%;
+	margin-left:-84px;
+	z-index:2;
+}
+.page-4-1 .img_2 {
+	height:auto;width:230px;
+	position:absolute;
+	left:50%;
+	top:28%;
+	margin-left:-115px;
+}
+.page-4-1 .img_3 {
+	height:auto;width:161px;
+	position:absolute;
+	left:50%;
+	top:28%;
+	margin-left:-80px;
+}
+.page-4-1 .img_4 {
+	height:auto;width:20px;
+	position:absolute;
+	left:50%;
+	top:87%;
+	margin-left:-10px;
+}
+.page-4-1 .img_5 {
+	height:auto;width:142px;
+	position:absolute;
+	left:50%;
+	top:82%;
+	margin-left:-71px;
+}
+.page-4-1 .img_6 {
+	height:auto;width:25px;
+	position:absolute;
+	left:50%;
+	top:92%;
+	margin-left:-12px;
+}
+.page-4-1 .img_7 {
+	height:auto;width:271px;
+	position:absolute;
+	left:50%;
+	top:33%;
+	margin-left:-135px;
+}
+.page-4-1 .img_8 {
+	height:auto;width:169px;
+	position:absolute;
+	left:50%;
+	top:75%;
+	margin-left:-84px;
+}
+.page-4-2 .img_1 {
+	height:auto;width:298px;
+	position:absolute;
+	left:50%;
+	top:5%;
+	margin-left:-149px;
+}
+.page-4-2 .img_2 {
+	height:auto;width:260px;
+	position:absolute;
+	left:50%;
+	top:75%;
+	margin-left:-130px;
+}
+.page-4-2 .img_3 {
+	height:auto;width:20px;
+	position:absolute;
+	left:50%;
+	top:87%;
+	margin-left:-10px;
+}
+.page-4-2 .img_6 {
+	height:auto;width:25px;
+	position:absolute;
+	left:50%;
+	top:92%;
+	margin-left:-12px;
+}
+.page-5-1 .img_1 {
+	height:auto;width:280px;
+	position:absolute;
+	left:50%;
+	top:20%;
+	margin-left:-140px;
+}
+.page-5-1 .img_2 {
+	height:auto;width:260px;
+	position:absolute;
+	left:50%;
+	top:67%;
+	margin-left:-130px;
+}
+.report-201702-1{background-image: url(../img/report-201702-1-1.jpg) !important;    background-size: cover;-webkit-background-size: cover;    background-position: 50%}
+.report-201705-1{background-image: url(../img/report-201705-1-1.jpg) !important;    background-size: cover;-webkit-background-size: cover;    background-position: 50%}
+.report-201707-1{background-image: url(../img/report-201707-1-1.jpg) !important;    background-size: cover;-webkit-background-size: cover;    background-position: 50%}
+.report-201708-1{background-image: url(../img/report-201708-1-1.jpg) !important;    background-size: cover;-webkit-background-size: cover;    background-position: 50%}
+.page-201709-1-1{background-image: url(../img/report-201709-1-1.jpg) !important;    background-size: cover;-webkit-background-size: cover;    background-position: 50%}
+.report-201710-1{background-image: url(../img/report-201710-1-1.jpg) !important;    background-size: cover;-webkit-background-size: cover;    background-position: 50%}
+.report-201711-1{background-image: url(../img/report-201711-1-1.jpg) !important;    background-size: cover;-webkit-background-size: cover;    background-position: 50%}
+.report-201712-1{background-image: url(../img/report-201712-1-1.jpg) !important;    background-size: cover;-webkit-background-size: cover;    background-position: 50%}
+.report-201801-1{background-image: url(../img/report-201801-1-1.jpg) !important;    background-size: cover;-webkit-background-size: cover;    background-position: 50%}
+.report-201802-1{background-image: url(../img/report-201802-1-1.jpg) !important;    background-size: cover;-webkit-background-size: cover;    background-position: 50%}

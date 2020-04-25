@@ -1,0 +1,255 @@
+
+body{
+	min-width: 1100px;
+	overflow: auto;
+}
+p{
+	margin:0;
+}
+.active-18-0518{
+	background-color:#5217ae;
+	color:#fff;
+	box-sizing:border-box;
+	text-align: center;
+}
+.content-bg{
+	background:url("../../dist/images/active/activity2018/activity20180518/content-bg.png") repeat-y top center;
+}
+.cbox{
+	background-color:#fff;
+	border-radius:10px;
+	color:#000;
+}
+.ccenter{
+	text-align:center;
+}
+.cleft{
+	text-align:left;
+}
+.text{
+	color:#c107d1;
+}
+.text-large{
+	font-size: 1.25em;
+	font-weight: bold;
+}
+.doubleline{
+	line-height: 2em;
+}
+.atitle{
+	height:140px;
+	line-height:140px;
+	background:url("../../dist/images/active/activity2018/activity20180518/title-bg.png") no-repeat bottom center;
+	vertical-align:middle;
+	position: absolute;
+	width: 100%;
+	top:-90px;
+}
+.calendar-content{
+	width:1050px;
+}
+.calendar-content, .introduction-box{
+	padding-bottom:3em;
+	display: inline-block;
+}
+.calendar-content>div{
+	display:inline-block;
+}
+.calendar-info{
+	width:33%;
+	margin-right:5px;
+	padding:38px 20px;
+	vertical-align:middle;
+}
+.calendar-info .info-main{
+	margin-bottom: 60px;
+}
+.calendar-operation{
+	width:65%;
+	padding:20px;
+	vertical-align:middle;
+}
+.top-line{
+	background-color:#82068d;
+	border:10px solid #c107d1;
+	border-radius:15px;
+	border-left-width:15px;
+	border-right-width:15px;
+	height:25px;
+}
+.operation-content{
+	padding:0 20px 20px;
+}
+.operation-bg{
+	background-color: rgba(253,231,255,0.85);
+	background: url('../../dist/images/active/activity2018/activity20180518/input-box-top.png') repeat-x top left;
+	border-radius: 10px;
+	padding:40px 20px 20px;
+	margin-top:-13px;
+}
+.coupon-box{
+  position: relative;
+}
+.coupon-amount{
+	width:100%;
+	border:1px solid #c107d1;
+	border-radius: 5px;
+	padding:5px;
+	padding-right: 30px;
+}
+.coupon-unit{
+  position:absolute;
+  top:4px;
+  right:10px;
+}
+.amount-tips, .amount-error{
+	font-size: 0.9em;
+	position: relative;
+	padding-left: 20px;
+}
+.amount-tips::before, .amount-error::before{
+	content:url('../../dist/images/active/activity2018/activity20180518/prompt.png');
+	position: absolute;
+	left: 0;
+}
+.amount-tips .error{
+	display: none;
+	}
+.amount-error .tips{
+	display: none;
+}
+.amount-error.deeps .error{
+	color:red;
+}
+.coupon-num::after{
+	content: '元';
+}
+.active-content{
+	margin-top:100px;
+	padding-top: 110px;
+	position: relative;
+	z-index: 1;
+}
+.active-introduction{
+	padding-bottom: 3em;
+	margin-top:100px;
+	padding-top: 110px;
+	position: relative;
+	z-index: 1;
+}
+.introduction-box{
+	padding:20px 60px;
+	max-width:1050px;
+	display: inline-block;
+}
+
+.introduction-tips{
+	font-size: 0.85em;
+	width:80%;
+	max-width:1100px;
+	display: inline-block;
+	padding-bottom: 3em;
+}
+.step{
+	margin-top: 20px;
+}
+.step >div{
+	display:inline-block;
+	width:30%;
+	margin-right:3%;
+}
+.step >p{
+	display:inline-block;
+	width:65%;
+	vertical-align:middle;
+	text-align:center;
+}
+.step h1{
+	color:#e9a6ee;
+	font-size: 4em;
+	margin-bottom: 0;
+}
+.step p{
+	color:#999999;
+}
+.footer{
+	background-color:#360d90;
+	font-size: 0.85em;
+	padding:40px;
+}
+.button{
+	border-radius: 5px;
+	background-color: #c107d1;
+	color:#ffcc00;
+	margin-top: 20px;
+	padding:10px;
+	width: 90%;
+}
+.button:hover{
+	cursor:pointer;
+}
+.success .edit{
+	display: none;
+}
+.edit .success{
+	display: none;
+}
+.use-conditions{
+	margin-top:20px;
+	margin-bottom: 5px;
+}
+ol{
+	margin:0;
+	line-height: 1.5em;
+}
+.model{
+	position: fixed;
+	height: 100%;
+	width:100%;
+	top:0;
+	left:0;
+	background: rgba(0,0,0,0.5);
+	text-align:center;
+	z-index: 1000;
+}
+.modelbox{
+	display:inline-block;
+	margin-top:25%;
+	padding:40px;
+	border-radius: 5px;
+	background-color: #5217ae;
+	color:#fff;
+	text-align: center;
+	min-width:390px;
+}
+.mtitle{
+	font-size: 1.05em;
+	margin-bottom: 20px;
+	font-weight:bold;
+}
+.mbtn{
+	margin-top: 20px;
+	padding:10px 20px;
+	border-radius: 5px;
+	display: inline-block;
+	background-color: #ff465b;
+	margin:20px;
+}
+.mbtn:hover{
+	cursor: pointer;
+}
+.choose-tips{
+	font-size:0.8em;
+}
+.confirm .submbtn,.confirm .choose-tips{
+	display: none;
+}
+.choose .cancel{
+	background-color: #999999;
+}
+.hide{
+	display: none;
+}
+.float-img{
+	z-index: -1;
+}

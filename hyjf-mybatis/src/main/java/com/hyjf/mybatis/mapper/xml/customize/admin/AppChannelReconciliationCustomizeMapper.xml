@@ -1,0 +1,647 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.AppChannelReconciliationCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+			<if test="userName != null and userName !=''">
+				AND mm.user_name LIKE #{userName,jdbcType=VARCHAR}
+			</if>
+			<if test="orderCode != null and orderCode != ''">
+				AND mm.order_code =  #{orderCode,jdbcType=VARCHAR}
+			</if>
+			<if test="borrowNid != null and borrowNid !=''">
+				AND mm.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+			</if>
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND mm.invest_time <![CDATA[>=]]> unix_timestamp(#{timeStartSrch})
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch !=''">
+				AND mm.invest_time <![CDATA[<=]]> unix_timestamp(#{timeEndSrch})
+			</if>
+			<if test="utmIdsSrch != null and utmIdsSrch != ''">
+				AND mm.utm_id in
+				<foreach collection="utmIdsSrch" open="(" close=")" separator="," item="utmId">
+					#{utmId}
+				</foreach>
+			</if>
+			<if test="isFirst != null ">
+				AND is_first = #{isFirst,jdbcType=INTEGER}
+			</if>
+		</where>
+	</sql>
+
+
+	<sql id="Where_Clause_HJH">
+		<where>
+			<if test="userName != null and userName !=''">
+				AND mm.user_name LIKE #{userName,jdbcType=VARCHAR}
+			</if>
+			<if test="orderCode != null and orderCode != ''">
+				AND mm.order_code =  #{orderCode,jdbcType=VARCHAR}
+			</if>
+			<if test="borrowNid != null and borrowNid !=''">
+				AND mm.borrow_nid = #{borrowNid,jdbcType=VARCHAR}
+			</if>
+			<if test="timeStartSrch != null and timeStartSrch != ''">
+				AND mm.invest_time <![CDATA[>=]]> unix_timestamp(#{timeStartSrch})
+			</if>
+			<if test="timeEndSrch != null and timeEndSrch !=''">
+				AND mm.invest_time <![CDATA[<=]]> unix_timestamp(#{timeEndSrch})
+			</if>
+			<if test="utmIdsSrch != null and utmIdsSrch != ''">
+				AND mm.utm_id in
+				<foreach collection="utmIdsSrch" open="(" close=")" separator="," item="utmId">
+					#{utmId}
+				</foreach>
+			</if>
+			<if test="isFirst != null ">
+				AND is_first = #{isFirst,jdbcType=INTEGER}
+			</if>
+		</where>
+	</sql>
+	<resultMap id="AppChannelReconciliationMap" type="com.hyjf.mybatis.model.customize.admin.AppChannelReconciliationCustomize">
+		<result column="user_id" 				property="userId" 			jdbcType="INTEGER" />
+		<result column="user_name"				property="userName" 				jdbcType="VARCHAR" />
+		<result column="utm_id" 				property="utmId" 			jdbcType="INTEGER" />
+		<result column="utm_name" 				property="utmName" 			jdbcType="VARCHAR" />
+		<result column="order_code" 			property="orderCode" 			jdbcType="VARCHAR" />
+		<result column="borrow_nid" 				property="borrowNid" 			jdbcType="VARCHAR" />
+		<result column="borrow_period" 			property="borrowPeriod" 		jdbcType="VARCHAR" />
+		<result column="invest_amount" 			property="investAmount" 		jdbcType="VARCHAR" />
+		<result column="invest_time" 			property="investTime" 		jdbcType="INTEGER" />
+		<result column="reg_time" 			property="regTime" 		jdbcType="VARCHAR" />
+		<result column="is_first" 			property="isFirst" 		jdbcType="INTEGER" />
+	</resultMap>
+
+	<select id="selectAppChannelReconciliationRecord" resultMap="AppChannelReconciliationMap" parameterType="com.hyjf.mybatis.model.customize.admin.AppChannelReconciliationCustomize" >
+		SELECT
+		user_id,
+		user_name,
+		utm_id,
+		utm_name,
+		order_code,
+		borrow_nid,
+		borrow_period,
+		invest_amount,
+		invest_time,
+		reg_time,
+		is_first
+		FROM
+		(
+		SELECT
+		a.user_id,
+		a.user_name,
+		a.utm_id,
+		a.utm_name,
+		a.order_code,
+		a.borrow_nid,
+		a.borrow_period,
+		a.invest_amount,
+		a.invest_time,
+		a.reg_time,
+		CASE
+		WHEN ifnull(
+		(
+		SELECT
+		count(id)
+		FROM
+		huiyingdai_borrow_tender bt
+		WHERE
+		bt.user_id = a.user_id
+		AND bt.addtime <![CDATA[<]]> a.invest_time
+		),
+		0
+		) + ifnull(
+		(
+		SELECT
+		count(assign_id)
+		FROM
+		huiyingdai_credit_tender ct
+		WHERE
+		ct.user_id = a.user_id
+		AND ct.add_time <![CDATA[<]]> concat(a.invest_time)
+		),
+		0
+		) + ifnull(
+		(
+		SELECT
+		count(id)
+		FROM
+		hyjf_borrow_tender_cpn bc
+		WHERE
+		bc.user_id = a.user_id
+		AND bc.addtime <![CDATA[<]]> a.invest_time
+		),
+		0
+		) + ifnull(
+		(
+		SELECT
+		count(id)
+		FROM
+		hyjf_hjh_accede ha
+		WHERE
+		ha.user_id = a.user_id
+		AND ha.add_time <![CDATA[<]]> a.invest_time
+		),
+		0
+		) = 0 THEN
+		'1'
+		ELSE
+		'0'
+		END is_first
+		FROM
+		(
+		SELECT
+		t.user_id,
+		t.user_name,
+		u.reg_time,
+		t.source_id AS utm_id,
+		t.source_name AS utm_name,
+		ten.nid AS order_code,
+		ten.borrow_nid,
+		CASE
+		WHEN b.borrow_style = 'endday' THEN
+		CONCAT(b.borrow_period, '天')
+		ELSE
+		CONCAT(b.borrow_period, '个月')
+		END borrow_period,
+		ten.account AS invest_amount,
+		ten.addtime AS invest_time
+		FROM
+		hyjf_app_channel_statistics_detail t
+		INNER JOIN huiyingdai_borrow_tender ten ON t.user_id = ten.user_id
+		AND ten.accede_order_id IS NULL
+		INNER JOIN huiyingdai_borrow b ON ten.borrow_nid = b.borrow_nid
+		LEFT JOIN huiyingdai_users u ON t.user_id = u.user_id
+		where 1=1
+		<if test="regStartTime != null and regStartTime != ''">
+			AND u.reg_time <![CDATA[>=]]> unix_timestamp(#{regStartTime})
+		</if>
+		<if test="regEndTime != null and regEndTime !=''">
+			AND u.reg_time <![CDATA[<=]]> unix_timestamp(#{regEndTime})
+		</if>
+        <if test="timeStartSrch != null and timeStartSrch != ''">
+            AND ten.addtime <![CDATA[>=]]> unix_timestamp(#{timeStartSrch})
+        </if>
+        <if test="timeEndSrch != null and timeEndSrch !=''">
+            AND ten.addtime <![CDATA[<=]]> unix_timestamp(#{timeEndSrch})
+        </if>
+		UNION ALL
+		SELECT
+		t.user_id,
+		t.user_name,
+		u.reg_time,
+		t.source_id AS utm_id,
+		t.source_name AS utm_name,
+		ten.accede_order_id AS order_code,
+		ten.plan_nid AS borrow_nid,
+		CONCAT(
+		b.debt_lock_period,
+		'个月'
+		) AS borrow_period,
+		ten.accede_account AS invest_amount,
+		ten.create_time AS invest_time
+		FROM
+		hyjf_app_channel_statistics_detail t
+		INNER JOIN hyjf_debt_plan_accede ten ON t.user_id = ten.user_id
+		INNER JOIN hyjf_debt_plan b ON ten.plan_nid = b.debt_plan_nid
+		LEFT JOIN huiyingdai_users u ON t.user_id = u.user_id
+		where 1=1
+		<if test="regStartTime != null and regStartTime != ''">
+			AND u.reg_time <![CDATA[>=]]> unix_timestamp(#{regStartTime})
+		</if>
+		<if test="regEndTime != null and regEndTime !=''">
+			AND u.reg_time <![CDATA[<=]]> unix_timestamp(#{regEndTime})
+		</if>
+        <if test="timeStartSrch != null and timeStartSrch != ''">
+            AND ten.create_time <![CDATA[>=]]> unix_timestamp(#{timeStartSrch})
+        </if>
+        <if test="timeEndSrch != null and timeEndSrch !=''">
+            AND ten.create_time <![CDATA[<=]]> unix_timestamp(#{timeEndSrch})
+        </if>
+		UNION ALL
+		SELECT
+		t.user_id,
+		t.user_name,
+		u.reg_time,
+		t.source_id AS utm_id,
+		t.source_name AS utm_name,
+		ten.assign_nid AS order_code,
+		CONCAT('HZR', ten.credit_nid) AS borrow_nid,
+		CONCAT(b.credit_term, '天') AS borrow_period,
+		ten.assign_capital AS invest_amount,
+		cast(ten.add_time AS SIGNED) AS invest_time
+		FROM
+		hyjf_app_channel_statistics_detail t
+		INNER JOIN huiyingdai_credit_tender ten ON t.user_id = ten.user_id
+		INNER JOIN huiyingdai_borrow_credit b ON ten.credit_nid = b.credit_nid
+		LEFT JOIN huiyingdai_users u ON t.user_id = u.user_id
+		where 1=1
+		<if test="regStartTime != null and regStartTime != ''">
+			AND u.reg_time <![CDATA[>=]]> unix_timestamp(#{regStartTime})
+		</if>
+		<if test="regEndTime != null and regEndTime !=''">
+			AND u.reg_time <![CDATA[<=]]> unix_timestamp(#{regEndTime})
+		</if>
+        <if test="timeStartSrch != null and timeStartSrch != ''">
+            AND ten.add_time <![CDATA[>=]]> unix_timestamp(#{timeStartSrch})
+        </if>
+        <if test="timeEndSrch != null and timeEndSrch !=''">
+            AND ten.add_time <![CDATA[<=]]> unix_timestamp(#{timeEndSrch})
+        </if>
+		) AS a
+		) mm
+		<include refid="Where_Clause" />
+		ORDER BY
+		mm.invest_time DESC
+		<if test="limitStart != null and limitStart != -1  and limitEnd !=null and limitEnd != -1" >
+			LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+		</if>
+	</select>
+
+
+	<!-- 汇计划列表 -->
+	<select id="selectAppChannelReconciliationRecordHjh" resultMap="AppChannelReconciliationMap" parameterType="com.hyjf.mybatis.model.customize.admin.AppChannelReconciliationCustomize" >
+		SELECT
+		user_id,
+		user_name,
+		utm_id,
+		utm_name,
+		order_code,
+		borrow_nid,
+		borrow_period,
+		invest_amount,
+		invest_time,
+		reg_time,
+		is_first
+		FROM
+		(
+		SELECT
+		a.user_id,
+		a.user_name,
+		a.reg_time,
+		a.utm_id,
+		a.utm_name,
+		a.order_code,
+		a.borrow_nid,
+		a.borrow_period,
+		a.invest_amount,
+		a.invest_time,
+        CASE
+        WHEN ifnull(
+        (
+        SELECT
+        count(id)
+        FROM
+        huiyingdai_borrow_tender bt
+        WHERE
+        bt.user_id = a.user_id
+        AND bt.addtime <![CDATA[<]]> a.invest_time
+        ),
+        0
+        ) + ifnull(
+        (
+        SELECT
+        count(assign_id)
+        FROM
+        huiyingdai_credit_tender ct
+        WHERE
+        ct.user_id = a.user_id
+        AND ct.add_time <![CDATA[<]]> concat(a.invest_time)
+        ),
+        0
+        ) + ifnull(
+        (
+        SELECT
+        count(id)
+        FROM
+        hyjf_borrow_tender_cpn bc
+        WHERE
+        bc.user_id = a.user_id
+        AND bc.addtime <![CDATA[<]]> a.invest_time
+        ),
+        0
+        ) + ifnull(
+        (
+        SELECT
+        count(id)
+        FROM
+        hyjf_hjh_accede ha
+        WHERE
+        ha.user_id = a.user_id
+        AND ha.add_time <![CDATA[<]]> a.invest_time
+        ),
+        0
+        ) = 0 THEN
+        '1'
+        ELSE
+        '0'
+        END is_first
+		FROM
+		(
+		SELECT
+		t.user_id,
+		t.user_name AS user_name,
+		u.reg_time,
+		t.source_id AS utm_id,
+		t.source_name AS utm_name,
+		ten.accede_order_id AS order_code,
+		ten.plan_nid AS borrow_nid,
+		CASE
+		WHEN hhp.is_month = '1' THEN
+		CONCAT(hhp.lock_period, '个月')
+		ELSE
+		CONCAT(hhp.lock_period, '天')
+		END AS borrow_period,
+		ten.accede_account AS invest_amount,
+		ten.add_time AS invest_time
+		FROM
+		hyjf_app_channel_statistics_detail t
+		INNER JOIN hyjf_hjh_accede ten ON t.user_id = ten.user_id
+		INNER JOIN hyjf_hjh_plan hhp ON ten.plan_nid = hhp.plan_nid
+		LEFT JOIN huiyingdai_users u ON t.user_id = u.user_id
+		where 1=1
+		<if test="regStartTime != null and regStartTime != ''">
+			AND u.reg_time <![CDATA[>=]]> unix_timestamp(#{regStartTime})
+		</if>
+		<if test="regEndTime != null and regEndTime !=''">
+			AND u.reg_time <![CDATA[<=]]> unix_timestamp(#{regEndTime})
+		</if>
+        <if test="timeStartSrch != null and timeStartSrch != ''">
+            AND ten.add_time <![CDATA[>=]]> unix_timestamp(#{timeStartSrch})
+        </if>
+        <if test="timeEndSrch != null and timeEndSrch !=''">
+            AND ten.add_time <![CDATA[<=]]> unix_timestamp(#{timeEndSrch})
+        </if>
+		) AS a
+		) mm
+		<include refid="Where_Clause_HJH" />
+		ORDER BY
+		mm.invest_time DESC
+		<if test="limitStart != null and limitStart != -1  and limitEnd !=null and limitEnd != -1" >
+			LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+		</if>
+	</select>
+
+	<select id="countAppChannelReconciliationRecord" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.admin.AppChannelReconciliationCustomize" >
+		SELECT
+		count(1)
+		FROM
+		(
+		SELECT
+		a.user_id,
+		a.user_name,
+		a.utm_id,
+		a.utm_name,
+		a.order_code,
+		a.borrow_nid,
+		a.invest_amount,
+		a.invest_time,
+		a.reg_time,
+		CASE
+		WHEN ifnull(
+		(
+		SELECT
+		count(id)
+		FROM
+		huiyingdai_borrow_tender bt
+		WHERE
+		bt.user_id = a.user_id
+		AND bt.addtime <![CDATA[<]]> a.invest_time
+		),
+		0
+		) + ifnull(
+		(
+		SELECT
+		count(assign_id)
+		FROM
+		huiyingdai_credit_tender ct
+		WHERE
+		ct.user_id = a.user_id
+		AND ct.add_time <![CDATA[<]]> concat(a.invest_time)
+		),
+		0
+		) + ifnull(
+		(
+		SELECT
+		count(id)
+		FROM
+		hyjf_borrow_tender_cpn bc
+		WHERE
+		bc.user_id = a.user_id
+		AND bc.addtime <![CDATA[<]]> a.invest_time
+		),
+		0
+		) + ifnull(
+		(
+		SELECT
+		count(id)
+		FROM
+		hyjf_hjh_accede ha
+		WHERE
+		ha.user_id = a.user_id
+		AND ha.add_time <![CDATA[<]]> a.invest_time
+		),
+		0
+		) = 0 THEN
+		'1'
+		ELSE
+		'0'
+		END is_first
+		FROM
+		(
+		SELECT
+		t.user_id,
+		t.user_name,
+		u.reg_time,
+		t.source_id AS utm_id,
+		t.source_name AS utm_name,
+		ten.nid AS order_code,
+		ten.borrow_nid,
+		ten.account AS invest_amount,
+		ten.addtime AS invest_time
+		FROM
+		hyjf_app_channel_statistics_detail t
+		INNER JOIN huiyingdai_borrow_tender ten ON t.user_id = ten.user_id
+		AND ten.accede_order_id IS NULL
+		INNER JOIN huiyingdai_borrow b ON ten.borrow_nid = b.borrow_nid
+		LEFT JOIN huiyingdai_users u ON t.user_id = u.user_id
+		where 1=1
+		<if test="regStartTime != null and regStartTime != ''">
+			AND u.reg_time <![CDATA[>=]]> unix_timestamp(#{regStartTime})
+		</if>
+		<if test="regEndTime != null and regEndTime !=''">
+			AND u.reg_time <![CDATA[<=]]> unix_timestamp(#{regEndTime})
+		</if>
+        <if test="timeStartSrch != null and timeStartSrch != ''">
+            AND ten.addtime <![CDATA[>=]]> unix_timestamp(#{timeStartSrch})
+        </if>
+        <if test="timeEndSrch != null and timeEndSrch !=''">
+            AND ten.addtime <![CDATA[<=]]> unix_timestamp(#{timeEndSrch})
+        </if>
+		UNION ALL
+		SELECT
+		t.user_id,
+		t.user_name,
+		u.reg_time,
+		t.source_id AS utm_id,
+		t.source_name AS utm_name,
+		ten.accede_order_id AS order_code,
+		ten.plan_nid AS borrow_nid,
+		ten.accede_account AS invest_amount,
+		ten.create_time AS invest_time
+		FROM
+		hyjf_app_channel_statistics_detail t
+		INNER JOIN hyjf_debt_plan_accede ten ON t.user_id = ten.user_id
+		INNER JOIN hyjf_debt_plan b ON ten.plan_nid = b.debt_plan_nid
+		LEFT JOIN huiyingdai_users u ON t.user_id = u.user_id
+		where 1=1
+		<if test="regStartTime != null and regStartTime != ''">
+			AND u.reg_time <![CDATA[>=]]> unix_timestamp(#{regStartTime})
+		</if>
+		<if test="regEndTime != null and regEndTime !=''">
+			AND u.reg_time <![CDATA[<=]]> unix_timestamp(#{regEndTime})
+		</if>
+        <if test="timeStartSrch != null and timeStartSrch != ''">
+            AND ten.create_time <![CDATA[>=]]> unix_timestamp(#{timeStartSrch})
+        </if>
+        <if test="timeEndSrch != null and timeEndSrch !=''">
+            AND ten.create_time <![CDATA[<=]]> unix_timestamp(#{timeEndSrch})
+        </if>
+		UNION ALL
+		SELECT
+		t.user_id,
+		t.user_name,
+		u.reg_time,
+		t.source_id AS utm_id,
+		t.source_name AS utm_name,
+		ten.assign_nid AS order_code,
+		CONCAT('HZR', ten.credit_nid) AS borrow_nid,
+		ten.assign_capital AS invest_amount,
+		cast(ten.add_time AS SIGNED) AS invest_time
+		FROM
+		hyjf_app_channel_statistics_detail t
+		INNER JOIN huiyingdai_credit_tender ten ON t.user_id = ten.user_id
+		INNER JOIN huiyingdai_borrow_credit b ON ten.credit_nid = b.credit_nid
+		LEFT JOIN huiyingdai_users u ON t.user_id = u.user_id
+		where 1=1
+		<if test="regStartTime != null and regStartTime != ''">
+			AND u.reg_time <![CDATA[>=]]> unix_timestamp(#{regStartTime})
+		</if>
+		<if test="regEndTime != null and regEndTime !=''">
+			AND u.reg_time <![CDATA[<=]]> unix_timestamp(#{regEndTime})
+		</if>
+        <if test="timeStartSrch != null and timeStartSrch != ''">
+            AND ten.add_time <![CDATA[>=]]> unix_timestamp(#{timeStartSrch})
+        </if>
+        <if test="timeEndSrch != null and timeEndSrch !=''">
+            AND ten.add_time <![CDATA[<=]]> unix_timestamp(#{timeEndSrch})
+        </if>
+		) AS a
+		) mm
+		<include refid="Where_Clause" />
+	</select>
+
+	<!--汇计划-->
+	<select id="countAppChannelReconciliationRecordHjh" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.admin.AppChannelReconciliationCustomize" >
+		SELECT
+		count(1)
+		FROM
+		(
+		SELECT
+		a.user_id,
+		a.user_name,
+		a.reg_time,
+		a.utm_id,
+		a.utm_name,
+		a.order_code,
+		a.borrow_nid,
+		a.invest_amount,
+		a.invest_time,
+		CASE
+		WHEN ifnull(
+		(
+		SELECT
+		count(id)
+		FROM
+		huiyingdai_borrow_tender bt
+		WHERE
+		bt.user_id = a.user_id
+		AND bt.addtime <![CDATA[<]]> a.invest_time
+		),
+		0
+		) + ifnull(
+		(
+		SELECT
+		count(assign_id)
+		FROM
+		huiyingdai_credit_tender ct
+		WHERE
+		ct.user_id = a.user_id
+		AND ct.add_time <![CDATA[<]]> concat(a.invest_time)
+		),
+		0
+		) + ifnull(
+		(
+		SELECT
+		count(id)
+		FROM
+		hyjf_borrow_tender_cpn bc
+		WHERE
+		bc.user_id = a.user_id
+		AND bc.addtime <![CDATA[<]]> a.invest_time
+		),
+		0
+		) + ifnull(
+		(
+		SELECT
+		count(id)
+		FROM
+		hyjf_hjh_accede ha
+		WHERE
+		ha.user_id = a.user_id
+		AND ha.add_time <![CDATA[<]]> a.invest_time
+		),
+		0
+		) = 0 THEN
+		'1'
+		ELSE
+		'0'
+		END is_first
+		FROM
+		(
+		SELECT
+		t.user_id,
+		t.user_name AS user_name,
+		u.reg_time,
+		t.source_id AS utm_id,
+		t.source_name AS utm_name,
+		ten.accede_order_id AS order_code,
+		ten.plan_nid AS borrow_nid,
+		ten.accede_account AS invest_amount,
+		ten.add_time AS invest_time
+		FROM
+		hyjf_app_channel_statistics_detail t
+		INNER JOIN hyjf_hjh_accede ten ON t.user_id = ten.user_id
+		INNER JOIN hyjf_hjh_plan hhp ON ten.plan_nid = hhp.plan_nid
+		LEFT JOIN huiyingdai_users u ON t.user_id = u.user_id
+		where 1=1
+		<if test="regStartTime != null and regStartTime != ''">
+			AND u.reg_time <![CDATA[>=]]> unix_timestamp(#{regStartTime})
+		</if>
+		<if test="regEndTime != null and regEndTime !=''">
+			AND u.reg_time <![CDATA[<=]]> unix_timestamp(#{regEndTime})
+		</if>
+        <if test="timeStartSrch != null and timeStartSrch != ''">
+            AND ten.add_time <![CDATA[>=]]> unix_timestamp(#{timeStartSrch})
+        </if>
+        <if test="timeEndSrch != null and timeEndSrch !=''">
+            AND ten.add_time <![CDATA[<=]]> unix_timestamp(#{timeEndSrch})
+        </if>
+		) AS a
+		) mm
+		<include refid="Where_Clause_HJH" />
+	</select>
+
+</mapper>

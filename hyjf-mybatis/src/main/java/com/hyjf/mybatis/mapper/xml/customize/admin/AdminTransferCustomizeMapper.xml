@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.AdminTransferCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+			ut.transfer_type = 0
+			<if test="outUserName != null and outUserName !='' ">
+				AND u.username LIKE CONCAT('%', #{outUserName,jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="status != null and status !='' ">
+				AND ut.`status` = #{status,jdbcType=VARCHAR}
+			</if>
+			<if test="orderId != null and orderId !='' ">
+				AND ut.order_id = #{orderId,jdbcType=VARCHAR}
+			</if>
+			<if test="opreateTimeStart != null and opreateTimeStart !='' ">
+				AND unix_timestamp(ut.create_time) <![CDATA[>=]]> unix_timestamp(#{opreateTimeStart,jdbcType=VARCHAR}) 
+			</if>
+			<if test="opreateTimeEnd != null and opreateTimeEnd !='' ">
+				AND unix_timestamp(ut.create_time) <![CDATA[<]]> unix_timestamp(#{opreateTimeEnd,jdbcType=VARCHAR})
+			</if>
+			<if test="transferTimeStart != null and transferTimeStart !='' ">
+				AND unix_timestamp(ut.transfer_time) <![CDATA[>=]]> unix_timestamp(#{transferTimeStart,jdbcType=VARCHAR})
+			</if>
+			<if test="transferTimeEnd != null and transferTimeEnd !='' ">
+				AND unix_timestamp(ut.transfer_time) <![CDATA[<]]> unix_timestamp(#{transferTimeEnd,jdbcType=VARCHAR})
+			</if>
+		</where>
+	</sql>
+
+	<resultMap id="AccountListPOMap" type="com.hyjf.mybatis.model.customize.admin.AdminTransferListCustomize">
+		<id 	column="id"					property="id" 				jdbcType="VARCHAR" />
+		<result column="order_id" 			property="orderId" 			jdbcType="VARCHAR" />
+		<result column="out_user_name" 		property="outUserName" 		jdbcType="VARCHAR" />
+		<result column="in_user_name" 		property="inUserName" 		jdbcType="VARCHAR" />
+		<result column="transfer_amount" 	property="transferAmount" 	jdbcType="VARCHAR" />
+		<result column="status" 			property="status" 			jdbcType="VARCHAR" />
+		<result column="username" 			property="createUserName" 	jdbcType="VARCHAR" />
+		<result column="create_time" 		property="createTime" 		jdbcType="VARCHAR" />
+		<result column="transfer_url" 		property="transferUrl" 		jdbcType="VARCHAR" />
+		<result column="transfer_time" 		property="transferTime" 	jdbcType="VARCHAR" />
+		<result column="remark" 			property="remark" 			jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectTransferList" resultMap="AccountListPOMap" parameterType="Map">
+		SELECT
+			ut.id,
+			ut.order_id,
+			u.username AS out_user_name,
+			'平台' AS in_user_name,
+			ut.transfer_amount,
+			pn.`name` AS `status`,
+			a.username,
+			date_format(
+				ut.create_time,
+				'%Y-%c-%d %h:%i:%s'
+			) AS create_time,
+			ut.transfer_url,
+			date_format(
+				ut.transfer_time,
+				'%Y-%c-%d %h:%i:%s'
+			) AS transfer_time,
+			ut.remark
+		FROM
+			hyjf_user_transfer ut
+		INNER JOIN huiyingdai_users u ON ut.out_user_id = u.user_id
+		INNER JOIN hyjf_admin a ON a.id = ut.create_user_id
+		LEFT JOIN hyjf_param_name pn ON CAST(ut.`status` AS CHAR) = pn.name_cd
+		AND pn.name_class = 'TRANSFER_STATUS'
+		<include refid="Where_Clause" />
+		ORDER BY ut.create_time DESC
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	<select id="countRecordTotal" resultType="java.lang.Integer" parameterType="Map">
+		SELECT
+			count(ut.id)
+		FROM
+			hyjf_user_transfer ut
+		INNER JOIN huiyingdai_users u ON ut.out_user_id = u.user_id
+		INNER JOIN hyjf_admin a ON a.id = ut.create_user_id
+		LEFT JOIN hyjf_param_name pn ON CAST(ut.`status` AS CHAR) = pn.name_cd
+		AND pn.name_class = 'TRANSFER_STATUS'
+		<include refid="Where_Clause" />
+	</select>
+</mapper>

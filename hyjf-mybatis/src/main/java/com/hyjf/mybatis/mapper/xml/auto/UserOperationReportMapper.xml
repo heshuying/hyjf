@@ -1,0 +1,638 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.UserOperationReportMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.UserOperationReport" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="operation_report_id" property="operationReportId" jdbcType="INTEGER" />
+    <result column="operation_report_type" property="operationReportType" jdbcType="TINYINT" />
+    <result column="man_tender_num" property="manTenderNum" jdbcType="INTEGER" />
+    <result column="man_tender_num_proportion" property="manTenderNumProportion" jdbcType="DECIMAL" />
+    <result column="woman_tender_num" property="womanTenderNum" jdbcType="INTEGER" />
+    <result column="woman_tender_num_proportion" property="womanTenderNumProportion" jdbcType="DECIMAL" />
+    <result column="age_first_stage_tender_num" property="ageFirstStageTenderNum" jdbcType="INTEGER" />
+    <result column="age_first_stage_tender_proportion" property="ageFirstStageTenderProportion" jdbcType="DECIMAL" />
+    <result column="age_second_stage_tender_num" property="ageSecondStageTenderNum" jdbcType="INTEGER" />
+    <result column="age_second_stage_tender_proportion" property="ageSecondStageTenderProportion" jdbcType="DECIMAL" />
+    <result column="age_third_stage_tender_num" property="ageThirdStageTenderNum" jdbcType="INTEGER" />
+    <result column="age_third_stage_tender_proportion" property="ageThirdStageTenderProportion" jdbcType="DECIMAL" />
+    <result column="age_fourth_stage_tender_num" property="ageFourthStageTenderNum" jdbcType="INTEGER" />
+    <result column="age_fourth_stage_tender_proportion" property="ageFourthStageTenderProportion" jdbcType="DECIMAL" />
+    <result column="age_firve_stage_tender_num" property="ageFirveStageTenderNum" jdbcType="INTEGER" />
+    <result column="age_firve_stage_tender_proportion" property="ageFirveStageTenderProportion" jdbcType="DECIMAL" />
+    <result column="amount_first_stage_tender_num" property="amountFirstStageTenderNum" jdbcType="INTEGER" />
+    <result column="amount_first_stage_tender_proportion" property="amountFirstStageTenderProportion" jdbcType="DECIMAL" />
+    <result column="amount_second_stage_tender_num" property="amountSecondStageTenderNum" jdbcType="INTEGER" />
+    <result column="amount_second_stage_tender_proportion" property="amountSecondStageTenderProportion" jdbcType="DECIMAL" />
+    <result column="amount_third_stage_tender_num" property="amountThirdStageTenderNum" jdbcType="INTEGER" />
+    <result column="amount_third_stage_tender_proportion" property="amountThirdStageTenderProportion" jdbcType="DECIMAL" />
+    <result column="amount_fourth_stage_tender_num" property="amountFourthStageTenderNum" jdbcType="INTEGER" />
+    <result column="amount_fourth_stage_tender_proportion" property="amountFourthStageTenderProportion" jdbcType="DECIMAL" />
+    <result column="amount_firve_stage_tender_num" property="amountFirveStageTenderNum" jdbcType="INTEGER" />
+    <result column="amount_firve_stage_tender_proportion" property="amountFirveStageTenderProportion" jdbcType="DECIMAL" />
+    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+    <result column="update_user_id" property="updateUserId" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="INTEGER" />
+    <result column="create_user_id" property="createUserId" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, operation_report_id, operation_report_type, man_tender_num, man_tender_num_proportion, 
+    woman_tender_num, woman_tender_num_proportion, age_first_stage_tender_num, age_first_stage_tender_proportion, 
+    age_second_stage_tender_num, age_second_stage_tender_proportion, age_third_stage_tender_num, 
+    age_third_stage_tender_proportion, age_fourth_stage_tender_num, age_fourth_stage_tender_proportion, 
+    age_firve_stage_tender_num, age_firve_stage_tender_proportion, amount_first_stage_tender_num, 
+    amount_first_stage_tender_proportion, amount_second_stage_tender_num, amount_second_stage_tender_proportion, 
+    amount_third_stage_tender_num, amount_third_stage_tender_proportion, amount_fourth_stage_tender_num, 
+    amount_fourth_stage_tender_proportion, amount_firve_stage_tender_num, amount_firve_stage_tender_proportion, 
+    update_time, update_user_id, create_time, create_user_id
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.UserOperationReportExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_user_operation_report
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_user_operation_report
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_user_operation_report
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.UserOperationReportExample" >
+    delete from hyjf_user_operation_report
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.UserOperationReport" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_user_operation_report (operation_report_id, operation_report_type, 
+      man_tender_num, man_tender_num_proportion, woman_tender_num, 
+      woman_tender_num_proportion, age_first_stage_tender_num, 
+      age_first_stage_tender_proportion, age_second_stage_tender_num, 
+      age_second_stage_tender_proportion, age_third_stage_tender_num, 
+      age_third_stage_tender_proportion, age_fourth_stage_tender_num, 
+      age_fourth_stage_tender_proportion, age_firve_stage_tender_num, 
+      age_firve_stage_tender_proportion, amount_first_stage_tender_num, 
+      amount_first_stage_tender_proportion, amount_second_stage_tender_num, 
+      amount_second_stage_tender_proportion, amount_third_stage_tender_num, 
+      amount_third_stage_tender_proportion, amount_fourth_stage_tender_num, 
+      amount_fourth_stage_tender_proportion, amount_firve_stage_tender_num, 
+      amount_firve_stage_tender_proportion, update_time, 
+      update_user_id, create_time, create_user_id
+      )
+    values (#{operationReportId,jdbcType=INTEGER}, #{operationReportType,jdbcType=TINYINT}, 
+      #{manTenderNum,jdbcType=INTEGER}, #{manTenderNumProportion,jdbcType=DECIMAL}, #{womanTenderNum,jdbcType=INTEGER}, 
+      #{womanTenderNumProportion,jdbcType=DECIMAL}, #{ageFirstStageTenderNum,jdbcType=INTEGER}, 
+      #{ageFirstStageTenderProportion,jdbcType=DECIMAL}, #{ageSecondStageTenderNum,jdbcType=INTEGER}, 
+      #{ageSecondStageTenderProportion,jdbcType=DECIMAL}, #{ageThirdStageTenderNum,jdbcType=INTEGER}, 
+      #{ageThirdStageTenderProportion,jdbcType=DECIMAL}, #{ageFourthStageTenderNum,jdbcType=INTEGER}, 
+      #{ageFourthStageTenderProportion,jdbcType=DECIMAL}, #{ageFirveStageTenderNum,jdbcType=INTEGER}, 
+      #{ageFirveStageTenderProportion,jdbcType=DECIMAL}, #{amountFirstStageTenderNum,jdbcType=INTEGER}, 
+      #{amountFirstStageTenderProportion,jdbcType=DECIMAL}, #{amountSecondStageTenderNum,jdbcType=INTEGER}, 
+      #{amountSecondStageTenderProportion,jdbcType=DECIMAL}, #{amountThirdStageTenderNum,jdbcType=INTEGER}, 
+      #{amountThirdStageTenderProportion,jdbcType=DECIMAL}, #{amountFourthStageTenderNum,jdbcType=INTEGER}, 
+      #{amountFourthStageTenderProportion,jdbcType=DECIMAL}, #{amountFirveStageTenderNum,jdbcType=INTEGER}, 
+      #{amountFirveStageTenderProportion,jdbcType=DECIMAL}, #{updateTime,jdbcType=INTEGER}, 
+      #{updateUserId,jdbcType=INTEGER}, #{createTime,jdbcType=INTEGER}, #{createUserId,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.UserOperationReport" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_user_operation_report
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="operationReportId != null" >
+        operation_report_id,
+      </if>
+      <if test="operationReportType != null" >
+        operation_report_type,
+      </if>
+      <if test="manTenderNum != null" >
+        man_tender_num,
+      </if>
+      <if test="manTenderNumProportion != null" >
+        man_tender_num_proportion,
+      </if>
+      <if test="womanTenderNum != null" >
+        woman_tender_num,
+      </if>
+      <if test="womanTenderNumProportion != null" >
+        woman_tender_num_proportion,
+      </if>
+      <if test="ageFirstStageTenderNum != null" >
+        age_first_stage_tender_num,
+      </if>
+      <if test="ageFirstStageTenderProportion != null" >
+        age_first_stage_tender_proportion,
+      </if>
+      <if test="ageSecondStageTenderNum != null" >
+        age_second_stage_tender_num,
+      </if>
+      <if test="ageSecondStageTenderProportion != null" >
+        age_second_stage_tender_proportion,
+      </if>
+      <if test="ageThirdStageTenderNum != null" >
+        age_third_stage_tender_num,
+      </if>
+      <if test="ageThirdStageTenderProportion != null" >
+        age_third_stage_tender_proportion,
+      </if>
+      <if test="ageFourthStageTenderNum != null" >
+        age_fourth_stage_tender_num,
+      </if>
+      <if test="ageFourthStageTenderProportion != null" >
+        age_fourth_stage_tender_proportion,
+      </if>
+      <if test="ageFirveStageTenderNum != null" >
+        age_firve_stage_tender_num,
+      </if>
+      <if test="ageFirveStageTenderProportion != null" >
+        age_firve_stage_tender_proportion,
+      </if>
+      <if test="amountFirstStageTenderNum != null" >
+        amount_first_stage_tender_num,
+      </if>
+      <if test="amountFirstStageTenderProportion != null" >
+        amount_first_stage_tender_proportion,
+      </if>
+      <if test="amountSecondStageTenderNum != null" >
+        amount_second_stage_tender_num,
+      </if>
+      <if test="amountSecondStageTenderProportion != null" >
+        amount_second_stage_tender_proportion,
+      </if>
+      <if test="amountThirdStageTenderNum != null" >
+        amount_third_stage_tender_num,
+      </if>
+      <if test="amountThirdStageTenderProportion != null" >
+        amount_third_stage_tender_proportion,
+      </if>
+      <if test="amountFourthStageTenderNum != null" >
+        amount_fourth_stage_tender_num,
+      </if>
+      <if test="amountFourthStageTenderProportion != null" >
+        amount_fourth_stage_tender_proportion,
+      </if>
+      <if test="amountFirveStageTenderNum != null" >
+        amount_firve_stage_tender_num,
+      </if>
+      <if test="amountFirveStageTenderProportion != null" >
+        amount_firve_stage_tender_proportion,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="createUserId != null" >
+        create_user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="operationReportId != null" >
+        #{operationReportId,jdbcType=INTEGER},
+      </if>
+      <if test="operationReportType != null" >
+        #{operationReportType,jdbcType=TINYINT},
+      </if>
+      <if test="manTenderNum != null" >
+        #{manTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="manTenderNumProportion != null" >
+        #{manTenderNumProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="womanTenderNum != null" >
+        #{womanTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="womanTenderNumProportion != null" >
+        #{womanTenderNumProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="ageFirstStageTenderNum != null" >
+        #{ageFirstStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="ageFirstStageTenderProportion != null" >
+        #{ageFirstStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="ageSecondStageTenderNum != null" >
+        #{ageSecondStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="ageSecondStageTenderProportion != null" >
+        #{ageSecondStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="ageThirdStageTenderNum != null" >
+        #{ageThirdStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="ageThirdStageTenderProportion != null" >
+        #{ageThirdStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="ageFourthStageTenderNum != null" >
+        #{ageFourthStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="ageFourthStageTenderProportion != null" >
+        #{ageFourthStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="ageFirveStageTenderNum != null" >
+        #{ageFirveStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="ageFirveStageTenderProportion != null" >
+        #{ageFirveStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="amountFirstStageTenderNum != null" >
+        #{amountFirstStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="amountFirstStageTenderProportion != null" >
+        #{amountFirstStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="amountSecondStageTenderNum != null" >
+        #{amountSecondStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="amountSecondStageTenderProportion != null" >
+        #{amountSecondStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="amountThirdStageTenderNum != null" >
+        #{amountThirdStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="amountThirdStageTenderProportion != null" >
+        #{amountThirdStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="amountFourthStageTenderNum != null" >
+        #{amountFourthStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="amountFourthStageTenderProportion != null" >
+        #{amountFourthStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="amountFirveStageTenderNum != null" >
+        #{amountFirveStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="amountFirveStageTenderProportion != null" >
+        #{amountFirveStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateUserId != null" >
+        #{updateUserId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="createUserId != null" >
+        #{createUserId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.UserOperationReportExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_user_operation_report
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_user_operation_report
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.operationReportId != null" >
+        operation_report_id = #{record.operationReportId,jdbcType=INTEGER},
+      </if>
+      <if test="record.operationReportType != null" >
+        operation_report_type = #{record.operationReportType,jdbcType=TINYINT},
+      </if>
+      <if test="record.manTenderNum != null" >
+        man_tender_num = #{record.manTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.manTenderNumProportion != null" >
+        man_tender_num_proportion = #{record.manTenderNumProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.womanTenderNum != null" >
+        woman_tender_num = #{record.womanTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.womanTenderNumProportion != null" >
+        woman_tender_num_proportion = #{record.womanTenderNumProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.ageFirstStageTenderNum != null" >
+        age_first_stage_tender_num = #{record.ageFirstStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.ageFirstStageTenderProportion != null" >
+        age_first_stage_tender_proportion = #{record.ageFirstStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.ageSecondStageTenderNum != null" >
+        age_second_stage_tender_num = #{record.ageSecondStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.ageSecondStageTenderProportion != null" >
+        age_second_stage_tender_proportion = #{record.ageSecondStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.ageThirdStageTenderNum != null" >
+        age_third_stage_tender_num = #{record.ageThirdStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.ageThirdStageTenderProportion != null" >
+        age_third_stage_tender_proportion = #{record.ageThirdStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.ageFourthStageTenderNum != null" >
+        age_fourth_stage_tender_num = #{record.ageFourthStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.ageFourthStageTenderProportion != null" >
+        age_fourth_stage_tender_proportion = #{record.ageFourthStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.ageFirveStageTenderNum != null" >
+        age_firve_stage_tender_num = #{record.ageFirveStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.ageFirveStageTenderProportion != null" >
+        age_firve_stage_tender_proportion = #{record.ageFirveStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.amountFirstStageTenderNum != null" >
+        amount_first_stage_tender_num = #{record.amountFirstStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.amountFirstStageTenderProportion != null" >
+        amount_first_stage_tender_proportion = #{record.amountFirstStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.amountSecondStageTenderNum != null" >
+        amount_second_stage_tender_num = #{record.amountSecondStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.amountSecondStageTenderProportion != null" >
+        amount_second_stage_tender_proportion = #{record.amountSecondStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.amountThirdStageTenderNum != null" >
+        amount_third_stage_tender_num = #{record.amountThirdStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.amountThirdStageTenderProportion != null" >
+        amount_third_stage_tender_proportion = #{record.amountThirdStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.amountFourthStageTenderNum != null" >
+        amount_fourth_stage_tender_num = #{record.amountFourthStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.amountFourthStageTenderProportion != null" >
+        amount_fourth_stage_tender_proportion = #{record.amountFourthStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.amountFirveStageTenderNum != null" >
+        amount_firve_stage_tender_num = #{record.amountFirveStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.amountFirveStageTenderProportion != null" >
+        amount_firve_stage_tender_proportion = #{record.amountFirveStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateUserId != null" >
+        update_user_id = #{record.updateUserId,jdbcType=INTEGER},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.createUserId != null" >
+        create_user_id = #{record.createUserId,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_user_operation_report
+    set id = #{record.id,jdbcType=INTEGER},
+      operation_report_id = #{record.operationReportId,jdbcType=INTEGER},
+      operation_report_type = #{record.operationReportType,jdbcType=TINYINT},
+      man_tender_num = #{record.manTenderNum,jdbcType=INTEGER},
+      man_tender_num_proportion = #{record.manTenderNumProportion,jdbcType=DECIMAL},
+      woman_tender_num = #{record.womanTenderNum,jdbcType=INTEGER},
+      woman_tender_num_proportion = #{record.womanTenderNumProportion,jdbcType=DECIMAL},
+      age_first_stage_tender_num = #{record.ageFirstStageTenderNum,jdbcType=INTEGER},
+      age_first_stage_tender_proportion = #{record.ageFirstStageTenderProportion,jdbcType=DECIMAL},
+      age_second_stage_tender_num = #{record.ageSecondStageTenderNum,jdbcType=INTEGER},
+      age_second_stage_tender_proportion = #{record.ageSecondStageTenderProportion,jdbcType=DECIMAL},
+      age_third_stage_tender_num = #{record.ageThirdStageTenderNum,jdbcType=INTEGER},
+      age_third_stage_tender_proportion = #{record.ageThirdStageTenderProportion,jdbcType=DECIMAL},
+      age_fourth_stage_tender_num = #{record.ageFourthStageTenderNum,jdbcType=INTEGER},
+      age_fourth_stage_tender_proportion = #{record.ageFourthStageTenderProportion,jdbcType=DECIMAL},
+      age_firve_stage_tender_num = #{record.ageFirveStageTenderNum,jdbcType=INTEGER},
+      age_firve_stage_tender_proportion = #{record.ageFirveStageTenderProportion,jdbcType=DECIMAL},
+      amount_first_stage_tender_num = #{record.amountFirstStageTenderNum,jdbcType=INTEGER},
+      amount_first_stage_tender_proportion = #{record.amountFirstStageTenderProportion,jdbcType=DECIMAL},
+      amount_second_stage_tender_num = #{record.amountSecondStageTenderNum,jdbcType=INTEGER},
+      amount_second_stage_tender_proportion = #{record.amountSecondStageTenderProportion,jdbcType=DECIMAL},
+      amount_third_stage_tender_num = #{record.amountThirdStageTenderNum,jdbcType=INTEGER},
+      amount_third_stage_tender_proportion = #{record.amountThirdStageTenderProportion,jdbcType=DECIMAL},
+      amount_fourth_stage_tender_num = #{record.amountFourthStageTenderNum,jdbcType=INTEGER},
+      amount_fourth_stage_tender_proportion = #{record.amountFourthStageTenderProportion,jdbcType=DECIMAL},
+      amount_firve_stage_tender_num = #{record.amountFirveStageTenderNum,jdbcType=INTEGER},
+      amount_firve_stage_tender_proportion = #{record.amountFirveStageTenderProportion,jdbcType=DECIMAL},
+      update_time = #{record.updateTime,jdbcType=INTEGER},
+      update_user_id = #{record.updateUserId,jdbcType=INTEGER},
+      create_time = #{record.createTime,jdbcType=INTEGER},
+      create_user_id = #{record.createUserId,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.UserOperationReport" >
+    update hyjf_user_operation_report
+    <set >
+      <if test="operationReportId != null" >
+        operation_report_id = #{operationReportId,jdbcType=INTEGER},
+      </if>
+      <if test="operationReportType != null" >
+        operation_report_type = #{operationReportType,jdbcType=TINYINT},
+      </if>
+      <if test="manTenderNum != null" >
+        man_tender_num = #{manTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="manTenderNumProportion != null" >
+        man_tender_num_proportion = #{manTenderNumProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="womanTenderNum != null" >
+        woman_tender_num = #{womanTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="womanTenderNumProportion != null" >
+        woman_tender_num_proportion = #{womanTenderNumProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="ageFirstStageTenderNum != null" >
+        age_first_stage_tender_num = #{ageFirstStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="ageFirstStageTenderProportion != null" >
+        age_first_stage_tender_proportion = #{ageFirstStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="ageSecondStageTenderNum != null" >
+        age_second_stage_tender_num = #{ageSecondStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="ageSecondStageTenderProportion != null" >
+        age_second_stage_tender_proportion = #{ageSecondStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="ageThirdStageTenderNum != null" >
+        age_third_stage_tender_num = #{ageThirdStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="ageThirdStageTenderProportion != null" >
+        age_third_stage_tender_proportion = #{ageThirdStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="ageFourthStageTenderNum != null" >
+        age_fourth_stage_tender_num = #{ageFourthStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="ageFourthStageTenderProportion != null" >
+        age_fourth_stage_tender_proportion = #{ageFourthStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="ageFirveStageTenderNum != null" >
+        age_firve_stage_tender_num = #{ageFirveStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="ageFirveStageTenderProportion != null" >
+        age_firve_stage_tender_proportion = #{ageFirveStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="amountFirstStageTenderNum != null" >
+        amount_first_stage_tender_num = #{amountFirstStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="amountFirstStageTenderProportion != null" >
+        amount_first_stage_tender_proportion = #{amountFirstStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="amountSecondStageTenderNum != null" >
+        amount_second_stage_tender_num = #{amountSecondStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="amountSecondStageTenderProportion != null" >
+        amount_second_stage_tender_proportion = #{amountSecondStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="amountThirdStageTenderNum != null" >
+        amount_third_stage_tender_num = #{amountThirdStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="amountThirdStageTenderProportion != null" >
+        amount_third_stage_tender_proportion = #{amountThirdStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="amountFourthStageTenderNum != null" >
+        amount_fourth_stage_tender_num = #{amountFourthStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="amountFourthStageTenderProportion != null" >
+        amount_fourth_stage_tender_proportion = #{amountFourthStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="amountFirveStageTenderNum != null" >
+        amount_firve_stage_tender_num = #{amountFirveStageTenderNum,jdbcType=INTEGER},
+      </if>
+      <if test="amountFirveStageTenderProportion != null" >
+        amount_firve_stage_tender_proportion = #{amountFirveStageTenderProportion,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateUserId != null" >
+        update_user_id = #{updateUserId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="createUserId != null" >
+        create_user_id = #{createUserId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.UserOperationReport" >
+    update hyjf_user_operation_report
+    set operation_report_id = #{operationReportId,jdbcType=INTEGER},
+      operation_report_type = #{operationReportType,jdbcType=TINYINT},
+      man_tender_num = #{manTenderNum,jdbcType=INTEGER},
+      man_tender_num_proportion = #{manTenderNumProportion,jdbcType=DECIMAL},
+      woman_tender_num = #{womanTenderNum,jdbcType=INTEGER},
+      woman_tender_num_proportion = #{womanTenderNumProportion,jdbcType=DECIMAL},
+      age_first_stage_tender_num = #{ageFirstStageTenderNum,jdbcType=INTEGER},
+      age_first_stage_tender_proportion = #{ageFirstStageTenderProportion,jdbcType=DECIMAL},
+      age_second_stage_tender_num = #{ageSecondStageTenderNum,jdbcType=INTEGER},
+      age_second_stage_tender_proportion = #{ageSecondStageTenderProportion,jdbcType=DECIMAL},
+      age_third_stage_tender_num = #{ageThirdStageTenderNum,jdbcType=INTEGER},
+      age_third_stage_tender_proportion = #{ageThirdStageTenderProportion,jdbcType=DECIMAL},
+      age_fourth_stage_tender_num = #{ageFourthStageTenderNum,jdbcType=INTEGER},
+      age_fourth_stage_tender_proportion = #{ageFourthStageTenderProportion,jdbcType=DECIMAL},
+      age_firve_stage_tender_num = #{ageFirveStageTenderNum,jdbcType=INTEGER},
+      age_firve_stage_tender_proportion = #{ageFirveStageTenderProportion,jdbcType=DECIMAL},
+      amount_first_stage_tender_num = #{amountFirstStageTenderNum,jdbcType=INTEGER},
+      amount_first_stage_tender_proportion = #{amountFirstStageTenderProportion,jdbcType=DECIMAL},
+      amount_second_stage_tender_num = #{amountSecondStageTenderNum,jdbcType=INTEGER},
+      amount_second_stage_tender_proportion = #{amountSecondStageTenderProportion,jdbcType=DECIMAL},
+      amount_third_stage_tender_num = #{amountThirdStageTenderNum,jdbcType=INTEGER},
+      amount_third_stage_tender_proportion = #{amountThirdStageTenderProportion,jdbcType=DECIMAL},
+      amount_fourth_stage_tender_num = #{amountFourthStageTenderNum,jdbcType=INTEGER},
+      amount_fourth_stage_tender_proportion = #{amountFourthStageTenderProportion,jdbcType=DECIMAL},
+      amount_firve_stage_tender_num = #{amountFirveStageTenderNum,jdbcType=INTEGER},
+      amount_firve_stage_tender_proportion = #{amountFirveStageTenderProportion,jdbcType=DECIMAL},
+      update_time = #{updateTime,jdbcType=INTEGER},
+      update_user_id = #{updateUserId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=INTEGER},
+      create_user_id = #{createUserId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

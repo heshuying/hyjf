@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.htj.DebtAccountDetailCustomizeMapper">
+	<resultMap id="AccountDetailMapResult" type="com.hyjf.mybatis.model.customize.admin.htj.DebtAccountDetailCustomize">
+		<result column="id" property="id" />
+		<result column="user_id" property="userId" /> <!-- 用户id -->
+		<result column="username" property="username" /> <!-- 用户名 -->
+		<result column="referrer_name" property="referrerName" /> <!-- 推荐人 -->
+		<result column="referrer_group" property="referrerGroup" /> <!-- 推荐组 -->
+		<result column="nid" property="nid" /> <!-- 订单号 -->
+		<result column="type" property="type" /> <!-- 操作类型 -->
+		<result column="trade_type" property="tradeType" /> <!-- 交易类型  -->
+		<result column="amount" property="amount" /> <!-- 操作金额  -->
+		<result column="balance" property="balance" /> <!-- 可用金额 -->
+		<result column="frost" property="frost" /> <!-- 冻结金额 -->
+		<result column="plan_balance" property="planBalance" /> <!-- 计划余额 -->
+		<result column="plan_frost" property="planFrost" /> <!-- 计划冻结金额-->
+		<result column="plan_order_balance" property="planOrderBalance" /> <!-- 计划订单可用余额 -->
+		<result column="plan_order_frost" property="planOrderFrost" /> <!-- 计划订单冻结金额-->
+		<result column="remark" property="remark" /> <!-- 备注  -->
+		<result column="create_time" property="createTime" /> <!-- 交易时间  -->
+	</resultMap>
+
+	<sql id="where-all-page-condition">
+		<if test="userId != null and userId != 0">
+			AND l.user_id = #{userId}
+		</if>
+		<if test="referrerName != null and referrerName != ''">
+			AND l.referer_user_name = #{referrerName}
+		</if>
+		<if test="tradeTypeSearch != null and tradeTypeSearch != ''">
+			AND t.id = #{tradeTypeSearch}
+		</if>
+		<if test="username != null and username != ''">
+			AND l.user_name = #{username}
+		</if>
+		<if test="nid != null and nid != ''">
+			AND l.nid = #{nid}
+		</if>
+		<if test="balance != null">
+			AND l.balance = #{balance}
+		</if>
+		<if test="frost != null">
+			AND l.frost = #{frost}
+		</if>
+		<if test="startDate != null and startDate != ''">
+			AND l.create_time >= UNIX_TIMESTAMP(CONCAT(#{startDate},' 00:00:00'))
+		</if>
+		<if test="endDate != null and endDate != ''">
+			AND l.create_time <![CDATA[<=]]> UNIX_TIMESTAMP(CONCAT(#{endDate},' 23:59:59'))
+		</if>
+	</sql>
+
+	<select id="queryAccountDetailCount" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.admin.htj.DebtAccountDetailCustomize">
+		SELECT COUNT(1)
+		FROM hyjf_debt_account_list l
+		LEFT JOIN huiyingdai_account_trade t ON l.trade= t.`value`
+		WHERE 1=1
+		<include refid="where-all-page-condition"/>
+	</select>
+
+	<select id="queryAccountDetails" resultMap="AccountDetailMapResult" parameterType="com.hyjf.mybatis.model.customize.admin.htj.DebtAccountDetailCustomize">
+		SELECT 
+			l.id, 
+			l.user_name as username,
+			l.referer_user_name as 'referrer_name',
+			l.nid AS nid , 
+			CASE l.type WHEN 1 THEN '收入' WHEN 2 THEN '支出' WHEN 3 THEN '冻结'  WHEN 4 THEN '解冻' ELSE '其它' END as type,
+			t.`name` as trade_type, 
+			l.amount, 
+			l.balance, 
+			IFNULL(l.frost,0) as frost,
+			IFNULL(l.plan_balance,0) as plan_balance,
+			IFNULL(l.plan_frost,0) as plan_frost,
+			IFNULL(l.plan_order_balance,0) as plan_order_balance,
+			IFNULL(l.plan_order_frost,0) as plan_order_frost,
+			l.remark, 
+			FROM_UNIXTIME(l.create_time, '%Y-%m-%d %H:%i:%S') as 'create_time'
+		FROM hyjf_debt_account_list l
+		LEFT JOIN huiyingdai_account_trade t ON l.trade= t.`value`
+		WHERE 1=1
+		<include refid="where-all-page-condition"/>
+		ORDER BY l.create_time DESC, l.id DESC
+	    <if test="limitStart >= 0" >
+	      LIMIT #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+
+</mapper>
+

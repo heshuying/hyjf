@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.BillionSecondCustomizeMapper">
+	<resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.customize.BillionSecondCustomize">
+		<result column="startTime" property="startTime" jdbcType="INTEGER" />
+		<result column="endTime" property="endTime" jdbcType="INTEGER" />
+		<result column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="account" property="account" jdbcType="DECIMAL" />
+	</resultMap>
+
+	<!-- 根据用户id获取投资金额 -->
+	<select id="selectUserTenderList"  parameterType="com.hyjf.mybatis.model.customize.BillionSecondCustomize" resultMap="BaseResultMap">
+		SELECT
+			b.user_id AS user_id,
+			SUM(b.account) AS account
+		FROM
+			huiyingdai_borrow_tender b
+		INNER JOIN huiyingdai_borrow borrow ON borrow.borrow_nid = b.borrow_nid
+		AND borrow.project_type not in(4,8,11)
+		WHERE
+			b.addtime <![CDATA[>]]> #{startTime}
+		AND b.addtime <![CDATA[<=]]> #{endTime}
+		
+		GROUP BY b.user_id
+	</select>
+
+</mapper>

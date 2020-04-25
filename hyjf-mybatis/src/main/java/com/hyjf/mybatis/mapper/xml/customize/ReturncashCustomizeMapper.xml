@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.ReturncashCustomizeMapper">
+	<resultMap id="selectReturncashListMap" type="com.hyjf.mybatis.model.customize.ReturncashCustomize">
+	    <id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="user_id" property="userId" jdbcType="INTEGER" />
+	    <result column="username" property="username" jdbcType="VARCHAR" />
+	    <result column="rec_money" property="recMoney" jdbcType="VARCHAR" />
+	    <result column="in_money" property="inMoney" jdbcType="INTEGER" />
+	    <result column="fee" property="fee" jdbcType="VARCHAR" />
+	    <result column="fee_rate" property="feeRate" jdbcType="VARCHAR" />
+	    <result column="maybackmoney" property="maybackmoney" jdbcType="VARCHAR" />
+	    <result column="type" property="type" jdbcType="VARCHAR" />
+	    <result column="region_name" property="regionName" jdbcType="VARCHAR" />
+		<result column="branch_name" property="branchName" jdbcType="VARCHAR" />
+		<result column="department_name" property="departmentName" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Returncash_Where_Clause" >
+	    <where>
+	            1=1
+			<if test="usernameSrch != null and usernameSrch != ''">
+				AND a.username like CONCAT('%', #{usernameSrch}, '%')
+			</if>
+			<if test="operatorSrch != null and operatorSrch != ''">
+				AND a.operator like CONCAT('%', #{operatorSrch}, '%')
+			</if>
+			<if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
+			<if test="combotreeListSrch != null and combotreeListSrch != ''">
+				AND od.id in
+				<foreach collection="combotreeListSrch" open="(" close=")" separator="," item="dep">
+					#{dep}
+				</foreach>
+			</if>
+	    </where>
+	</sql>
+
+	<select id="selectReturncashCount" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.ReturncashCustomize">
+		SELECT
+			count(a.id) as cnt
+		FROM
+			(
+				SELECT
+					a.id,
+					a.user_id,
+					u.username,
+					a.rec_money,
+					a.in_money,
+					a.fee,
+					a.fee / a.rec_money AS fee_rate,
+
+				IF (
+					a.in_money <![CDATA[>=]]> a.rec_money,
+					a.fee,
+					ROUND(
+						a.fee / a.rec_money * a.in_money,
+						2
+					)
+				) AS maybackmoney,
+				1 AS type,
+				CASE WHEN ui.attribute = 2 OR ui.attribute = 3 THEN
+					a.user_id
+				ELSE
+					su.spreads_userid
+				END AS hyd_id
+			FROM
+				huiyingdai_account a
+			LEFT JOIN huiyingdai_users u ON a.user_id = u.user_id
+			LEFT JOIN huiyingdai_users_info ui ON a.user_id = ui.user_id
+			LEFT JOIN huiyingdai_spreads_users su ON a.user_id = su.user_id
+			WHERE
+				a.rec_money <![CDATA[>=]]> 10000
+			AND a.in_money <![CDATA[>=]]> 9775
+			AND NOT EXISTS (
+				SELECT
+					t.id
+				FROM
+					huiyingdai_borrow b,
+					huiyingdai_borrow_tender t
+				WHERE
+					b.borrow_nid = t.borrow_nid
+				AND t.addtime <![CDATA[>=]]> UNIX_TIMESTAMP('2016-01-01 00:00:00')
+				AND t.user_id = a.user_id
+			)
+			UNION
+				SELECT
+					a.id,
+					a.user_id,
+					u.username,
+					a.rec_money,
+					a.in_money,
+					a.fee,
+					a.fee / a.rec_money AS fee_rate,
+
+				IF (
+					a.in_money <![CDATA[>=]]> a.rec_money,
+					a.fee,
+					ROUND(
+						a.fee / a.rec_money * a.in_money,
+						2
+					)
+				) AS maybackmoney,
+				2 AS type,
+				CASE WHEN ui.attribute = 2 OR ui.attribute = 3 THEN
+					a.user_id
+				ELSE
+					su.spreads_userid
+				END AS hyd_id
+			FROM
+				huiyingdai_account a
+			LEFT JOIN huiyingdai_users u ON a.user_id = u.user_id
+			LEFT JOIN huiyingdai_users_info ui ON a.user_id = ui.user_id
+			LEFT JOIN huiyingdai_spreads_users su ON a.user_id = su.user_id
+			WHERE
+				a.rec_money <![CDATA[>=]]> 1000
+			AND a.in_money <![CDATA[>=]]> 997
+			AND EXISTS (
+				SELECT
+					t.id
+				FROM
+					huiyingdai_borrow b,
+					huiyingdai_borrow_tender t
+				WHERE
+					b.borrow_nid = t.borrow_nid
+				AND t.addtime <![CDATA[>=]]> UNIX_TIMESTAMP('2016-01-01 00:00:00')
+				AND t.user_id = a.user_id
+			)
+			) a
+			LEFT JOIN `hyjf_crm`.`oa_users` `ou` on ou.hyd_id = a.hyd_id AND ou.user_status IN ('E','Q1','Q11','Q2','Q21')
+			LEFT JOIN `hyjf_crm`.`oa_department` `od` ON `od`.`id` = `ou`.`departmentid` and `od`.`id` IS NOT NULL
+			LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+			LEFT JOIN `hyjf_crm`.`oa_department` `od3` ON `od3`.`id` = `od2`.`parentid`
+		<include refid="Returncash_Where_Clause" />
+	</select>
+	<select id="selectReturncashList" resultMap="selectReturncashListMap" parameterType="com.hyjf.mybatis.model.customize.ReturncashCustomize">
+		SELECT
+			a.*,
+			`od3`.`name` AS `regionName`,
+			`od2`.`name` AS `branchName`,
+			`od`.`name` AS `departmentName`
+		FROM
+			(
+				SELECT
+					a.id,
+					a.user_id,
+					u.username,
+					a.rec_money,
+					a.in_money,
+					a.fee,
+					a.fee / a.rec_money AS fee_rate,
+
+				IF (
+					a.in_money <![CDATA[>=]]> a.rec_money,
+					a.fee,
+					ROUND(
+						a.fee / a.rec_money * a.in_money,
+						2
+					)
+				) AS maybackmoney,
+				1 AS type,
+				CASE WHEN ui.attribute = 2 OR ui.attribute = 3 THEN
+					a.user_id
+				ELSE
+					su.spreads_userid
+				END AS hyd_id
+			FROM
+				huiyingdai_account a
+			LEFT JOIN huiyingdai_users u ON a.user_id = u.user_id
+			LEFT JOIN huiyingdai_users_info ui ON a.user_id = ui.user_id
+			LEFT JOIN huiyingdai_spreads_users su ON a.user_id = su.user_id
+			WHERE
+				a.rec_money <![CDATA[>=]]> 10000
+			AND a.in_money <![CDATA[>=]]> 9775
+			AND NOT EXISTS (
+				SELECT
+					t.id
+				FROM
+					huiyingdai_borrow b,
+					huiyingdai_borrow_tender t
+				WHERE
+					b.borrow_nid = t.borrow_nid
+				AND t.addtime <![CDATA[>=]]> UNIX_TIMESTAMP('2016-01-01 00:00:00')
+				AND t.user_id = a.user_id
+			)
+			UNION
+				SELECT
+					a.id,
+					a.user_id,
+					u.username,
+					a.rec_money,
+					a.in_money,
+					a.fee,
+					a.fee / a.rec_money AS fee_rate,
+
+				IF (
+					a.in_money <![CDATA[>=]]> a.rec_money,
+					a.fee,
+					ROUND(
+						a.fee / a.rec_money * a.in_money,
+						2
+					)
+				) AS maybackmoney,
+				2 AS type,
+				CASE WHEN ui.attribute = 2 OR ui.attribute = 3 THEN
+					a.user_id
+				ELSE
+					su.spreads_userid
+				END AS hyd_id
+			FROM
+				huiyingdai_account a
+			LEFT JOIN huiyingdai_users u ON a.user_id = u.user_id
+			LEFT JOIN huiyingdai_users_info ui ON a.user_id = ui.user_id
+			LEFT JOIN huiyingdai_spreads_users su ON a.user_id = su.user_id
+			WHERE
+				a.rec_money <![CDATA[>=]]> 1000
+			AND a.in_money <![CDATA[>=]]> 997
+			AND EXISTS (
+				SELECT
+					t.id
+				FROM
+					huiyingdai_borrow b,
+					huiyingdai_borrow_tender t
+				WHERE
+					b.borrow_nid = t.borrow_nid
+				AND t.addtime <![CDATA[>=]]> UNIX_TIMESTAMP('2016-01-01 00:00:00')
+				AND t.user_id = a.user_id
+			)
+			) a
+			LEFT JOIN `hyjf_crm`.`oa_users` `ou` on ou.hyd_id = a.hyd_id AND ou.user_status IN ('E','Q1','Q11','Q2','Q21')
+			LEFT JOIN `hyjf_crm`.`oa_department` `od` ON `od`.`id` = `ou`.`departmentid` and `od`.`id` IS NOT NULL
+			LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+			LEFT JOIN `hyjf_crm`.`oa_department` `od3` ON `od3`.`id` = `od2`.`parentid`
+		<include refid="Returncash_Where_Clause" />
+		ORDER BY
+			a.id DESC
+		<if test="limitStart >= 0" >
+	      limit #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+
+	<resultMap id="AccountFundsResultMap" type="com.hyjf.mybatis.model.customize.ReturncashCustomize" >
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<result column="money" property="money" jdbcType="DECIMAL" />
+		<result column="note" property="note" jdbcType="VARCHAR" />
+		<result column="addtime" property="addtime" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="operator" property="operator" jdbcType="VARCHAR" />
+		<result column="region_name" property="regionName" jdbcType="VARCHAR" />
+		<result column="branch_name" property="branchName" jdbcType="VARCHAR" />
+		<result column="department_name" property="departmentName" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Returnedcash_Where_Clause" >
+	    <where>
+			<if test="usernameSrch != null and usernameSrch != ''">
+				AND u.username like CONCAT('%', #{usernameSrch}, '%')
+			</if>
+			<if test="operatorSrch != null and operatorSrch != ''">
+				AND a.operator like CONCAT('%', #{operatorSrch}, '%')
+			</if>
+			<if test="addtimeStartSrch != null and addtimeStartSrch != ''">
+				AND FROM_UNIXTIME( a.addtime, '%Y-%m-%d' ) <![CDATA[>=]]> #{addtimeStartSrch}
+			</if>
+			<if test="addtimeEndSrch != null and addtimeEndSrch != ''">
+				AND FROM_UNIXTIME( a.addtime, '%Y-%m-%d' ) <![CDATA[<=]]> #{addtimeEndSrch}
+			</if>
+			<if test="combotreeListSrch != null and combotreeListSrch != ''">
+				AND a.department_id in
+				<foreach collection="combotreeListSrch" open="(" close=")" separator="," item="dep">
+					#{dep}
+				</foreach>
+			</if>
+	    </where>
+	</sql>
+
+	<select id="selectReturnedcashCount" resultType="java.lang.Integer" parameterType="com.hyjf.mybatis.model.customize.ReturncashCustomize">
+		SELECT
+			count(a.id) as cnt
+		FROM
+			huiyingdai_account_funds a
+			LEFT JOIN huiyingdai_users u ON a.user_id = u.user_id
+		<include refid="Returnedcash_Where_Clause" />
+	</select>
+	<select id="selectReturnedcashList" resultMap="selectReturncashListMap" parameterType="com.hyjf.mybatis.model.customize.ReturncashCustomize">
+		SELECT
+			a.id,
+			a.user_id,
+			u.username,
+			a.money,
+			a.note,
+			FROM_UNIXTIME(a.addtime, '%Y-%m-%d %H:%i:%s') as addtime,
+			CASE WHEN a.`status` = '1' THEN
+			    '成功'
+			ELSE '失败'
+			END AS `status`,
+			a.`operator`,
+			a.region_name,
+			a.branch_name,
+			a.department_name
+		FROM
+			huiyingdai_account_funds a
+			LEFT JOIN huiyingdai_users u ON a.user_id = u.user_id
+		<include refid="Returnedcash_Where_Clause" />
+		ORDER BY
+			a.addtime DESC
+		<if test="limitStart >= 0" >
+	      limit #{limitStart} , #{limitEnd}
+	    </if>
+	</select>
+</mapper>

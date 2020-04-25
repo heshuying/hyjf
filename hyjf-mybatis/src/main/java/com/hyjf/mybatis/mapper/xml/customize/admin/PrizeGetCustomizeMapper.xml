@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.admin.PrizeGetCustomizeMapper">
+
+	<sql id="Where_Clause">
+		<where>
+			ipf.del_flg = 0 
+			<if test="prizeStatus != null and prizeStatus != ''">
+				AND ipf.prize_status = #{prizeStatus}
+			</if>
+			<!-- 奖品获得方式 -->
+			<if test="prizeKind != null and prizeKind != ''">
+				AND ipf.prize_kind = #{prizeKind}
+			</if>
+			<if test="prizeType != null and prizeType != ''">
+				AND ipf.prize_type = #{prizeType}
+			</if>
+			<if test="prizeGroupCode != null and prizeGroupCode != ''">
+				AND ipf.prize_group_code = #{prizeGroupCode}
+			</if>
+		</where>
+	</sql>
+
+	<resultMap id="prizeConfMap" type="com.hyjf.mybatis.model.customize.admin.PrizeGetCustomize">
+		<id column="id" property="id" />
+		<result column="prize_name" property="prizeName" />
+		<result column="prize_quantity" property="prizeQuantity" />
+		<result column="recommend_quantity" property="recommendQuantity" />
+		<result column="prize_reminder_quantity" property="prizeReminderQuantity" />
+		<result column="prize_group_code" property="prizeGroupCode" />
+		<result column="prize_type" property="prizeType" />
+		<result column="coupon_code" property="couponCode" />
+		<result column="prize_probability" property="prizeProbability" />
+		<result column="prize_pic_url" property="prizePicUrl" />
+		<result column="prize_kind" property="prizeKind" />
+		<result column="prize_sort" property="prizeSort" />
+		<result column="prize_status" property="prizeStatus" />
+		<result column="success_message" property="successMessage" />
+		<result column="remark" property="remark" />
+	</resultMap>
+	<select id="selectPrizeConfList" resultMap="prizeConfMap" parameterType="Map">
+		SELECT
+			ipf.id,
+			ipf.prize_name,
+			ipf.prize_quantity,
+			ipf.recommend_quantity,
+			ipf.prize_reminder_quantity,
+			ipf.prize_group_code,
+			ipf.prize_type,
+			ipf.coupon_code,
+			ipf.prize_probability,
+			CONCAT(#{fileurl},ipf.prize_pic_url) AS prize_pic_url,
+			ipf.prize_kind,
+			ipf.prize_sort,
+			ipf.prize_status,
+			ipf.success_message,
+			ipf.remark
+		FROM
+			hyjf_invite_prize_conf ipf
+		<include refid="Where_Clause" />
+		GROUP BY
+			ipf.prize_group_code
+		ORDER BY
+			ipf.prize_sort
+		<if test="limitStart != null and limitStart >= 0 and limitEnd !=null and limitEnd >= 0" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	<select id="selectPrizeWinList" resultType="hashmap" parameterType="Map">
+		SELECT
+			hu.username AS userName,
+			ipc.prize_name AS prizeName
+		FROM
+			hyjf_invite_recommend_prize irp
+		JOIN (
+			SELECT
+				*
+			FROM
+				hyjf_invite_prize_conf
+			GROUP BY
+				prize_group_code
+		) ipc ON irp.prize_group = ipc.prize_group_code
+		JOIN huiyingdai_users hu ON irp.user_id = hu.user_id
+		WHERE
+			irp.del_flg = 0
+		AND irp.prize_kind = 2
+		ORDER BY
+			irp.add_time DESC
+		LIMIT 100
+	</select>
+	<update id="updatePrizeCountUsed" parameterType="Map" >
+	    update hyjf_invite_prize_conf
+	    set
+	      prize_reminder_quantity = prize_reminder_quantity - #{prizeCount},
+	      update_time = unix_timestamp(now())
+	    where
+	      prize_group_code = #{prizeGroupCode}
+  	</update>
+  	<update id="updatePrizeStatus" parameterType="Map" >
+	    update hyjf_invite_prize_conf
+	    set
+	      prize_status = #{prizeStatus},
+	      update_time = unix_timestamp(now())
+	    where
+	      prize_group_code = #{prizeGroupCode}
+  	</update>
+  	<delete id="deletePrizeByGroupCode" parameterType="java.lang.String" >
+	    delete from hyjf_invite_prize_conf
+	    where prize_group_code = #{groupCode}
+	</delete>
+	
+</mapper>

@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.auto.PreRegistChannelExclusiveActivityMapper" >
+  <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.PreRegistChannelExclusiveActivity" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="referrer" property="referrer" jdbcType="INTEGER" />
+    <result column="referrer_user_name" property="referrerUserName" jdbcType="VARCHAR" />
+    <result column="pre_regist_time" property="preRegistTime" jdbcType="INTEGER" />
+    <result column="regist_time" property="registTime" jdbcType="INTEGER" />
+    <result column="utm_id" property="utmId" jdbcType="INTEGER" />
+    <result column="utm_term" property="utmTerm" jdbcType="VARCHAR" />
+    <result column="source_id" property="sourceId" jdbcType="INTEGER" />
+    <result column="utm_source" property="utmSource" jdbcType="VARCHAR" />
+    <result column="tender_total" property="tenderTotal" jdbcType="DECIMAL" />
+    <result column="tender_single" property="tenderSingle" jdbcType="DECIMAL" />
+    <result column="reward" property="reward" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, user_id, username, mobile, referrer, referrer_user_name, pre_regist_time, regist_time, 
+    utm_id, utm_term, source_id, utm_source, tender_total, tender_single, reward, remark, 
+    create_time, update_time
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.hyjf.mybatis.model.auto.PreRegistChannelExclusiveActivityExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from hyjf_pre_regist_channel_exclusive_activity
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limitStart >= 0" >
+      limit #{limitStart} , #{limitEnd}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from hyjf_pre_regist_channel_exclusive_activity
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from hyjf_pre_regist_channel_exclusive_activity
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hyjf.mybatis.model.auto.PreRegistChannelExclusiveActivityExample" >
+    delete from hyjf_pre_regist_channel_exclusive_activity
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hyjf.mybatis.model.auto.PreRegistChannelExclusiveActivity" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_pre_regist_channel_exclusive_activity (user_id, username, mobile, 
+      referrer, referrer_user_name, pre_regist_time, 
+      regist_time, utm_id, utm_term, 
+      source_id, utm_source, tender_total, 
+      tender_single, reward, remark, 
+      create_time, update_time)
+    values (#{userId,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, 
+      #{referrer,jdbcType=INTEGER}, #{referrerUserName,jdbcType=VARCHAR}, #{preRegistTime,jdbcType=INTEGER}, 
+      #{registTime,jdbcType=INTEGER}, #{utmId,jdbcType=INTEGER}, #{utmTerm,jdbcType=VARCHAR}, 
+      #{sourceId,jdbcType=INTEGER}, #{utmSource,jdbcType=VARCHAR}, #{tenderTotal,jdbcType=DECIMAL}, 
+      #{tenderSingle,jdbcType=DECIMAL}, #{reward,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=INTEGER}, #{updateTime,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hyjf.mybatis.model.auto.PreRegistChannelExclusiveActivity" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into hyjf_pre_regist_channel_exclusive_activity
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="username != null" >
+        username,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="referrer != null" >
+        referrer,
+      </if>
+      <if test="referrerUserName != null" >
+        referrer_user_name,
+      </if>
+      <if test="preRegistTime != null" >
+        pre_regist_time,
+      </if>
+      <if test="registTime != null" >
+        regist_time,
+      </if>
+      <if test="utmId != null" >
+        utm_id,
+      </if>
+      <if test="utmTerm != null" >
+        utm_term,
+      </if>
+      <if test="sourceId != null" >
+        source_id,
+      </if>
+      <if test="utmSource != null" >
+        utm_source,
+      </if>
+      <if test="tenderTotal != null" >
+        tender_total,
+      </if>
+      <if test="tenderSingle != null" >
+        tender_single,
+      </if>
+      <if test="reward != null" >
+        reward,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="referrer != null" >
+        #{referrer,jdbcType=INTEGER},
+      </if>
+      <if test="referrerUserName != null" >
+        #{referrerUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="preRegistTime != null" >
+        #{preRegistTime,jdbcType=INTEGER},
+      </if>
+      <if test="registTime != null" >
+        #{registTime,jdbcType=INTEGER},
+      </if>
+      <if test="utmId != null" >
+        #{utmId,jdbcType=INTEGER},
+      </if>
+      <if test="utmTerm != null" >
+        #{utmTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="sourceId != null" >
+        #{sourceId,jdbcType=INTEGER},
+      </if>
+      <if test="utmSource != null" >
+        #{utmSource,jdbcType=VARCHAR},
+      </if>
+      <if test="tenderTotal != null" >
+        #{tenderTotal,jdbcType=DECIMAL},
+      </if>
+      <if test="tenderSingle != null" >
+        #{tenderSingle,jdbcType=DECIMAL},
+      </if>
+      <if test="reward != null" >
+        #{reward,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hyjf.mybatis.model.auto.PreRegistChannelExclusiveActivityExample" resultType="java.lang.Integer" >
+    select count(*) from hyjf_pre_regist_channel_exclusive_activity
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update hyjf_pre_regist_channel_exclusive_activity
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.username != null" >
+        username = #{record.username,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mobile != null" >
+        mobile = #{record.mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="record.referrer != null" >
+        referrer = #{record.referrer,jdbcType=INTEGER},
+      </if>
+      <if test="record.referrerUserName != null" >
+        referrer_user_name = #{record.referrerUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.preRegistTime != null" >
+        pre_regist_time = #{record.preRegistTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.registTime != null" >
+        regist_time = #{record.registTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.utmId != null" >
+        utm_id = #{record.utmId,jdbcType=INTEGER},
+      </if>
+      <if test="record.utmTerm != null" >
+        utm_term = #{record.utmTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sourceId != null" >
+        source_id = #{record.sourceId,jdbcType=INTEGER},
+      </if>
+      <if test="record.utmSource != null" >
+        utm_source = #{record.utmSource,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tenderTotal != null" >
+        tender_total = #{record.tenderTotal,jdbcType=DECIMAL},
+      </if>
+      <if test="record.tenderSingle != null" >
+        tender_single = #{record.tenderSingle,jdbcType=DECIMAL},
+      </if>
+      <if test="record.reward != null" >
+        reward = #{record.reward,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remark != null" >
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update hyjf_pre_regist_channel_exclusive_activity
+    set id = #{record.id,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      username = #{record.username,jdbcType=VARCHAR},
+      mobile = #{record.mobile,jdbcType=VARCHAR},
+      referrer = #{record.referrer,jdbcType=INTEGER},
+      referrer_user_name = #{record.referrerUserName,jdbcType=VARCHAR},
+      pre_regist_time = #{record.preRegistTime,jdbcType=INTEGER},
+      regist_time = #{record.registTime,jdbcType=INTEGER},
+      utm_id = #{record.utmId,jdbcType=INTEGER},
+      utm_term = #{record.utmTerm,jdbcType=VARCHAR},
+      source_id = #{record.sourceId,jdbcType=INTEGER},
+      utm_source = #{record.utmSource,jdbcType=VARCHAR},
+      tender_total = #{record.tenderTotal,jdbcType=DECIMAL},
+      tender_single = #{record.tenderSingle,jdbcType=DECIMAL},
+      reward = #{record.reward,jdbcType=VARCHAR},
+      remark = #{record.remark,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=INTEGER},
+      update_time = #{record.updateTime,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hyjf.mybatis.model.auto.PreRegistChannelExclusiveActivity" >
+    update hyjf_pre_regist_channel_exclusive_activity
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="username != null" >
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="referrer != null" >
+        referrer = #{referrer,jdbcType=INTEGER},
+      </if>
+      <if test="referrerUserName != null" >
+        referrer_user_name = #{referrerUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="preRegistTime != null" >
+        pre_regist_time = #{preRegistTime,jdbcType=INTEGER},
+      </if>
+      <if test="registTime != null" >
+        regist_time = #{registTime,jdbcType=INTEGER},
+      </if>
+      <if test="utmId != null" >
+        utm_id = #{utmId,jdbcType=INTEGER},
+      </if>
+      <if test="utmTerm != null" >
+        utm_term = #{utmTerm,jdbcType=VARCHAR},
+      </if>
+      <if test="sourceId != null" >
+        source_id = #{sourceId,jdbcType=INTEGER},
+      </if>
+      <if test="utmSource != null" >
+        utm_source = #{utmSource,jdbcType=VARCHAR},
+      </if>
+      <if test="tenderTotal != null" >
+        tender_total = #{tenderTotal,jdbcType=DECIMAL},
+      </if>
+      <if test="tenderSingle != null" >
+        tender_single = #{tenderSingle,jdbcType=DECIMAL},
+      </if>
+      <if test="reward != null" >
+        reward = #{reward,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hyjf.mybatis.model.auto.PreRegistChannelExclusiveActivity" >
+    update hyjf_pre_regist_channel_exclusive_activity
+    set user_id = #{userId,jdbcType=INTEGER},
+      username = #{username,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      referrer = #{referrer,jdbcType=INTEGER},
+      referrer_user_name = #{referrerUserName,jdbcType=VARCHAR},
+      pre_regist_time = #{preRegistTime,jdbcType=INTEGER},
+      regist_time = #{registTime,jdbcType=INTEGER},
+      utm_id = #{utmId,jdbcType=INTEGER},
+      utm_term = #{utmTerm,jdbcType=VARCHAR},
+      source_id = #{sourceId,jdbcType=INTEGER},
+      utm_source = #{utmSource,jdbcType=VARCHAR},
+      tender_total = #{tenderTotal,jdbcType=DECIMAL},
+      tender_single = #{tenderSingle,jdbcType=DECIMAL},
+      reward = #{reward,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

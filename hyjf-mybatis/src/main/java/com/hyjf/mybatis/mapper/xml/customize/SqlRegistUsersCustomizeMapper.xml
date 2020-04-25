@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.hyjf.mybatis.mapper.customize.SqlRegistUsersCustomizeMapper">
+	<resultMap id="selectRegistUsers"
+		type="com.hyjf.mybatis.model.customize.SqlRegistUsersCustomize">
+		<result column="user_id" property="user_id" jdbcType="INTEGER" />
+		<result column="客户" property="username" jdbcType="CHAR" />
+		<result column="truename" property="truename" jdbcType="VARCHAR" />
+		<result column="推荐人" property="user_realname" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="CHAR" />
+		<result column="account" property="account" jdbcType="DECIMAL" />
+		<result column="regtime" property="reg_time" jdbcType="INTEGER" />
+	</resultMap>
+	<select id="selectRegistUsersByRegtime" resultMap="selectRegistUsers"
+		parameterType="int">
+		SELECT u.user_id ,u.username as'客户',ui.truename,ou.user_realname as '推荐人',u.mobile, w.account,
+			FROM_UNIXTIME(u.reg_time,'%Y-%m-%d %H:%i:%S') as regtime,
+			IFNULL(c.id,'未开户') AS id
+		FROM huiyingdai_users u
+		left JOIN huiyingdai_borrow_tender w ON u.user_id= w.user_id
+		INNER JOIN huiyingdai_users_info ui ON ui.user_id= u.user_id AND ui.attribute =0
+		LEFT JOIN huiyingdai_account_chinapnr c ON u.user_id= c.user_id 
+		LEFT JOIN huiyingdai_spreads_users su ON u.user_id= su.user_id 
+		LEFT JOIN hyjf_crm.oa_users ou ON ou.hyd_id= su.spreads_userid   AND ou.user_status in('E','Q1','Q2') 
+		WHERE 1=1 and FROM_UNIXTIME(u.reg_time,'%Y%m%d') = #{u.reg_time}
+		ORDER BY u.reg_time
+	</select>
+
+</mapper>

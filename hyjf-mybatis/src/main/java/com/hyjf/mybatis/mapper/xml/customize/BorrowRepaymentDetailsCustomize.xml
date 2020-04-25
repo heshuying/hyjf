@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.hyjf.mybatis.mapper.customize.BorrowRepaymentDetailsCustomizeMapper">
+	<sql id="Where_Clause">
+			<!-- 借款编号 -->
+			<if test="borrowNidSrch != null and borrowNidSrch != ''">
+				AND hb.borrow_nid LIKE CONCAT('%', #{borrowNidSrch}, '%')
+			</if>
+			<!-- 借款人 -->
+			<if test="borrowUserNameSrch != null and borrowUserNameSrch != ''">
+				AND u1.username LIKE CONCAT('%', #{borrowUserNameSrch},
+				'%')
+			</if>
+			<!-- 投资人 -->
+			<if test="recoverUserNameSrch != null and recoverUserNameSrch != ''">
+				AND u2.username LIKE CONCAT('%', #{recoverUserNameSrch},
+				'%')
+			</if>
+			<!-- 推荐人 -->
+			<if test="inviteUserNameSrch != null and inviteUserNameSrch != ''">
+				AND hbt.invite_user_name LIKE CONCAT('%', #{inviteUserNameSrch},
+				'%')
+			</if>
+			
+			<!-- 还款状态 -->
+			<if test="statusSrch != null and statusSrch != ''">
+				AND hbr.recover_status = #{statusSrch}
+			</if>
+			<!-- 应还款日期 -->
+			<if test="recoverTimeStartSrch != null and recoverTimeStartSrch != ''">
+				AND hbr.recover_time <![CDATA[>=]]>
+				unix_timestamp(#{recoverTimeStartSrch})
+			</if>
+			<if test="recoverTimeEndSrch != null and recoverTimeEndSrch != ''">
+				AND hbr.recover_time <![CDATA[<=]]>
+				unix_timestamp(#{recoverTimeEndSrch})+86399
+			</if>
+			
+			<!-- 实际还款时间 -->
+			<if test="recoverYesTimeStartSrch != null and recoverYesTimeStartSrch != ''">
+				AND hbr.recover_yestime <![CDATA[>=]]>
+				unix_timestamp(#{recoverYesTimeStartSrch})
+			</if>
+			<if test="recoverYesTimeEndSrch != null and recoverYesTimeEndSrch != ''">
+				AND hbr.recover_yestime <![CDATA[<=]]>
+				unix_timestamp(#{recoverYesTimeEndSrch})+86399
+			</if>
+	</sql>
+	
+	<sql id="Where_recoverDepartmentName_Clause">
+		<where>
+			<!-- 推荐人 -->
+			<if test="recoverDepartmentNameSrch != null and recoverDepartmentNameSrch != ''">
+				AND t.recover_region_name LIKE CONCAT('%', #{recoverDepartmentNameSrch},'%')
+			</if>
+		</where>
+	</sql>
+	
+	 <select id="countBorrowRepaymentDetails" resultType="java.lang.Long"
+		parameterType="com.hyjf.mybatis.model.customize.BorrowRepaymentDetailsCustomize">
+		SELECT count(1) FROM (
+			SELECT
+					hb.id id,
+					hb.borrow_nid AS borrow_nid,
+					u1.user_id AS borrow_user_id,
+					u1.username AS borrow_user_name,
+					hbpt.borrow_name AS project_type_name,
+					CASE WHEN hb.borrow_style = 'endday' THEN CONCAT(hb.borrow_period, '天') ELSE CONCAT(hb.borrow_period, '个月') END AS borrowPeriod,
+					hb.borrow_apr AS borrow_apr,
+					hb.account AS borrow_account,
+					hb.borrow_account_yes AS borrow_account_yes,
+					hbs.name AS repay_type,
+					u2.user_id AS recover_user_id,
+					u2.username AS recover_user_name,
+					hbt.tender_user_attribute tender_user_attribute,
+					CASE WHEN ui2.attribute = '1' THEN `od6`.`name` ELSE `od3`.`name` END `recover_region_name`,
+					CASE WHEN ui2.attribute = '1' THEN `od5`.`name` ELSE `od2`.`name` END `recover_branch_name`,
+					CASE WHEN ui2.attribute = '1' THEN `od4`.`name` ELSE `od`.`name`  END `recover_department_name`,
+					hbt.invite_user_attribute invite_user_attribute,
+					hbt.invite_user_name invite_user_name,
+					iui.truename invite_truename,
+					hbt.invite_region_name invite_region_name,
+					hbt.invite_branch_name invite_branch_name,
+					hbt.invite_department_name invite_department_name,
+					1 AS recover_period,
+					hbr.recover_capital AS recover_capital,
+					hbr.recover_interest AS recover_interest,
+					hbr.recover_account AS recover_account,
+					hbr.recover_fee AS recover_fee,
+					hbr.recover_status AS status,
+					FROM_UNIXTIME(hbr.recover_time, '%Y-%m-%d' ) recover_time,
+					hbr.recover_time order_by_recover_time,
+					IF(hbr.recover_yestime is null or hbr.recover_yestime='' or hbr.recover_yestime=0,
+					'',FROM_UNIXTIME(hbr.recover_yestime, '%Y-%m-%d %H:%i:%s' )) as recover_yestime,
+					hbr.recover_yestime order_by_recover_yestime
+			FROM huiyingdai_borrow hb
+			INNER JOIN huiyingdai_borrow_recover hbr ON hbr.borrow_nid=hb.borrow_nid 
+			INNER JOIN huiyingdai_borrow_tender hbt ON hbt.nid=hbr.nid
+			LEFT JOIN huiyingdai_users_info iui ON iui.user_id = hbr.invite_user_id
+			LEFT JOIN huiyingdai_users AS u1 ON hbr.borrow_userid = u1.user_id
+			LEFT JOIN huiyingdai_borrow_project_type hbpt ON hbpt.borrow_cd = CAST(hb.project_type AS CHAR)
+			LEFT JOIN huiyingdai_borrow_style AS hbs on hb.borrow_style=hbs.nid
+			LEFT JOIN huiyingdai_users AS u2 ON hbr.user_id = u2.user_id
+			LEFT JOIN huiyingdai_spreads_users su ON su.user_id = u2.user_id
+			LEFT JOIN huiyingdai_users_info ui2 ON ui2.user_id = u2.user_id
+			LEFT JOIN `hyjf_crm`.`oa_users` `ou` ON `ou`.hyd_id = hbr.user_id AND ou.user_status IN ('E','Q1','Q11','Q2','Q21')
+			LEFT JOIN `hyjf_crm`.`oa_department` `od` ON `od`.`id` = `ou`.`departmentid` AND `od`.id IS NOT NULL
+			LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+			LEFT JOIN `hyjf_crm`.`oa_department` `od3` ON `od3`.`id` = `od2`.`parentid`
+			LEFT JOIN `hyjf_crm`.`oa_users` `ou1` ON `ou1`.hyd_id = su.spreads_userid AND ou1.user_status IN ('E','Q1','Q11','Q2','Q21')
+			LEFT JOIN `hyjf_crm`.`oa_department` `od4` ON `od4`.`id` = `ou1`.`departmentid` AND `od4`.id IS NOT NULL
+			LEFT JOIN `hyjf_crm`.`oa_department` `od5` ON `od5`.`id` = `od4`.`parentid`
+			LEFT JOIN `hyjf_crm`.`oa_department` `od6` ON `od6`.`id` = `od5`.`parentid`
+			WHERE  (hb.borrow_style='end' OR hb.borrow_style='endday')
+			<include refid="Where_Clause" />
+			UNION ALL
+			SELECT	
+					hb.id id,
+					hb.borrow_nid AS borrow_nid,
+					u1.user_id AS borrow_user_id,
+					u1.username AS borrow_user_name,
+					hbpt.borrow_name AS project_type_name,
+					CASE WHEN hb.borrow_style = 'endday' THEN CONCAT(hb.borrow_period, '天') ELSE CONCAT(hb.borrow_period, '个月') END AS borrow_period,
+					hb.borrow_apr AS borrow_apr,
+					hb.account AS borrow_account,
+					hb.borrow_account_yes AS borrow_account_yes,
+					hbs.name AS repay_type,
+					u2.user_id AS recover_user_id,
+					u2.username AS recover_user_name,
+					hbt.tender_user_attribute tender_user_attribute,
+					CASE WHEN ui2.attribute = '1' THEN `od6`.`name` ELSE `od3`.`name` END `recover_region_name`,
+					CASE WHEN ui2.attribute = '1' THEN `od5`.`name` ELSE `od2`.`name` END `recover_branch_name`,
+					CASE WHEN ui2.attribute = '1' THEN `od4`.`name` ELSE `od`.`name`  END `recover_department_name`,
+					hbt.invite_user_attribute invite_user_attribute,
+					hbt.invite_user_name invite_user_name,
+					iui.truename invite_truename,
+					hbt.invite_region_name invite_region_name,
+					hbt.invite_branch_name invite_branch_name,
+					hbt.invite_department_name invite_department_name,
+					hbr.recover_period AS recover_period,
+					hbr.recover_capital AS recover_capital,
+					hbr.recover_interest AS recover_interest,
+					hbr.recover_account AS recover_account,
+					hbr.recover_fee AS recover_fee,
+					hbr.recover_status AS status,
+					FROM_UNIXTIME(hbr.recover_time, '%Y-%m-%d' ) recover_time,
+					hbr.recover_time order_by_recover_time,
+					IF(hbr.recover_yestime is null or hbr.recover_yestime='' or hbr.recover_yestime=0,
+					'',FROM_UNIXTIME(hbr.recover_yestime, '%Y-%m-%d %H:%i:%s' )) as recover_yestime,
+					hbr.recover_yestime order_by_recover_yestime
+			FROM huiyingdai_borrow hb
+			INNER JOIN huiyingdai_borrow_recover_plan hbr ON hbr.borrow_nid=hb.borrow_nid 
+			INNER JOIN huiyingdai_borrow_tender hbt ON hbt.nid=hbr.nid
+			LEFT JOIN huiyingdai_users_info iui ON iui.user_id = hbr.invite_user_id
+			LEFT JOIN huiyingdai_users AS u1 ON hbr.borrow_userid = u1.user_id
+			LEFT JOIN huiyingdai_borrow_project_type hbpt ON hbpt.borrow_cd = CAST(hb.project_type AS CHAR)
+			LEFT JOIN huiyingdai_borrow_style AS hbs on hb.borrow_style=hbs.nid
+			LEFT JOIN huiyingdai_users AS u2 ON hbr.user_id = u2.user_id
+			LEFT JOIN huiyingdai_spreads_users su ON su.user_id = u2.user_id
+			LEFT JOIN huiyingdai_users_info ui2 ON ui2.user_id = u2.user_id
+			LEFT JOIN `hyjf_crm`.`oa_users` `ou` ON `ou`.hyd_id = hbr.user_id AND ou.user_status IN ('E','Q1','Q11','Q2','Q21')
+			LEFT JOIN `hyjf_crm`.`oa_department` `od` ON `od`.`id` = `ou`.`departmentid` AND `od`.id IS NOT NULL
+			LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+			LEFT JOIN `hyjf_crm`.`oa_department` `od3` ON `od3`.`id` = `od2`.`parentid`
+			LEFT JOIN `hyjf_crm`.`oa_users` `ou1` ON `ou1`.hyd_id = su.spreads_userid AND ou1.user_status IN ('E','Q1','Q11','Q2','Q21')
+			LEFT JOIN `hyjf_crm`.`oa_department` `od4` ON `od4`.`id` = `ou1`.`departmentid` AND `od4`.id IS NOT NULL
+			LEFT JOIN `hyjf_crm`.`oa_department` `od5` ON `od5`.`id` = `od4`.`parentid`
+			LEFT JOIN `hyjf_crm`.`oa_department` `od6` ON `od6`.`id` = `od5`.`parentid`
+			WHERE  hb.borrow_style<![CDATA[ <> ]]>'end' AND hb.borrow_style<![CDATA[ <> ]]>'endday'
+			<include refid="Where_Clause" />
+			) t
+			<include refid="Where_recoverDepartmentName_Clause" />
+		
+	</select>
+
+	<resultMap id="searchBorrowRepaymentDetailsListResultMap"
+		type="com.hyjf.mybatis.model.customize.BorrowRepaymentDetailsCustomize">
+		<!-- 项目id -->
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<!-- 项目编号 -->
+		<result column="borrow_nid" property="borrowNid" jdbcType="VARCHAR" />
+		<!-- 借款人id -->
+		<result column="borrow_user_id" property="borrowUserId" jdbcType="VARCHAR" />
+		<!-- 借款人名称 -->
+		<result column="borrow_user_name" property="borrowUserName" jdbcType="VARCHAR" />
+		<!-- 项目类别名称 -->
+		<result column="project_type_name" property="projectTypeName" jdbcType="VARCHAR" />
+		<!-- 项目期限 -->
+		<result column="borrow_period" property="borrowPeriod" jdbcType="VARCHAR" />
+		<!-- 年化利率 -->
+		<result column="borrow_apr" property="borrowApr" jdbcType="VARCHAR" />
+		<!-- 借款金额 -->
+		<result column="borrow_account" property="borrowAccount" jdbcType="VARCHAR" />
+		<!-- 借到金额 -->
+		<result column="borrow_account_yes" property="borrowAccountYes" jdbcType="VARCHAR" />
+		<!-- 还款类型 -->
+		<result column="repay_type" property="repayType" jdbcType="VARCHAR" />
+		<!-- 投资人编号 -->
+		<result column="recover_user_id" property="recoverUserId" jdbcType="VARCHAR" />
+		<!-- 投资人名称 -->
+		<result column="recover_user_name" property="recoverUserName" jdbcType="VARCHAR" />
+		<!-- 投资人属性（投资时） -->
+		<result column="tender_user_attribute" property="tenderUserAttribute" jdbcType="VARCHAR" />
+		<!-- 投资人所属一级分部（当前） -->
+		<result column="recover_region_name" property="recoverRegionName" jdbcType="VARCHAR" />
+		<!-- 投资人所属二级分部（当前） -->
+		<result column="recover_branch_name" property="recoverBranchName" jdbcType="VARCHAR" />
+		<!-- 投资人所属团队（当前） -->
+		<result column="recover_department_name" property="recoverDepartmentName" jdbcType="VARCHAR" />
+		<!-- 推荐人属性（投资时） -->
+		<result column="invite_user_attribute" property="inviteUserAttribute" jdbcType="VARCHAR" />
+		<!-- 推荐人用户名（投资时） -->
+		<result column="invite_user_name" property="inviteUserName" jdbcType="VARCHAR" />
+		<!-- 推荐人姓名（投资时） -->
+		<result column="invite_truename" property="inviteTrueName" jdbcType="VARCHAR" />
+		<!-- 推荐人所属一级分部（投资时） -->
+		<result column="invite_region_name" property="inviteRegionName" jdbcType="VARCHAR" />
+		<!-- 推荐人所属二级分部（当投资时） -->
+		<result column="invite_branch_name" property="inviteBranchName" jdbcType="VARCHAR" />
+		<!-- 推荐人所属团队（投资时） -->
+		<result column="invite_department_name" property="inviteDepartmentName" jdbcType="VARCHAR" />
+		<!-- 分期还款期数 -->
+		<result column="recover_period" property="recoverPeriod" jdbcType="VARCHAR" />
+		<!-- 应还本金 -->
+		<result column="recover_capital" property="recoverCapital" jdbcType="VARCHAR" />
+		<!-- 应还利息 -->
+		<result column="recover_interest" property="recoverInterest" jdbcType="VARCHAR" />
+		<!-- 应还本息 -->
+		<result column="recover_account" property="recoverAccount" jdbcType="VARCHAR" />
+		<!-- 服务费 -->
+		<result column="recover_fee" property="recoverFee" jdbcType="VARCHAR" />
+		<!-- 还款状态 -->
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<!-- 应回款时间 -->
+		<result column="recover_time" property="recoverTime" jdbcType="VARCHAR" />
+		<!-- 应回款时间戳 -->
+		<result column="order_by_recover_time" property="orderByRecoverTime" jdbcType="VARCHAR" />
+		<!-- 实际还款时间 -->
+		<result column="recover_yestime" property="recoverYestime" jdbcType="VARCHAR" />
+		<!-- 实际还款时间戳 -->
+		<result column="order_by_recover_yestime" property="orderByRecoverYestime" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectBorrowRepaymentDetailsList" resultMap="searchBorrowRepaymentDetailsListResultMap"
+		parameterType="com.hyjf.mybatis.model.customize.BorrowRepaymentDetailsCustomize">
+		SELECT * FROM (
+			SELECT
+					hb.id id,
+					hb.borrow_nid AS borrow_nid,
+					u1.user_id AS borrow_user_id,
+					u1.username AS borrow_user_name,
+					hbpt.borrow_name AS project_type_name,
+					CASE WHEN hb.borrow_style = 'endday' THEN CONCAT(hb.borrow_period, '天') ELSE CONCAT(hb.borrow_period, '个月') END AS borrow_period,
+					hb.borrow_apr AS borrow_apr,
+					hb.account AS borrow_account,
+					hb.borrow_account_yes AS borrow_account_yes,
+					hbs.name AS repay_type,
+					u2.user_id AS recover_user_id,
+					u2.username AS recover_user_name,
+					hbt.tender_user_attribute tender_user_attribute,
+					CASE WHEN ui2.attribute = '1' THEN `od6`.`name` ELSE `od3`.`name` END `recover_region_name`,
+					CASE WHEN ui2.attribute = '1' THEN `od5`.`name` ELSE `od2`.`name` END `recover_branch_name`,
+					CASE WHEN ui2.attribute = '1' THEN `od4`.`name` ELSE `od`.`name`  END `recover_department_name`,
+					hbt.invite_user_attribute invite_user_attribute,
+					hbt.invite_user_name invite_user_name,
+					iui.truename invite_truename,
+					hbt.invite_region_name invite_region_name,
+					hbt.invite_branch_name invite_branch_name,
+					hbt.invite_department_name invite_department_name,
+					1 AS recover_period,
+					hbr.recover_capital AS recover_capital,
+					hbr.recover_interest AS recover_interest,
+					hbr.recover_account AS recover_account,
+					hbr.recover_fee AS recover_fee,
+					hbr.recover_status AS status,
+					FROM_UNIXTIME(hbr.recover_time, '%Y-%m-%d' ) recover_time,
+					hbr.recover_time order_by_recover_time,
+					IF(hbr.recover_yestime is null or hbr.recover_yestime='' or hbr.recover_yestime=0,
+					'',FROM_UNIXTIME(hbr.recover_yestime, '%Y-%m-%d %H:%i:%s' )) as recover_yestime,
+					hbr.recover_yestime order_by_recover_yestime
+			FROM huiyingdai_borrow hb
+			INNER JOIN huiyingdai_borrow_recover hbr ON hbr.borrow_nid=hb.borrow_nid 
+			INNER JOIN huiyingdai_borrow_tender hbt ON hbt.nid=hbr.nid
+			LEFT JOIN huiyingdai_users_info iui ON iui.user_id = hbr.invite_user_id
+			LEFT JOIN huiyingdai_users AS u1 ON hbr.borrow_userid = u1.user_id
+			LEFT JOIN huiyingdai_borrow_project_type hbpt ON hbpt.borrow_cd = CAST(hb.project_type AS CHAR)
+			LEFT JOIN huiyingdai_borrow_style AS hbs on hb.borrow_style=hbs.nid
+			LEFT JOIN huiyingdai_users AS u2 ON hbr.user_id = u2.user_id
+			LEFT JOIN huiyingdai_spreads_users su ON su.user_id = u2.user_id
+			LEFT JOIN huiyingdai_users_info ui2 ON ui2.user_id = u2.user_id
+			LEFT JOIN `hyjf_crm`.`oa_users` `ou` ON `ou`.hyd_id = hbr.user_id AND ou.user_status IN ('E','Q1','Q11','Q2','Q21')
+			LEFT JOIN `hyjf_crm`.`oa_department` `od` ON `od`.`id` = `ou`.`departmentid` AND `od`.id IS NOT NULL
+			LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+			LEFT JOIN `hyjf_crm`.`oa_department` `od3` ON `od3`.`id` = `od2`.`parentid`
+			LEFT JOIN `hyjf_crm`.`oa_users` `ou1` ON `ou1`.hyd_id = su.spreads_userid AND ou1.user_status IN ('E','Q1','Q11','Q2','Q21')
+			LEFT JOIN `hyjf_crm`.`oa_department` `od4` ON `od4`.`id` = `ou1`.`departmentid` AND `od4`.id IS NOT NULL
+			LEFT JOIN `hyjf_crm`.`oa_department` `od5` ON `od5`.`id` = `od4`.`parentid`
+			LEFT JOIN `hyjf_crm`.`oa_department` `od6` ON `od6`.`id` = `od5`.`parentid`
+			WHERE  (hb.borrow_style='end' OR hb.borrow_style='endday')
+			<include refid="Where_Clause" />
+			UNION ALL
+			SELECT	
+					hb.id id,
+					hb.borrow_nid AS borrow_nid,
+					u1.user_id AS borrow_user_id,
+					u1.username AS borrow_user_name,
+					hbpt.borrow_name AS project_type_name,
+					CASE WHEN hb.borrow_style = 'endday' THEN CONCAT(hb.borrow_period, '天') ELSE CONCAT(hb.borrow_period, '个月') END AS borrow_period,
+					hb.borrow_apr AS borrow_apr,
+					hb.account AS borrow_account,
+					hb.borrow_account_yes AS borrow_account_yes,
+					hbs.name AS repay_type,
+					u2.user_id AS recover_user_id,
+					u2.username AS recover_user_name,
+					hbt.tender_user_attribute tender_user_attribute,
+					CASE WHEN ui2.attribute = '1' THEN `od6`.`name` ELSE `od3`.`name` END `recover_region_name`,
+					CASE WHEN ui2.attribute = '1' THEN `od5`.`name` ELSE `od2`.`name` END `recover_branch_name`,
+					CASE WHEN ui2.attribute = '1' THEN `od4`.`name` ELSE `od`.`name`  END `recover_department_name`,
+					hbt.invite_user_attribute invite_user_attribute,
+					hbt.invite_user_name invite_user_name,
+					iui.truename invite_truename,
+					hbt.invite_region_name invite_region_name,
+					hbt.invite_branch_name invite_branch_name,
+					hbt.invite_department_name invite_department_name,
+					hbr.recover_period AS recover_period,
+					hbr.recover_capital AS recover_capital,
+					hbr.recover_interest AS recover_interest,
+					hbr.recover_account AS recover_account,
+					hbr.recover_fee AS recover_fee,
+					hbr.recover_status AS status,
+					FROM_UNIXTIME(hbr.recover_time, '%Y-%m-%d' ) recover_time,
+					hbr.recover_time order_by_recover_time,
+					IF(hbr.recover_yestime is null or hbr.recover_yestime='' or hbr.recover_yestime=0,
+					'',FROM_UNIXTIME(hbr.recover_yestime, '%Y-%m-%d %H:%i:%s' )) as recover_yestime,
+					hbr.recover_yestime order_by_recover_yestime
+			FROM huiyingdai_borrow hb
+			INNER JOIN huiyingdai_borrow_recover_plan hbr ON hbr.borrow_nid=hb.borrow_nid 
+			INNER JOIN huiyingdai_borrow_tender hbt ON hbt.nid=hbr.nid
+			LEFT JOIN huiyingdai_users_info iui ON iui.user_id = hbr.invite_user_id
+			LEFT JOIN huiyingdai_users AS u1 ON hbr.borrow_userid = u1.user_id
+			LEFT JOIN huiyingdai_borrow_project_type hbpt ON hbpt.borrow_cd = CAST(hb.project_type AS CHAR)
+			LEFT JOIN huiyingdai_borrow_style AS hbs on hb.borrow_style=hbs.nid
+			LEFT JOIN huiyingdai_users AS u2 ON hbr.user_id = u2.user_id
+			LEFT JOIN huiyingdai_spreads_users su ON su.user_id = u2.user_id
+			LEFT JOIN huiyingdai_users_info ui2 ON ui2.user_id = u2.user_id
+			LEFT JOIN `hyjf_crm`.`oa_users` `ou` ON `ou`.hyd_id = hbr.user_id AND ou.user_status IN ('E','Q1','Q11','Q2','Q21')
+			LEFT JOIN `hyjf_crm`.`oa_department` `od` ON `od`.`id` = `ou`.`departmentid` AND `od`.id IS NOT NULL
+			LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+			LEFT JOIN `hyjf_crm`.`oa_department` `od3` ON `od3`.`id` = `od2`.`parentid`
+			LEFT JOIN `hyjf_crm`.`oa_users` `ou1` ON `ou1`.hyd_id = su.spreads_userid AND ou1.user_status IN ('E','Q1','Q11','Q2','Q21')
+			LEFT JOIN `hyjf_crm`.`oa_department` `od4` ON `od4`.`id` = `ou1`.`departmentid` AND `od4`.id IS NOT NULL
+			LEFT JOIN `hyjf_crm`.`oa_department` `od5` ON `od5`.`id` = `od4`.`parentid`
+			LEFT JOIN `hyjf_crm`.`oa_department` `od6` ON `od6`.`id` = `od5`.`parentid`
+			WHERE  hb.borrow_style<![CDATA[ <> ]]>'end' AND hb.borrow_style<![CDATA[ <> ]]>'endday'
+			<include refid="Where_Clause" />) t
+			<include refid="Where_recoverDepartmentName_Clause" />
+		ORDER BY
+		t.order_by_recover_time DESC,t.id ASC
+		<if test="limitStart >= 0">
+			LIMIT #{limitStart} , #{limitEnd}
+		</if>
+	</select>
+
+	<select id="sumBorrowRepaymentDetails"
+		resultType="com.hyjf.mybatis.model.customize.BorrowRepaymentDetailsCustomize"
+		parameterType="com.hyjf.mybatis.model.customize.BorrowRepaymentDetailsCustomize">
+		SELECT SUM(t.recover_capital) AS recoverCapital,
+		SUM(t.recover_interest) AS recoverInterest,
+		SUM(t.recover_Account) AS recoverAccount,
+		SUM(t.recover_fee) AS recoverFee FROM (
+			SELECT
+					hbr.recover_capital AS recover_capital,
+					hbr.recover_interest AS recover_interest,
+					hbr.recover_account AS recover_account,
+					hbr.recover_fee AS recover_fee,
+					CASE WHEN ui2.attribute = '1' THEN `od6`.`name` ELSE `od3`.`name` END `recover_region_name`
+			FROM huiyingdai_borrow hb
+			INNER JOIN huiyingdai_borrow_recover hbr ON hbr.borrow_nid=hb.borrow_nid 
+			INNER JOIN huiyingdai_borrow_tender hbt ON hbt.nid=hbr.nid
+			LEFT JOIN huiyingdai_users_info iui ON iui.user_id = hbr.invite_user_id
+			LEFT JOIN huiyingdai_users AS u1 ON hbr.borrow_userid = u1.user_id
+			LEFT JOIN huiyingdai_borrow_project_type hbpt ON hbpt.borrow_cd = CAST(hb.project_type AS CHAR)
+			LEFT JOIN huiyingdai_borrow_style AS hbs on hb.borrow_style=hbs.nid
+			LEFT JOIN huiyingdai_users AS u2 ON hbr.user_id = u2.user_id
+			LEFT JOIN huiyingdai_spreads_users su ON su.user_id = u2.user_id
+			LEFT JOIN huiyingdai_users_info ui2 ON ui2.user_id = u2.user_id
+			LEFT JOIN `hyjf_crm`.`oa_users` `ou` ON `ou`.hyd_id = hbr.user_id AND ou.user_status IN ('E','Q1','Q11','Q2','Q21')
+			LEFT JOIN `hyjf_crm`.`oa_department` `od` ON `od`.`id` = `ou`.`departmentid` AND `od`.id IS NOT NULL
+			LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+			LEFT JOIN `hyjf_crm`.`oa_department` `od3` ON `od3`.`id` = `od2`.`parentid`
+			LEFT JOIN `hyjf_crm`.`oa_users` `ou1` ON `ou1`.hyd_id = su.spreads_userid AND ou1.user_status IN ('E','Q1','Q11','Q2','Q21')
+			LEFT JOIN `hyjf_crm`.`oa_department` `od4` ON `od4`.`id` = `ou1`.`departmentid` AND `od4`.id IS NOT NULL
+			LEFT JOIN `hyjf_crm`.`oa_department` `od5` ON `od5`.`id` = `od4`.`parentid`
+			LEFT JOIN `hyjf_crm`.`oa_department` `od6` ON `od6`.`id` = `od5`.`parentid`
+			WHERE  (hb.borrow_style='end' OR hb.borrow_style='endday')
+			<include refid="Where_Clause" />
+			UNION ALL
+			SELECT	
+					hbr.recover_capital AS recover_capital,
+					hbr.recover_interest AS recover_interest,
+					hbr.recover_account AS recover_account,
+					hbr.recover_fee AS recover_fee,
+					CASE WHEN ui2.attribute = '1' THEN `od6`.`name` ELSE `od3`.`name` END `recover_region_name`
+			FROM huiyingdai_borrow hb
+			INNER JOIN huiyingdai_borrow_recover_plan hbr ON hbr.borrow_nid=hb.borrow_nid 
+			INNER JOIN huiyingdai_borrow_tender hbt ON hbt.nid=hbr.nid
+			LEFT JOIN huiyingdai_users_info iui ON iui.user_id = hbr.invite_user_id
+			LEFT JOIN huiyingdai_users AS u1 ON hbr.borrow_userid = u1.user_id
+			LEFT JOIN huiyingdai_borrow_project_type hbpt ON hbpt.borrow_cd = CAST(hb.project_type AS CHAR)
+			LEFT JOIN huiyingdai_borrow_style AS hbs on hb.borrow_style=hbs.nid
+			LEFT JOIN huiyingdai_users AS u2 ON hbr.user_id = u2.user_id
+			LEFT JOIN huiyingdai_spreads_users su ON su.user_id = u2.user_id
+			LEFT JOIN huiyingdai_users_info ui2 ON ui2.user_id = u2.user_id
+			LEFT JOIN `hyjf_crm`.`oa_users` `ou` ON `ou`.hyd_id = hbr.user_id AND ou.user_status IN ('E','Q1','Q11','Q2','Q21')
+			LEFT JOIN `hyjf_crm`.`oa_department` `od` ON `od`.`id` = `ou`.`departmentid` AND `od`.id IS NOT NULL
+			LEFT JOIN `hyjf_crm`.`oa_department` `od2` ON `od2`.`id` = `od`.`parentid`
+			LEFT JOIN `hyjf_crm`.`oa_department` `od3` ON `od3`.`id` = `od2`.`parentid`
+			LEFT JOIN `hyjf_crm`.`oa_users` `ou1` ON `ou1`.hyd_id = su.spreads_userid AND ou1.user_status IN ('E','Q1','Q11','Q2','Q21')
+			LEFT JOIN `hyjf_crm`.`oa_department` `od4` ON `od4`.`id` = `ou1`.`departmentid` AND `od4`.id IS NOT NULL
+			LEFT JOIN `hyjf_crm`.`oa_department` `od5` ON `od5`.`id` = `od4`.`parentid`
+			LEFT JOIN `hyjf_crm`.`oa_department` `od6` ON `od6`.`id` = `od5`.`parentid`
+			WHERE  hb.borrow_style<![CDATA[ <> ]]>'end' AND hb.borrow_style<![CDATA[ <> ]]>'endday'
+			<include refid="Where_Clause" />) t
+			<include refid="Where_recoverDepartmentName_Clause" />
+	</select> 
+</mapper>

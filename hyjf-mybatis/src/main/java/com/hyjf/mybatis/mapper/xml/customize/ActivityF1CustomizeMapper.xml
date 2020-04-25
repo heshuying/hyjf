@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hyjf.mybatis.mapper.customize.ActivityF1CustomizeMapper">
+
+   <resultMap id="BaseResultMap" type="com.hyjf.mybatis.model.auto.ActivityF1" >
+	    <id column="user_id" property="userId" jdbcType="INTEGER" />
+	    <result column="user_name" property="userName" jdbcType="CHAR" />
+	    <result column="mobile" property="mobile" jdbcType="CHAR" />
+	    <result column="real_name" property="realName" jdbcType="VARCHAR" />
+	    <result column="activity_type" property="activityType" jdbcType="VARCHAR" />
+	    <result column="speed" property="speed" jdbcType="INTEGER" />
+	    <result column="tender_account_all" property="tenderAccountAll" jdbcType="DECIMAL" />
+	    <result column="is_app_flg" property="isAppFlg" jdbcType="VARCHAR" />
+	    <result column="is_first_flg" property="isFirstFlg" jdbcType="VARCHAR" />
+	    <result column="return_amount_activity" property="returnAmountActivity" jdbcType="DECIMAL" />
+	    <result column="return_amount_extra" property="returnAmountExtra" jdbcType="DECIMAL" />
+	    <result column="return_amount" property="returnAmount" jdbcType="DECIMAL" />
+	    <result column="add_time" property="addTime" jdbcType="INTEGER" />
+	    <result column="update_time" property="updateTime" jdbcType="INTEGER" />
+	    <result column="is_return_flg" property="isReturnFlg" jdbcType="VARCHAR" />
+	    <result column="return_time" property="returnTime" jdbcType="INTEGER" />
+  </resultMap>
+
+	<sql id="Where_Clause">
+		<where>
+			<if test="userName != null and userName != ''">
+				AND user_name LIKE CONCAT('%', #{userName}, '%')
+			</if>
+			<if test="realName != null and realName != ''">
+				AND real_name LIKE CONCAT('%', #{realName}, '%')
+			</if>
+			<if test="mobile != null and mobile != ''">
+				AND mobile LIKE CONCAT('%', #{mobile}, '%')
+			</if>
+				AND speed != 0
+		</where>
+	</sql>
+
+	<select id="selectActivityF1List" resultMap="BaseResultMap" parameterType="Map">
+		SELECT * FROM huiyingdai_activity_F1
+		<include refid="Where_Clause" />
+		order by `is_return_flg` Asc,`return_time` Asc, `speed` Desc,`tender_account_all` Desc,`update_time` Desc
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+
+
+	<select id="queryActivityF1Count" resultType="java.lang.Integer" parameterType="Map">
+		SELECT COUNT(1)
+		FROM huiyingdai_activity_F1 l
+		<include refid="Where_Clause" />
+		<if test="limitStart != null and limitEnd !=null" >
+	      LIMIT #{limitStart,jdbcType=INTEGER} , #{limitEnd,jdbcType=INTEGER}
+	    </if>
+	</select>
+	
+
+</mapper>
