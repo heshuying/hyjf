@@ -31,7 +31,7 @@
 		<!-- MyBatis版本号 -->
 		<mybatis.version>3.2.4</mybatis.version>
 		<!-- mysql-connector -->
-		<mysql.connector.java.version>5.1.30</mysql.connector.java.version>
+		<mysql.connector.java.version>8.0.16</mysql.connector.java.version>
 
 		<!-- jackson版本号 -->
 		<jackson.version>2.5.0</jackson.version>
